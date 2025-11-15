@@ -1,13 +1,16 @@
 import Navbar from "@/components/navbar";
 import HeroSection from "@/components/hero-section";
-import PopularTests from "@/components/popular-tests";
+import SearchSection from "@/components/search-section";
+import ServicesSection from "@/components/services-section";
+
 
 export default function Home() {
   return (
     <div>
       <Navbar />
       <HeroSection />
-      <PopularTests />
+      <SearchSection />
+      <ServicesSection />
     </div>
   );
 }

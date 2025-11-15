@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Department {
@@ -156,6 +156,7 @@ interface Hospital {
 
 export default function DoctorListPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [divisions, setDivisions] = useState<Division[]>([]);
@@ -377,6 +378,14 @@ export default function DoctorListPage() {
       setThanas([]);
     }
   }, [selectedDistrict, districts, fetchThanas]);
+
+  // Read search query from URL params
+  useEffect(() => {
+    const search = searchParams.get("search");
+    if (search) {
+      setSearchQuery(decodeURIComponent(search));
+    }
+  }, [searchParams]);
 
   // Get unique values for filters
   const specialties = useMemo(() => {

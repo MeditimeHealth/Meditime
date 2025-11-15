@@ -68,11 +68,11 @@ export default function HeroSection() {
           onSlideChangeTransitionEnd={() => {
             setIsAnimating(false);
           }}
-          pagination={{
-            clickable: true,
-            bulletClass: "swiper-pagination-bullet-custom",
-            bulletActiveClass: "swiper-pagination-bullet-active-custom",
-          }}
+          // pagination={{
+          //   clickable: true,
+          //   bulletClass: "swiper-pagination-bullet-custom",
+          //   bulletActiveClass: "swiper-pagination-bullet-active-custom",
+          // }}
           autoplay={{
             delay: 5000,
             disableOnInteraction: false,
