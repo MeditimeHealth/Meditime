@@ -4,7 +4,11 @@ import SearchSection from "@/components/search-section";
 import ServicesSection from "@/components/services-section";
 import WhyChooseSection from "@/components/why-choose-section";
 import StatsSection from "@/components/stats-section";
+import PatientReviewSection from "@/components/patient-review-section";
+import HospitalPartnersSection from "@/components/hospital-partners-section";
+import BlogSection from "@/components/blog-section";
 import AppDownloadSection from "@/components/app-download-section";
+import Footer from "@/components/footer";
 
 
 export default function Home() {
@@ -16,7 +20,11 @@ export default function Home() {
       <ServicesSection />
       <WhyChooseSection />
       <StatsSection />
+      <PatientReviewSection />
+      <HospitalPartnersSection />
+      <BlogSection />
       <AppDownloadSection />
+      <Footer />
     </div>
   );
 }

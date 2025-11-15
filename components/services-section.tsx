@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
 
 export default function ServicesSection() {
@@ -11,24 +12,28 @@ export default function ServicesSection() {
       title: "ডাক্তার",
       description:
         "বিশেষজ্ঞ ডাক্তারের তালিকা থেকে খুঁজে নিন আপনার প্রয়োজনীয় ডাক্তারের চেম্বার ও সময়সূচি।",
+      href: "/doctor",
     },
     {
       image: "/impression-2.png",
       title: "হাসপাতাল",
       description:
         "বিশেষায়িত হাসপাতালের তালিকা থেকে খুঁজে নিন আপনার লোকেশনে পছন্দকৃত হাসপাতাল।",
+      href: "/hospital",
     },
     {
       image: "/impression-3.png",
       title: "লাইভ ডাক্তার",
       description:
         "আপনার প্রয়োজনীয় মূহুর্তে বিশেষজ্ঞ ডাক্তারের পরামর্শ নিন ভিডিও কলের মাধ্যমে।",
+      href: "/use-this-right-now",
     },
     {
       image: "/impression-4.png",
       title: "হেলথ টিপস্",
       description:
         "বছরজুড়ে নানা রকম স্বাস্থ্যসেবা সম্পর্কিত টিপস পেতে যুক্ত থাকুন আমাদের সাথে।",
+      href: "/blog",
     },
   ];
 
@@ -83,7 +88,8 @@ export default function ServicesSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="p-6 bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow h-full flex flex-col">
+              <Link href={service.href} className="block h-full">
+                <Card className="p-6 bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow h-full flex flex-col cursor-pointer">
                 {/* Icon */}
                 <div className="mb-4 flex justify-center">
                   <div className="relative w-12 h-12 flex items-center justify-center">
@@ -120,6 +126,7 @@ export default function ServicesSection() {
                   {service.description}
                 </p>
               </Card>
+              </Link>
             </motion.div>
           );
         })}
