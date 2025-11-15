@@ -26,7 +26,7 @@ export default function ServicesSection() {
       title: "লাইভ ডাক্তার",
       description:
         "আপনার প্রয়োজনীয় মূহুর্তে বিশেষজ্ঞ ডাক্তারের পরামর্শ নিন ভিডিও কলের মাধ্যমে।",
-      href: "/use-this-right-now",
+      href: "/",
     },
     {
       image: "/impression-4.png",
