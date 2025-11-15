@@ -1,0 +1,99 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import UserSidebar from "@/components/user-sidebar";
+
+interface User {
+  id: string;
+  fullName: string;
+  email?: string;
+  phoneNumber: string;
+  role?: string;
+}
+
+export default function UserLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkUser = () => {
+      if (typeof window !== "undefined") {
+        const userData = localStorage.getItem("user");
+        if (userData) {
+          try {
+            const parsedUser = JSON.parse(userData);
+            if (parsedUser.role === 'user' || !parsedUser.role) {
+              setUser(parsedUser);
+            } else {
+              router.push("/");
+            }
+          } catch (error) {
+            console.error("Error parsing user data:", error);
+            localStorage.removeItem("user");
+            router.push("/login");
+          }
+        } else {
+          router.push("/login");
+        }
+      }
+      setLoading(false);
+    };
+
+    checkUser();
+    window.addEventListener("storage", checkUser);
+    window.addEventListener("userLogin", checkUser);
+    window.addEventListener("userLogout", checkUser);
+
+    return () => {
+      window.removeEventListener("storage", checkUser);
+      window.removeEventListener("userLogin", checkUser);
+      window.removeEventListener("userLogout", checkUser);
+    };
+  }, [router]);
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      localStorage.removeItem("user");
+      setUser(null);
+      window.dispatchEvent(new Event("userLogout"));
+      router.push("/");
+      router.refresh();
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <div className="flex h-screen bg-gray-50">
+      <main className="flex-1 lg:mr-64 overflow-y-auto">
+        <div className="p-6 lg:p-8">
+          {children}
+        </div>
+      </main>
+      <UserSidebar user={user} onLogout={handleLogout} />
+    </div>
+  );
+}
+

@@ -1,0 +1,71 @@
+import { NextRequest, NextResponse } from "next/server";
+import dbConnect from "@/lib/mongodb";
+import District from "@/models/District";
+import Division from "@/models/Division";
+
+export async function GET(request: NextRequest) {
+  try {
+    await dbConnect();
+    const { searchParams } = new URL(request.url);
+    const divisionId = searchParams.get("division");
+
+    let query: any = {};
+    if (divisionId) {
+      query.division = divisionId;
+    }
+
+    const districts = await District.find(query)
+      .populate("division", "name")
+      .sort({ name: 1 });
+    return NextResponse.json({ districts }, { status: 200 });
+  } catch (error: any) {
+    console.error("Error fetching districts:", error);
+    return NextResponse.json(
+      { error: error.message || "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    await dbConnect();
+    const body = await request.json();
+    const { name, division } = body;
+
+    if (!name || !division) {
+      return NextResponse.json(
+        { error: "District name and division are required" },
+        { status: 400 }
+      );
+    }
+
+    // Verify division exists
+    const divisionExists = await Division.findById(division);
+    if (!divisionExists) {
+      return NextResponse.json(
+        { error: "Division not found" },
+        { status: 404 }
+      );
+    }
+
+    const district = await District.create({ name, division });
+    return NextResponse.json(
+      { message: "District created successfully", district },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.error("Error creating district:", error);
+    if (error.code === 11000) {
+      return NextResponse.json(
+        { error: "District already exists in this division" },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json(
+      { error: error.message || "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
