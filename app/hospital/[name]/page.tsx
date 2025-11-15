@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   ArrowLeft,
   Building2,
@@ -14,6 +15,7 @@ import {
   Clock,
   Users,
   Award,
+  Search,
 } from "lucide-react";
 import Navbar from "@/components/navbar";
 import { motion } from "framer-motion";
@@ -188,6 +190,7 @@ export default function HospitalDetailPage() {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchHospitalAndDoctors = useCallback(async () => {
     try {
@@ -305,6 +308,22 @@ export default function HospitalDetailPage() {
 
     return sorted;
   }, [doctors, sortBy, sortDirection]);
+
+  // Filter doctors based on search query
+  const filteredDoctors = useMemo(() => {
+    if (!searchQuery.trim()) return sortedDoctors;
+    
+    const query = searchQuery.toLowerCase().trim();
+    return sortedDoctors.filter((doctor) => {
+      const nameMatch = doctor.name.toLowerCase().includes(query);
+      const specialtyMatch = doctor.specialty?.toLowerCase().includes(query);
+      const qualificationMatch = doctor.qualification?.toLowerCase().includes(query);
+      const departmentMatch = doctor.department?.toLowerCase().includes(query);
+      const currentPositionMatch = doctor.currentPosition?.toLowerCase().includes(query);
+      
+      return nameMatch || specialtyMatch || qualificationMatch || departmentMatch || currentPositionMatch;
+    });
+  }, [sortedDoctors, searchQuery]);
 
   if (loading) {
     return (
@@ -539,76 +558,117 @@ export default function HospitalDetailPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-6"
         >
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8">
-            <div>
-              {/* Hospital Description Section */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="mb-10"
-              >
-                <Card className="p-8 bg-gradient-to-br from-white via-primary/5 to-white border-2 border-primary/10 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="space-y-4">
-                    <h3
-                      className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
-                    >
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <Building2 className="h-6 w-6 text-primary" />
-                      </div>
-                      হাসপাতাল সম্পর্কে
-                    </h3>
-                    <div
-                      className="text-base md:text-lg leading-relaxed text-gray-700 space-y-4"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
-                    >
-                      <p className="text-justify">
-                        {hospital.name} একটি আধুনিক ও উন্নত চিকিৎসা সেবা প্রদানকারী
-                        স্বাস্থ্যসেবা প্রতিষ্ঠান। আমাদের হাসপাতালে অভিজ্ঞ ও দক্ষ
-                        চিকিৎসকগণ সর্বোচ্চ মানের চিকিৎসা সেবা প্রদান করে থাকেন।
-                        আধুনিক চিকিৎসা সরঞ্জাম ও প্রযুক্তির সমন্বয়ে আমরা রোগীদের
-                        জন্য সর্বোত্তম চিকিৎসা নিশ্চিত করি।
-                      </p>
-                      {/* <p className="text-justify">
-                        আমাদের হাসপাতালে বিভিন্ন বিশেষজ্ঞ ডাক্তারদের পরামর্শ গ্রহণ
-                        করা যায় এবং উন্নতমানের ডায়াগনস্টিক সেবা পাওয়া যায়।
-                        রোগীদের সুবিধার জন্য আমরা সহজ অ্যাপয়েন্টমেন্ট সিস্টেম
-                        এবং নিয়মিত চিকিৎসা পরামর্শ প্রদান করে থাকি। আপনার
-                        স্বাস্থ্যসেবার প্রয়োজন মেটাতে আমরা সর্বদা প্রস্তুত।
-                      </p> */}
+          <div className="mb-8">
+            {/* Hospital Description Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-10"
+            >
+              <Card className="p-8 bg-gradient-to-br from-white via-primary/5 to-white border-2 border-primary/10 shadow-lg hover:shadow-xl transition-all duration-300">
+                <div className="space-y-4">
+                  <h3
+                    className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3"
+                    style={{
+                      fontFamily:
+                        "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                    }}
+                  >
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Building2 className="h-6 w-6 text-primary" />
                     </div>
+                    হাসপাতাল সম্পর্কে
+                  </h3>
+                  <div
+                    className="text-base md:text-lg leading-relaxed text-gray-700 space-y-4"
+                    style={{
+                      fontFamily:
+                        "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                    }}
+                  >
+                    <p className="text-justify">
+                      {hospital.name} একটি আধুনিক ও উন্নত চিকিৎসা সেবা প্রদানকারী
+                      স্বাস্থ্যসেবা প্রতিষ্ঠান। আমাদের হাসপাতালে অভিজ্ঞ ও দক্ষ
+                      চিকিৎসকগণ সর্বোচ্চ মানের চিকিৎসা সেবা প্রদান করে থাকেন।
+                      আধুনিক চিকিৎসা সরঞ্জাম ও প্রযুক্তির সমন্বয়ে আমরা রোগীদের
+                      জন্য সর্বোত্তম চিকিৎসা নিশ্চিত করি।
+                    </p>
+                    {/* <p className="text-justify">
+                      আমাদের হাসপাতালে বিভিন্ন বিশেষজ্ঞ ডাক্তারদের পরামর্শ গ্রহণ
+                      করা যায় এবং উন্নতমানের ডায়াগনস্টিক সেবা পাওয়া যায়।
+                      রোগীদের সুবিধার জন্য আমরা সহজ অ্যাপয়েন্টমেন্ট সিস্টেম
+                      এবং নিয়মিত চিকিৎসা পরামর্শ প্রদান করে থাকি। আপনার
+                      স্বাস্থ্যসেবার প্রয়োজন মেটাতে আমরা সর্বদা প্রস্তুত।
+                    </p> */}
                   </div>
-                </Card>
-              </motion.div>
-
-              <h2
-                className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 flex items-center gap-3"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
-              >
-                <div className="p-3 bg-primary/10 rounded-xl">
-                  <Users className="h-8 w-8 text-primary" />
                 </div>
-                "{banglaLabels.doctorsAt}"
-              </h2>
-              <p
-                className="text-lg text-gray-600"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
-              >
-                {doctors.length} {banglaLabels.doctorsAvailable}
-              </p>
+              </Card>
+            </motion.div>
+
+            {/* Doctors Header with Search Box */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+              <div className="flex-1">
+                <h2
+                  className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 flex items-center gap-3"
+                  style={{
+                    fontFamily:
+                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                  }}
+                >
+                  <div className="p-3 bg-primary/10 rounded-xl">
+                    <Users className="h-8 w-8 text-primary" />
+                  </div>
+                  "{banglaLabels.doctorsAt}"
+                </h2>
+                <p
+                  className="text-lg text-gray-600"
+                  style={{
+                    fontFamily:
+                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                  }}
+                >
+                  {filteredDoctors.length} {banglaLabels.doctorsAvailable}
+                </p>
+              </div>
+
+              {/* Search Box */}
+              <div className="w-full md:w-auto">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="ডাক্তার খুঁজুন..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 pr-4 py-2 w-full md:w-80 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                    style={{
+                      fontFamily:
+                        "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                    }}
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Sort Controls - Modern Design */}
@@ -655,7 +715,7 @@ export default function HospitalDetailPage() {
           </div>
 
           {/* Doctors Grid */}
-          {sortedDoctors.length === 0 ? (
+          {filteredDoctors.length === 0 ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -670,7 +730,7 @@ export default function HospitalDetailPage() {
                       "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                   }}
                 >
-                  {banglaLabels.noDoctors}
+                  {searchQuery ? "কোন ডাক্তার পাওয়া যায়নি" : banglaLabels.noDoctors}
                 </p>
                 <p
                   className="text-lg text-gray-400"
@@ -679,13 +739,13 @@ export default function HospitalDetailPage() {
                       "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                   }}
                 >
-                  {banglaLabels.checkLater}
+                  {searchQuery ? "অনুগ্রহ করে অন্য শব্দ দিয়ে খুঁজুন" : banglaLabels.checkLater}
                 </p>
               </Card>
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {sortedDoctors.map((doctor, index) => (
+              {filteredDoctors.map((doctor, index) => (
                 <motion.div
                   key={doctor._id}
                   initial={{ opacity: 0, y: 20 }}
