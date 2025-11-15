@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import { Navigation, Pagination, Autoplay, EffectFade } from "swiper/modules";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -13,25 +12,22 @@ import "swiper/css/effect-fade";
 
 const slides = [
   {
-    title: "Hassle-Free Lab Tests With Home Sample Collection Service",
+    title: "হোম স্যাম্পল কালেকশন সার্ভিস সহ ঝামেলামুক্ত ল্যাব টেস্ট",
     description:
-      "We know it can be difficult to do lab tests, especially during busy schedules, harsh weather, and heavy traffic, which is why we offer lab tests at home",
+      "আমরা জানি ল্যাব টেস্ট করা কঠিন হতে পারে, বিশেষ করে ব্যস্ত সময়সূচী, খারাপ আবহাওয়া এবং ভারী ট্রাফিকের সময়, তাই আমরা বাড়িতে ল্যাব টেস্টের সুবিধা প্রদান করি",
     image: "/slide.jpg",
-    cta: "Book a test",
   },
   {
-    title: "Expert Medical Care in the Comfort of Your Home",
+    title: "আপনার বাড়ির আরামে বিশেষজ্ঞ চিকিৎসা সেবা",
     description:
-      "Get professional healthcare services delivered right to your doorstep with our experienced team of doctors and medical professionals",
+      "আমাদের অভিজ্ঞ ডাক্তার এবং চিকিৎসা পেশাদারদের দল দিয়ে আপনার দোরগোড়ায় পেশাদার স্বাস্থ্যসেবা পেতে পারেন",
     image: "/slide2.jpg",
-    cta: "Book Appointment",
   },
   {
-    title: "Your Health, Our Priority",
+    title: "আপনার স্বাস্থ্য, আমাদের অগ্রাধিকার",
     description:
-      "Comprehensive healthcare solutions tailored to meet all your medical needs with convenience and care",
+      "সুবিধা এবং যত্ন সহ আপনার সমস্ত চিকিৎসা প্রয়োজনের জন্য তৈরি করা সম্পূর্ণ স্বাস্থ্যসেবা সমাধান",
     image: "/slide3.jpg",
-    cta: "Get Started",
   },
 ];
 
@@ -111,22 +107,40 @@ export default function HeroSection() {
                     <p className="mb-8 text-base leading-relaxed sm:text-lg lg:text-xl">
                       {slide.description}
                     </p>
-                    <Button className="bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base px-6 py-3">
-                      {slide.cta}
-                      <svg
-                        className="ml-2 h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                      <Button className="bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base px-6 py-3 w-full sm:w-auto">
+                        অ্যাপয়েন্টমেন্ট বুক করুন
+                        <svg
+                          className="ml-2 h-5 w-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </Button>
+                      <Button className="bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base px-6 py-3 w-full sm:w-auto">
+                        লাইভ কনসালটেন্ট
+                        <svg
+                          className="ml-2 h-5 w-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
