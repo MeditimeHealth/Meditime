@@ -16,16 +16,28 @@ const doctorSchema = z.object({
   name: z.string().min(2, "Name is required"),
   qualification: z.string().min(2, "Qualification is required"),
   currentPosition: z.string().optional(),
-  experience: z.preprocess((val) => (val === "" ? undefined : Number(val)), z.number().min(0, "Experience must be at least 0")),
+  experience: z.preprocess(
+    (val) => (val === "" || val === undefined ? undefined : Number(val)),
+    z.number().min(0, "Experience must be at least 0")
+  ),
   hospital: z.string().optional(),
   division: z.string().optional(),
   district: z.string().optional(),
   thana: z.string().optional(),
   chamber: z.string().optional(),
   department: z.string().optional(),
-  consultationFee: z.preprocess((val) => (val === "" ? undefined : Number(val)), z.number().min(0, "Consultation fee must be at least 0").optional()),
-  oldPatientFee: z.preprocess((val) => (val === "" ? undefined : Number(val)), z.number().min(0, "Old patient fee must be at least 0").optional()),
-  newPatientFee: z.preprocess((val) => (val === "" ? undefined : Number(val)), z.number().min(0, "New patient fee must be at least 0").optional()),
+  consultationFee: z.preprocess(
+    (val) => (val === "" || val === undefined ? undefined : Number(val)),
+    z.number().min(0, "Consultation fee must be at least 0").optional()
+  ),
+  oldPatientFee: z.preprocess(
+    (val) => (val === "" || val === undefined ? undefined : Number(val)),
+    z.number().min(0, "Old patient fee must be at least 0").optional()
+  ),
+  newPatientFee: z.preprocess(
+    (val) => (val === "" || val === undefined ? undefined : Number(val)),
+    z.number().min(0, "New patient fee must be at least 0").optional()
+  ),
   diseases: z.array(z.string()).optional(),
   bio: z.string().optional(),
   image: z.string().optional(),
@@ -95,7 +107,7 @@ export default function CreateDoctorPage() {
     setValue,
     formState: { errors },
   } = useForm<DoctorFormValues>({
-    resolver: zodResolver(doctorSchema),
+    resolver: zodResolver(doctorSchema) as any,
     defaultValues: {
       availabilitySlots: [{ days: [], startTime: "", endTime: "", chamber: "" }],
     },
@@ -333,7 +345,7 @@ export default function CreateDoctorPage() {
       </div>
 
       <Card className="p-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label htmlFor="name">

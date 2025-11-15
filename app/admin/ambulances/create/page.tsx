@@ -17,10 +17,10 @@ const ambulanceSchema = z.object({
   district: z.string().optional(),
   thana: z.string().optional(),
   availabilityStatus: z.enum(["Available", "Unavailable", "On Call"], {
-    errorMap: () => ({ message: "Availability status is required" }),
+    message: "Availability status is required",
   }),
   vehicleType: z.enum(["Basic Life Support", "Advanced Life Support", "Critical Care", "Air Ambulance"], {
-    errorMap: () => ({ message: "Vehicle type is required" }),
+    message: "Vehicle type is required",
   }),
 });
 

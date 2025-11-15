@@ -20,7 +20,10 @@ const signupSchema = z
     fullName: z.string().min(2, "Full name is required"),
     gender: z.enum(["male", "female"]),
     bloodGroup: z.string().optional(),
-    age: z.preprocess((val) => (val === "" ? undefined : Number(val)), z.number().min(1, "Age must be greater than 0").max(150, "Age must be less than 150")),
+    age: z.preprocess(
+      (val) => (val === "" || val === undefined ? undefined : Number(val)),
+      z.number().min(1, "Age must be greater than 0").max(150, "Age must be less than 150")
+    ),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string().min(6, "Please confirm your password"),
     agreeToTerms: z.boolean().refine((val) => val === true, {
@@ -47,7 +50,7 @@ export default function SignupPage() {
     setValue,
     formState: { errors },
   } = useForm<SignupFormValues>({
-    resolver: zodResolver(signupSchema),
+    resolver: zodResolver(signupSchema) as any,
     defaultValues: {
       agreeToTerms: false,
     },
@@ -123,7 +126,7 @@ export default function SignupPage() {
                 <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Create Account</h3>
                 <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Fill in your details to get started</p>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
+                <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-3 sm:space-y-4">
 
 
                   <div>

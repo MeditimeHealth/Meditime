@@ -15,7 +15,10 @@ const timeSlotSchema = z.object({
   endDate: z.string().min(1, "End date is required"),
   startTime: z.string().min(1, "Start time is required"),
   endTime: z.string().min(1, "End time is required"),
-  slotDuration: z.preprocess((val) => (val === "" ? undefined : Number(val)), z.number().min(15, "Slot duration must be at least 15 minutes").optional()),
+  slotDuration: z.preprocess(
+    (val) => (val === "" || val === undefined ? undefined : Number(val)),
+    z.number().min(15, "Slot duration must be at least 15 minutes").optional()
+  ),
 });
 
 type TimeSlotFormValues = z.infer<typeof timeSlotSchema>;
@@ -44,7 +47,7 @@ export default function TimeSlotsPage() {
     formState: { errors },
     reset,
   } = useForm<TimeSlotFormValues>({
-    resolver: zodResolver(timeSlotSchema),
+    resolver: zodResolver(timeSlotSchema) as any,
   });
 
   useEffect(() => {
@@ -216,7 +219,7 @@ export default function TimeSlotsPage() {
       {/* Create Time Slots Form */}
       <Card className="p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Create Time Slots</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="startDate">Start Date</Label>

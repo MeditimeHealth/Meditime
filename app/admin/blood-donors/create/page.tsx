@@ -16,14 +16,14 @@ const bloodDonorSchema = z.object({
   phoneNumber: z.string().min(10, "Phone number is required"),
   email: z.string().email("Invalid email address").optional().or(z.literal("")),
   bloodGroup: z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], {
-    errorMap: () => ({ message: "Blood group is required" }),
+    message: "Blood group is required",
   }),
   division: z.string().optional(),
   district: z.string().optional(),
   thana: z.string().optional(),
   photo: z.string().optional(),
   availabilityStatus: z.enum(["Available", "Unavailable", "Recently Donated"], {
-    errorMap: () => ({ message: "Availability status is required" }),
+    message: "Availability status is required",
   }),
   lastDonationDate: z.string().optional(),
 });
