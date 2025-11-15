@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import { Navigation, Pagination, Autoplay, EffectFade } from "swiper/modules";
 import { Button } from "./ui/button";
+import Link from "next/link";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -108,38 +109,42 @@ export default function HeroSection() {
                       {slide.description}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                      <Button className="bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base px-6 py-3 w-full sm:w-auto">
-                        অ্যাপয়েন্টমেন্ট বুক করুন
-                        <svg
-                          className="ml-2 h-5 w-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 5l7 7-7 7"
-                          />
-                        </svg>
-                      </Button>
-                      <Button className="bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base px-6 py-3 w-full sm:w-auto">
-                        লাইভ কনসালটেন্ট
-                        <svg
-                          className="ml-2 h-5 w-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 5l7 7-7 7"
-                          />
-                        </svg>
-                      </Button>
+                      <Link href="/doctor">
+                        <Button className="bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base px-6 py-3 w-full sm:w-auto">
+                          অ্যাপয়েন্টমেন্ট বুক করুন
+                          <svg
+                            className="ml-2 h-5 w-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
+                        </Button>
+                      </Link>
+                      <Link href="/doctor">
+                        <Button className="bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base px-6 py-3 w-full sm:w-auto">
+                          লাইভ কনসালটেন্ট
+                          <svg
+                            className="ml-2 h-5 w-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </div>

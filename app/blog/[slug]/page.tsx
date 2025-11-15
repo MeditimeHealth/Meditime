@@ -210,7 +210,7 @@ export default function BlogPostPage() {
             {/* Article Header */}
             <div className="mb-8">
               <h1
-                className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight tracking-tight"
+                className="text-4xl md:text-5xl font-bold text-primary mb-6 leading-tight tracking-tight"
                 dangerouslySetInnerHTML={{ __html: post.title.rendered }}
               />
               

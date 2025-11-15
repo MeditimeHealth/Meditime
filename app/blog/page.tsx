@@ -137,16 +137,24 @@ export default function HealthTipsPage() {
       
       {/* Big Search Section - Full Width */}
       <div className="w-full bg-gradient-to-br from-primary/5 via-white to-primary/5 py-16 px-4 sm:px-6 lg:px-8 pt-24">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative">
-            <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
-            <Input
-              type="text"
-              placeholder="Expert advice and insights to help you live a healthier life"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-16 pr-6 py-8 text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all"
-            />
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">স্বাস্থ্য টিপস</h1>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Expert advice and insights to help you live a healthier life
+            </p>
+          </div>
+          <div className="max-w-4xl mx-auto">
+            <div className="relative">
+              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
+              <Input
+                type="text"
+                placeholder="Expert advice and insights to help you live a healthier life"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-16 pr-6 py-8 text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -206,7 +214,7 @@ export default function HealthTipsPage() {
                             Featured Article
                           </span>
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-[1.1] group-hover:text-primary transition-colors tracking-tight">
+                        <h2 className="text-4xl md:text-5xl font-bold text-primary mb-6 leading-[1.1] transition-colors tracking-tight">
                           {stripHtml(featuredPost.title.rendered)}
                         </h2>
                         <div className="flex items-center gap-4 text-sm text-gray-500 mb-6 font-medium">
@@ -260,7 +268,7 @@ export default function HealthTipsPage() {
                                 />
                               </div>
                               <div className="p-6 md:p-8 flex flex-col justify-center">
-                                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight group-hover:text-primary transition-colors tracking-tight">
+                                <h3 className="text-2xl md:text-3xl font-bold text-primary mb-3 leading-tight transition-colors tracking-tight">
                                   {stripHtml(post.title.rendered)}
                                 </h3>
                                 <div className="flex items-center gap-3 text-xs text-gray-500 mb-4 font-medium">
@@ -297,7 +305,7 @@ export default function HealthTipsPage() {
                             />
                           </div>
                           <div className="p-6 flex-1 flex flex-col">
-                            <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight group-hover:text-primary transition-colors line-clamp-2 tracking-tight">
+                            <h3 className="text-xl font-bold text-primary mb-3 leading-tight transition-colors line-clamp-2 tracking-tight">
                               {stripHtml(post.title.rendered)}
                             </h3>
                             <div className="flex items-center gap-3 text-xs text-gray-500 mb-3 font-medium">

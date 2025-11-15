@@ -67,7 +67,7 @@ export default function ContactPage() {
       
       <div className="container mx-auto px-4 py-16 mt-20">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
+          <h1 className="text-4xl font-bold text-primary mb-4">Contact Us</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Have a question or need assistance? We're here to help!
           </p>
@@ -76,7 +76,7 @@ export default function ContactPage() {
         <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <div className="lg:col-span-1 space-y-6">
             <Card className="p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Get in Touch</h2>
+              <h2 className="text-2xl font-bold text-primary mb-6">Get in Touch</h2>
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -116,7 +116,7 @@ export default function ContactPage() {
 
           <div className="lg:col-span-2">
             <Card className="p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
+              <h2 className="text-2xl font-bold text-primary mb-6">Send us a Message</h2>
               
               {isSuccess && (
                 <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md flex items-center gap-3">

@@ -184,6 +184,7 @@ export default function HospitalDetailPage() {
 
   const [hospital, setHospital] = useState<Hospital | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [allHospitals, setAllHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -196,6 +197,7 @@ export default function HospitalDetailPage() {
       const hospitalsData = await hospitalsResponse.json();
 
       if (hospitalsResponse.ok) {
+        setAllHospitals(hospitalsData.hospitals);
         const foundHospital = hospitalsData.hospitals.find(
           (h: Hospital) => h.name === hospitalName
         );
@@ -236,6 +238,33 @@ export default function HospitalDetailPage() {
     }
     return parts.join(", ");
   };
+
+  // Get recommended hospitals from the same location
+  const recommendedHospitals = useMemo(() => {
+    if (!hospital || !allHospitals.length) return [];
+    
+    const currentThanaId = hospital.thana?._id;
+    const currentDistrictId = hospital.thana?.district?._id;
+    const currentDivisionId = hospital.thana?.district?.division?._id;
+    
+    return allHospitals
+      .filter((h) => {
+        // Exclude current hospital
+        if (h.name === hospital.name) return false;
+        
+        // Match by thana (most specific)
+        if (currentThanaId && h.thana?._id === currentThanaId) return true;
+        
+        // Match by district if thana doesn't match
+        if (currentDistrictId && h.thana?.district?._id === currentDistrictId) return true;
+        
+        // Match by division if district doesn't match
+        if (currentDivisionId && h.thana?.district?.division?._id === currentDivisionId) return true;
+        
+        return false;
+      })
+      .slice(0, 5); // Limit to 5 recommendations
+  }, [hospital, allHospitals]);
 
   const sortedDoctors = useMemo(() => {
     const sorted = [...doctors];
@@ -358,6 +387,9 @@ export default function HospitalDetailPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       <Navbar />
       <div className="max-w-7xl mt-28 mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Main Content */}
+          <div className="flex-1">
         {/* Back Button */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -580,7 +612,7 @@ export default function HospitalDetailPage() {
             </div>
 
             {/* Sort Controls - Modern Design */}
-            <div className="flex items-center gap-3 bg-white p-4 rounded-xl shadow-md border border-gray-200">
+            {/* <div className="flex items-center gap-3 bg-white p-4 rounded-xl shadow-md border border-gray-200">
               <label
                 htmlFor="sortBy"
                 className="text-base font-semibold text-gray-700 whitespace-nowrap"
@@ -619,7 +651,7 @@ export default function HospitalDetailPage() {
               >
                 {sortDirection === "asc" ? "↑" : "↓"}
               </Button>
-            </div>
+            </div> */}
           </div>
 
           {/* Doctors Grid */}
@@ -892,6 +924,79 @@ export default function HospitalDetailPage() {
             </div>
           )}
         </motion.div>
+          </div>
+
+          {/* Sidebar - Recommended Hospitals */}
+          {recommendedHospitals.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="w-full lg:w-80 shrink-0"
+            >
+              <Card className="p-6 bg-gradient-to-br from-white via-primary/5 to-white border-2 border-primary/20 shadow-xl sticky top-32">
+                <h3
+                  className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3"
+                  style={{
+                    fontFamily:
+                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                  }}
+                >
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Building2 className="h-6 w-6 text-primary" />
+                  </div>
+                  একই এলাকার হাসপাতাল
+                </h3>
+                <div className="space-y-4">
+                  {recommendedHospitals.map((recHospital, index) => (
+                    <motion.div
+                      key={recHospital._id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: 0.4 + index * 0.1 }}
+                      whileHover={{ scale: 1.02 }}
+                    >
+                      <Link href={`/hospital/${encodeURIComponent(recHospital.name)}`}>
+                        <Card className="p-4 bg-white border-2 border-gray-200 hover:border-primary/50 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer">
+                          <div className="flex items-start gap-3">
+                            <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/30 flex items-center justify-center">
+                              <Building2 className="h-6 w-6 text-primary" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4
+                                className="text-lg font-bold text-gray-900 mb-1 line-clamp-2"
+                                style={{
+                                  fontFamily:
+                                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                                }}
+                              >
+                                {recHospital.name}
+                              </h4>
+                              {getHospitalLocationString(recHospital) && (
+                                <div className="flex items-center gap-1 text-sm text-gray-600">
+                                  <MapPin className="h-4 w-4 text-primary shrink-0" />
+                                  <span
+                                    className="line-clamp-1"
+                                    style={{
+                                      fontFamily:
+                                        "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                                    }}
+                                  >
+                                    {getHospitalLocationString(recHospital)}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </Card>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              </Card>
+            </motion.div>
+          )}
+        </div>
       </div>
     </div>
   );
