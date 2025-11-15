@@ -289,7 +289,7 @@ export default function ServiceDetailPage() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Services
             </Link>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">{serviceSection.title}</h1>
+            <h1 className="text-4xl font-bold text-[#009A98] mb-2">{serviceSection.title}</h1>
             <p className="text-lg text-gray-600">{serviceSection.description}</p>
           </div>
         </div>
@@ -298,10 +298,10 @@ export default function ServiceDetailPage() {
         <div className="flex w-full">
           {/* Left Sidebar - Sort Options */}
           <div className="w-80 bg-white border-r border-gray-200 p-6 h-[calc(100vh-200px)] sticky top-20 overflow-y-auto">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Sort & Filter</h2>
+            <h2 className="text-lg font-semibold text-[#009A98] mb-4">Sort & Filter</h2>
             
             {/* Sort Options */}
-            <div className="mb-6">
+            {/* <div className="mb-6">
               <Label className="text-sm font-medium text-gray-700 mb-2 block">Sort By</Label>
               <div className="space-y-2">
                 {(["name", "location", "status", "date"] as SortOption[]).map((option) => (
@@ -318,8 +318,29 @@ export default function ServiceDetailPage() {
                   </button>
                 ))}
               </div>
-            </div>
-
+            </div> */}
+  {/* Service-specific filters */}
+  {serviceType === "blood-donor" && (
+              <div className="mb-6">
+                <Label htmlFor="bloodGroup" className="text-sm font-medium text-gray-700 mb-2 block">Blood Group</Label>
+                <select
+                  id="bloodGroup"
+                  value={bloodGroupFilter}
+                  onChange={(e) => setBloodGroupFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                >
+                  <option value="">All Blood Groups</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                </select>
+              </div>
+            )}
             {/* Location Filters */}
             <div className="space-y-4 mb-6">
               <div>
@@ -376,28 +397,7 @@ export default function ServiceDetailPage() {
               </div>
             </div>
 
-            {/* Service-specific filters */}
-            {serviceType === "blood-donor" && (
-              <div className="mb-6">
-                <Label htmlFor="bloodGroup" className="text-sm font-medium text-gray-700 mb-2 block">Blood Group</Label>
-                <select
-                  id="bloodGroup"
-                  value={bloodGroupFilter}
-                  onChange={(e) => setBloodGroupFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-                >
-                  <option value="">All Blood Groups</option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                </select>
-              </div>
-            )}
+          
 
             {serviceType === "ambulance" && (
               <>
@@ -463,7 +463,7 @@ export default function ServiceDetailPage() {
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-xl font-semibold text-gray-900 truncate">
+                              <h3 className="text-xl font-semibold text-[#009A98] truncate">
                                 {donor.name}
                               </h3>
                               <div className="flex items-center gap-2 mt-1">
@@ -534,7 +534,7 @@ export default function ServiceDetailPage() {
                               <Car className="h-8 w-8 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-xl font-semibold text-gray-900 truncate">
+                              <h3 className="text-xl font-semibold text-[#009A98] truncate">
                                 {ambulance.name}
                               </h3>
                               <p className="text-sm text-gray-600 mt-1">{ambulance.vehicleType}</p>
