@@ -2,6 +2,7 @@ import Navbar from "@/components/navbar";
 import HeroSection from "@/components/hero-section";
 import SearchSection from "@/components/search-section";
 import ServicesSection from "@/components/services-section";
+import WhyChooseSection from "@/components/why-choose-section";
 
 
 export default function Home() {
@@ -11,6 +12,7 @@ export default function Home() {
       <HeroSection />
       <SearchSection />
       <ServicesSection />
+      <WhyChooseSection />
     </div>
   );
 }

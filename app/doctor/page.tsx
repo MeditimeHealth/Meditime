@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef, Suspense } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -154,7 +154,7 @@ interface Hospital {
   thana?: Thana;
 }
 
-export default function DoctorListPage() {
+function DoctorListPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -1921,27 +1921,26 @@ export default function DoctorListPage() {
                     {/* Details */}
                     <div className="space-y-3 text-base border-t border-gray-200 pt-4">
                       {doctor.hospital && (
-                        <Link
-                          href={`/hospital/${encodeURIComponent(
-                            doctor.hospital
-                          )}`}
+                        <motion.div
+                          whileHover={{ x: 5 }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            router.push(`/hospital/${encodeURIComponent(doctor.hospital!)}`);
+                          }}
+                          className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors cursor-pointer group"
                         >
-                          <motion.div
-                            whileHover={{ x: 5 }}
-                            className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors cursor-pointer group"
+                          <Building2 className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                          <span
+                            className="underline font-semibold text-base"
+                            style={{
+                              fontFamily:
+                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            }}
                           >
-                            <Building2 className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
-                            <span
-                              className="underline font-semibold text-base"
-                              style={{
-                                fontFamily:
-                                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                              }}
-                            >
-                              {doctor.hospital}
-                            </span>
-                          </motion.div>
-                        </Link>
+                            {doctor.hospital}
+                          </span>
+                        </motion.div>
                       )}
                       {(doctor.division || doctor.district || doctor.thana) && (
                         <div className="flex items-center gap-2 text-gray-600">
@@ -2084,5 +2083,17 @@ export default function DoctorListPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function DoctorListPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-500">লোড হচ্ছে...</div>
+      </div>
+    }>
+      <DoctorListPageContent />
+    </Suspense>
   );
 }
