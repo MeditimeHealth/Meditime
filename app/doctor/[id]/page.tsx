@@ -528,6 +528,16 @@ export default function DoctorProfilePage() {
                 বুক অ্যাপয়েন্টমেন্ট
               </h2>
               <div className="space-y-5">
+                <Link href={`/doctor/${doctorId}/book`}>
+                  <Button
+                    className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all"
+                    style={{
+                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                    }}
+                  >
+                    অনলাইনে বুক করুন
+                  </Button>
+                </Link>
                 <div>
                   <p
                     className="text-base md:text-lg font-bold text-gray-800 mb-4"
