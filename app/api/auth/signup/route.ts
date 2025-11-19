@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const body = await request.json();
-    const { email, phoneNumber, fullName, gender, bloodGroup, age, password } = body;
+    const { email, phoneNumber, fullName, gender, bloodGroup, age, password, userType } = body;
 
     // Validate required fields
     if (!phoneNumber || !fullName || !gender || !age || !password) {
@@ -45,6 +45,8 @@ export async function POST(request: NextRequest) {
       bloodGroup: bloodGroup || undefined,
       age,
       password: hashedPassword,
+      userType: userType || 'user',
+      role: userType === 'bloodDonor' ? 'bloodDonor' : userType === 'ambulance' ? 'ambulance' : 'user',
     });
 
     // Return user data (without password)
@@ -56,6 +58,8 @@ export async function POST(request: NextRequest) {
       gender: user.gender,
       bloodGroup: user.bloodGroup,
       age: user.age,
+      userType: user.userType,
+      role: user.role,
     };
 
     return NextResponse.json(

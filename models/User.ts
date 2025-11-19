@@ -9,7 +9,8 @@ export interface IUser extends Document {
   bloodGroup?: string;
   age: number;
   password: string;
-  role?: 'admin' | 'user' | 'doctor';
+  role?: 'admin' | 'user' | 'doctor' | 'bloodDonor' | 'ambulance';
+  userType?: 'user' | 'bloodDonor' | 'ambulance';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -61,7 +62,12 @@ const UserSchema: Schema = new Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'user', 'doctor'],
+      enum: ['admin', 'user', 'doctor', 'bloodDonor', 'ambulance'],
+      default: 'user',
+    },
+    userType: {
+      type: String,
+      enum: ['user', 'bloodDonor', 'ambulance'],
       default: 'user',
     },
   },
@@ -70,6 +76,11 @@ const UserSchema: Schema = new Schema(
   }
 );
 
-const User = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+// Delete existing model to force recompilation with updated schema
+if (mongoose.models.User) {
+  mongoose.deleteModel('User');
+}
+
+const User = mongoose.model<IUser>('User', UserSchema);
 
 export default User;

@@ -106,3 +106,20 @@ html.lenis {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Ensure proper scrolling behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Fix for nested scrollable containers */
+[data-lenis-prevent],
+.overflow-y-auto,
+.overflow-y-scroll {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}

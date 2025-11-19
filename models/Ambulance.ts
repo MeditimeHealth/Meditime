@@ -8,6 +8,8 @@ export interface IAmbulance extends Document {
   thana?: string;
   availabilityStatus: string;
   vehicleType: string;
+  isApproved: boolean;
+  userId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -46,6 +48,14 @@ const AmbulanceSchema: Schema = new Schema(
       type: String,
       required: [true, 'Vehicle type is required'],
       enum: ['Basic Life Support', 'Advanced Life Support', 'Critical Care', 'Air Ambulance'],
+      trim: true,
+    },
+    isApproved: {
+      type: Boolean,
+      default: false,
+    },
+    userId: {
+      type: String,
       trim: true,
     },
   },

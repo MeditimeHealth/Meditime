@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import Navbar from "@/components/navbar";
 import { Mail, Phone, MapPin, Send, CheckCircle2 } from "lucide-react";
+import { showToast } from "@/lib/toast";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -52,10 +53,10 @@ export default function ContactPage() {
         reset();
         setTimeout(() => setIsSuccess(false), 5000);
       } else {
-        alert(result.error || "Failed to send message. Please try again.");
+        showToast.error(result.error || "Failed to send message. Please try again.");
       }
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      showToast.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }

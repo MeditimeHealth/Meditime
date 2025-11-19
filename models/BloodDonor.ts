@@ -11,6 +11,8 @@ export interface IBloodDonor extends Document {
   photo?: string;
   availabilityStatus: string;
   lastDonationDate?: Date;
+  isApproved: boolean;
+  userId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -63,6 +65,14 @@ const BloodDonorSchema: Schema = new Schema(
     },
     lastDonationDate: {
       type: Date,
+    },
+    isApproved: {
+      type: Boolean,
+      default: false,
+    },
+    userId: {
+      type: String,
+      trim: true,
     },
   },
   {

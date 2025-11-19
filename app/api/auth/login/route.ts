@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const body = await request.json();
-    const { phoneOrEmail, password } = body;
+    const { phoneOrEmail, password, userType } = body;
 
     if (!phoneOrEmail || !password) {
       return NextResponse.json(
@@ -29,6 +29,14 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+    // Check user type if provided
+    if (userType && user.userType !== userType) {
+      return NextResponse.json(
+        { error: `Invalid user type. Please sign in as ${user.userType === 'bloodDonor' ? 'Blood Donor' : user.userType === 'ambulance' ? 'Ambulance' : 'User'}` },
         { status: 401 }
       );
     }
@@ -54,6 +62,7 @@ export async function POST(request: NextRequest) {
       bloodGroup: user.bloodGroup,
       age: user.age,
       role: user.role || 'user',
+      userType: user.userType || 'user',
     };
 
     return NextResponse.json(

@@ -47,23 +47,66 @@ export async function PUT(
       photo,
       availabilityStatus,
       lastDonationDate,
+      isApproved,
     } = body;
 
     const { id } = await params;
+    const updateData: any = {
+      name,
+      phoneNumber,
+      email: email || undefined,
+      bloodGroup,
+      division: division || undefined,
+      district: district || undefined,
+      thana: thana || undefined,
+      photo: photo || undefined,
+      availabilityStatus,
+      lastDonationDate: lastDonationDate ? new Date(lastDonationDate) : undefined,
+    };
+    
+    if (isApproved !== undefined) {
+      updateData.isApproved = isApproved;
+    }
+
     const bloodDonor = await BloodDonor.findByIdAndUpdate(
       id,
-      {
-        name,
-        phoneNumber,
-        email: email || undefined,
-        bloodGroup,
-        division: division || undefined,
-        district: district || undefined,
-        thana: thana || undefined,
-        photo: photo || undefined,
-        availabilityStatus,
-        lastDonationDate: lastDonationDate ? new Date(lastDonationDate) : undefined,
-      },
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    if (!bloodDonor) {
+      return NextResponse.json(
+        { error: "Blood donor not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Blood donor updated successfully", bloodDonor },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error("Error updating blood donor:", error);
+    return NextResponse.json(
+      { error: error.message || "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await dbConnect();
+
+    const body = await request.json();
+    const { id } = await params;
+    
+    const bloodDonor = await BloodDonor.findByIdAndUpdate(
+      id,
+      body,
       { new: true, runValidators: true }
     );
 

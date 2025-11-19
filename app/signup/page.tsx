@@ -14,9 +14,13 @@ import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import { showToast } from "@/lib/toast";
 
 const signupSchema = z
   .object({
+    userType: z.enum(["user", "bloodDonor", "ambulance"], {
+      message: "Please select a user type",
+    }),
     email: z.string().email("Invalid email address").optional().or(z.literal("")),
     phoneNumber: z.string().min(10, "Phone number must be at least 10 digits").regex(/^[0-9]+$/, "Phone number must contain only digits"),
     fullName: z.string().min(2, "Full name is required"),
@@ -74,13 +78,30 @@ export default function SignupPage() {
       const result = await response.json();
 
       if (response.ok) {
-        router.push("/login");
-        alert("Account created successfully! Please login.");
+        // Store user data in localStorage
+        if (result.user) {
+          localStorage.setItem("user", JSON.stringify(result.user));
+          // Dispatch event to update navbar
+          window.dispatchEvent(new Event("userLogin"));
+        }
+
+        const userType = data.userType;
+        if (userType === 'bloodDonor') {
+          router.push("/blood-donor/profile");
+          showToast.success("Account created successfully! Please complete your profile.");
+        } else if (userType === 'ambulance') {
+          router.push("/ambulance/profile");
+          showToast.success("Account created successfully! Please complete your profile.");
+        } else {
+          router.push("/");
+          showToast.success("Account created successfully! You are now logged in.");
+        }
+        router.refresh();
       } else {
-        alert(result.error || "Signup failed");
+        showToast.error(result.error || "Signup failed");
       }
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      showToast.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -131,7 +152,24 @@ export default function SignupPage() {
                   <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Fill in your details to get started</p>
 
                   <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-3 sm:space-y-4">
-
+                    <div>
+                      <Label htmlFor="userType" className="text-sm sm:text-base">
+                        Sign up as <span className="text-red-500">*</span>
+                      </Label>
+                      <select
+                        id="userType"
+                        {...register("userType")}
+                        className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm sm:text-base ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                      >
+                        <option value="">Select user type</option>
+                        <option value="user">User</option>
+                        <option value="bloodDonor">Blood Donor</option>
+                        <option value="ambulance">Ambulance</option>
+                      </select>
+                      {errors.userType && (
+                        <p className="text-xs sm:text-sm text-red-500 mt-1">{errors.userType.message}</p>
+                      )}
+                    </div>
 
                     <div>
                       <Label htmlFor="fullName" className="text-sm sm:text-base">

@@ -28,6 +28,12 @@ export async function GET(request: NextRequest) {
     if (vehicleType) {
       query.vehicleType = vehicleType;
     }
+    
+    // Only show approved ambulances to public
+    const isAdmin = searchParams.get("admin") === "true";
+    if (!isAdmin) {
+      query.isApproved = true;
+    }
 
     const ambulances = await Ambulance.find(query).sort({ createdAt: -1 });
     return NextResponse.json({ ambulances }, { status: 200 });
@@ -53,6 +59,8 @@ export async function POST(request: NextRequest) {
       thana,
       availabilityStatus,
       vehicleType,
+      userId,
+      isApproved,
     } = body;
 
     // Validate required fields
@@ -72,6 +80,8 @@ export async function POST(request: NextRequest) {
       thana: thana || undefined,
       availabilityStatus,
       vehicleType,
+      userId: userId || undefined,
+      isApproved: isApproved !== undefined ? isApproved : true, // Admin creates are auto-approved
     });
 
     return NextResponse.json(

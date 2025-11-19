@@ -28,6 +28,12 @@ export async function GET(request: NextRequest) {
     if (availabilityStatus) {
       query.availabilityStatus = availabilityStatus;
     }
+    
+    // Only show approved blood donors to public
+    const isAdmin = searchParams.get("admin") === "true";
+    if (!isAdmin) {
+      query.isApproved = true;
+    }
 
     const bloodDonors = await BloodDonor.find(query).sort({ createdAt: -1 });
     return NextResponse.json({ bloodDonors }, { status: 200 });
@@ -56,6 +62,8 @@ export async function POST(request: NextRequest) {
       photo,
       availabilityStatus,
       lastDonationDate,
+      userId,
+      isApproved,
     } = body;
 
     // Validate required fields
@@ -78,6 +86,8 @@ export async function POST(request: NextRequest) {
       photo: photo || undefined,
       availabilityStatus,
       lastDonationDate: lastDonationDate ? new Date(lastDonationDate) : undefined,
+      userId: userId || undefined,
+      isApproved: isApproved !== undefined ? isApproved : true, // Admin creates are auto-approved
     });
 
     return NextResponse.json(

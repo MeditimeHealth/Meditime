@@ -18,7 +18,8 @@ import {
   Car,
   Image,
   Briefcase,
-  Building2
+  Building2,
+  Clock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -59,6 +60,11 @@ const menuItems = [
     title: "Ambulances",
     icon: Car,
     href: "/admin/ambulances",
+  },
+  {
+    title: "Pending Services",
+    icon: Clock,
+    href: "/admin/pending-services",
   },
   {
     title: "Locations",

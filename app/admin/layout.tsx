@@ -73,9 +73,9 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       <Sidebar user={user} onLogout={handleLogout} />
-      <main className="flex-1 lg:ml-64 overflow-y-auto">
+      <main className="flex-1 lg:ml-64 overflow-y-auto h-screen" style={{ WebkitOverflowScrolling: 'touch' }}>
         <div className="p-6 lg:p-8">
           {children}
         </div>

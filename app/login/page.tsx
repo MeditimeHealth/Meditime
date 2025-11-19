@@ -12,8 +12,12 @@ import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import { showToast } from "@/lib/toast";
 
 const loginSchema = z.object({
+  userType: z.enum(["user", "bloodDonor", "ambulance"], {
+    message: "Please select a user type",
+  }),
   phoneOrEmail: z.string().min(1, "Phone number or email is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
@@ -49,13 +53,22 @@ export default function LoginPage() {
         localStorage.setItem("user", JSON.stringify(result.user));
         // Dispatch event to update navbar
         window.dispatchEvent(new Event("userLogin"));
-        router.push("/");
+        
+        // Redirect based on user type
+        const userType = result.user.userType || result.user.role;
+        if (userType === 'bloodDonor') {
+          router.push("/blood-donor/profile");
+        } else if (userType === 'ambulance') {
+          router.push("/ambulance/profile");
+        } else {
+          router.push("/");
+        }
         router.refresh();
       } else {
-        alert(result.error || "Login failed");
+        showToast.error(result.error || "Login failed");
       }
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      showToast.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -104,6 +117,23 @@ export default function LoginPage() {
                   <p className="text-gray-600 mb-8">Sign in to your account</p>
 
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                    <div>
+                      <Label htmlFor="userType">Sign in as <span className="text-red-500">*</span></Label>
+                      <select
+                        id="userType"
+                        {...register("userType")}
+                        className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                      >
+                        <option value="">Select user type</option>
+                        <option value="user">User</option>
+                        <option value="bloodDonor">Blood Donor</option>
+                        <option value="ambulance">Ambulance</option>
+                      </select>
+                      {errors.userType && (
+                        <p className="text-sm text-red-500 mt-1">{errors.userType.message}</p>
+                      )}
+                    </div>
+
                     <div>
                       <Label htmlFor="phoneOrEmail">Phone Number or Email</Label>
                       <Input
