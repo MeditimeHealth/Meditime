@@ -5,26 +5,38 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, X, Edit, Trash2 } from "lucide-react";
+import { Select } from "@/components/ui/select";
+import { Plus, X, Edit, Trash2, Filter } from "lucide-react";
+
+interface Department {
+  _id: string;
+  name: string;
+  image?: string;
+}
 
 interface Disease {
   _id: string;
   name: string;
   bangla: string;
+  department?: Department;
 }
 
 export default function DiseasesPage() {
   const [diseases, setDiseases] = useState<Disease[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState<string>("all");
   const [formData, setFormData] = useState({
     name: "",
     bangla: "",
+    departmentId: "",
   });
 
   useEffect(() => {
     fetchDiseases();
+    fetchDepartments();
   }, []);
 
   const fetchDiseases = async () => {
@@ -39,6 +51,18 @@ export default function DiseasesPage() {
       console.error("Error fetching diseases:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchDepartments = async () => {
+    try {
+      const response = await fetch("/api/departments");
+      const data = await response.json();
+      if (response.ok) {
+        setDepartments(data.departments);
+      }
+    } catch (error) {
+      console.error("Error fetching departments:", error);
     }
   };
 
@@ -64,7 +88,7 @@ export default function DiseasesPage() {
         await fetchDiseases();
         setShowForm(false);
         setEditingId(null);
-        setFormData({ name: "", bangla: "" });
+        setFormData({ name: "", bangla: "", departmentId: "" });
         alert(editingId ? "Disease updated successfully" : "Disease created successfully");
       } else {
         alert(result.error || "Failed to save disease");
@@ -82,6 +106,7 @@ export default function DiseasesPage() {
     setFormData({
       name: disease.name,
       bangla: disease.bangla,
+      departmentId: disease.department?._id || "",
     });
     setShowForm(true);
   };
@@ -118,6 +143,13 @@ export default function DiseasesPage() {
     );
   }
 
+  // Helper to filter diseases by selected department
+  const filteredDiseases = diseases.filter((disease) => {
+    if (selectedDepartmentFilter === "all") return true;
+    if (selectedDepartmentFilter === "none") return !disease.department;
+    return disease.department?._id === selectedDepartmentFilter;
+  });
+
   return (
     <div className="space-y-6">
       <div>
@@ -126,15 +158,33 @@ export default function DiseasesPage() {
       </div>
 
       {/* Action Bar */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-gray-600">
-          {diseases.length} Disease{diseases.length !== 1 ? "s" : ""}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4 flex-1">
+          <div className="text-sm text-gray-600">
+            {filteredDiseases.length} Disease{filteredDiseases.length !== 1 ? "s" : ""}
+          </div>
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-gray-500" />
+            <Select 
+              value={selectedDepartmentFilter} 
+              onChange={(e) => setSelectedDepartmentFilter(e.target.value)}
+              className="w-[200px]"
+            >
+              <option value="all">All Departments</option>
+              <option value="none">No Department</option>
+              {departments.map((dept) => (
+                <option key={dept._id} value={dept._id}>
+                  {dept.name}
+                </option>
+              ))}
+            </Select>
+          </div>
         </div>
         <Button
           onClick={() => {
             setShowForm(!showForm);
             setEditingId(null);
-            setFormData({ name: "", bangla: "" });
+            setFormData({ name: "", bangla: "", departmentId: "" });
           }}
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -155,7 +205,7 @@ export default function DiseasesPage() {
               onClick={() => {
                 setShowForm(false);
                 setEditingId(null);
-                setFormData({ name: "", bangla: "" });
+                setFormData({ name: "", bangla: "", departmentId: "" });
               }}
             >
               <X className="h-4 w-4" />
@@ -198,6 +248,25 @@ export default function DiseasesPage() {
                   }}
                 />
               </div>
+
+              <div>
+                <Label htmlFor="department">Department (Optional)</Label>
+                <Select
+                  id="department"
+                  value={formData.departmentId}
+                  onChange={(e) =>
+                    setFormData({ ...formData, departmentId: e.target.value })
+                  }
+                  className="mt-1"
+                >
+                  <option value="">None</option>
+                  {departments.map((dept) => (
+                    <option key={dept._id} value={dept._id}>
+                      {dept.name}
+                    </option>
+                  ))}
+                </Select>
+              </div>
             </div>
 
             <div className="flex gap-2 pt-4">
@@ -214,7 +283,7 @@ export default function DiseasesPage() {
                 onClick={() => {
                   setShowForm(false);
                   setEditingId(null);
-                  setFormData({ name: "", bangla: "" });
+                  setFormData({ name: "", bangla: "", departmentId: "" });
                 }}
               >
                 Cancel
@@ -225,20 +294,26 @@ export default function DiseasesPage() {
       )}
 
       {/* Diseases List */}
-      {diseases.length === 0 ? (
+      {filteredDiseases.length === 0 ? (
         <Card className="p-12 text-center">
-          <p className="text-gray-500 mb-4">No diseases found</p>
-          <Button onClick={() => setShowForm(true)}>Create First Disease</Button>
+          <p className="text-gray-500 mb-4">
+            {diseases.length === 0 ? "No diseases found" : "No diseases found with selected filter"}
+          </p>
+          {diseases.length === 0 && (
+            <Button onClick={() => setShowForm(true)}>Create First Disease</Button>
+          )}
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {diseases.map((disease) => (
+          {filteredDiseases.map((disease) => (
             <Card key={disease._id} className="p-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-gray-900 truncate">
-                    {disease.name}
-                  </h3>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-semibold text-gray-900 truncate">
+                      {disease.name}
+                    </h3>
+                  </div>
                   <p
                     className="text-sm text-gray-600 mt-1"
                     style={{
@@ -248,6 +323,11 @@ export default function DiseasesPage() {
                   >
                     {disease.bangla}
                   </p>
+                  {disease.department && (
+                    <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                      <span>{disease.department.name}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-2 ml-4">
                   <Button

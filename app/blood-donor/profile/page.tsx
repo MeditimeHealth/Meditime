@@ -13,6 +13,7 @@ import Image from "next/image";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { showToast } from "@/lib/toast";
+import { Trash2 } from "lucide-react";
 
 const bloodDonorSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -283,6 +284,49 @@ export default function BloodDonorProfilePage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!existingProfile || !user) {
+      return;
+    }
+
+    if (!confirm("Are you sure you want to delete your blood donor profile? This action cannot be undone.")) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/blood-donors/${existingProfile._id}?userId=${user.id}`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        showToast.success("Blood donor profile deleted successfully!");
+        setExistingProfile(null);
+        // Reset form
+        setValue("name", user.fullName || "");
+        setValue("phoneNumber", user.phoneNumber || "");
+        setValue("email", user.email || "");
+        setValue("bloodGroup", "");
+        setValue("division", "");
+        setValue("district", "");
+        setValue("thana", "");
+        setValue("availabilityStatus", "Available");
+        setValue("lastDonationDate", "");
+        setValue("photo", "");
+        setImagePreview(null);
+        setSelectedImage(null);
+      } else {
+        showToast.error(result.error || "Failed to delete blood donor profile");
+      }
+    } catch {
+      showToast.error("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -538,6 +582,17 @@ export default function BloodDonorProfilePage() {
                     ? (existingProfile ? "Updating..." : "Submitting...")
                     : (existingProfile ? "Update Blood Donor Profile" : "Create Blood Donor Profile")}
                 </Button>
+                {existingProfile && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={handleDelete}
+                    disabled={isLoading || isUploading}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </Button>
+                )}
                 <Button
                   type="button"
                   variant="outline"

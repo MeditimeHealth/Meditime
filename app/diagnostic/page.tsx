@@ -18,6 +18,7 @@ interface DiagnosticTest {
   duration?: string;
   preparation?: string;
   fastingRequired?: boolean;
+  image?: string;
 }
 
 interface DiagnosticCenter {
@@ -282,34 +283,44 @@ Thank you for choosing Medi Time!
   }, [tests]);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="max-w-7xl mt-10 mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Diagnostic Tests</h1>
-          <p className="text-gray-600">Book diagnostic tests and get the best prices</p>
-        </div>
+      
+      {/* Hero Section - 70% of homepage height */}
+      <div className="relative mt-20 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto">
+          <div className="h-[350px] sm:h-[385px] lg:h-[420px] rounded-2xl overflow-hidden">
+            <div className="relative h-full w-full">
+              {/* Background Image */}
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage: `url(/slide.jpg)`,
+                }}
+              >
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/50"></div>
+              </div>
 
-        {/* Category Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {categoryCounts.map((category) => (
-            <Card
-              key={category.id}
-              className={`p-6 text-center cursor-pointer transition-all ${
-                selectedCategory === category.id
-                  ? "bg-primary text-white border-primary"
-                  : "hover:shadow-lg"
-              }`}
-              onClick={() => setSelectedCategory(selectedCategory === category.id ? "" : category.id)}
-            >
-              <div className="text-4xl mb-2">{category.icon}</div>
-              <div className="font-semibold">{category.count} tests</div>
-              <div className="text-sm opacity-80">{category.name}</div>
-            </Card>
-          ))}
+              {/* Content */}
+              <div className="relative z-10 flex h-full items-center justify-center">
+                <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                  <div className="mx-auto max-w-3xl text-center text-white">
+                    <h1 className="mb-6 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+                      Diagnostic Tests
+                    </h1>
+                    <p className="mb-8 text-base leading-relaxed sm:text-lg lg:text-xl">
+                      Book diagnostic tests and get the best prices
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
+      <div className="max-w-7xl mt-10 mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Search Bar */}
         <div className="mb-6">
           <div className="relative">
@@ -324,72 +335,7 @@ Thank you for choosing Medi Time!
           </div>
         </div>
 
-        {/* Location Filter */}
-        <Card className="p-6 mb-6 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-primary" />
-            Diagnostic Centers Near You
-          </h2>
-          <div className="flex flex-wrap gap-4">
-            <div className="flex-1 min-w-[200px]">
-              <Label>Division</Label>
-              <select
-                value={selectedDivision}
-                onChange={(e) => {
-                  setSelectedDivision(e.target.value);
-                  setSelectedDistrict("");
-                  setSelectedThana("");
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md mt-1"
-              >
-                <option value="">All Divisions</option>
-                {divisions.map((div) => (
-                  <option key={div._id} value={div.name}>
-                    {div.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {selectedDivision && (
-              <div className="flex-1 min-w-[200px]">
-                <Label>District</Label>
-                <select
-                  value={selectedDistrict}
-                  onChange={(e) => {
-                    setSelectedDistrict(e.target.value);
-                    setSelectedThana("");
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md mt-1"
-                >
-                  <option value="">All Districts</option>
-                  {districts.map((dist) => (
-                    <option key={dist._id} value={dist.name}>
-                      {dist.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-            {selectedDistrict && (
-              <div className="flex-1 min-w-[200px]">
-                <Label>Thana</Label>
-                <select
-                  value={selectedThana}
-                  onChange={(e) => setSelectedThana(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md mt-1"
-                >
-                  <option value="">All Thanas</option>
-                  {thanas.map((thana) => (
-                    <option key={thana._id} value={thana.name}>
-                      {thana.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </div>
-        </Card>
-
+  
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Tests List */}
@@ -407,37 +353,84 @@ Thank you for choosing Medi Time!
             ) : (
               <div className="space-y-4">
                 {filteredTests.map((test) => (
-                  <Card key={test._id} className="p-6 hover:shadow-lg transition-shadow">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-xl font-semibold text-gray-900">{test.name}</h3>
-                          <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                            {test.category}
-                          </span>
-                        </div>
-                        {test.description && (
-                          <p className="text-sm text-gray-600 mb-2">{test.description}</p>
+                  <Card key={test._id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-gray-100">
+                    <div className="flex flex-col sm:flex-row">
+                      {/* Image Section */}
+                      <div className="sm:w-48 h-48 sm:h-auto relative bg-gray-100 shrink-0">
+                        {test.image ? (
+                          <img
+                            src={test.image}
+                            alt={test.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-300">
+                            <FileText className="h-12 w-12" />
+                          </div>
                         )}
-                        <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                          {test.duration && <span>⏱️ {test.duration}</span>}
-                          {test.fastingRequired && <span>🍽️ Fasting Required</span>}
-                        </div>
-                        <div className="flex items-center gap-2 mt-3">
-                          {test.originalPrice && test.originalPrice > test.price && (
-                            <span className="text-sm text-gray-400 line-through">
-                              {test.originalPrice}৳
-                            </span>
+                        {test.fastingRequired && (
+                          <div className="absolute top-2 left-2 bg-orange-500/90 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
+                            Fasting Required
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Content Section */}
+                      <div className="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <span className="text-xs font-medium text-primary bg-primary/5 px-2 py-1 rounded-full mb-2 inline-block">
+                                {test.category}
+                              </span>
+                              <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
+                                {test.name}
+                              </h3>
+                            </div>
+                            <div className="text-right">
+                              {test.originalPrice && test.originalPrice > test.price && (
+                                <div className="text-sm text-gray-400 line-through mb-1">
+                                  {test.originalPrice}৳
+                                </div>
+                              )}
+                              <div className="text-2xl font-bold text-primary">
+                                {test.price}৳
+                              </div>
+                            </div>
+                          </div>
+
+                          {test.description && (
+                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                              {test.description}
+                            </p>
                           )}
-                          <span className="text-xl font-bold text-primary">
-                            {test.price}৳
-                          </span>
+
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
+                            {test.duration && (
+                              <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded">
+                                <span className="text-xs">⏱️</span>
+                                <span>{test.duration}</span>
+                              </div>
+                            )}
+                            {test.preparation && (
+                              <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded">
+                                <span className="text-xs">📋</span>
+                                <span className="truncate max-w-[200px]">{test.preparation}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-end pt-4 border-t border-gray-100">
+                          <Button 
+                            onClick={() => addToCart(test)} 
+                            className="bg-gray-900 hover:bg-primary text-white transition-colors rounded-full px-6"
+                          >
+                            <ShoppingCart className="h-4 w-4 mr-2" />
+                            Add to Cart
+                          </Button>
                         </div>
                       </div>
-                      <Button onClick={() => addToCart(test)} className="ml-4">
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        Add
-                      </Button>
                     </div>
                   </Card>
                 ))}

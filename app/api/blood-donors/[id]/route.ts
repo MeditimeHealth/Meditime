@@ -48,9 +48,28 @@ export async function PUT(
       availabilityStatus,
       lastDonationDate,
       isApproved,
+      userId,
     } = body;
 
     const { id } = await params;
+    
+    // Check if blood donor exists and verify ownership (if userId provided)
+    const existingDonor = await BloodDonor.findById(id);
+    if (!existingDonor) {
+      return NextResponse.json(
+        { error: "Blood donor not found" },
+        { status: 404 }
+      );
+    }
+
+    // If userId is provided, verify ownership (users can only edit their own profile)
+    if (userId && existingDonor.userId && existingDonor.userId !== userId) {
+      return NextResponse.json(
+        { error: "You don't have permission to edit this profile" },
+        { status: 403 }
+      );
+    }
+
     const updateData: any = {
       name,
       phoneNumber,
@@ -64,7 +83,8 @@ export async function PUT(
       lastDonationDate: lastDonationDate ? new Date(lastDonationDate) : undefined,
     };
     
-    if (isApproved !== undefined) {
+    // Only admin can change approval status
+    if (isApproved !== undefined && !userId) {
       updateData.isApproved = isApproved;
     }
 
@@ -73,13 +93,6 @@ export async function PUT(
       updateData,
       { new: true, runValidators: true }
     );
-
-    if (!bloodDonor) {
-      return NextResponse.json(
-        { error: "Blood donor not found" },
-        { status: 404 }
-      );
-    }
 
     return NextResponse.json(
       { message: "Blood donor updated successfully", bloodDonor },
@@ -138,14 +151,27 @@ export async function DELETE(
     await dbConnect();
 
     const { id } = await params;
-    const bloodDonor = await BloodDonor.findByIdAndDelete(id);
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
 
+    // Check if blood donor exists
+    const bloodDonor = await BloodDonor.findById(id);
     if (!bloodDonor) {
       return NextResponse.json(
         { error: "Blood donor not found" },
         { status: 404 }
       );
     }
+
+    // If userId is provided, verify ownership (users can only delete their own profile)
+    if (userId && bloodDonor.userId && bloodDonor.userId !== userId) {
+      return NextResponse.json(
+        { error: "You don't have permission to delete this profile" },
+        { status: 403 }
+      );
+    }
+
+    await BloodDonor.findByIdAndDelete(id);
 
     return NextResponse.json(
       { message: "Blood donor deleted successfully" },

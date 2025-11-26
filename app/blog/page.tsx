@@ -135,25 +135,35 @@ export default function HealthTipsPage() {
     <div className="min-h-screen bg-white">
       <Navbar />
       
-      {/* Big Search Section - Full Width */}
-      <div className="w-full bg-gradient-to-br from-primary/5 via-white to-primary/5 py-16 px-4 sm:px-6 lg:px-8 pt-24">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">স্বাস্থ্য টিপস</h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Expert advice and insights to help you live a healthier life
-            </p>
-          </div>
-          <div className="max-w-4xl mx-auto">
-            <div className="relative">
-              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
-              <Input
-                type="text"
-                placeholder="Expert advice and insights to help you live a healthier life"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-16 pr-6 py-8 text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all"
-              />
+      {/* Hero Section - 70% of homepage height */}
+      <div className="relative mt-20 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto">
+          <div className="h-[350px] sm:h-[385px] lg:h-[420px] rounded-2xl overflow-hidden">
+            <div className="relative h-full w-full">
+              {/* Background Image */}
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage: `url(/slide.jpg)`,
+                }}
+              >
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/50"></div>
+              </div>
+
+              {/* Content */}
+              <div className="relative z-10 flex h-full items-center justify-center">
+                <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                  <div className="mx-auto max-w-3xl text-center text-white">
+                    <h1 className="mb-6 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+                      স্বাস্থ্য টিপস
+                    </h1>
+                    <p className="mb-8 text-base leading-relaxed sm:text-lg lg:text-xl">
+                      Expert advice and insights to help you live a healthier life
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

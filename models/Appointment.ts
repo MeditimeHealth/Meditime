@@ -12,6 +12,9 @@ export interface IAppointment extends Document {
   appointmentTime?: string;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   userId?: mongoose.Types.ObjectId;
+  affiliateCode?: string;
+  affiliateId?: mongoose.Types.ObjectId;
+  hasCommission: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -68,6 +71,18 @@ const AppointmentSchema: Schema = new Schema(
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
+    },
+    affiliateCode: {
+      type: String,
+      trim: true,
+    },
+    affiliateId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Affiliate',
+    },
+    hasCommission: {
+      type: Boolean,
+      default: false,
     },
   },
   {

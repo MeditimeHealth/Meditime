@@ -6,17 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, X, Trash2, Edit } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
 
 interface DiagnosticTest {
   _id: string;
   name: string;
-  category: string;
   description?: string;
   price: number;
-  originalPrice?: number;
-  duration?: string;
-  preparation?: string;
-  fastingRequired?: boolean;
+  image?: string;
 }
 
 export default function DiagnosticTestsPage() {
@@ -26,16 +23,13 @@ export default function DiagnosticTestsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
-    category: "",
     description: "",
     price: "",
-    originalPrice: "",
-    duration: "",
-    preparation: "",
-    fastingRequired: false,
+    image: "",
   });
+  const [uploading, setUploading] = useState(false);
 
-  const categories = ["Blood Tests", "Cardiology", "Imaging", "Pathology"];
+
 
   useEffect(() => {
     fetchTests();
@@ -57,6 +51,12 @@ export default function DiagnosticTestsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.image) {
+      toast.error("Please upload an image for the test");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -65,13 +65,9 @@ export default function DiagnosticTestsPage() {
       const body = {
         ...(editingId && { id: editingId }),
         name: formData.name,
-        category: formData.category,
         description: formData.description || undefined,
         price: parseFloat(formData.price),
-        originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
-        duration: formData.duration || undefined,
-        preparation: formData.preparation || undefined,
-        fastingRequired: formData.fastingRequired,
+        image: formData.image || undefined,
       };
 
       const res = await fetch(url, {
@@ -83,15 +79,15 @@ export default function DiagnosticTestsPage() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(data.message || (editingId ? "Updated successfully!" : "Created successfully!"));
+        toast.success(data.message || (editingId ? "Updated successfully!" : "Created successfully!"));
         setShowForm(false);
         resetForm();
         fetchTests();
       } else {
-        alert(data.error || "Failed to save");
+        toast.error(data.error || "Failed to save");
       }
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -101,19 +97,17 @@ export default function DiagnosticTestsPage() {
     setEditingId(test._id);
     setFormData({
       name: test.name,
-      category: test.category,
       description: test.description || "",
       price: test.price.toString(),
-      originalPrice: test.originalPrice?.toString() || "",
-      duration: test.duration || "",
-      preparation: test.preparation || "",
-      fastingRequired: test.fastingRequired || false,
+      image: test.image || "",
     });
     setShowForm(true);
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this test?")) return;
+
+    const loadingToast = toast.loading("Deleting test...");
 
     try {
       const response = await fetch(`/api/diagnostic/tests/${id}`, {
@@ -122,37 +116,33 @@ export default function DiagnosticTestsPage() {
 
       if (response.ok) {
         setTests(tests.filter((test) => test._id !== id));
-        alert("Test deleted successfully");
+        toast.success("Test deleted successfully", { id: loadingToast });
       } else {
         const data = await response.json();
-        alert(data.error || "Failed to delete test");
+        toast.error(data.error || "Failed to delete test", { id: loadingToast });
       }
     } catch (error) {
       console.error("Error deleting test:", error);
-      alert("Failed to delete test");
+      toast.error("Failed to delete test", { id: loadingToast });
     }
   };
 
   const resetForm = () => {
     setFormData({
       name: "",
-      category: "",
       description: "",
       price: "",
-      originalPrice: "",
-      duration: "",
-      preparation: "",
-      fastingRequired: false,
+      image: "",
     });
     setEditingId(null);
   };
 
-  const filteredTests = tests.filter(
-    test => !formData.category || test.category === formData.category || formData.category === ""
-  );
+  const filteredTests = tests;
 
   return (
-    <div className="space-y-6">
+    <>
+      <Toaster position="top-right" />
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Diagnostic Tests</h1>
@@ -164,22 +154,7 @@ export default function DiagnosticTestsPage() {
         </Button>
       </div>
 
-      {/* Filter */}
-      <div className="flex items-center gap-4">
-        <Label>Filter by Category:</Label>
-        <select
-          value={formData.category}
-          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-          className="px-3 py-2 border border-gray-300 rounded-md"
-        >
-          <option value="">All Categories</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
-      </div>
+
 
       {/* Create/Edit Form */}
       {showForm && (
@@ -193,6 +168,65 @@ export default function DiagnosticTestsPage() {
             </Button>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Image Upload */}
+            <div>
+              <Label htmlFor="image">
+                Test Image <span className="text-red-500">*</span>
+              </Label>
+              <div className="mt-2 flex items-center gap-4">
+                {formData.image && (
+                  <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
+                    <img
+                      src={formData.image}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, image: "" })}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                )}
+                <div className="flex-1">
+                  <Input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setUploading(true);
+                        const data = new FormData();
+                        data.append("image", file);
+                        try {
+                          const res = await fetch("/api/upload/imgbb", {
+                            method: "POST",
+                            body: data,
+                          });
+                          const json = await res.json();
+                          if (json.url) {
+                            setFormData({ ...formData, image: json.url });
+                          } else {
+                            alert("Failed to upload image");
+                          }
+                        } catch (err) {
+                          console.error("Upload error:", err);
+                          alert("Failed to upload image");
+                        } finally {
+                          setUploading(false);
+                        }
+                      }
+                    }}
+                    disabled={uploading}
+                  />
+                  {uploading && <p className="text-sm text-gray-500 mt-1">Uploading...</p>}
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="name">
@@ -208,25 +242,7 @@ export default function DiagnosticTestsPage() {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="category">
-                  Category <span className="text-red-500">*</span>
-                </Label>
-                <select
-                  id="category"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  required
-                  className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm mt-1"
-                >
-                  <option value="">Select Category</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-              </div>
+
 
               <div>
                 <Label htmlFor="price">
@@ -243,43 +259,6 @@ export default function DiagnosticTestsPage() {
                   className="mt-1"
                 />
               </div>
-
-              <div>
-                <Label htmlFor="originalPrice">Original Price (৳) - for discount</Label>
-                <Input
-                  id="originalPrice"
-                  type="number"
-                  step="0.01"
-                  value={formData.originalPrice}
-                  onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
-                  placeholder="600"
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="duration">Duration</Label>
-                <Input
-                  id="duration"
-                  value={formData.duration}
-                  onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                  placeholder="e.g., 1-2 hours"
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="fastingRequired" className="flex items-center gap-2 mt-6">
-                  <input
-                    type="checkbox"
-                    id="fastingRequired"
-                    checked={formData.fastingRequired}
-                    onChange={(e) => setFormData({ ...formData, fastingRequired: e.target.checked })}
-                    className="h-4 w-4"
-                  />
-                  Fasting Required
-                </Label>
-              </div>
             </div>
 
             <div>
@@ -290,18 +269,6 @@ export default function DiagnosticTestsPage() {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
                 placeholder="Test description..."
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm mt-1"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="preparation">Preparation Instructions</Label>
-              <textarea
-                id="preparation"
-                value={formData.preparation}
-                onChange={(e) => setFormData({ ...formData, preparation: e.target.value })}
-                rows={2}
-                placeholder="Preparation instructions for the patient..."
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm mt-1"
               />
             </div>
@@ -337,40 +304,26 @@ export default function DiagnosticTestsPage() {
                 key={test._id}
                 className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-start justify-between"
               >
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900">{test.name}</h3>
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                      {test.category}
-                    </span>
-                    {test.fastingRequired && (
-                      <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">
-                        Fasting Required
-                      </span>
+                  <div className="flex-1 flex gap-4">
+                    {test.image && (
+                      <div className="w-16 h-16 rounded-md overflow-hidden shrink-0 border border-gray-200">
+                        <img src={test.image} alt={test.name} className="w-full h-full object-cover" />
+                      </div>
                     )}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">{test.name}</h3>
+                      </div>
+                      {test.description && (
+                        <p className="text-sm text-gray-600 mb-2">{test.description}</p>
+                      )}
+                      <div className="flex items-center gap-4 text-sm">
+                        <span className="font-bold text-primary text-lg">
+                          {test.price}৳
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  {test.description && (
-                    <p className="text-sm text-gray-600 mb-2">{test.description}</p>
-                  )}
-                  <div className="flex items-center gap-4 text-sm">
-                    {test.originalPrice && test.originalPrice > test.price && (
-                      <span className="text-gray-400 line-through">
-                        {test.originalPrice}৳
-                      </span>
-                    )}
-                    <span className="font-bold text-primary text-lg">
-                      {test.price}৳
-                    </span>
-                    {test.duration && (
-                      <span className="text-gray-500">⏱️ {test.duration}</span>
-                    )}
-                  </div>
-                  {test.preparation && (
-                    <p className="text-xs text-gray-500 mt-2">
-                      <strong>Preparation:</strong> {test.preparation}
-                    </p>
-                  )}
-                </div>
                 <div className="flex gap-2 ml-4">
                   <Button
                     variant="outline"
@@ -393,6 +346,7 @@ export default function DiagnosticTestsPage() {
         )}
       </Card>
     </div>
+    </>
   );
 }
 

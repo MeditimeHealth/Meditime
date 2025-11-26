@@ -83,7 +83,7 @@ export default function EditDoctorPage() {
   const [thanas, setThanas] = useState<Array<{_id: string; name: string}>>([]);
   const [, setHospitals] = useState<Array<{_id: string; name: string}>>([]);
   const [availableHospitals, setAvailableHospitals] = useState<string[]>([]);
-  const [departments, setDepartments] = useState<Array<{_id: string; name: string; bangla: string}>>([]);
+  const [departments, setDepartments] = useState<Array<{_id: string; name: string; image?: string}>>([]);
   const [diseases, setDiseases] = useState<Array<{_id: string; name: string; bangla: string}>>([]);
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
 
@@ -650,7 +650,7 @@ export default function EditDoctorPage() {
                 <option value="">বিভাগ নির্বাচন করুন (Select Department)</option>
                 {departments.map((dept) => (
                   <option key={dept._id} value={dept.name}>
-                    {dept.bangla} ({dept.name})
+                    {dept.name}
                   </option>
                 ))}
               </select>

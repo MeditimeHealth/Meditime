@@ -28,24 +28,20 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { name, category, description, price, originalPrice, duration, preparation, fastingRequired } = body;
+    const { name, description, price, image } = body;
 
-    if (!name || !category || !price) {
+    if (!name || !price) {
       return NextResponse.json(
-        { error: "Name, category, and price are required" },
+        { error: "Name and price are required" },
         { status: 400 }
       );
     }
 
     const test = await DiagnosticTest.create({
       name,
-      category,
       description: description || undefined,
       price,
-      originalPrice: originalPrice || undefined,
-      duration: duration || undefined,
-      preparation: preparation || undefined,
-      fastingRequired: fastingRequired || false,
+      image: image || undefined,
     });
 
     return NextResponse.json(
@@ -54,6 +50,50 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     console.error("Error creating test:", error);
+    return NextResponse.json(
+      { error: error.message || "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    await dbConnect();
+    const body = await request.json();
+    const { id, name, description, price, image } = body;
+
+    if (!id || !name || !price) {
+      return NextResponse.json(
+        { error: "ID, name, and price are required" },
+        { status: 400 }
+      );
+    }
+
+    const test = await DiagnosticTest.findByIdAndUpdate(
+      id,
+      {
+        name,
+        description: description || undefined,
+        price,
+        image: image || undefined,
+      },
+      { new: true }
+    );
+
+    if (!test) {
+      return NextResponse.json(
+        { error: "Test not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Test updated successfully", test },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error("Error updating test:", error);
     return NextResponse.json(
       { error: error.message || "Internal server error" },
       { status: 500 }

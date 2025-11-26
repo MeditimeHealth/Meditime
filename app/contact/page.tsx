@@ -76,6 +76,21 @@ export default function ContactPage() {
 
         <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <div className="lg:col-span-1 space-y-6">
+            {/* Emergency Hotline */}
+            <Card className="p-6 border-2 border-[#ff5e29]">
+              <h2 className="text-2xl font-bold text-primary mb-4">Emergency Hotline</h2>
+              <a 
+                href="tel:+8801610384444" 
+                className="flex items-center justify-center gap-3 px-6 py-4 rounded-lg text-white font-bold airport-light transition-all hover:scale-105 shadow-lg text-lg"
+              >
+                <Phone className="h-6 w-6" />
+                <span>+880 1610-384444</span>
+              </a>
+              <p className="text-sm text-gray-600 mt-3 text-center">
+                Available 24/7 for medical emergencies
+              </p>
+            </Card>
+
             <Card className="p-6">
               <h2 className="text-2xl font-bold text-primary mb-6">Get in Touch</h2>
               <div className="space-y-6">

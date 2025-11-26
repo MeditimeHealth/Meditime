@@ -2,13 +2,9 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IDiagnosticTest extends Document {
   name: string;
-  category: string; // Blood Tests, Cardiology, Imaging, Pathology
   description?: string;
   price: number;
-  originalPrice?: number; // For showing discounts
-  duration?: string; // How long test takes
-  preparation?: string; // Preparation instructions
-  fastingRequired?: boolean;
+  image?: string; // URL to image
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,12 +16,6 @@ const DiagnosticTestSchema: Schema = new Schema(
       required: [true, 'Test name is required'],
       trim: true,
     },
-    category: {
-      type: String,
-      required: [true, 'Category is required'],
-      enum: ['Blood Tests', 'Cardiology', 'Imaging', 'Pathology'],
-      trim: true,
-    },
     description: {
       type: String,
       trim: true,
@@ -35,21 +25,9 @@ const DiagnosticTestSchema: Schema = new Schema(
       required: [true, 'Price is required'],
       min: [0, 'Price must be positive'],
     },
-    originalPrice: {
-      type: Number,
-      min: [0, 'Price must be positive'],
-    },
-    duration: {
+    image: {
       type: String,
       trim: true,
-    },
-    preparation: {
-      type: String,
-      trim: true,
-    },
-    fastingRequired: {
-      type: Boolean,
-      default: false,
     },
   },
   {
@@ -57,7 +35,11 @@ const DiagnosticTestSchema: Schema = new Schema(
   }
 );
 
-const DiagnosticTest = mongoose.models.DiagnosticTest || mongoose.model<IDiagnosticTest>('DiagnosticTest', DiagnosticTestSchema);
+// Delete the cached model to ensure schema changes are applied
+if (mongoose.models.DiagnosticTest) {
+  delete mongoose.models.DiagnosticTest;
+}
+
+const DiagnosticTest = mongoose.model<IDiagnosticTest>('DiagnosticTest', DiagnosticTestSchema);
 
 export default DiagnosticTest;
-

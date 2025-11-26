@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Appointment from '@/models/Appointment';
 import Doctor from '@/models/Doctor';
+import Affiliate from '@/models/Affiliate';
 
 // GET - Fetch all appointments or filter by doctorId
 export async function GET(request: NextRequest) {
@@ -23,6 +24,7 @@ export async function GET(request: NextRequest) {
     const appointments = await Appointment.find(query)
       .populate('doctorId', 'name qualification department hospital')
       .populate('userId', 'fullName email phoneNumber')
+      .populate('affiliateId', 'name affiliateCode email')
       .sort({ appointmentDate: -1, createdAt: -1 });
 
     return NextResponse.json(
@@ -55,6 +57,7 @@ export async function POST(request: NextRequest) {
       appointmentDate,
       appointmentTime,
       userId,
+      affiliateCode,
     } = body;
 
     // Validate required fields
@@ -74,6 +77,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate affiliate code if provided
+    let affiliateId = undefined;
+    if (affiliateCode) {
+      const affiliate = await Affiliate.findOne({ 
+        affiliateCode: affiliateCode.toUpperCase(),
+        isActive: true 
+      });
+      
+      if (affiliate) {
+        affiliateId = affiliate._id;
+        // Increment referrals count
+        affiliate.referrals = (affiliate.referrals || 0) + 1;
+        await affiliate.save();
+      }
+    }
+
     // Create appointment
     const appointment = await Appointment.create({
       doctorId,
@@ -86,6 +105,9 @@ export async function POST(request: NextRequest) {
       appointmentDate: new Date(appointmentDate),
       appointmentTime: appointmentTime || undefined,
       userId: userId || undefined,
+      affiliateCode: affiliateCode?.toUpperCase() || undefined,
+      affiliateId: affiliateId || undefined,
+      hasCommission: false,
       status: 'pending',
     });
 

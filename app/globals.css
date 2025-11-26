@@ -123,3 +123,13 @@ body {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
+
+@keyframes airport-pulse {
+  0% { background-color: #ff5e29; box-shadow: 0 0 0 0 rgba(255, 94, 41, 0.7); }
+  50% { background-color: #ff7f50; box-shadow: 0 0 0 10px rgba(255, 94, 41, 0); }
+  100% { background-color: #ff5e29; box-shadow: 0 0 0 0 rgba(255, 94, 41, 0); }
+}
+
+.airport-light {
+  animation: airport-pulse 2s infinite;
+}

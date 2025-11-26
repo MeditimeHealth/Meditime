@@ -5,7 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, UserCircle, Settings, User as UserIcon, LogOut as LogOutIcon, Wallet, DollarSign } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface User {
   id: string;
@@ -18,6 +25,7 @@ interface User {
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [affiliate, setAffiliate] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -45,6 +53,19 @@ export default function Navbar() {
           }
         } else {
           setUser(null);
+        }
+        
+        // Also check for affiliate
+        const affiliateData = localStorage.getItem("affiliate");
+        if (affiliateData) {
+          try {
+            setAffiliate(JSON.parse(affiliateData));
+          } catch (error) {
+            console.error("Error parsing affiliate data:", error);
+            localStorage.removeItem("affiliate");
+          }
+        } else {
+          setAffiliate(null);
         }
       }
     };
@@ -90,6 +111,7 @@ export default function Navbar() {
     { href: "/service", label: "সেবা সমূহ" },
     { href: "/diagnostic", label: "ডায়াগনস্টিক টেস্ট" },
     { href: "/blog", label: "স্বাস্থ্য টিপস" },
+    { href: "/affiliate-program", label: "অ্যাফিলিয়েট" },
     { href: "/contact", label: "যোগাযোগ" },
   ];
 
@@ -122,8 +144,8 @@ export default function Navbar() {
             : "bg-white/90 backdrop-blur-lg shadow-md"
         }`}
       >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 sm:h-18 md:h-20 items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 ">
+          <div className="flex h-16 sm:h-14 md:h-15 items-center justify-between">
             {/* Logo */}
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -132,11 +154,11 @@ export default function Navbar() {
             >
               <Link href="/" onClick={() => setMobileMenuOpen(false)}>
                 <Image 
-                  src="/logos.png" 
+                  src="/Asset 21@0.5x.png" 
                   alt="Logo" 
                   width={120} 
                   height={120} 
-                  className="h-10 sm:h-12 md:h-14 w-auto cursor-pointer" 
+                  className="h-10 sm:h-10 md:h-10 w-auto cursor-pointer" 
                   priority
                 />
               </Link>
@@ -191,38 +213,119 @@ export default function Navbar() {
 
             {/* Desktop Right Side Actions */}
             <div className="hidden lg:flex items-center gap-3 md:gap-4">
-              {user ? (
+              {user || affiliate ? (
                 <>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-primary/10 to-primary/5 rounded-full border border-primary/20">
-                      <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary-light to-primary flex items-center justify-center text-white font-bold text-sm">
-                        {user.fullName?.charAt(0)?.toUpperCase() || "U"}
-                      </div>
-                      <span className="text-base font-semibold text-gray-800">
-                        {user.fullName}
-                      </span>
-                    </div>
-                    {user.role === 'admin' && (
-                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Link
-                          href="/admin"
-                          className="px-4 py-2 bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl"
-                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                  {/* Profile Menu Button - Icon Only */}
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <button className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-light to-primary flex items-center justify-center text-white font-bold text-sm hover:shadow-lg transition-all hover:scale-105">
+                        {(user?.fullName || affiliate?.name)?.charAt(0)?.toUpperCase() || "U"}
+                      </button>
+                    </SheetTrigger>
+                    <SheetContent>
+                      <SheetHeader>
+                        <div className="flex items-center gap-3 pb-4 border-b">
+                          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary-light to-primary flex items-center justify-center text-white font-bold text-lg">
+                            {(user?.fullName || affiliate?.name)?.charAt(0)?.toUpperCase() || "U"}
+                          </div>
+                          <div>
+                            <SheetTitle className="text-left">{user?.fullName || affiliate?.name}</SheetTitle>
+                            <p className="text-sm text-gray-600">{user?.email || affiliate?.email}</p>
+                          </div>
+                        </div>
+                      </SheetHeader>
+                      <div className="mt-6 space-y-2">
+                        {/* For Affiliates */}
+                        {affiliate && (
+                          <>
+                            <button
+                              onClick={() => {
+                                router.push('/affiliate-program/dashboard');
+                              }}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                              <Wallet className="h-5 w-5 text-gray-600" />
+                              <span className="font-medium">Dashboard</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                router.push('/affiliate-program/profile');
+                              }}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                              <UserCircle className="h-5 w-5 text-gray-600" />
+                              <span className="font-medium">My Profile</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                router.push('/affiliate-program/withdrawal');
+                              }}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                              <DollarSign className="h-5 w-5 text-gray-600" />
+                              <span className="font-medium">Request Withdrawal</span>
+                            </button>
+                          </>
+                        )}
+                        
+                        {/* For Regular Users */}
+                        {user && !affiliate && (
+                          <>
+                            <button
+                              onClick={() => {
+                                router.push('/user/profile');
+                              }}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                              <UserCircle className="h-5 w-5 text-gray-600" />
+                              <span className="font-medium">My Profile</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                router.push('/appointments');
+                              }}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                              <Wallet className="h-5 w-5 text-gray-600" />
+                              <span className="font-medium">My Appointments</span>
+                            </button>
+                          </>
+                        )}
+                        
+                        {/* Admin Dashboard (for admins) */}
+                        {user?.role === 'admin' && (
+                          <button
+                            onClick={() => {
+                              router.push('/admin');
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-primary/10 rounded-lg transition-colors text-primary"
+                          >
+                            <Settings className="h-5 w-5" />
+                            <span className="font-medium">Admin Dashboard</span>
+                          </button>
+                        )}
+                        
+                        <div className="border-t my-2"></div>
+                        
+                        {/* Logout */}
+                        <button
+                          onClick={() => {
+                            if (affiliate) {
+                              localStorage.removeItem("affiliate");
+                              setAffiliate(null);
+                              router.push("/affiliate-program");
+                            } else {
+                              handleLogout();
+                            }
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-red-50 rounded-lg transition-colors text-red-600"
                         >
-                          ড্যাশবোর্ড
-                        </Link>
-                      </motion.div>
-                    )}
-                  </div>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleLogout}
-                    className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-base font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg border border-gray-200"
-                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                  >
-                    লগআউট
-                  </motion.button>
+                          <LogOutIcon className="h-5 w-5" />
+                          <span className="font-medium">Logout</span>
+                        </button>
+                      </div>
+                    </SheetContent>
+                  </Sheet>
                 </>
               ) : (
                 <>

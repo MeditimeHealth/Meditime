@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Smartphone, QrCode } from "lucide-react";
+import { QrCode } from "lucide-react";
 
 export default function AppDownloadSection() {
   return (
@@ -122,57 +122,123 @@ export default function AppDownloadSection() {
                   </div>
 
                   {/* App Content Preview */}
-                  <div className="p-4 space-y-4 overflow-y-auto h-[calc(100%-3rem)]">
-                    {/* Video Consultation */}
-                    <div className="bg-gradient-to-r from-[#009A98] to-[#00B5B2] rounded-lg p-4 text-white">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                          <Smartphone className="w-6 h-6" />
+                  <div className="p-4 space-y-3 overflow-y-auto h-[calc(100%-3rem)]">
+                    {/* Doctor Appointment */}
+                    <div className="bg-gradient-to-r from-[#009A98] to-[#00B5B2] rounded-lg p-3 text-white">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                          </svg>
                         </div>
-                        <div>
-                          <h3 className="font-bold text-sm">ভিডিও কনসালটেশন</h3>
-                          <p className="text-xs opacity-90">Video Consultation</p>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-xs">ডাক্তার অ্যাপয়েন্টমেন্ট</h3>
+                          <p className="text-[10px] opacity-90 truncate">Doctor Appointment</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Hospital */}
+                    <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm-1 14H9v-2h2v-2h2v2h2v2h-2v2h-2v-2z"/>
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-xs text-gray-800">হাসপাতাল</h3>
+                          <p className="text-[10px] text-gray-600 truncate">Hospital</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Video Consultation */}
+                    <div className="bg-purple-50 rounded-lg p-3 border border-purple-100">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-purple-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-xs text-gray-800">ভিডিও কনসালটেশন</h3>
+                          <p className="text-[10px] text-gray-600 truncate">Video Consultation</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Health Tips */}
+                    <div className="bg-green-50 rounded-lg p-3 border border-green-100">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-xs text-gray-800">হেলথ টিপস</h3>
+                          <p className="text-[10px] text-gray-600 truncate">Health Tips</p>
                         </div>
                       </div>
                     </div>
 
                     {/* Order Medicine */}
-                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                    <div className="bg-orange-50 rounded-lg p-3 border border-orange-100">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <div className="w-8 h-8 bg-blue-200 rounded flex items-center justify-center">
-                            <div className="w-4 h-4 bg-blue-400 rounded"></div>
-                          </div>
+                        <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M4.22 11.29l1.06 1.06L7 10.59V20h2v-9.41l1.72 1.76 1.06-1.06L8 7.5l-3.78 3.79zM14.5 2H6v6h8.5V2zm-1 5H7V3h6.5v4zM20 8h-6v12h6V8zm-1 11h-4V9h4v10z"/>
+                          </svg>
                         </div>
-                        <div>
-                          <h3 className="font-bold text-sm text-gray-800">ঔষধ অর্ডার করুন</h3>
-                          <p className="text-xs text-gray-600">Order Medicine</p>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-xs text-gray-800">ঔষধ অর্ডার</h3>
+                          <p className="text-[10px] text-gray-600 truncate">Order Medicine</p>
                         </div>
                       </div>
                     </div>
 
                     {/* Diagnostic & Tests */}
-                    <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                    <div className="bg-red-50 rounded-lg p-3 border border-red-100">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                          <div className="w-6 h-6 border-2 border-green-400 rounded"></div>
+                        <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                          </svg>
                         </div>
-                        <div>
-                          <h3 className="font-bold text-sm text-gray-800">ডায়াগনস্টিক ও টেস্ট</h3>
-                          <p className="text-xs text-gray-600">Diagnostic & Tests</p>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-xs text-gray-800">ডায়াগনস্টিক ও টেস্ট</h3>
+                          <p className="text-[10px] text-gray-600 truncate">Diagnostic & Tests</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Ambulance Service */}
+                    <div className="bg-yellow-50 rounded-lg p-3 border border-yellow-100">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-xs text-gray-800">অ্যাম্বুলেন্স সেবা</h3>
+                          <p className="text-[10px] text-gray-600 truncate">Ambulance Service</p>
                         </div>
                       </div>
                     </div>
 
                     {/* Healthcare Packages */}
-                    <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                    <div className="bg-indigo-50 rounded-lg p-3 border border-indigo-100">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                          <div className="w-6 h-6 bg-purple-300 rounded"></div>
+                        <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
+                          </svg>
                         </div>
-                        <div>
-                          <h3 className="font-bold text-sm text-gray-800">স্বাস্থ্যসেবা প্যাকেজ</h3>
-                          <p className="text-xs text-gray-600">Healthcare Packages</p>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-xs text-gray-800">স্বাস্থ্যসেবা প্যাকেজ</h3>
+                          <p className="text-[10px] text-gray-600 truncate">Healthcare Packages</p>
                         </div>
                       </div>
                     </div>

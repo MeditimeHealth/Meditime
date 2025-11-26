@@ -2,9 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IDepartment extends Document {
   name: string;
-  bangla: string;
-  emoji: string;
-  icon?: string;
+  image?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,19 +13,8 @@ const DepartmentSchema: Schema = new Schema(
       type: String,
       required: [true, 'Department name is required'],
       trim: true,
-      unique: true,
     },
-    bangla: {
-      type: String,
-      required: [true, 'Bengali name is required'],
-      trim: true,
-    },
-    emoji: {
-      type: String,
-      required: [true, 'Emoji is required'],
-      trim: true,
-    },
-    icon: {
+    image: {
       type: String,
       trim: true,
     },

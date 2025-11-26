@@ -3,6 +3,7 @@ import HeroSection from "@/components/hero-section";
 import SearchSection from "@/components/search-section";
 import ServicesSection from "@/components/services-section";
 import WhyChooseSection from "@/components/why-choose-section";
+import DepartmentSection from "@/components/department-section";
 import StatsSection from "@/components/stats-section";
 import PatientReviewSection from "@/components/patient-review-section";
 import HospitalPartnersSection from "@/components/hospital-partners-section";
@@ -19,6 +20,7 @@ export default function Home() {
       <SearchSection />
       <ServicesSection />
       <WhyChooseSection />
+      <DepartmentSection />
       <StatsSection />
       <PatientReviewSection />
       <HospitalPartnersSection />

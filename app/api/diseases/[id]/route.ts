@@ -10,7 +10,7 @@ export async function PUT(
     await dbConnect();
     const { id } = await params;
     const body = await request.json();
-    const { name, bangla } = body;
+    const { name, bangla, departmentId } = body;
 
     if (!name || !bangla) {
       return NextResponse.json(
@@ -19,9 +19,25 @@ export async function PUT(
       );
     }
 
+    // Validate department if provided
+    if (departmentId) {
+      const Department = (await import("@/models/Department")).default;
+      const departmentExists = await Department.findById(departmentId);
+      if (!departmentExists) {
+        return NextResponse.json(
+          { error: "Invalid department selected" },
+          { status: 400 }
+        );
+      }
+    }
+
     const disease = await Disease.findByIdAndUpdate(
       id,
-      { name, bangla },
+      { 
+        name, 
+        bangla, 
+        department: departmentId || undefined 
+      },
       { new: true, runValidators: true }
     );
 

@@ -52,6 +52,11 @@ const menuItems = [
     href: "/admin/doctors",
   },
   {
+    title: "Add Hospital",
+    icon: Building2,
+    href: "/admin/hospitals",
+  },
+  {
     title: "Blood Donors",
     icon: Droplet,
     href: "/admin/blood-donors",
@@ -168,7 +173,7 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
                       : "text-gray-700 hover:bg-gray-100"
                   )}
                 >
-                  <Icon className="h-5 w-5" />
+                  {Icon && <Icon className="h-5 w-5" />}
                   <span>{item.title}</span>
                 </Link>
               );

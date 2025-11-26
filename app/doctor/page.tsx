@@ -26,9 +26,7 @@ import { motion, AnimatePresence } from "framer-motion";
 interface Department {
   _id: string;
   name: string;
-  bangla: string;
-  emoji: string;
-  icon?: string;
+  image?: string;
 }
 
 const banglaLabels = {
@@ -1086,27 +1084,31 @@ function DoctorListPageContent() {
                         >
                           {/* Circular Icon Container */}
                           <div
-                            className={`w-14 h-14 rounded-full flex items-center justify-center ${
+                            className={`w-14 h-14 rounded-full flex items-center justify-center overflow-hidden ${
                               selectedDept === dept.name
                                 ? "bg-white/20"
                                 : "bg-gray-100"
                             }`}
                           >
-                            <span className="text-2xl">{dept.emoji}</span>
+                            {dept.image ? (
+                              <img
+                                src={dept.image}
+                                alt={dept.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Stethoscope className="w-7 h-7 text-gray-600" />
+                            )}
                           </div>
-                          {/* Bengali Text */}
+                          {/* Department Name */}
                           <p
                             className={`font-bold text-sm text-center mt-1 ${
                               selectedDept === dept.name
                                 ? "text-white"
                                 : "text-gray-900"
                             }`}
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
                           >
-                            {dept.bangla}
+                            {dept.name}
                           </p>
                         </motion.button>
                       );

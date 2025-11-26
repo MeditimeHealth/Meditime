@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/navbar";
-import { ArrowLeft, Calendar, Clock, MapPin, User, Phone, Loader2 } from "lucide-react";
+import { ArrowLeft, MapPin, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { showToast } from "@/lib/toast";
 
 interface Doctor {
   _id: string;
@@ -60,6 +61,7 @@ export default function BookAppointmentPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [existingAppointments, setExistingAppointments] = useState<string[]>([]);
+  const [latestAvailableDates, setLatestAvailableDates] = useState<Date[]>([]);
 
   // Form data
   const [patientName, setPatientName] = useState("");
@@ -67,15 +69,9 @@ export default function BookAppointmentPage() {
   const [gender, setGender] = useState("");
   const [age, setAge] = useState("");
   const [patientType, setPatientType] = useState<"old" | "new" | "report">("new");
+  const [affiliateCode, setAffiliateCode] = useState("");
 
-  useEffect(() => {
-    if (doctorId) {
-      fetchDoctor();
-      fetchAppointments();
-    }
-  }, [doctorId]);
-
-  const fetchDoctor = async () => {
+  const fetchDoctor = useCallback(async () => {
     try {
       const response = await fetch(`/api/doctors/${doctorId}`);
       const data = await response.json();
@@ -94,9 +90,9 @@ export default function BookAppointmentPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [doctorId]);
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async () => {
     try {
       const response = await fetch(`/api/appointments?doctorId=${doctorId}`);
       const data = await response.json();
@@ -113,7 +109,7 @@ export default function BookAppointmentPage() {
     } catch (error) {
       console.error("Error fetching appointments:", error);
     }
-  };
+  }, [doctorId]);
 
   // Get available chambers from doctor's availability
   const getAvailableChambers = () => {
@@ -128,32 +124,141 @@ export default function BookAppointmentPage() {
   };
 
   // Get available days for selected chamber
-  const getAvailableDays = (): string[] => {
+  const getAvailableDays = useCallback((): string[] => {
     if (!doctor || !selectedChamber) return [];
     const availabilityArray = Array.isArray(doctor.availability)
       ? doctor.availability
       : [doctor.availability];
     const slot = availabilityArray.find((s) => s.chamber === selectedChamber);
     return slot ? slot.days : [];
+  }, [doctor, selectedChamber]);
+
+  // Helper function to get date string in YYYY-MM-DD format
+  const getDateString = (date: Date): string => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
-  // Check if date is available
-  const isDateAvailable = (date: Date): boolean => {
-    const dayName = getDayName(date);
-    const availableDays = getAvailableDays();
-    if (!availableDays.includes(dayName)) return false;
+  // Get all available dates and update latest 2
+  const updateLatestAvailableDates = useCallback(() => {
+    if (!selectedChamber || !doctor) {
+      setLatestAvailableDates([]);
+      return;
+    }
 
-    // Check if date is in the past
+    const availableDays = getAvailableDays();
+    if (availableDays.length === 0) {
+      setLatestAvailableDates([]);
+      return;
+    }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (date < today) return false;
+    
+    // Generate available dates for the next 30 days
+    const allAvailableDates: Date[] = [];
+    for (let i = 0; i < 30; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      date.setHours(0, 0, 0, 0);
+      const dayName = getDayName(date);
+      
+      // Check if date is not in the past and matches available days
+      if (date >= today && availableDays.includes(dayName)) {
+        const dateStr = getDateString(date);
+        // Check if date is not already booked
+        if (!existingAppointments.includes(dateStr)) {
+          allAvailableDates.push(date);
+        }
+      }
+    }
 
-    // Check if date is already booked
-    const dateStr = date.toISOString().split('T')[0];
-    if (existingAppointments.includes(dateStr)) return false;
+    // Sort dates and take only the latest 2 (first 2 available dates)
+    const sortedDates = allAvailableDates.sort((a, b) => a.getTime() - b.getTime());
+    const latestTwo = sortedDates.slice(0, 2);
+    // Ensure we only set maximum 2 dates
+    setLatestAvailableDates(latestTwo.length > 2 ? latestTwo.slice(0, 2) : latestTwo);
+  }, [selectedChamber, doctor, existingAppointments, getAvailableDays]);
 
-    return true;
-  };
+  useEffect(() => {
+    if (doctorId) {
+      fetchDoctor();
+      fetchAppointments();
+    }
+  }, [doctorId, fetchDoctor, fetchAppointments]);
+
+  // Auto-populate user data from localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          if (user.fullName) {
+            setPatientName(user.fullName);
+          }
+          if (user.phoneNumber) {
+            setMobileNumber(user.phoneNumber);
+          }
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+        }
+      }
+    }
+  }, []);
+
+  // Update latest available dates when chamber or appointments change
+  useEffect(() => {
+    if (selectedChamber && doctor) {
+      updateLatestAvailableDates();
+    }
+  }, [selectedChamber, doctor, existingAppointments, updateLatestAvailableDates]);
+
+  // Check if date is in the first 2 available dates (can be booked)
+  const isDateAvailable = useCallback((date: Date): boolean => {
+    if (latestAvailableDates.length === 0) return false;
+    
+    const dateStr = getDateString(date);
+    
+    // Only return true if date is in the latestAvailableDates array (first 2)
+    return latestAvailableDates.some((availableDate) => {
+      return getDateString(availableDate) === dateStr;
+    });
+  }, [latestAvailableDates]);
+
+  // Check if date matches doctor's schedule and is not booked (to show all available dates)
+  const isDateInSchedule = useCallback((date: Date): boolean => {
+    if (!doctor || !selectedChamber) return false;
+    
+    const availableDays = getAvailableDays();
+    if (availableDays.length === 0) return false;
+    
+    const dayName = getDayName(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dateToCheck = new Date(date);
+    dateToCheck.setHours(0, 0, 0, 0);
+    
+    // Check if date matches schedule and is not booked
+    if (dateToCheck >= today && availableDays.includes(dayName)) {
+      const dateStr = getDateString(date);
+      const isBooked = existingAppointments.includes(dateStr);
+      return !isBooked;
+    }
+    
+    return false;
+  }, [doctor, selectedChamber, existingAppointments, getAvailableDays]);
+
+  // Check if date matches doctor's schedule but is not in first 2 available dates
+  const isDateInScheduleButNotAvailable = useCallback((date: Date): boolean => {
+    const isInSchedule = isDateInSchedule(date);
+    const isAvailable = isDateAvailable(date);
+    // It's in schedule but not in the first 2 available dates
+    return isInSchedule && !isAvailable;
+  }, [isDateInSchedule, isDateAvailable]);
 
   // Generate calendar days
   const getCalendarDays = () => {
@@ -177,8 +282,17 @@ export default function BookAppointmentPage() {
   };
 
   const handleDateSelect = (date: Date) => {
-    if (isDateAvailable(date)) {
+    const dateStr = getDateString(date);
+    
+    const isInLatestTwo = latestAvailableDates.some((availableDate) => {
+      return getDateString(availableDate) === dateStr;
+    });
+
+    if (isInLatestTwo) {
       setSelectedDate(date);
+    } else {
+      // Show toast notification if trying to select a date that's not in the latest 2
+      showToast.error("আপনি শুধুমাত্র সর্বশেষ ২টি উপলব্ধ তারিখ বুক করতে পারবেন");
     }
   };
 
@@ -209,6 +323,7 @@ export default function BookAppointmentPage() {
           chamberName: selectedChamber,
           appointmentDate: selectedDate.toISOString(),
           userId: user?._id || user?.id || undefined,
+          affiliateCode: affiliateCode || undefined,
         }),
       });
 
@@ -378,23 +493,35 @@ export default function BookAppointmentPage() {
                       return <div key={index} className="aspect-square" />;
                     }
 
-                    const isAvailable = isDateAvailable(date);
+                    const isAvailable = isDateAvailable(date); // First 2 available dates (can be booked)
+                    const isInScheduleButNotAvailable = isDateInScheduleButNotAvailable(date); // In schedule but not first 2
                     const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
                     const isToday = date.toDateString() === new Date().toDateString();
 
                     return (
                       <button
                         key={index}
-                        onClick={() => handleDateSelect(date)}
+                        onClick={() => {
+                          if (isAvailable) {
+                            handleDateSelect(date);
+                          } else if (isInScheduleButNotAvailable) {
+                            showToast.error("প্রথম ২টি উপলব্ধ তারিখ নির্বাচন করুন");
+                          }
+                        }}
                         disabled={!isAvailable}
                         className={`aspect-square rounded-lg transition-all font-semibold ${
                           isSelected
-                            ? "bg-primary text-white shadow-lg scale-105"
+                            ? "text-white shadow-lg scale-105"
                             : isAvailable
-                            ? "bg-white hover:bg-primary/10 text-gray-900 border-2 border-primary/20 hover:border-primary/50"
+                            ? "bg-primary text-white border-2 border-primary hover:bg-primary/90 hover:shadow-md"
+                            : isInScheduleButNotAvailable
+                            ? "bg-blue-100 text-blue-700 border-2 border-blue-300 cursor-not-allowed opacity-75"
                             : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        } ${isToday ? "ring-2 ring-primary/50" : ""}`}
-                        style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                        } ${isToday && !isSelected && !isAvailable ? "ring-2 ring-gray-300" : ""}`}
+                        style={{ 
+                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                          backgroundColor: isSelected ? "#ff5e29" : undefined
+                        }}
                       >
                         {toBengaliNumber(date.getDate())}
                       </button>
@@ -486,6 +613,19 @@ export default function BookAppointmentPage() {
                     placeholder="বয়স লিখুন"
                     className="mt-1"
                     min="0"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="affiliateCode" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                    অ্যাফিলিয়েট কোড (ঐচ্ছিক)
+                  </Label>
+                  <Input
+                    id="affiliateCode"
+                    value={affiliateCode}
+                    onChange={(e) => setAffiliateCode(e.target.value.toUpperCase())}
+                    placeholder="অ্যাফিলিয়েট কোড লিখুন"
+                    className="mt-1"
                   />
                 </div>
 

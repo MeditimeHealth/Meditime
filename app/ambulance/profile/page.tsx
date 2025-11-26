@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { showToast } from "@/lib/toast";
+import { Trash2 } from "lucide-react";
 
 const ambulanceSchema = z.object({
   name: z.string().min(2, "Name/Company is required"),
@@ -206,6 +207,44 @@ export default function AmbulanceProfilePage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!existingProfile || !user) {
+      return;
+    }
+
+    if (!confirm("Are you sure you want to delete your ambulance service profile? This action cannot be undone.")) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/ambulances/${existingProfile._id}?userId=${user.id}`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        showToast.success("Ambulance service profile deleted successfully!");
+        setExistingProfile(null);
+        // Reset form
+        setValue("name", user.fullName || "");
+        setValue("phoneNumber", user.phoneNumber || "");
+        setValue("division", "");
+        setValue("district", "");
+        setValue("thana", "");
+        setValue("availabilityStatus", "Available");
+        setValue("vehicleType", "");
+      } else {
+        showToast.error(result.error || "Failed to delete ambulance service profile");
+      }
+    } catch {
+      showToast.error("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -392,6 +431,17 @@ export default function AmbulanceProfilePage() {
                     ? (existingProfile ? "Updating..." : "Submitting...") 
                     : (existingProfile ? "Update Ambulance Service" : "Create Ambulance Service")}
                 </Button>
+                {existingProfile && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={handleDelete}
+                    disabled={isLoading}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </Button>
+                )}
                 <Button
                   type="button"
                   variant="outline"

@@ -10,9 +10,7 @@ import { Plus, X, Edit, Trash2 } from "lucide-react";
 interface Department {
   _id: string;
   name: string;
-  bangla: string;
-  emoji: string;
-  icon?: string;
+  image?: string;
 }
 
 export default function DepartmentsPage() {
@@ -20,11 +18,11 @@ export default function DepartmentsPage() {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string>("");
   const [formData, setFormData] = useState({
     name: "",
-    bangla: "",
-    emoji: "",
-    icon: "",
+    image: "",
   });
 
   useEffect(() => {
@@ -43,6 +41,57 @@ export default function DepartmentsPage() {
       console.error("Error fetching departments:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image size should be less than 5MB");
+      return;
+    }
+
+    setUploading(true);
+    
+    try {
+      // Create FormData for ImgBB API
+      const formDataImg = new FormData();
+      formDataImg.append("image", file);
+      
+      // ImgBB API key - You'll need to add this to your environment variables
+      const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY || "your-imgbb-api-key";
+      
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=${apiKey}`,
+        {
+          method: "POST",
+          body: formDataImg,
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        const imageUrl = data.data.url;
+        setFormData({ ...formData, image: imageUrl });
+        setImagePreview(imageUrl);
+      } else {
+        alert("Failed to upload image");
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Error uploading image. Please try again.");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -68,7 +117,8 @@ export default function DepartmentsPage() {
         await fetchDepartments();
         setShowForm(false);
         setEditingId(null);
-        setFormData({ name: "", bangla: "", emoji: "", icon: "" });
+        setFormData({ name: "", image: "" });
+        setImagePreview("");
         alert(editingId ? "Department updated successfully" : "Department created successfully");
       } else {
         alert(result.error || "Failed to save department");
@@ -85,10 +135,9 @@ export default function DepartmentsPage() {
     setEditingId(department._id);
     setFormData({
       name: department.name,
-      bangla: department.bangla,
-      emoji: department.emoji,
-      icon: department.icon || "",
+      image: department.image || "",
     });
+    setImagePreview(department.image || "");
     setShowForm(true);
   };
 
@@ -140,7 +189,8 @@ export default function DepartmentsPage() {
           onClick={() => {
             setShowForm(!showForm);
             setEditingId(null);
-            setFormData({ name: "", bangla: "", emoji: "", icon: "" });
+            setFormData({ name: "", image: "" });
+            setImagePreview("");
           }}
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -161,7 +211,8 @@ export default function DepartmentsPage() {
               onClick={() => {
                 setShowForm(false);
                 setEditingId(null);
-                setFormData({ name: "", bangla: "", emoji: "", icon: "" });
+                setFormData({ name: "", image: "" });
+                setImagePreview("");
               }}
             >
               <X className="h-4 w-4" />
@@ -172,7 +223,7 @@ export default function DepartmentsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="name">
-                  Department Name (English) <span className="text-red-500">*</span>
+                  Department Name <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="name"
@@ -187,51 +238,29 @@ export default function DepartmentsPage() {
               </div>
 
               <div>
-                <Label htmlFor="bangla">
-                  Department Name (Bengali) <span className="text-red-500">*</span>
+                <Label htmlFor="image">
+                  Department Photo
                 </Label>
                 <Input
-                  id="bangla"
-                  value={formData.bangla}
-                  onChange={(e) =>
-                    setFormData({ ...formData, bangla: e.target.value })
-                  }
-                  placeholder="হৃদরোগ"
-                  required
-                  className="mt-1"
-                  style={{
-                    fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="emoji">
-                  Emoji <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="emoji"
-                  value={formData.emoji}
-                  onChange={(e) =>
-                    setFormData({ ...formData, emoji: e.target.value })
-                  }
-                  placeholder="❤️"
-                  required
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
                   className="mt-1"
                 />
-              </div>
-
-              <div>
-                <Label htmlFor="icon">Icon Name (Optional)</Label>
-                <Input
-                  id="icon"
-                  value={formData.icon}
-                  onChange={(e) =>
-                    setFormData({ ...formData, icon: e.target.value })
-                  }
-                  placeholder="Heart"
-                  className="mt-1"
-                />
+                {uploading && (
+                  <p className="text-sm text-blue-600 mt-1">Uploading image...</p>
+                )}
+                {imagePreview && (
+                  <div className="mt-2">
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview" 
+                      className="w-24 h-24 object-cover rounded border"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -249,7 +278,8 @@ export default function DepartmentsPage() {
                 onClick={() => {
                   setShowForm(false);
                   setEditingId(null);
-                  setFormData({ name: "", bangla: "", emoji: "", icon: "" });
+                  setFormData({ name: "", image: "" });
+                  setImagePreview("");
                 }}
               >
                 Cancel
@@ -271,20 +301,13 @@ export default function DepartmentsPage() {
             <Card key={department._id} className="p-4">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3 flex-1">
-                  <div className="text-3xl">{department.emoji}</div>
+                  {department.image && (
+                    <img src={department.image} alt={department.name} className="w-12 h-12 object-cover rounded" />
+                  )}
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-900 truncate">
                       {department.name}
                     </h3>
-                    <p
-                      className="text-sm text-gray-600"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
-                    >
-                      {department.bangla}
-                    </p>
                   </div>
                 </div>
                 <div className="flex gap-2">

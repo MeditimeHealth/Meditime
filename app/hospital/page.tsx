@@ -775,130 +775,36 @@ export default function HospitalListPage() {
                   whileHover={{ y: -5 }}
                 >
                   <Link href={`/hospital/${encodeURIComponent(hospital.name)}`}>
-                    <Card className="p-6 h-full hover:shadow-2xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-primary/20 bg-white group">
-                      <div className="space-y-5">
-                        {/* Hospital Header */}
-                        <div className="flex items-start gap-4">
-                          <motion.div
-                            whileHover={{ scale: 1.1, rotate: 5 }}
-                            className="relative w-20 h-20 rounded-2xl overflow-hidden shrink-0 bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all"
-                          >
-                            <Building2 className="h-10 w-10 text-white" />
-                          </motion.div>
-                          <div className="flex-1 min-w-0">
-                            <h3 
-                              className="text-xl font-bold text-gray-900 truncate mb-2 group-hover:text-primary transition-colors"
-                              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                            >
-                              {hospital.name}
-                            </h3>
-                            {getHospitalLocationString(hospital) && (
-                              <div className="flex items-center gap-2 text-gray-600">
-                                <MapPin className="h-4 w-4 shrink-0 text-primary" />
-                                <span 
-                                  className="text-sm truncate"
-                                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                                >
-                                  {getHospitalLocationString(hospital)}
-                                </span>
-                              </div>
-                            )}
+                    <Card className="p-6 h-full shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer border border-gray-200 hover:border-primary/30 bg-white group">
+                      <div className="space-y-4">
+                        {/* Top horizontal line */}
+                        <div className="w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+                        
+                        {/* Hospital Name with Icon */}
+                        <div className="flex items-start gap-3">
+                          <div className="shrink-0">
+                            <Building2 className="h-5 w-5 text-primary" />
                           </div>
+                          <h3 
+                            className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors"
+                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                          >
+                            {hospital.name}
+                          </h3>
                         </div>
 
-                        {/* Details */}
-                        <div className="space-y-3">
-                          {hospital.address && (
-                            <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                              <MapPin className="h-5 w-5 shrink-0 text-primary mt-0.5" />
-                              <div className="flex-1 min-w-0">
-                                <p 
-                                  className="text-xs font-semibold text-gray-500 mb-1"
-                                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                                >
-                                  {banglaLabels.address}
-                                </p>
-                                <p 
-                                  className="text-sm text-gray-700 line-clamp-2"
-                                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                                >
-                                  {hospital.address}
-                                </p>
-                              </div>
-                            </div>
-                          )}
-                          {/* {hospital.phone && (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                              <Phone className="h-5 w-5 shrink-0 text-primary" />
-                              <div className="flex-1 min-w-0">
-                                <p 
-                                  className="text-xs font-semibold text-gray-500 mb-1"
-                                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                                >
-                                  {banglaLabels.phone}
-                                </p>
-                                <a 
-                                  href={`tel:${hospital.phone}`}
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="text-sm font-medium text-primary hover:underline"
-                                >
-                                  {hospital.phone}
-                                </a>
-                              </div>
-                            </div>
-                          )} */}
-                          {/* {hospital.email && (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                              <Mail className="h-5 w-5 shrink-0 text-primary" />
-                              <div className="flex-1 min-w-0">
-                                <p 
-                                  className="text-xs font-semibold text-gray-500 mb-1"
-                                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                                >
-                                  {banglaLabels.email}
-                                </p>
-                                <a 
-                                  href={`mailto:${hospital.email}`}
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="text-sm font-medium text-primary hover:underline truncate block"
-                                >
-                                  {hospital.email}
-                                </a>
-                              </div>
-                            </div>
-                          )} */}
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="space-y-3 pt-2">
-                          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <Button 
-                              className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all"
-                              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                            >
-                              {banglaLabels.viewDoctors}
-                              <Users className="h-5 w-5 ml-2" />
-                            </Button>
-                          </motion.div>
-                          {hospital.phone && (
-                            <motion.a
-                              href={`tel:${hospital.phone}`}
-                              onClick={(e) => e.stopPropagation()}
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              className="block"
-                            >
-                              <Button 
-                                variant="outline"
-                                className="w-full font-semibold py-3 border-2 hover:border-primary hover:bg-primary/5 transition-all"
-                                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                              >
-                                {banglaLabels.callNow}
-                                <Phone className="h-5 w-5 ml-2" />
-                              </Button>
-                            </motion.a>
-                          )}
-                        </div>
+                        {/* Address */}
+                        {hospital.address && (
+                          <p 
+                            className="text-sm text-gray-600 leading-relaxed pl-8"
+                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                          >
+                            {hospital.address}
+                          </p>
+                        )}
+                        
+                        {/* Bottom horizontal line */}
+                        <div className="w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
                       </div>
                     </Card>
                   </Link>

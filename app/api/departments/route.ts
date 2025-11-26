@@ -20,16 +20,19 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { name, bangla, emoji, icon } = body;
+    const { name, image } = body;
 
-    if (!name || !bangla || !emoji) {
+    if (!name) {
       return NextResponse.json(
-        { error: "Name, Bengali name, and emoji are required" },
+        { error: "Department name is required" },
         { status: 400 }
       );
     }
 
-    const department = await Department.create({ name, bangla, emoji, icon });
+    const department = await Department.create({ 
+      name, 
+      image 
+    });
     return NextResponse.json(
       { message: "Department created successfully", department },
       { status: 201 }

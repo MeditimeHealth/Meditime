@@ -9,12 +9,23 @@ export async function PUT(
   try {
     await dbConnect();
     const body = await request.json();
-    const { name, bangla, emoji, icon } = body;
+    const { name, image } = body;
 
     const { id } = await params;
+    
+    if (!name) {
+      return NextResponse.json(
+        { error: "Department name is required" },
+        { status: 400 }
+      );
+    }
+    
+    const updateData: any = { name };
+    if (image !== undefined) updateData.image = image;
+
     const department = await Department.findByIdAndUpdate(
       id,
-      { name, bangla, emoji, icon },
+      updateData,
       { new: true, runValidators: true }
     );
 

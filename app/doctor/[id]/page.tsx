@@ -49,12 +49,7 @@ interface Doctor {
   rating?: number;
 }
 
-const STATIC_PHONE_NUMBERS = [
-  "০৯৬১৩৮২০৫৯৫",
-  "০১৯৪৬১০২১০২",
-  "০১৯০৬৩৯৯৪৯৬",
-  "০১৯০৬৩৯৯৪৯৭",
-];
+
 
 const banglaDays = [
   "সোমবার",
@@ -538,60 +533,6 @@ export default function DoctorProfilePage() {
                     অনলাইনে বুক করুন
                   </Button>
                 </Link>
-                <div>
-                  <p
-                    className="text-base md:text-lg font-bold text-gray-800 mb-4"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
-                  >
-                    কল করুন
-                  </p>
-                  <div className="space-y-3">
-                    {STATIC_PHONE_NUMBERS.map((number, index) => (
-                      <a
-                        key={index}
-                        href={`tel:${number.replace(/[০-৯]/g, (char) => {
-                          const bangla = "০১২৩৪৫৬৭৮৯";
-                          const english = "0123456789";
-                          return english[bangla.indexOf(char)];
-                        })}`}
-                        className="flex items-center gap-3 p-4 bg-white hover:bg-primary/10 rounded-xl border-2 border-primary/20 hover:border-primary/50 transition-all shadow-md hover:shadow-lg"
-                      >
-                        <Phone className="h-5 w-5 text-primary shrink-0" />
-                        <span
-                          className="text-base md:text-lg font-bold text-primary"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {number}
-                        </span>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-                <div className="pt-5 border-t-2 border-gray-300 bg-white p-4 rounded-xl">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Clock className="h-4 w-4 text-primary" />
-                    <p
-                      className="text-sm md:text-base font-semibold text-gray-700"
-                      style={{
-                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
-                    >
-                      কল করার সময়
-                    </p>
-                  </div>
-                  <p
-                    className="text-sm md:text-base text-gray-600"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
-                  >
-                    সময়ঃ সকাল ৬:০০টা হতে ৯:০০টা শনিবার হতে বৃহস্পতিবার
-                  </p>
-                </div>
               </div>
             </Card>
 

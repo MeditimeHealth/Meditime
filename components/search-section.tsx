@@ -28,6 +28,7 @@ export default function SearchSection() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [isSticky, setIsSticky] = useState(false);
 
   useEffect(() => {
     fetchDoctors();
@@ -41,6 +42,21 @@ export default function SearchSection() {
         console.error("Error loading recent searches:", e);
       }
     }
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const heroSection = document.getElementById("hero-text-section");
+      if (heroSection) {
+        const rect = heroSection.getBoundingClientRect();
+        // Make sticky when hero section is scrolled past
+        setIsSticky(rect.bottom <= 100);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Check initial state
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const fetchDoctors = async () => {
@@ -167,6 +183,7 @@ export default function SearchSection() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Hero Text Section */}
       <motion.div
+        id="hero-text-section"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -193,12 +210,20 @@ export default function SearchSection() {
         </p>
       </motion.div>
 
+      {/* Spacer to prevent layout shift when sticky */}
+      {isSticky && <div className="h-28 mb-10"></div>}
+
       {/* Search Section */}
       <motion.div
+        id="search-section"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="mb-10"
+        className={`mb-10 transition-all duration-300 ${
+          isSticky
+            ? "fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-7xl px-4 sm:px-6 lg:px-8 z-50"
+            : "relative"
+        }`}
       >
         <Card className="p-6 bg-white border-2 border-primary/10 shadow-lg">
           <div className="relative">

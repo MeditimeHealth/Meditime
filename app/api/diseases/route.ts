@@ -5,7 +5,9 @@ import Disease from "@/models/Disease";
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
-    const diseases = await Disease.find({}).sort({ bangla: 1 });
+    const diseases = await Disease.find({})
+      .populate('department', 'name bangla emoji')
+      .sort({ bangla: 1 });
     return NextResponse.json({ diseases }, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching diseases:", error);
@@ -20,7 +22,7 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { name, bangla } = body;
+    const { name, bangla, departmentId } = body;
 
     if (!name || !bangla) {
       return NextResponse.json(
@@ -29,7 +31,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const disease = await Disease.create({ name, bangla });
+    // Validate department if provided
+    if (departmentId) {
+      const Department = (await import("@/models/Department")).default;
+      const departmentExists = await Department.findById(departmentId);
+      if (!departmentExists) {
+        return NextResponse.json(
+          { error: "Invalid department selected" },
+          { status: 400 }
+        );
+      }
+    }
+
+    const disease = await Disease.create({ 
+      name, 
+      bangla, 
+      department: departmentId || undefined 
+    });
+    
     return NextResponse.json(
       { message: "Disease created successfully", disease },
       { status: 201 }
