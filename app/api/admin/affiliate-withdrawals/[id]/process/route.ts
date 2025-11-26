@@ -6,12 +6,12 @@ import Affiliate from '@/models/Affiliate';
 // PUT - Process withdrawal request (approve or reject)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await context.params;
     const body = await request.json();
     const { action, adminId, rejectionReason, notes } = body;
 

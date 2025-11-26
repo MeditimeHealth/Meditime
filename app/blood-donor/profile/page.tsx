@@ -55,6 +55,7 @@ export default function BloodDonorProfilePage() {
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<BloodDonorFormValues>({
     resolver: zodResolver(bloodDonorSchema),
@@ -304,17 +305,19 @@ export default function BloodDonorProfilePage() {
       if (response.ok) {
         showToast.success("Blood donor profile deleted successfully!");
         setExistingProfile(null);
-        // Reset form
-        setValue("name", user.fullName || "");
-        setValue("phoneNumber", user.phoneNumber || "");
-        setValue("email", user.email || "");
-        setValue("bloodGroup", "");
-        setValue("division", "");
-        setValue("district", "");
-        setValue("thana", "");
-        setValue("availabilityStatus", "Available");
-        setValue("lastDonationDate", "");
-        setValue("photo", "");
+        // Reset form fields to defaults
+        reset({
+          name: user.fullName || "",
+          phoneNumber: user.phoneNumber || "",
+          email: user.email || "",
+          bloodGroup: undefined,
+          division: "",
+          district: "",
+          thana: "",
+          availabilityStatus: "Available",
+          lastDonationDate: "",
+          photo: "",
+        });
         setImagePreview(null);
         setSelectedImage(null);
       } else {

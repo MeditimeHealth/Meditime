@@ -18,11 +18,22 @@ export async function GET(request: NextRequest) {
     
     const { searchParams } = new URL(request.url);
     const thanaId = searchParams.get("thana");
+    const searchTerm = searchParams.get("search") || "";
+    const limitParam = parseInt(searchParams.get("limit") || "20", 10);
+    const pageParam = parseInt(searchParams.get("page") || "1", 10);
+
+    const limit = Number.isNaN(limitParam) ? 20 : Math.max(1, limitParam);
+    const page = Number.isNaN(pageParam) ? 1 : Math.max(1, pageParam);
 
     let query: any = {};
     if (thanaId) {
       query.thana = thanaId;
     }
+    if (searchTerm) {
+      query.name = { $regex: searchTerm, $options: "i" };
+    }
+
+    const skip = (page - 1) * limit;
 
     const hospitals = await Hospital.find(query)
       .populate({
@@ -40,9 +51,14 @@ export async function GET(request: NextRequest) {
         },
       })
       .sort({ name: 1 })
+      .skip(skip)
+      .limit(limit)
       .lean();
+
+    const totalCount = await Hospital.countDocuments(query);
+    const hasMore = skip + hospitals.length < totalCount;
     
-    return NextResponse.json({ hospitals }, { status: 200 });
+    return NextResponse.json({ hospitals, hasMore }, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching hospitals:", error);
     return NextResponse.json(

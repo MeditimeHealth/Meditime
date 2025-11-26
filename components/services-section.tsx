@@ -35,6 +35,13 @@ export default function ServicesSection() {
         "বছরজুড়ে নানা রকম স্বাস্থ্যসেবা সম্পর্কিত টিপস পেতে যুক্ত থাকুন আমাদের সাথে।",
       href: "/blog",
     },
+    {
+      image: "/impression-1.png",
+      title: "ডায়াগনস্টিক টেস্ট",
+      description:
+        "বিভিন্ন ধরনের ডায়াগনস্টিক টেস্ট বুক করুন এবং সেরা মূল্যে পরীক্ষা করান।",
+      href: "/diagnostic",
+    },
   ];
 
   return (
@@ -78,7 +85,7 @@ export default function ServicesSection() {
       </motion.div>
 
       {/* Service Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {services.map((service, index) => {
           return (
             <motion.div

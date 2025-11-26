@@ -47,6 +47,7 @@ export default function AmbulanceProfilePage() {
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<AmbulanceFormValues>({
     resolver: zodResolver(ambulanceSchema),
@@ -227,14 +228,16 @@ export default function AmbulanceProfilePage() {
       if (response.ok) {
         showToast.success("Ambulance service profile deleted successfully!");
         setExistingProfile(null);
-        // Reset form
-        setValue("name", user.fullName || "");
-        setValue("phoneNumber", user.phoneNumber || "");
-        setValue("division", "");
-        setValue("district", "");
-        setValue("thana", "");
-        setValue("availabilityStatus", "Available");
-        setValue("vehicleType", "");
+        // Reset form fields to defaults
+        reset({
+          name: user.fullName || "",
+          phoneNumber: user.phoneNumber || "",
+          division: "",
+          district: "",
+          thana: "",
+          availabilityStatus: "Available",
+          vehicleType: undefined,
+        });
       } else {
         showToast.error(result.error || "Failed to delete ambulance service profile");
       }

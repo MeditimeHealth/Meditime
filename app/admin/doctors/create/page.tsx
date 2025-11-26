@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import { Plus, X } from "lucide-react";
@@ -78,6 +77,23 @@ interface AvailabilitySlot {
   chamber?: string;
 }
 
+type HospitalWithLocation = {
+  _id: string;
+  name: string;
+  thana?: {
+    _id: string;
+    name: string;
+    district?: {
+      _id: string;
+      name: string;
+      division?: {
+        _id: string;
+        name: string;
+      };
+    };
+  };
+};
+
 export default function CreateDoctorPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -90,8 +106,15 @@ export default function CreateDoctorPage() {
   const [divisions, setDivisions] = useState<Array<{_id: string; name: string}>>([]);
   const [districts, setDistricts] = useState<Array<{_id: string; name: string}>>([]);
   const [thanas, setThanas] = useState<Array<{_id: string; name: string}>>([]);
-  const [hospitals, setHospitals] = useState<Array<{_id: string; name: string}>>([]);
+  const [hospitals, setHospitals] = useState<HospitalWithLocation[]>([]);
   const [availableHospitals, setAvailableHospitals] = useState<string[]>([]);
+  const [hospitalSearchTerm, setHospitalSearchTerm] = useState("");
+  const [hospitalPage, setHospitalPage] = useState(1);
+  const [hasMoreHospitals, setHasMoreHospitals] = useState(false);
+  const [isHospitalLoading, setIsHospitalLoading] = useState(false);
+  const [showHospitalDropdown, setShowHospitalDropdown] = useState(false);
+  const [selectedHospitalName, setSelectedHospitalName] = useState("");
+  const hospitalDropdownRef = useRef<HTMLDivElement>(null);
   const [departments, setDepartments] = useState<Array<{_id: string; name: string; image?: string}>>([]);
   const [diseases, setDiseases] = useState<Array<{_id: string; name: string; bangla: string}>>([]);
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
@@ -114,7 +137,78 @@ export default function CreateDoctorPage() {
   });
   const watchedDivision = watch("division");
   const watchedDistrict = watch("district");
-  const watchedThana = watch("thana");
+  const hospitalSearchInitialized = useRef(false);
+
+  const fetchHospitals = useCallback(
+    async (searchValue: string = "", pageToLoad = 1) => {
+      setIsHospitalLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (searchValue) {
+          params.set("search", searchValue);
+        }
+        params.set("page", pageToLoad.toString());
+        params.set("limit", "20");
+
+        const response = await fetch(`/api/locations/hospitals?${params.toString()}`);
+        const data = await response.json();
+
+        if (response.ok && data.hospitals) {
+          setHospitals((prev) => {
+            const nextHospitals =
+              pageToLoad === 1
+                ? data.hospitals
+                : [
+                    ...prev,
+                    ...data.hospitals.filter(
+                      (newHospital: HospitalWithLocation) =>
+                        !prev.some((existing) => existing._id === newHospital._id)
+                    ),
+                  ];
+
+            setAvailableHospitals(nextHospitals.map((hospital: HospitalWithLocation) => hospital.name));
+            return nextHospitals;
+          });
+          setHasMoreHospitals(Boolean(data.hasMore));
+          setHospitalPage(pageToLoad);
+        } else {
+          console.error("Failed to fetch hospitals", data?.error);
+          if (pageToLoad === 1) {
+            setHospitals([]);
+            setAvailableHospitals([]);
+          }
+          setHasMoreHospitals(false);
+        }
+      } catch (error) {
+        console.error("Error fetching hospitals:", error);
+        if (pageToLoad === 1) {
+          setHospitals([]);
+          setAvailableHospitals([]);
+        }
+        setHasMoreHospitals(false);
+      } finally {
+        setIsHospitalLoading(false);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    fetchHospitals("", 1);
+  }, [fetchHospitals]);
+
+  useEffect(() => {
+    if (!hospitalSearchInitialized.current) {
+      hospitalSearchInitialized.current = true;
+      return;
+    }
+
+    const debounce = setTimeout(() => {
+      fetchHospitals(hospitalSearchTerm, 1);
+    }, 400);
+
+    return () => clearTimeout(debounce);
+  }, [hospitalSearchTerm, fetchHospitals]);
 
   // Fetch divisions on mount
   useEffect(() => {
@@ -123,6 +217,23 @@ export default function CreateDoctorPage() {
       .then((data) => {
         if (data.divisions) setDivisions(data.divisions);
       });
+  }, []);
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        hospitalDropdownRef.current &&
+        !hospitalDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowHospitalDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   // Fetch departments on mount
@@ -156,8 +267,6 @@ export default function CreateDoctorPage() {
       }
       setValue("district", "");
       setValue("thana", "");
-      setValue("hospital", "");
-      setAvailableHospitals([]);
       setThanas([]);
     }
   }, [watchedDivision, divisions, setValue]);
@@ -174,31 +283,74 @@ export default function CreateDoctorPage() {
           });
       }
       setValue("thana", "");
-      setValue("hospital", "");
-      setAvailableHospitals([]);
     }
   }, [watchedDistrict, districts, setValue]);
 
-  // Fetch hospitals when thana changes
-  useEffect(() => {
-    if (watchedThana) {
-      const thana = thanas.find(t => t.name === watchedThana);
-      if (thana) {
-        fetch(`/api/locations/hospitals?thana=${thana._id}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.hospitals) {
-              setHospitals(data.hospitals);
-              const hospitalNames = data.hospitals.map((h: {name: string}) => h.name);
-              setAvailableHospitals(hospitalNames);
-              if (hospitalNames.length > 0 && !watch("hospital")) {
-                setValue("hospital", hospitalNames[0]);
-              }
-            }
-          });
+  // Handle hospital selection - auto-populate location
+  const handleHospitalSelect = (hospitalName: string) => {
+    setSelectedHospitalName(hospitalName);
+    setValue("hospital", hospitalName);
+    setShowHospitalDropdown(false);
+    setHospitalSearchTerm(hospitalName);
+    
+    if (hospitalName) {
+      const selectedHospital = hospitals.find(h => h.name === hospitalName);
+      
+      if (selectedHospital && selectedHospital.thana) {
+        const thana = selectedHospital.thana;
+        const district = thana.district;
+        const division = district?.division;
+        
+        // Set division first
+        if (division && division.name) {
+          const divisionName = division.name;
+          setValue("division", divisionName);
+          
+          // Find division from divisions list to get _id
+          const divisionObj = divisions.find(d => d.name === divisionName);
+          if (divisionObj) {
+            // Fetch districts for the division
+            fetch(`/api/locations/districts?division=${divisionObj._id}`)
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.districts) {
+                  setDistricts(data.districts);
+                  
+                  // Set district
+                  if (district && district.name) {
+                    const districtName = district.name;
+                    setValue("district", districtName);
+                    
+                    // Find district from districts list to get _id
+                    const districtObj = data.districts.find((d: {name: string}) => d.name === districtName);
+                    if (districtObj) {
+                      // Fetch thanas for the district
+                      fetch(`/api/locations/thanas?district=${districtObj._id}`)
+                        .then((res) => res.json())
+                        .then((data) => {
+                          if (data.thanas) {
+                            setThanas(data.thanas);
+                            
+                            // Set thana
+                            if (thana.name) {
+                              setValue("thana", thana.name);
+                            }
+                          }
+                        });
+                    }
+                  }
+                }
+              });
+          }
+        }
       }
     }
-  }, [watchedThana, thanas, setValue, watch]);
+  };
+
+  const loadMoreHospitals = () => {
+    if (isHospitalLoading || !hasMoreHospitals) return;
+    fetchHospitals(hospitalSearchTerm, hospitalPage + 1);
+  };
 
   // Add new availability slot
   const addAvailabilitySlot = () => {
@@ -423,7 +575,6 @@ export default function CreateDoctorPage() {
                   setValue("division", e.target.value);
                   setValue("district", "");
                   setValue("thana", "");
-                  setValue("hospital", "");
                 }}
               >
                 <option value="">Select Division</option>
@@ -445,7 +596,6 @@ export default function CreateDoctorPage() {
                 onChange={(e) => {
                   setValue("district", e.target.value);
                   setValue("thana", "");
-                  setValue("hospital", "");
                 }}
               >
                 <option value="">Select District</option>
@@ -466,7 +616,6 @@ export default function CreateDoctorPage() {
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
                 onChange={(e) => {
                   setValue("thana", e.target.value);
-                  setValue("hospital", "");
                 }}
               >
                 <option value="">Select Thana</option>
@@ -478,33 +627,65 @@ export default function CreateDoctorPage() {
               </select>
             </div>
 
-            <div>
+            <div className="relative" ref={hospitalDropdownRef}>
               <Label htmlFor="hospital">Hospital</Label>
-              <select
+              <Input
                 id="hospital"
-                {...register("hospital")}
-                disabled={!watchedThana || availableHospitals.length === 0}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-              >
-                <option value="">
-                  {availableHospitals.length === 0
-                    ? watchedThana
-                      ? "No hospitals in this area"
-                      : "Select Thana first"
-                    : "Select Hospital"}
-                </option>
-                {availableHospitals.map((hosp) => (
-                  <option key={hosp} value={hosp}>
-                    {hosp}
-                  </option>
-                ))}
-              </select>
-              {availableHospitals.length === 0 && watchedThana && (
-                <Input
-                  {...register("hospital")}
-                  placeholder="Or enter hospital name manually"
-                  className="mt-2"
-                />
+                type="text"
+                placeholder="Search or select hospital..."
+                value={hospitalSearchTerm}
+                onChange={(e) => {
+                  setHospitalSearchTerm(e.target.value);
+                  setShowHospitalDropdown(true);
+                  if (!e.target.value) {
+                    setSelectedHospitalName("");
+                    setValue("hospital", "");
+                  }
+                }}
+                onFocus={() => setShowHospitalDropdown(true)}
+                className="mt-1"
+                autoComplete="off"
+              />
+              {showHospitalDropdown && (
+                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                  {isHospitalLoading && availableHospitals.length === 0 ? (
+                    <div className="p-3 text-sm text-gray-500 text-center">
+                      Loading hospitals...
+                    </div>
+                  ) : availableHospitals.length === 0 ? (
+                    <div className="p-3 text-sm text-gray-500 text-center">
+                      No hospitals found
+                    </div>
+                  ) : (
+                    <>
+                      {availableHospitals.map((hosp) => (
+                        <div
+                          key={hosp}
+                          onClick={() => handleHospitalSelect(hosp)}
+                          className={`px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm ${
+                            selectedHospitalName === hosp ? "bg-primary/10" : ""
+                          }`}
+                        >
+                          {hosp}
+                        </div>
+                      ))}
+                      {hasMoreHospitals && (
+                        <div className="border-t border-gray-200 p-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            onClick={loadMoreHospitals}
+                            disabled={isHospitalLoading}
+                          >
+                            {isHospitalLoading ? "Loading..." : "Load more hospitals"}
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
               )}
             </div>
 
@@ -582,7 +763,7 @@ export default function CreateDoctorPage() {
               )}
             </div>
 
-            <div className="md:col-span-2">
+            {/* <div className="md:col-span-2">
               <Label className="mb-3 block font-semibold text-gray-900">
                 যে সকল রোগের চিকিৎসা করা হয় (Diseases Treated) <span className="text-gray-500 text-xs">(Optional)</span>
               </Label>
@@ -632,7 +813,7 @@ export default function CreateDoctorPage() {
                   {selectedDiseases.length} disease(s) selected
                 </p>
               )}
-            </div>
+            </div> */}
 
             <div className="md:col-span-2">
               <Label htmlFor="image">Profile Image</Label>
