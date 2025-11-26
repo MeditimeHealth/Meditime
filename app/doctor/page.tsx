@@ -1819,24 +1819,20 @@ function DoctorListPageContent() {
             </Card>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {filteredAndSortedDoctors.map((doctor, index) => (
               <motion.div
                 key={doctor._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                whileHover={{ y: -5 }}
+                whileHover={{ y: -3 }}
               >
                 <Link href={`/doctor/${doctor._id}`}>
-                  <Card className="p-6 bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 hover:border-primary/50 shadow-lg hover:shadow-2xl transition-all duration-300 h-full cursor-pointer">
-                  <div className="space-y-5">
-                    {/* Doctor Image and Basic Info */}
-                    <div className="flex items-start gap-4">
-                      <motion.div
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        className="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0 bg-gradient-to-br from-primary/20 to-primary/10 border-2 border-primary/30 shadow-md"
-                      >
+                  <Card className="p-6 bg-white border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-md transition-all duration-300 h-full cursor-pointer">
+                    <div className="space-y-4">
+                      {/* Doctor Image */}
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
                         {doctor.image ? (
                           <Image
                             src={doctor.image}
@@ -1845,239 +1841,64 @@ function DoctorListPageContent() {
                             className="object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-primary-dark text-white font-bold text-2xl">
-                            {doctor.name.charAt(0)}
-                          </div>
-                        )}
-                      </motion.div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start gap-2 flex-wrap">
-                          <h3
-                            className="text-2xl font-bold text-gray-900 truncate"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
-                          >
-                            {doctor.name}
-                          </h3>
-                        </div>
-                        <p
-                          className="text-base text-gray-600 mt-1"
-                          style={{
-                            fontFamily:
-                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {[
-                            doctor.currentPosition,
-                            doctor.qualification,
-                            doctor.department
-                          ].filter(Boolean).join(", ")}
-                        </p>
-
-                        {/* Matched Fields Indicator */}
-                        {searchQuery && getMatchedFields(doctor).length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-1">
-                            <span
-                              className="text-xs text-gray-500"
-                              style={{
-                                fontFamily:
-                                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                              }}
-                            >
-                              {banglaLabels.matched}:
-                            </span>
-                            {getMatchedFields(doctor).map((field, idx) => (
-                              <span
-                                key={idx}
-                                className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium"
-                                style={{
-                                  fontFamily:
-                                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                                }}
-                              >
-                                {field}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        {doctor.rating !== undefined && doctor.rating > 0 && (
-                          <div className="flex items-center gap-1 mt-2">
-                            <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                            <span
-                              className="text-base font-semibold text-gray-700"
-                              style={{
-                                fontFamily:
-                                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                              }}
-                            >
-                              {doctor.rating.toFixed(1)}
-                            </span>
+                          <div className="w-full h-full flex items-center justify-center">
+                            <svg className="w-12 h-12 text-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <circle cx="12" cy="8" r="4" fill="currentColor" fillOpacity="0.3"/>
+                              <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" strokeWidth="1.5" fill="currentColor" fillOpacity="0.1"/>
+                              <path d="M15 3v2M15 7v2M13 5h4" stroke="#4A90A4" strokeWidth="1.5" strokeLinecap="round"/>
+                            </svg>
                           </div>
                         )}
                       </div>
-                    </div>
 
-                    {/* Details */}
-                    <div className="space-y-3 text-base border-t border-gray-200 pt-4">
-                      {doctor.hospital && (
-                        <motion.div
-                          whileHover={{ x: 5 }}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            router.push(`/hospital/${encodeURIComponent(doctor.hospital!)}`);
-                          }}
-                          className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors cursor-pointer group"
-                        >
-                          <Building2 className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
-                          <span
-                            className="underline font-semibold text-base"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
-                          >
-                            {doctor.hospital}
-                          </span>
-                        </motion.div>
-                      )}
-                      {(doctor.division || doctor.district || doctor.thana) && (
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <MapPin className="h-5 w-5 text-primary" />
-                          <span
-                            className="text-sm"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
-                          >
-                            {[doctor.division, doctor.district, doctor.thana]
-                              .filter(Boolean)
-                              .join(", ")}
-                          </span>
-                        </div>
-                      )}
-                      {doctor.chamber && (
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <Building2 className="h-5 w-5 text-primary" />
-                          <span
-                            className="text-sm"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
-                          >
-                            চেম্বার: {doctor.chamber}
-                          </span>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <Award className="h-5 w-5 text-primary" />
-                        <span
-                          className="text-base"
-                          style={{
-                            fontFamily:
-                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {banglaLabels.experienceLabel}:{" "}
-                          <span className="font-bold text-gray-900">
-                            {doctor.experience} {banglaLabels.years}
-                          </span>
-                        </span>
-                      </div>
-                      {doctor.rating !== undefined && doctor.rating > 0 && (
-                        <div className="flex items-center gap-2 text-gray-700">
-                          <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                          <span
-                            className="text-base"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
-                          >
-                            <span className="font-bold text-gray-900">
-                              {doctor.rating.toFixed(1)}
-                            </span>{" "}
-                            রেটিং
-                          </span>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <svg
-                          className="h-5 w-5 text-primary"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <text
-                            x="12"
-                            y="18"
-                            fontSize="16"
-                            fontWeight="bold"
-                            textAnchor="middle"
-                            fill="currentColor"
-                            style={{
-                              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
-                          >
-                            ৳
-                          </text>
-                        </svg>
-                        <span
-                          className="text-base"
-                          style={{
-                            fontFamily:
-                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          নতুন রোগীর ফি: <span className="font-bold text-gray-900 text-xl">
-                            {doctor.newPatientFee || doctor.consultationFee}
-                          </span>
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <Clock className="h-5 w-5 text-primary" />
-                        <span
-                          className="text-sm"
-                          style={{
-                            fontFamily:
-                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {banglaLabels.availability}: {formatAvailability(doctor.availability)}
-                        </span>
-                      </div>
-                    </div>
-
-
-                    {/* Action Buttons */}
-                    <div className="space-y-3 border-t border-gray-200 pt-4">
-                      <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                      {/* Doctor Name */}
+                      <h3
+                        className="text-xl font-bold text-[#2C5282]"
+                        style={{
+                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                        }}
                       >
-                        <Button
-                          className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all"
-                          variant="default"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            window.location.href = `/doctor/${doctor._id}`;
-                          }}
+                        {doctor.name}
+                      </h3>
+
+                      {/* Position & Qualification */}
+                      <p
+                        className="text-sm text-[#4A90A4] leading-relaxed"
+                        style={{
+                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                        }}
+                      >
+                        {[doctor.currentPosition, doctor.qualification].filter(Boolean).join(", ") || "বিশেষজ্ঞ"}
+                      </p>
+
+                      {/* Department */}
+                      {doctor.department && (
+                        <p
+                          className="text-sm text-[#4A90A4]"
                           style={{
-                            fontFamily:
-                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           }}
                         >
-                          {banglaLabels.bookAppointment}
-                        </Button>
-                      </motion.div>
+                          {doctor.department}
+                        </p>
+                      )}
+
+                      {/* Red Divider Line */}
+                      <div className="w-12 h-0.5 bg-[#8B4513] my-3"></div>
+
+                      {/* Hospital Name */}
+                      {doctor.hospital && (
+                        <p
+                          className="text-base font-semibold text-gray-700 leading-relaxed"
+                          style={{
+                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                          }}
+                        >
+                          {doctor.hospital}
+                        </p>
+                      )}
                     </div>
-                  </div>
-                </Card>
+                  </Card>
                 </Link>
               </motion.div>
             ))}

@@ -111,6 +111,11 @@ const menuItems = [
     icon: Settings,
     href: "/admin/settings",
   },
+  {
+    title: "Affiliate Management",
+    icon: Users,
+    href: "/admin/affiliate-management",
+  },
 ];
 
 export default function Sidebar({ user, onLogout }: SidebarProps) {

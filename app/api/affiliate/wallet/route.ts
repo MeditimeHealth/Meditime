@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
+import User from '@/models/User';
 import Affiliate from '@/models/Affiliate';
 import AffiliateCommission from '@/models/AffiliateCommission';
 import AffiliateWithdrawal from '@/models/AffiliateWithdrawal';
@@ -19,8 +20,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Find affiliate
-    const affiliate = await Affiliate.findOne({ affiliateCode: affiliateCode.toUpperCase() });
+    // Find affiliate - check both User model (new) and Affiliate model (legacy)
+    let affiliate = await User.findOne({ 
+      affiliateCode: affiliateCode.toUpperCase(),
+      userType: 'affiliate'
+    });
+    
+    // Fallback to legacy Affiliate model if not found in User
+    if (!affiliate) {
+      affiliate = await Affiliate.findOne({ affiliateCode: affiliateCode.toUpperCase() });
+    }
+
     if (!affiliate) {
       return NextResponse.json(
         { error: 'Affiliate not found' },

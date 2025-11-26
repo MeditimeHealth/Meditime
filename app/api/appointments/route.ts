@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const doctorId = searchParams.get('doctorId');
     const status = searchParams.get('status');
+    const userId = searchParams.get('userId');
 
     const query: any = {};
     if (doctorId) {
@@ -20,9 +21,12 @@ export async function GET(request: NextRequest) {
     if (status) {
       query.status = status;
     }
+    if (userId) {
+      query.userId = userId;
+    }
 
     const appointments = await Appointment.find(query)
-      .populate('doctorId', 'name qualification department hospital')
+      .populate('doctorId', 'name qualification department hospital image')
       .populate('userId', 'fullName email phoneNumber')
       .populate('affiliateId', 'name affiliateCode email')
       .sort({ appointmentDate: -1, createdAt: -1 });
@@ -112,7 +116,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Populate doctor info
-    await appointment.populate('doctorId', 'name qualification department hospital');
+    await appointment.populate('doctorId', 'name qualification department hospital image');
 
     return NextResponse.json(
       { message: 'Appointment booked successfully', appointment },

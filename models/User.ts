@@ -5,12 +5,24 @@ export interface IUser extends Document {
   phoneNumber: string;
   username?: string;
   fullName: string;
-  gender: 'male' | 'female' | 'other';
+  gender?: 'male' | 'female' | 'other';
   bloodGroup?: string;
-  age: number;
+  age?: number;
   password: string;
-  role?: 'admin' | 'user' | 'doctor' | 'bloodDonor' | 'ambulance';
-  userType?: 'user' | 'bloodDonor' | 'ambulance';
+  photo?: string;
+  role?: 'admin' | 'user' | 'doctor' | 'bloodDonor' | 'ambulance' | 'affiliate';
+  userType?: 'user' | 'bloodDonor' | 'ambulance' | 'affiliate';
+  // Affiliate-specific fields
+  affiliateCode?: string;
+  isActive?: boolean;
+  walletBalance?: number;
+  totalEarned?: number;
+  totalWithdrawn?: number;
+  pendingCommissions?: number;
+  referrals?: number;
+  earnings?: number;
+  paymentMethod?: string;
+  paymentDetails?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,7 +55,6 @@ const UserSchema: Schema = new Schema(
     gender: {
       type: String,
       enum: ['male', 'female', 'other'],
-      required: [true, 'Gender is required'],
     },
     bloodGroup: {
       type: String,
@@ -51,7 +62,6 @@ const UserSchema: Schema = new Schema(
     },
     age: {
       type: Number,
-      required: [true, 'Age is required'],
       min: [1, 'Age must be greater than 0'],
       max: [150, 'Age must be less than 150'],
     },
@@ -62,13 +72,66 @@ const UserSchema: Schema = new Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'user', 'doctor', 'bloodDonor', 'ambulance'],
+      enum: ['admin', 'user', 'doctor', 'bloodDonor', 'ambulance', 'affiliate'],
       default: 'user',
     },
     userType: {
       type: String,
-      enum: ['user', 'bloodDonor', 'ambulance'],
+      enum: ['user', 'bloodDonor', 'ambulance', 'affiliate'],
       default: 'user',
+    },
+    photo: {
+      type: String,
+      trim: true,
+    },
+    // Affiliate-specific fields
+    affiliateCode: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    walletBalance: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    totalEarned: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    totalWithdrawn: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    pendingCommissions: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    referrals: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    earnings: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    paymentMethod: {
+      type: String,
+      trim: true,
+    },
+    paymentDetails: {
+      type: String,
+      trim: true,
     },
   },
   {

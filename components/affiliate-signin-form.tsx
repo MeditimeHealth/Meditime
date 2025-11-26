@@ -33,17 +33,22 @@ export default function AffiliateSigninForm() {
   const onSubmit = async (data: SigninFormValues) => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/affiliate/signin", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          phoneOrEmail: data.emailOrPhone,
+          password: data.password,
+          userType: 'affiliate'
+        }),
       });
 
       const result = await response.json();
 
       if (response.ok) {
         // Store affiliate data in localStorage
-        localStorage.setItem("affiliate", JSON.stringify(result.affiliate));
+        const affiliateData = result.affiliate || result.user;
+        localStorage.setItem("affiliate", JSON.stringify(affiliateData));
         
         showToast.success("Successfully signed in!");
         

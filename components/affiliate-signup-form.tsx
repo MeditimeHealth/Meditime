@@ -57,22 +57,29 @@ export default function AffiliateSignupForm() {
   const onSubmit = async (data: SignupFormValues) => {
     setIsLoading(true);
     try {
-      const { agreeToTerms, ...signupData } = data;
+      const { agreeToTerms, confirmPassword, ...signupData } = data;
 
-      const response = await fetch("/api/affiliate/signup", {
+      const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(signupData),
+        body: JSON.stringify({
+          fullName: signupData.name,
+          email: signupData.email,
+          phoneNumber: signupData.phoneNumber,
+          password: signupData.password,
+          userType: 'affiliate'
+        }),
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        setAffiliateCode(result.affiliate.affiliateCode);
+        const affiliateData = result.affiliate || result.user;
+        setAffiliateCode(affiliateData.affiliateCode);
         showToast.success("Affiliate account created successfully!");
         
         // Store affiliate data in localStorage
-        localStorage.setItem("affiliate", JSON.stringify(result.affiliate));
+        localStorage.setItem("affiliate", JSON.stringify(affiliateData));
       } else {
         showToast.error(result.error || "Signup failed");
       }

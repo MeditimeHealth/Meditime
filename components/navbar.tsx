@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, UserCircle, Settings, User as UserIcon, LogOut as LogOutIcon, Wallet, DollarSign } from "lucide-react";
+import { Menu, X, UserCircle, Settings, LogOut as LogOutIcon, Wallet, DollarSign } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -154,7 +154,7 @@ export default function Navbar() {
             >
               <Link href="/" onClick={() => setMobileMenuOpen(false)}>
                 <Image 
-                  src="/Asset 21@0.5x.png" 
+                  src="/logo.png" 
                   alt="Logo" 
                   width={120} 
                   height={120} 
@@ -215,19 +215,30 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center gap-3 md:gap-4">
               {user || affiliate ? (
                 <>
-                  {/* Profile Menu Button - Icon Only */}
+                  {/* Profile Menu Button - Drawer Icon */}
                   <Sheet>
                     <SheetTrigger asChild>
-                      <button className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-light to-primary flex items-center justify-center text-white font-bold text-sm hover:shadow-lg transition-all hover:scale-105">
-                        {(user?.fullName || affiliate?.name)?.charAt(0)?.toUpperCase() || "U"}
+                      <button className="h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 hover:text-primary transition-all hover:scale-105 border border-gray-200">
+                        <Menu className="h-5 w-5" />
                       </button>
                     </SheetTrigger>
                     <SheetContent>
                       <SheetHeader>
                         <div className="flex items-center gap-3 pb-4 border-b">
-                          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary-light to-primary flex items-center justify-center text-white font-bold text-lg">
-                            {(user?.fullName || affiliate?.name)?.charAt(0)?.toUpperCase() || "U"}
-                          </div>
+                          {(user as any)?.photo ? (
+                            <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-gray-200">
+                              <Image
+                                src={(user as any).photo}
+                                alt={user?.fullName || affiliate?.name || "User"}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary-light to-primary flex items-center justify-center text-white font-bold text-lg">
+                              {(user?.fullName || affiliate?.name)?.charAt(0)?.toUpperCase() || "U"}
+                            </div>
+                          )}
                           <div>
                             <SheetTitle className="text-left">{user?.fullName || affiliate?.name}</SheetTitle>
                             <p className="text-sm text-gray-600">{user?.email || affiliate?.email}</p>
@@ -440,9 +451,20 @@ export default function Navbar() {
                   {user ? (
                     <>
                       <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl border border-primary/20">
-                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary-light to-primary flex items-center justify-center text-white font-bold text-lg">
-                          {user.fullName?.charAt(0)?.toUpperCase() || "U"}
-                        </div>
+                        {(user as any)?.photo ? (
+                          <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-primary/30">
+                            <Image
+                              src={(user as any).photo}
+                              alt={user.fullName || "User"}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary-light to-primary flex items-center justify-center text-white font-bold text-lg">
+                            {user.fullName?.charAt(0)?.toUpperCase() || "U"}
+                          </div>
+                        )}
                         <div className="flex-1 min-w-0">
                           <p
                             className="text-base font-semibold text-gray-800 truncate"

@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const user = await User.findOne({
       $or: [
         { phoneNumber: phoneOrEmail },
-        { email: phoneOrEmail },
+        { email: phoneOrEmail.toLowerCase() },
         { username: phoneOrEmail.toLowerCase() },
       ],
     });
@@ -35,9 +35,23 @@ export async function POST(request: NextRequest) {
 
     // Check user type if provided
     if (userType && user.userType !== userType) {
+      const typeLabels: Record<string, string> = {
+        'bloodDonor': 'Blood Donor',
+        'ambulance': 'Ambulance',
+        'affiliate': 'Affiliate',
+        'user': 'User'
+      };
       return NextResponse.json(
-        { error: `Invalid user type. Please sign in as ${user.userType === 'bloodDonor' ? 'Blood Donor' : user.userType === 'ambulance' ? 'Ambulance' : 'User'}` },
+        { error: `Invalid user type. Please sign in as ${typeLabels[user.userType || 'user'] || 'User'}` },
         { status: 401 }
+      );
+    }
+
+    // Check if affiliate account is active
+    if (user.userType === 'affiliate' && user.isActive === false) {
+      return NextResponse.json(
+        { error: "Your affiliate account has been deactivated. Please contact support." },
+        { status: 403 }
       );
     }
 
@@ -52,7 +66,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Return user data (without password)
-    const userData = {
+    const userData: any = {
       id: user._id,
       email: user.email,
       phoneNumber: user.phoneNumber,
@@ -61,12 +75,32 @@ export async function POST(request: NextRequest) {
       gender: user.gender,
       bloodGroup: user.bloodGroup,
       age: user.age,
+      photo: user.photo,
       role: user.role || 'user',
       userType: user.userType || 'user',
     };
 
+    // Add affiliate-specific data if user is an affiliate
+    if (user.userType === 'affiliate') {
+      userData.affiliateCode = user.affiliateCode;
+      userData.isActive = user.isActive;
+      userData.walletBalance = user.walletBalance || 0;
+      userData.totalEarned = user.totalEarned || 0;
+      userData.totalWithdrawn = user.totalWithdrawn || 0;
+      userData.pendingCommissions = user.pendingCommissions || 0;
+      userData.referrals = user.referrals || 0;
+      userData.earnings = user.earnings || 0;
+      userData.paymentMethod = user.paymentMethod;
+      userData.paymentDetails = user.paymentDetails;
+      userData.name = user.fullName; // For backward compatibility
+    }
+
     return NextResponse.json(
-      { message: "Login successful", user: userData },
+      { 
+        message: "Login successful", 
+        user: userData,
+        ...(user.userType === 'affiliate' && { affiliate: userData })
+      },
       { status: 200 }
     );
   } catch (error: any) {

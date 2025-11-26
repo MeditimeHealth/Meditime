@@ -12,7 +12,7 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await request.json();
-    const { status } = body;
+    const { status, userId } = body;
 
     if (!status) {
       return NextResponse.json(
@@ -29,11 +29,37 @@ export async function PATCH(
       );
     }
 
+    // Check if appointment exists and verify ownership (if userId provided)
+    const existingAppointment = await Appointment.findById(id);
+    if (!existingAppointment) {
+      return NextResponse.json(
+        { error: 'Appointment not found' },
+        { status: 404 }
+      );
+    }
+
+    // If userId is provided (user trying to cancel), verify ownership
+    if (userId && existingAppointment.userId) {
+      if (existingAppointment.userId.toString() !== userId) {
+        return NextResponse.json(
+          { error: 'You do not have permission to update this appointment' },
+          { status: 403 }
+        );
+      }
+      // Users can only cancel their own appointments
+      if (status !== 'cancelled') {
+        return NextResponse.json(
+          { error: 'You can only cancel your own appointments' },
+          { status: 403 }
+        );
+      }
+    }
+
     const appointment = await Appointment.findByIdAndUpdate(
       id,
       { status },
       { new: true }
-    ).populate('doctorId', 'name qualification department hospital')
+    ).populate('doctorId', 'name qualification department hospital image')
      .populate('userId', 'fullName email phoneNumber');
 
     if (!appointment) {

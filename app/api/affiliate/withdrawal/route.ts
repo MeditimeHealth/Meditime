@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import AffiliateWithdrawal from '@/models/AffiliateWithdrawal';
+import User from '@/models/User';
 import Affiliate from '@/models/Affiliate';
 
 // POST - Submit withdrawal request
@@ -28,8 +29,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find affiliate
-    const affiliate = await Affiliate.findOne({ affiliateCode: affiliateCode.toUpperCase() });
+    // Find affiliate - check both User model (new) and Affiliate model (legacy)
+    let affiliate = await User.findOne({ 
+      affiliateCode: affiliateCode.toUpperCase(),
+      userType: 'affiliate'
+    });
+    
+    // Fallback to legacy Affiliate model if not found in User
+    if (!affiliate) {
+      affiliate = await Affiliate.findOne({ affiliateCode: affiliateCode.toUpperCase() });
+    }
+
     if (!affiliate) {
       return NextResponse.json(
         { error: 'Affiliate not found' },
@@ -58,7 +68,7 @@ export async function POST(request: NextRequest) {
       status: 'pending',
     });
 
-    await withdrawal.populate('affiliateId', 'name affiliateCode email');
+    await withdrawal.populate('affiliateId', 'fullName name affiliateCode email');
 
     return NextResponse.json(
       {
