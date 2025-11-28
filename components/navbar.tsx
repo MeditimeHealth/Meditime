@@ -107,6 +107,7 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/doctor", label: "ডাক্তার" },
+    { href: "/departments", label: "বিভাগ" },
     { href: "/hospital", label: "হাসপাতাল" },
     { href: "/service", label: "সেবা সমূহ" },
     { href: "/diagnostic", label: "ডায়াগনস্টিক টেস্ট" },

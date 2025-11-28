@@ -671,69 +671,7 @@ export default function HospitalListPage() {
         </motion.div>
 
         {/* Sort and Results Count */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-5 rounded-xl shadow-md border border-gray-200"
-        >
-          <div 
-            className="text-base font-semibold text-gray-700"
-            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-          >
-            {searchQuery ? (
-              <span>
-                {banglaLabels.found} <span className="text-primary text-xl">{filteredAndSortedHospitals.length}</span> {banglaLabels.hospitals} {banglaLabels.matching} &quot;{searchQuery}&quot;
-              </span>
-            ) : (
-              <span>
-                {banglaLabels.showing} <span className="text-primary text-xl">{filteredAndSortedHospitals.length}</span> {banglaLabels.of} <span className="text-gray-900">{hospitals.length}</span> {banglaLabels.totalHospitals}
-              </span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-4">
-            {(searchQuery || hasActiveFilters) && (
-              <Button 
-                variant="outline" 
-                onClick={clearFilters} 
-                className="flex items-center gap-2"
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-              >
-                <X className="h-4 w-4" />
-                {banglaLabels.clearFilters}
-              </Button>
-            )}
-
-            <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
-              <Label 
-                htmlFor="sortBy" 
-                className="text-base font-semibold text-gray-700 whitespace-nowrap"
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-              >
-                {banglaLabels.sortBy}:
-              </Label>
-              <select
-                id="sortBy"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-base font-medium focus:outline-none focus:ring-2 focus:ring-primary bg-white"
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-              >
-                <option value="name">{banglaLabels.name}</option>
-                <option value="location">{banglaLabels.location}</option>
-              </select>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSortDirection(sortDirection === "asc" ? "desc" : "asc")}
-                className="px-4 py-2 text-lg"
-              >
-                {sortDirection === "asc" ? "↑" : "↓"}
-              </Button>
-            </div>
-          </div>
-        </motion.div>
+    
 
         {/* Hospital Cards Grid */}
         <AnimatePresence mode="wait">

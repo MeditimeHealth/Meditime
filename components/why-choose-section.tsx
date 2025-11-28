@@ -62,7 +62,7 @@ export default function WhyChooseSection() {
       </motion.div>
 
       {/* Feature Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {features.map((feature, index) => {
           const IconComponent = feature.icon;
           return (
@@ -73,19 +73,19 @@ export default function WhyChooseSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="p-6 bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow h-full flex flex-col">
+              <Card className="p-3 sm:p-4 md:p-6 bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow h-full flex flex-col">
                 {/* Icon */}
-                <div className="mb-4">
-                  <div className="w-16 h-16 rounded-lg bg-blue-50 flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-blue-200 flex items-center justify-center">
-                      <IconComponent className="w-6 h-6 text-gray-900" strokeWidth={2} />
+                <div className="mb-2 sm:mb-3 md:mb-4 flex justify-center sm:justify-start">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <div className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-full bg-blue-200 flex items-center justify-center">
+                      <IconComponent className="w-5 h-5 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-900" strokeWidth={2} />
                     </div>
                   </div>
                 </div>
 
                 {/* Title */}
                 <h3
-                  className="text-xl font-bold text-gray-900 mb-3"
+                  className="text-sm sm:text-base md:text-xl font-bold text-gray-900 mb-1 sm:mb-2 md:mb-3 text-center sm:text-left"
                   style={{
                     fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                   }}
@@ -95,7 +95,7 @@ export default function WhyChooseSection() {
 
                 {/* Description */}
                 <p
-                  className="text-gray-600 leading-relaxed grow"
+                  className="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed grow text-center sm:text-left"
                   style={{
                     fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                   }}

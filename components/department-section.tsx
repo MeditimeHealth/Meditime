@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
 interface Department {
   _id: string;
@@ -89,34 +90,59 @@ export default function DepartmentSection() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 flex flex-col items-center text-center cursor-pointer h-full">
-                  {/* Image */}
-                  <div className="mb-4 flex justify-center">
-                    <div className="relative w-20 h-20 flex items-center justify-center">
-                      <Image
-                        src={department.image!}
-                        alt={department.name}
-                        width={80}
-                        height={80}
-                        className="object-contain"
-                      />
+                <Link href={`/departments/${encodeURIComponent(department.name)}`}>
+                  <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 flex flex-col items-center text-center cursor-pointer h-full">
+                    {/* Image */}
+                    <div className="mb-4 flex justify-center">
+                      <div className="relative w-20 h-20 flex items-center justify-center">
+                        <Image
+                          src={department.image!}
+                          alt={department.name}
+                          width={80}
+                          height={80}
+                          className="object-contain"
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Department Name */}
-                  <h3
-                    className="text-base md:text-lg font-bold"
-                    style={{
-                      color: "#1e3a8a",
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
-                  >
-                    {department.name}
-                  </h3>
-                </div>
+                    {/* Department Name */}
+                    <h3
+                      className="text-base md:text-lg font-bold"
+                      style={{
+                        color: "#1e3a8a",
+                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                      }}
+                    >
+                      {department.name}
+                    </h3>
+                  </div>
+                </Link>
               </motion.div>
             ))}
           </div>
+        )}
+
+        {/* View All Departments Button */}
+        {departments.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="mt-12 text-center"
+          >
+            <Link href="/departments">
+              <button
+                className="bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                style={{
+                  fontFamily:
+                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                }}
+              >
+                সকল বিভাগ দেখুন →
+              </button>
+            </Link>
+          </motion.div>
         )}
       </div>
     </div>
