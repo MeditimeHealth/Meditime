@@ -6,6 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Navbar from "@/components/navbar";
 import {
   Star,
@@ -15,6 +17,7 @@ import {
   Award,
   Phone,
   Check,
+  Calendar,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -83,6 +86,8 @@ export default function DoctorProfilePage() {
   const [doctor, setDoctor] = useState<Doctor | null>(null);
   const [relatedDoctors, setRelatedDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedChamber, setSelectedChamber] = useState<string>("");
+  const [affiliateCode, setAffiliateCode] = useState<string>("");
 
   useEffect(() => {
     if (doctorId) {
@@ -283,7 +288,7 @@ export default function DoctorProfilePage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column */}
+          {/* Left Column - Desktop and Tablet */}
           <div className="lg:col-span-2 space-y-6">
             {/* Diseases Treated Section */}
             {doctor.diseases && doctor.diseases.length > 0 && (
@@ -296,23 +301,21 @@ export default function DoctorProfilePage() {
                 >
                   যে সকল রোগের চিকিৎসা করা হয়
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {doctor.diseases.map((disease, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-3 p-4 bg-white rounded-xl border-2 border-primary/10 shadow-md hover:shadow-lg transition-shadow"
-                    >
-                      <Check className="h-6 w-6 text-primary shrink-0" />
-                      <span
-                        className="text-base md:text-lg font-semibold text-gray-800"
+                <div className="bg-white p-6 rounded-xl border-2 border-primary/10 shadow-md">
+                  <ul className="space-y-3">
+                    {doctor.diseases.map((disease, index) => (
+                      <li
+                        key={index}
+                        className="flex items-start gap-3 text-base md:text-lg font-semibold text-gray-800"
                         style={{
                           fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                         }}
                       >
-                        {disease}
-                      </span>
-                    </div>
-                  ))}
+                        <span className="text-primary mt-1">•</span>
+                        <span>{disease}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </Card>
             )}
@@ -341,76 +344,102 @@ export default function DoctorProfilePage() {
               </Card>
             )}
 
-            {/* Related Doctors */}
-            {relatedDoctors.length > 0 && (
-              <Card className="p-8 bg-gradient-to-br from-white to-purple-50 border-2 border-primary/20 shadow-xl">
-                <h2
-                  className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
-                  style={{
-                    fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
-                >
-                  সংশ্লিষ্ট ডাক্তার
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {relatedDoctors.map((relatedDoctor) => (
-                    <Link
-                      key={relatedDoctor._id}
-                      href={`/doctor/${relatedDoctor._id}`}
-                      className="group"
-                    >
-                      <motion.div
-                        whileHover={{ y: -5 }}
-                        className="p-5 bg-white rounded-xl border-2 border-gray-200 hover:border-primary/50 transition-all shadow-md hover:shadow-xl"
+            {/* Related Doctors - Desktop/Tablet */}
+            <div className="hidden md:block">
+              {relatedDoctors.length > 0 && (
+                <Card className="p-8 bg-gradient-to-br from-white to-purple-50 border-2 border-primary/20 shadow-xl">
+                  <h2
+                    className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
+                    style={{
+                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                    }}
+                  >
+                    সংশ্লিষ্ট ডাক্তার
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {relatedDoctors.map((relatedDoctor) => (
+                      <Link
+                        key={relatedDoctor._id}
+                        href={`/doctor/${relatedDoctor._id}`}
+                        className="group"
                       >
-                        <div className="flex items-center gap-4 mb-3">
-                          <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-200 ring-2 ring-primary/20">
-                            {relatedDoctor.image ? (
-                              <Image
-                                src={relatedDoctor.image}
-                                alt={relatedDoctor.name}
-                                fill
-                                className="object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-primary-dark text-white text-2xl font-bold">
-                                {relatedDoctor.name.charAt(0)}
-                              </div>
-                            )}
+                        <motion.div
+                          whileHover={{ y: -5 }}
+                          className="p-5 bg-white rounded-xl border-2 border-gray-200 hover:border-primary/50 transition-all shadow-md hover:shadow-xl"
+                        >
+                          <div className="flex items-center gap-4 mb-3">
+                            <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-200 ring-2 ring-primary/20">
+                              {relatedDoctor.image ? (
+                                <Image
+                                  src={relatedDoctor.image}
+                                  alt={relatedDoctor.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-primary-dark text-white text-2xl font-bold">
+                                  {relatedDoctor.name.charAt(0)}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3
+                                className="text-base md:text-lg font-bold text-gray-900 truncate group-hover:text-primary"
+                                style={{
+                                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                                }}
+                              >
+                                {relatedDoctor.name}
+                              </h3>
+                              <p
+                                className="text-sm md:text-base text-gray-600 truncate"
+                                style={{
+                                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                                }}
+                              >
+                                {[
+                                  relatedDoctor.currentPosition,
+                                  relatedDoctor.qualification,
+                                  relatedDoctor.department
+                                ].filter(Boolean).join(", ")}
+                              </p>
+                            </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <h3
-                              className="text-base md:text-lg font-bold text-gray-900 truncate group-hover:text-primary"
-                              style={{
-                                fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                              }}
-                            >
-                              {relatedDoctor.name}
-                            </h3>
-                            <p
-                              className="text-sm md:text-base text-gray-600 truncate"
-                              style={{
-                                fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                              }}
-                            >
-                              {[
-                                relatedDoctor.currentPosition,
-                                relatedDoctor.qualification,
-                                relatedDoctor.department
-                              ].filter(Boolean).join(", ")}
-                            </p>
-                          </div>
-                        </div>
-                      </motion.div>
-                    </Link>
-                  ))}
-                </div>
-              </Card>
-            )}
+                        </motion.div>
+                      </Link>
+                    ))}
+                  </div>
+                </Card>
+              )}
+            </div>
           </div>
 
-          {/* Right Column */}
-          <div className="space-y-6">
+          {/* Right Column - Desktop */}
+          <div className="hidden lg:block space-y-6">
+            {/* Book Appointment */}
+            <Card className="p-6 bg-gradient-to-br from-white to-emerald-50 border-2 border-primary/20 shadow-xl">
+              <h2
+                className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
+                style={{
+                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                }}
+              >
+                অ্যাপয়েন্টমেন্ট বুক করুন
+              </h2>
+              <div className="space-y-5">
+                <Link href={`/doctor/${doctorId}/book`}>
+                  <Button
+                    className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all"
+                    style={{
+                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                    }}
+                  >
+                    অনলাইনে বুক করুন
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+
             {/* Fees Section */}
             <Card className="p-6 bg-gradient-to-br from-white to-amber-50 border-2 border-primary/20 shadow-xl">
               <h2
@@ -493,7 +522,7 @@ export default function DoctorProfilePage() {
                       {slot.days.map((day, dayIndex) => (
                         <div
                           key={dayIndex}
-                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-full"
                         >
                           <Clock className="h-4 w-4 text-primary shrink-0" />
                           <span
@@ -509,30 +538,6 @@ export default function DoctorProfilePage() {
                     </div>
                   </div>
                 ))}
-              </div>
-            </Card>
-
-            {/* Book Appointment */}
-            <Card className="p-6 bg-gradient-to-br from-white to-emerald-50 border-2 border-primary/20 shadow-xl">
-              <h2
-                className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
-                style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
-              >
-                বুক অ্যাপয়েন্টমেন্ট
-              </h2>
-              <div className="space-y-5">
-                <Link href={`/doctor/${doctorId}/book`}>
-                  <Button
-                    className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
-                  >
-                    অনলাইনে বুক করুন
-                  </Button>
-                </Link>
               </div>
             </Card>
 
@@ -587,6 +592,201 @@ export default function DoctorProfilePage() {
                 </div>
               </Card>
             )} */}
+          </div>
+
+          {/* Mobile Layout - Reordered */}
+          <div className="lg:hidden space-y-6">
+            {/* Fees Section - Mobile */}
+            <Card className="p-6 bg-gradient-to-br from-white to-amber-50 border-2 border-primary/20 shadow-xl">
+              <h2
+                className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
+                style={{
+                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                }}
+              >
+                ডাক্তারের পরামর্শ ফি
+              </h2>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-5 bg-white rounded-xl border-2 border-primary/10 shadow-md">
+                  <span
+                    className="text-base md:text-lg font-bold text-gray-800"
+                    style={{
+                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                    }}
+                  >
+                    নতুন রোগী
+                  </span>
+                  <span
+                    className="text-xl md:text-2xl font-bold text-primary"
+                    style={{
+                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                    }}
+                  >
+                    ৳{newPatientFee}
+                  </span>
+                </div>
+                {oldPatientFee && (
+                  <div className="flex items-center justify-between p-5 bg-white rounded-xl border-2 border-primary/10 shadow-md">
+                    <span
+                      className="text-base md:text-lg font-bold text-gray-800"
+                      style={{
+                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                      }}
+                    >
+                      পুরাতন রোগী
+                    </span>
+                    <span
+                      className="text-xl md:text-2xl font-bold text-primary"
+                      style={{
+                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                      }}
+                    >
+                      ৳{oldPatientFee}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            {/* Chamber Schedule - Mobile */}
+            <Card className="p-6 bg-gradient-to-br from-white to-indigo-50 border-2 border-primary/20 shadow-xl">
+              <h2
+                className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
+                style={{
+                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                }}
+              >
+                চেম্বার সময়সূচী
+              </h2>
+              <div className="space-y-5">
+                {availabilityArray.map((slot, index) => (
+                  <div key={index} className="bg-white p-5 rounded-xl border-2 border-primary/10 shadow-md last:mb-0">
+                    {slot.chamber && (
+                      <div className="flex items-center gap-2 mb-4">
+                        <MapPin className="h-5 w-5 text-primary shrink-0" />
+                        <p
+                          className="text-base md:text-lg font-bold text-gray-800"
+                          style={{
+                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                          }}
+                        >
+                          {slot.chamber}
+                        </p>
+                      </div>
+                    )}
+                    <div className="space-y-2">
+                      {slot.days.map((day, dayIndex) => (
+                        <div
+                          key={dayIndex}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-full"
+                        >
+                          <Clock className="h-4 w-4 text-primary shrink-0" />
+                          <span
+                            className="text-sm md:text-base font-semibold text-gray-700"
+                            style={{
+                              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            }}
+                          >
+                            {getBengaliDay(day)}: {slot.startTime} - {slot.endTime}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Book Appointment - Mobile */}
+            <Card className="p-6 bg-gradient-to-br from-white to-emerald-50 border-2 border-primary/20 shadow-xl">
+              <h2
+                className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
+                style={{
+                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                }}
+              >
+                অ্যাপয়েন্টমেন্ট বুক করুন
+              </h2>
+              <div className="space-y-5">
+                <Link href={`/doctor/${doctorId}/book`}>
+                  <Button
+                    className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all"
+                    style={{
+                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                    }}
+                  >
+                    অনলাইনে বুক করুন
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+
+            {/* Related Doctors - Mobile (shown after Book Appointment) */}
+            {relatedDoctors.length > 0 && (
+              <Card className="p-8 bg-gradient-to-br from-white to-purple-50 border-2 border-primary/20 shadow-xl">
+                <h2
+                  className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
+                  style={{
+                    fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                  }}
+                >
+                  সংশ্লিষ্ট ডাক্তার
+                </h2>
+                <div className="grid grid-cols-1 gap-5">
+                  {relatedDoctors.map((relatedDoctor) => (
+                    <Link
+                      key={relatedDoctor._id}
+                      href={`/doctor/${relatedDoctor._id}`}
+                      className="group"
+                    >
+                      <motion.div
+                        whileHover={{ y: -5 }}
+                        className="p-5 bg-white rounded-xl border-2 border-gray-200 hover:border-primary/50 transition-all shadow-md hover:shadow-xl"
+                      >
+                        <div className="flex items-center gap-4 mb-3">
+                          <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-200 ring-2 ring-primary/20">
+                            {relatedDoctor.image ? (
+                              <Image
+                                src={relatedDoctor.image}
+                                alt={relatedDoctor.name}
+                                fill
+                                className="object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-primary-dark text-white text-2xl font-bold">
+                                {relatedDoctor.name.charAt(0)}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3
+                              className="text-base md:text-lg font-bold text-gray-900 truncate group-hover:text-primary"
+                              style={{
+                                fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                              }}
+                            >
+                              {relatedDoctor.name}
+                            </h3>
+                            <p
+                              className="text-sm md:text-base text-gray-600 truncate"
+                              style={{
+                                fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                              }}
+                            >
+                              {[
+                                relatedDoctor.currentPosition,
+                                relatedDoctor.qualification,
+                                relatedDoctor.department
+                              ].filter(Boolean).join(", ")}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </Link>
+                  ))}
+                </div>
+              </Card>
+            )}
           </div>
         </div>
       </div>

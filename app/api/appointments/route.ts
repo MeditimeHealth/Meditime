@@ -44,6 +44,33 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// Generate unique serial number
+async function generateSerialNumber(): Promise<string> {
+  const today = new Date();
+  const year = today.getFullYear().toString().slice(-2);
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const prefix = `MT${year}${month}${day}`;
+  
+  // Find the last appointment for today to get the next sequence number
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+  
+  const lastAppointment = await Appointment.findOne({
+    serialNumber: { $regex: `^${prefix}` }
+  }).sort({ serialNumber: -1 });
+  
+  let sequence = 1;
+  if (lastAppointment && lastAppointment.serialNumber) {
+    const lastSequence = parseInt(lastAppointment.serialNumber.slice(-4));
+    if (!isNaN(lastSequence)) {
+      sequence = lastSequence + 1;
+    }
+  }
+  
+  return `${prefix}${String(sequence).padStart(4, '0')}`;
+}
+
 // POST - Create a new appointment
 export async function POST(request: NextRequest) {
   try {
@@ -97,9 +124,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Generate unique serial number
+    const serialNumber = await generateSerialNumber();
+
     // Create appointment
     const appointment = await Appointment.create({
       doctorId,
+      serialNumber,
       patientName,
       mobileNumber,
       gender: gender || undefined,

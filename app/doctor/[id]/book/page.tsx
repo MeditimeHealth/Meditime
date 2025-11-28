@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/navbar";
-import { ArrowLeft, MapPin, Loader2 } from "lucide-react";
+import { ArrowLeft, MapPin, Loader2, RotateCcw, ChevronDown, Ticket } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "@/lib/toast";
 
@@ -406,39 +406,55 @@ export default function BookAppointmentPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Calendar */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Chamber Selection */}
+            {/* Chamber Selection - Dropdown */}
             <Card className="p-6 bg-gradient-to-br from-white to-blue-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-2xl font-bold text-gray-900 mb-5"
                 style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
               >
-                চেম্বার নির্বাচন করুন
+                চেম্বার নির্বাচন করুন <span className="text-red-500">*</span>
               </h2>
-              <div className="space-y-3">
+              <div className="relative">
                 {availableChambers.length > 0 ? (
-                  availableChambers.map((chamber, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedChamber(chamber)}
-                      className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
-                        selectedChamber === chamber
-                          ? "bg-primary text-white border-primary shadow-lg"
-                          : "bg-white border-primary/20 hover:border-primary/50"
-                      }`}
+                  <div className="relative">
+                    <select
+                      value={selectedChamber}
+                      onChange={(e) => setSelectedChamber(e.target.value)}
+                      className={`w-full p-4 pr-12 rounded-xl border-2 transition-all appearance-none cursor-pointer text-lg font-semibold
+                        ${selectedChamber 
+                          ? "bg-primary text-white border-primary shadow-lg" 
+                          : "bg-white border-primary/20 hover:border-primary/50 text-gray-700"
+                        }`}
                       style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                     >
-                      <div className="flex items-center gap-3">
-                        <MapPin className="h-5 w-5" />
-                        <span className="font-semibold text-lg">{chamber}</span>
-                      </div>
-                    </button>
-                  ))
+                      <option value="" className="text-gray-700 bg-white">চেম্বার নির্বাচন করুন</option>
+                      {availableChambers.map((chamber, index) => (
+                        <option key={index} value={chamber} className="text-gray-700 bg-white">
+                          {chamber}
+                        </option>
+                      ))}
+                    </select>
+                    <div className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${selectedChamber ? 'text-white' : 'text-gray-500'}`}>
+                      <ChevronDown className="h-6 w-6" />
+                    </div>
+                    <div className={`absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none ${selectedChamber ? 'text-white' : 'text-primary'}`}>
+                     
+                    </div>
+                  </div>
                 ) : (
-                  <p className="text-gray-500" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                  <p className="text-gray-500 p-4 bg-gray-50 rounded-xl" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
                     কোন চেম্বার পাওয়া যায়নি
                   </p>
                 )}
               </div>
+              {selectedChamber && (
+                <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-xl">
+                  <p className="text-green-700 font-medium flex items-center gap-2" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                    <MapPin className="h-4 w-4" />
+                    নির্বাচিত চেম্বার: {selectedChamber}
+                  </p>
+                </div>
+              )}
             </Card>
 
             {/* Calendar */}
@@ -509,15 +525,15 @@ export default function BookAppointmentPage() {
                           }
                         }}
                         disabled={!isAvailable}
-                        className={`aspect-square rounded-lg transition-all font-semibold ${
+                        className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center ${
                           isSelected
-                            ? "text-white shadow-lg scale-105"
+                            ? "text-white shadow-lg scale-110 ring-4 ring-orange-300"
                             : isAvailable
-                            ? "bg-primary text-white border-2 border-primary hover:bg-primary/90 hover:shadow-md"
+                            ? "bg-primary text-white border-2 border-primary hover:bg-primary/90 hover:shadow-md hover:scale-105"
                             : isInScheduleButNotAvailable
                             ? "bg-blue-100 text-blue-700 border-2 border-blue-300 cursor-not-allowed opacity-75"
                             : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        } ${isToday && !isSelected && !isAvailable ? "ring-2 ring-gray-300" : ""}`}
+                        } ${isToday && !isSelected && !isAvailable ? "ring-2 ring-gray-400" : ""}`}
                         style={{ 
                           fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           backgroundColor: isSelected ? "#ff5e29" : undefined
@@ -546,17 +562,46 @@ export default function BookAppointmentPage() {
           {/* Right Column - Form */}
           <div className="space-y-6">
             <Card className="p-6 bg-gradient-to-br from-white to-amber-50 border-2 border-primary/20 shadow-xl">
-              <h2
-                className="text-2xl font-bold text-gray-900 mb-5"
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-              >
-                রোগীর তথ্য
-              </h2>
+              <div className="flex items-center justify-between mb-5">
+                <h2
+                  className="text-2xl font-bold text-gray-900"
+                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                >
+                  রোগীর তথ্য
+                </h2>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setPatientName("");
+                    setMobileNumber("");
+                    setGender("");
+                    setAge("");
+                    setPatientType("new");
+                    setAffiliateCode("");
+                  }}
+                  className="flex items-center gap-2 text-gray-600 hover:text-primary hover:border-primary"
+                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  মুছুন
+                </Button>
+              </div>
+
+              {/* Required fields notice */}
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600 flex items-center gap-2" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                  <span className="text-red-500 font-bold">*</span>
+                  চিহ্নিত ঘরগুলো অবশ্যই পূরণ করতে হবে
+                </p>
+              </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Patient Name - Required */}
                 <div>
-                  <Label htmlFor="patientName" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
-                    রোগীর নাম *
+                  <Label htmlFor="patientName" className="flex items-center gap-1" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                    রোগীর নাম <span className="text-red-500 font-bold">*</span>
                   </Label>
                   <Input
                     id="patientName"
@@ -564,13 +609,14 @@ export default function BookAppointmentPage() {
                     onChange={(e) => setPatientName(e.target.value)}
                     required
                     placeholder="রোগীর নাম লিখুন"
-                    className="mt-1"
+                    className={`mt-1 border-2 ${!patientName ? 'border-red-300 bg-red-50/50' : 'border-green-300 bg-green-50/30'}`}
                   />
                 </div>
 
+                {/* Mobile Number - Required */}
                 <div>
-                  <Label htmlFor="mobileNumber" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
-                    মোবাইল নম্বর *
+                  <Label htmlFor="mobileNumber" className="flex items-center gap-1" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                    মোবাইল নম্বর <span className="text-red-500 font-bold">*</span>
                   </Label>
                   <Input
                     id="mobileNumber"
@@ -579,10 +625,11 @@ export default function BookAppointmentPage() {
                     onChange={(e) => setMobileNumber(e.target.value)}
                     required
                     placeholder="মোবাইল নম্বর লিখুন"
-                    className="mt-1"
+                    className={`mt-1 border-2 ${!mobileNumber ? 'border-red-300 bg-red-50/50' : 'border-green-300 bg-green-50/30'}`}
                   />
                 </div>
 
+                {/* Gender - Optional */}
                 <div>
                   <Label htmlFor="gender" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
                     লিঙ্গ
@@ -591,16 +638,17 @@ export default function BookAppointmentPage() {
                     id="gender"
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="mt-1 w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white"
                     style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                   >
                     <option value="">লিঙ্গ নির্বাচন করুন</option>
                     <option value="male">পুরুষ</option>
                     <option value="female">মহিলা</option>
-                    <option value="other">অন্যান্য</option>
+                
                   </select>
                 </div>
 
+                {/* Age - Optional */}
                 <div>
                   <Label htmlFor="age" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
                     বয়স
@@ -611,27 +659,33 @@ export default function BookAppointmentPage() {
                     value={age}
                     onChange={(e) => setAge(e.target.value)}
                     placeholder="বয়স লিখুন"
-                    className="mt-1"
+                    className="mt-1 border-2 border-gray-200"
                     min="0"
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="affiliateCode" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
-                    অ্যাফিলিয়েট কোড (ঐচ্ছিক)
+                {/* Affiliate Code - with Serial Input Option */}
+                <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200">
+                  <Label htmlFor="affiliateCode" className="flex items-center gap-2 text-purple-700" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                    <Ticket className="h-4 w-4" />
+                    সিরিয়াল/অ্যাফিলিয়েট কোড (ঐচ্ছিক)
                   </Label>
                   <Input
                     id="affiliateCode"
                     value={affiliateCode}
                     onChange={(e) => setAffiliateCode(e.target.value.toUpperCase())}
-                    placeholder="অ্যাফিলিয়েট কোড লিখুন"
-                    className="mt-1"
+                    placeholder="সিরিয়াল বা অ্যাফিলিয়েট কোড লিখুন"
+                    className="mt-2 border-2 border-purple-300 focus:border-purple-500 bg-white"
                   />
+                  <p className="mt-2 text-xs text-purple-600" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                    রেফারেল কোড থাকলে এখানে লিখুন
+                  </p>
                 </div>
 
+                {/* Patient Type - Required */}
                 <div>
-                  <Label style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
-                    রোগীর ধরন *
+                  <Label className="flex items-center gap-1" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                    রোগীর ধরন <span className="text-red-500 font-bold">*</span>
                   </Label>
                   <div className="mt-2 space-y-2">
                     {[
@@ -641,11 +695,11 @@ export default function BookAppointmentPage() {
                     ].map((type) => (
                       <label
                         key={type.value}
-                        className="flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all hover:bg-primary/5"
-                        style={{
-                          borderColor: patientType === type.value ? "rgb(239 68 68)" : "rgb(229 231 235)",
-                          backgroundColor: patientType === type.value ? "rgb(254 242 242)" : "white",
-                        }}
+                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all hover:bg-primary/5 ${
+                          patientType === type.value 
+                            ? "border-primary bg-primary/10 shadow-sm" 
+                            : "border-gray-200 bg-white"
+                        }`}
                       >
                         <input
                           type="radio"
@@ -653,7 +707,7 @@ export default function BookAppointmentPage() {
                           value={type.value}
                           checked={patientType === type.value}
                           onChange={(e) => setPatientType(e.target.value as "old" | "new" | "report")}
-                          className="w-4 h-4 text-primary"
+                          className="w-4 h-4 text-primary accent-primary"
                         />
                         <span style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
                           {type.label}
@@ -663,15 +717,26 @@ export default function BookAppointmentPage() {
                   </div>
                 </div>
 
+                {/* Validation Warning */}
+                {(!selectedChamber || !selectedDate) && (
+                  <div className="p-3 bg-yellow-50 border border-yellow-300 rounded-lg">
+                    <p className="text-sm text-yellow-700" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                      {!selectedChamber && "⚠️ চেম্বার নির্বাচন করুন"}
+                      {!selectedChamber && !selectedDate && " এবং "}
+                      {!selectedDate && "⚠️ তারিখ নির্বাচন করুন"}
+                    </p>
+                  </div>
+                )}
+
                 <Button
                   type="submit"
-                  disabled={!selectedChamber || !selectedDate || submitting}
-                  className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all"
+                  disabled={!selectedChamber || !selectedDate || !patientName || !mobileNumber || submitting}
+                  className="w-full bg-gradient-to-r from-primary to-orange-600 hover:from-orange-600 hover:to-primary text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
                   {submitting ? (
                     <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
                       বুক করা হচ্ছে...
                     </>
                   ) : (
