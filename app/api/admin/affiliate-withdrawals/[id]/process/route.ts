@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import AffiliateWithdrawal from '@/models/AffiliateWithdrawal';
-import Affiliate from '@/models/Affiliate';
 
 // PUT - Process withdrawal request (approve or reject)
 export async function PUT(
@@ -41,36 +40,15 @@ export async function PUT(
     }
 
     if (action === 'approve') {
-      // Check affiliate balance
-      const affiliate = await Affiliate.findById(withdrawal.affiliateId);
-      if (!affiliate) {
-        return NextResponse.json(
-          { error: 'Affiliate not found' },
-          { status: 404 }
-        );
-      }
-
-      if (affiliate.walletBalance < withdrawal.amount) {
-        return NextResponse.json(
-          { error: 'Insufficient balance in affiliate wallet' },
-          { status: 400 }
-        );
-      }
-
-      // Approve withdrawal
+      // Approve withdrawal (wallet was already deducted at request time)
       withdrawal.status = 'approved';
       withdrawal.processedBy = adminId;
       withdrawal.processedAt = new Date();
       withdrawal.notes = notes;
       await withdrawal.save();
 
-      // Deduct from wallet
-      affiliate.walletBalance -= withdrawal.amount;
-      affiliate.totalWithdrawn = (affiliate.totalWithdrawn || 0) + withdrawal.amount;
-      await affiliate.save();
-
       return NextResponse.json({
-        message: 'Withdrawal approved and processed successfully',
+        message: 'Withdrawal approved successfully',
         withdrawal,
       });
     } else {

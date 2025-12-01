@@ -22,7 +22,8 @@ import {
   Clock,
   Wallet,
   Camera,
-  FileText
+  FileText,
+  DollarSign
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -114,10 +115,15 @@ const menuItems = [
     icon: Settings,
     href: "/admin/settings",
   },
+  // {
+  //   title: "Affiliate Management",
+  //   icon: Users,
+  //   href: "/admin/affiliate-management",
+  // },
   {
-    title: "Affiliate Management",
-    icon: Users,
-    href: "/admin/affiliate-management",
+    title: "Affiliate Withdrawals",
+    icon: DollarSign,
+    href: "/admin/affiliate-withdrawals",
   },
   {
     title: "Photo Requests",

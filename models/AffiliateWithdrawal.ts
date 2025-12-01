@@ -3,12 +3,12 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IAffiliateWithdrawal extends Document {
   affiliateId: mongoose.Types.ObjectId;
   amount: number;
-  patientName: string;
-  patientPhone: string;
-  hospitalName: string;
-  proofPhotos: string[];
-  paymentMethod: string;
-  paymentDetails: string;
+  patientName?: string;
+  patientPhone?: string;
+  hospitalName?: string;
+  proofPhotos?: string[];
+  paymentMethod?: string;
+  paymentDetails?: string;
   status: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string;
   processedBy?: mongoose.Types.ObjectId;
@@ -32,37 +32,25 @@ const AffiliateWithdrawalSchema: Schema = new Schema(
     },
     patientName: {
       type: String,
-      required: [true, 'Patient name is required'],
       trim: true,
     },
     patientPhone: {
       type: String,
-      required: [true, 'Patient phone is required'],
       trim: true,
     },
     hospitalName: {
       type: String,
-      required: [true, 'Hospital name is required'],
       trim: true,
     },
     proofPhotos: {
       type: [String],
-      required: [true, 'At least one proof photo is required'],
-      validate: {
-        validator: function(v: string[]) {
-          return v && v.length > 0;
-        },
-        message: 'At least one proof photo is required',
-      },
     },
     paymentMethod: {
       type: String,
-      required: [true, 'Payment method is required'],
       trim: true,
     },
     paymentDetails: {
       type: String,
-      required: [true, 'Payment details are required'],
       trim: true,
     },
     status: {

@@ -32,13 +32,34 @@ export default function WithdrawalRequestPage() {
 
   // Form state
   const [amount, setAmount] = useState("");
-  const [patientName, setPatientName] = useState("");
-  const [patientPhone, setPatientPhone] = useState("");
-  const [hospitalName, setHospitalName] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [paymentDetails, setPaymentDetails] = useState("");
-  const [photos, setPhotos] = useState<string[]>([]);
-  const [uploading, setUploading] = useState(false);
+  const [notes, setNotes] = useState("");
+
+  // Fetch latest wallet balance from server to avoid stale localStorage data
+  const fetchWalletData = async (code: string, baseAffiliate: Affiliate) => {
+    try {
+      const response = await fetch(`/api/affiliate/wallet?affiliateCode=${code}`);
+      const data = await response.json();
+
+      if (response.ok && data.wallet) {
+        const updatedAffiliate: Affiliate = {
+          ...baseAffiliate,
+          walletBalance: data.wallet.balance || 0,
+        };
+
+        setAffiliate(updatedAffiliate);
+        // Keep localStorage in sync so other pages see the correct balance
+        localStorage.setItem("affiliate", JSON.stringify(updatedAffiliate));
+      } else {
+        // If wallet API fails, at least keep the basic affiliate info
+        setAffiliate(baseAffiliate);
+      }
+    } catch (error) {
+      console.error("Error fetching wallet data:", error);
+      setAffiliate(baseAffiliate);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     // Check if affiliate is logged in
@@ -50,55 +71,19 @@ export default function WithdrawalRequestPage() {
 
     try {
       const parsedData = JSON.parse(affiliateData);
-      setAffiliate(parsedData);
+      // Always use latest wallet balance from backend if possible
+      if (parsedData.affiliateCode) {
+        fetchWalletData(parsedData.affiliateCode, parsedData);
+      } else {
+        setAffiliate(parsedData);
+        setLoading(false);
+      }
     } catch (error) {
       console.error("Error parsing affiliate data:", error);
       localStorage.removeItem("affiliate");
       router.push("/affiliate-program");
-    } finally {
-      setLoading(false);
     }
   }, [router]);
-
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    try {
-      setUploading(true);
-      const uploadedUrls: string[] = [];
-
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const response = await fetch("/api/upload/image", {
-          method: "POST",
-          body: formData,
-        });
-
-        const data = await response.json();
-        if (response.ok && data.url) {
-          uploadedUrls.push(data.url);
-        } else {
-          showToast.error(`Failed to upload ${file.name}`);
-        }
-      }
-
-      setPhotos([...photos, ...uploadedUrls]);
-      showToast.success("Photos uploaded successfully!");
-    } catch (error) {
-      console.error("Error uploading photos:", error);
-      showToast.error("Failed to upload photos");
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const removePhoto = (index: number) => {
-    setPhotos(photos.filter((_, i) => i !== index));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,11 +103,6 @@ export default function WithdrawalRequestPage() {
       return;
     }
 
-    if (photos.length === 0) {
-      showToast.error("Please upload at least one proof photo");
-      return;
-    }
-
     try {
       setSubmitting(true);
       const response = await fetch("/api/affiliate/withdrawal", {
@@ -133,12 +113,7 @@ export default function WithdrawalRequestPage() {
         body: JSON.stringify({
           affiliateCode: affiliate.affiliateCode,
           amount: requestedAmount,
-          patientName,
-          patientPhone,
-          hospitalName,
-          proofPhotos: photos,
-          paymentMethod,
-          paymentDetails,
+          notes,
         }),
       });
 
@@ -217,140 +192,19 @@ export default function WithdrawalRequestPage() {
                 </p>
               </div>
 
-              {/* Patient Information */}
-              <div className="p-4 bg-gray-50 rounded-lg space-y-4">
+              {/* Notes */}
+              <div className="p-4 bg-gray-50 rounded-lg space-y-2">
                 <h3 className="font-semibold text-gray-900">
-                  Service Details
+                  Additional Notes (Optional)
                 </h3>
-
-                <div>
-                  <Label htmlFor="patientName">Patient Name *</Label>
-                  <Input
-                    id="patientName"
-                    value={patientName}
-                    onChange={(e) => setPatientName(e.target.value)}
-                    placeholder="Enter patient name"
-                    className="mt-1"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="patientPhone">Patient Phone Number *</Label>
-                  <Input
-                    id="patientPhone"
-                    type="tel"
-                    value={patientPhone}
-                    onChange={(e) => setPatientPhone(e.target.value)}
-                    placeholder="Enter phone number"
-                    className="mt-1"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="hospitalName">Hospital Name *</Label>
-                  <Input
-                    id="hospitalName"
-                    value={hospitalName}
-                    onChange={(e) => setHospitalName(e.target.value)}
-                    placeholder="Enter hospital name"
-                    className="mt-1"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Payment Information */}
-              <div className="p-4 bg-gray-50 rounded-lg space-y-4">
-                <h3 className="font-semibold text-gray-900">
-                  Payment Information
-                </h3>
-
-                <div>
-                  <Label htmlFor="paymentMethod">Payment Method *</Label>
-                  <select
-                    id="paymentMethod"
-                    value={paymentMethod}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                    required
-                  >
-                    <option value="">Select payment method</option>
-                    <option value="bKash">bKash</option>
-                    <option value="Nagad">Nagad</option>
-                    <option value="Rocket">Rocket</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-
-                <div>
-                  <Label htmlFor="paymentDetails">
-                    Payment Details (Account Number/Bank Details) *
-                  </Label>
-                  <textarea
-                    id="paymentDetails"
-                    value={paymentDetails}
-                    onChange={(e) => setPaymentDetails(e.target.value)}
-                    placeholder="Enter your account number, bank name, or other payment details..."
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                    rows={3}
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Photo Upload */}
-              <div>
-                <Label>Proof Photos * (Service proof, prescription, etc.)</Label>
-                <div className="mt-2 space-y-2">
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handlePhotoUpload}
-                      className="hidden"
-                      id="photo-upload"
-                      disabled={uploading}
-                    />
-                    <label
-                      htmlFor="photo-upload"
-                      className="cursor-pointer flex flex-col items-center gap-2"
-                    >
-                      <Upload className="h-8 w-8 text-gray-400" />
-                      <span className="text-sm text-gray-600">
-                        {uploading ? "Uploading..." : "Click to upload photos"}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        Any image format accepted
-                      </span>
-                    </label>
-                  </div>
-
-                  {/* Photo Preview */}
-                  {photos.length > 0 && (
-                    <div className="grid grid-cols-3 gap-2">
-                      {photos.map((photo, index) => (
-                        <div key={index} className="relative group">
-                          <img
-                            src={photo}
-                            alt={`Proof ${index + 1}`}
-                            className="w-full h-24 object-cover rounded-lg border-2 border-gray-200"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removePhoto(index)}
-                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <textarea
+                  id="notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Add any notes for the admin (optional)..."
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  rows={3}
+                />
               </div>
 
               {/* Info Alert */}
@@ -360,7 +214,8 @@ export default function WithdrawalRequestPage() {
                   <p className="font-semibold mb-1">Important:</p>
                   <ul className="list-disc list-inside space-y-1">
                     <li>Your withdrawal request will be reviewed by our admin team</li>
-                    <li>Please provide accurate service details and proof photos</li>
+                    <li>The requested amount will be deducted from your wallet immediately after submitting the request</li>
+                    <li>You can only request up to your current wallet balance</li>
                     <li>Processing may take 2-5 business days</li>
                   </ul>
                 </div>
@@ -378,7 +233,7 @@ export default function WithdrawalRequestPage() {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={submitting || uploading || photos.length === 0}
+                  disabled={submitting}
                   className="flex-1 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary"
                 >
                   {submitting ? (

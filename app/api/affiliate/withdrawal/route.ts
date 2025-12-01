@@ -19,12 +19,13 @@ export async function POST(request: NextRequest) {
       proofPhotos,
       paymentMethod,
       paymentDetails,
+      notes,
     } = body;
 
-    // Validate required fields
-    if (!affiliateCode || !amount || !patientName || !patientPhone || !hospitalName || !proofPhotos || !paymentMethod || !paymentDetails) {
+    // Basic validation
+    if (!affiliateCode || !amount) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Affiliate code and amount are required' },
         { status: 400 }
       );
     }
@@ -47,15 +48,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const currentBalance = affiliate.walletBalance || 0;
+
     // Check balance
-    if ((affiliate.walletBalance || 0) < amount) {
+    if (currentBalance < amount) {
       return NextResponse.json(
-        { error: 'Insufficient balance. Your current balance is ৳' + (affiliate.walletBalance || 0) },
+        { error: 'Insufficient balance. Your current balance is ৳' + currentBalance },
         { status: 400 }
       );
     }
 
-    // Create withdrawal request
+    // Immediately deduct from wallet at request time
+    affiliate.walletBalance = currentBalance - amount;
+    affiliate.totalWithdrawn = (affiliate.totalWithdrawn || 0) + amount;
+    await affiliate.save();
+
+    // Create withdrawal request (admin will only approve/reject, no more balance changes)
     const withdrawal = await AffiliateWithdrawal.create({
       affiliateId: affiliate._id,
       amount,
@@ -65,6 +73,7 @@ export async function POST(request: NextRequest) {
       proofPhotos,
       paymentMethod,
       paymentDetails,
+      notes,
       status: 'pending',
     });
 

@@ -192,47 +192,61 @@ export default function AffiliateWithdrawalsPage() {
               <p className="text-gray-500">No withdrawal requests found</p>
             </Card>
           ) : (
-            withdrawals.map((withdrawal) => (
-              <Card
-                key={withdrawal._id}
-                className={`p-4 cursor-pointer transition-all hover:shadow-lg ${
-                  selectedWithdrawal?._id === withdrawal._id 
-                    ? 'border-2 border-primary bg-primary/5' 
-                    : ''
-                }`}
-                onClick={() => setSelectedWithdrawal(withdrawal)}
-              >
-                <div className="space-y-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-lg">
-                        {withdrawal.affiliateId.name} ({withdrawal.affiliateId.affiliateCode})
-                      </h3>
-                      <p className="text-sm text-gray-600">{withdrawal.affiliateId.email}</p>
-                    </div>
+            withdrawals.map((withdrawal) => {
+              const affiliate = withdrawal.affiliateId;
+              
+              return (
+                <Card
+                  key={withdrawal._id}
+                  className={`p-4 cursor-pointer transition-all hover:shadow-lg ${
+                    selectedWithdrawal?._id === withdrawal._id 
+                      ? 'border-2 border-primary bg-primary/5' 
+                      : ''
+                  }`}
+                  onClick={() => setSelectedWithdrawal(withdrawal)}
+                >
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-semibold text-lg">
+                          {affiliate ? (
+                            <>
+                              {affiliate.name} ({affiliate.affiliateCode})
+                            </>
+                          ) : (
+                            "Unknown affiliate"
+                          )}
+                        </h3>
+                        {affiliate && (
+                          <p className="text-sm text-gray-600">{affiliate.email}</p>
+                        )}
+                      </div>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(withdrawal.status)}`}>
                       {withdrawal.status.toUpperCase()}
                     </span>
                   </div>
 
-                  <div className="pt-2 border-t">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Requested Amount:</span>
-                      <span className="text-xl font-bold text-primary">৳{withdrawal.amount.toFixed(2)}</span>
+                    <div className="pt-2 border-t">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Requested Amount:</span>
+                        <span className="text-xl font-bold text-primary">৳{withdrawal.amount.toFixed(2)}</span>
+                      </div>
+                      {affiliate && (
+                        <div className="flex justify-between items-center mt-1">
+                          <span className="text-sm text-gray-600">Current Balance:</span>
+                          <span className="text-sm font-medium">৳{affiliate.walletBalance.toFixed(2)}</span>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex justify-between items-center mt-1">
-                      <span className="text-sm text-gray-600">Current Balance:</span>
-                      <span className="text-sm font-medium">৳{withdrawal.affiliateId.walletBalance.toFixed(2)}</span>
-                    </div>
-                  </div>
 
-                  <div className="text-xs text-gray-500 flex items-center gap-2">
-                    <Calendar className="h-3 w-3" />
-                    {formatDate(withdrawal.createdAt)}
+                    <div className="text-xs text-gray-500 flex items-center gap-2">
+                      <Calendar className="h-3 w-3" />
+                      {formatDate(withdrawal.createdAt)}
+                    </div>
                   </div>
-                </div>
-              </Card>
-            ))
+                </Card>
+              );
+            })
           )}
         </div>
 
@@ -262,20 +276,28 @@ export default function AffiliateWithdrawalsPage() {
                 <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
                   <h3 className="font-semibold text-sm text-gray-700">Affiliate Information</h3>
                   <div className="space-y-1 text-sm">
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-gray-600" />
-                      <span>{selectedWithdrawal.affiliateId.name}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-gray-600" />
-                      <span>{selectedWithdrawal.affiliateId.phoneNumber}</span>
-                    </div>
-                    <div className="text-xs text-gray-600">
-                      Code: {selectedWithdrawal.affiliateId.affiliateCode}
-                    </div>
-                    <div className="text-xs text-gray-600">
-                      Wallet Balance: ৳{selectedWithdrawal.affiliateId.walletBalance.toFixed(2)}
-                    </div>
+                    {selectedWithdrawal.affiliateId ? (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4 text-gray-600" />
+                          <span>{selectedWithdrawal.affiliateId.name}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-gray-600" />
+                          <span>{selectedWithdrawal.affiliateId.phoneNumber}</span>
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          Code: {selectedWithdrawal.affiliateId.affiliateCode}
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          Wallet Balance: ৳{selectedWithdrawal.affiliateId.walletBalance.toFixed(2)}
+                        </div>
+                      </>
+                    ) : (
+                      <p className="text-sm text-gray-500">
+                        Affiliate information not available (record not linked).
+                      </p>
+                    )}
                   </div>
                 </div>
 

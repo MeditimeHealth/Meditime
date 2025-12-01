@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import './Appointment'; // Ensure Appointment schema is registered for populate
 
 export interface IAffiliateCommission extends Document {
   appointmentId: mongoose.Types.ObjectId;

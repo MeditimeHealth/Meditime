@@ -60,7 +60,7 @@ export default function AdminDashboard() {
 
       <Card className="p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <a
             href="/admin/doctors/create"
             className="p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors"
@@ -74,6 +74,15 @@ export default function AdminDashboard() {
           >
             <h3 className="font-medium text-gray-900">Manage Doctors</h3>
             <p className="text-sm text-gray-600 mt-1">View and edit existing doctor profiles</p>
+          </a>
+          <a
+            href="/admin/affiliate-withdrawals"
+            className="p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors"
+          >
+            <h3 className="font-medium text-gray-900">Affiliate Withdrawal Requests</h3>
+            <p className="text-sm text-gray-600 mt-1">
+              View and process affiliate withdrawal requests
+            </p>
           </a>
         </div>
       </Card>
