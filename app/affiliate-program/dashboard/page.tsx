@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -38,6 +38,10 @@ import {
   BarChart3,
   PieChart as PieChartIcon,
   RefreshCw,
+  Filter,
+  TrendingDown as TrendingDownIcon,
+  Upload,
+  Image as ImageIcon,
 } from "lucide-react";
 import { FiActivity } from "react-icons/fi";
 import { HiOutlineChartBar } from "react-icons/hi";
@@ -126,8 +130,40 @@ interface AffiliateRequest {
   patientPhone: string;
   doctorName: string;
   hospitalName: string;
+  proofPhoto?: string;
+  proofPhotos?: string[];
+  appointmentId?: string;
+  commissionAmount?: number;
   status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
+}
+
+interface ReferralPatient {
+  _id: string;
+  serialNumber?: string;
+  patientName: string;
+  mobileNumber: string;
+  gender?: string;
+  age?: number;
+  patientType: 'old' | 'new' | 'report';
+  chamberName: string;
+  appointmentDate: string;
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  createdAt: string;
+  doctorId?: {
+    name: string;
+    qualification: string;
+    department?: string;
+    hospital?: string;
+  };
+}
+
+interface ReferralStats {
+  total: number;
+  pending: number;
+  confirmed: number;
+  completed: number;
+  cancelled: number;
 }
 
 export default function EnhancedAffiliateDashboard() {
@@ -135,8 +171,16 @@ export default function EnhancedAffiliateDashboard() {
   const [commissions, setCommissions] = useState<Commission[]>([]);
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
   const [requests, setRequests] = useState<AffiliateRequest[]>([]);
+  const [referralPatients, setReferralPatients] = useState<ReferralPatient[]>([]);
+  const [referralStats, setReferralStats] = useState<ReferralStats | null>(null);
+  const [referralLoading, setReferralLoading] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'commissions' | 'withdrawals' | 'profile' | 'requests'>('overview');
+  const [reports, setReports] = useState<any>(null);
+  const [reportsLoading, setReportsLoading] = useState(false);
+  const [reportType, setReportType] = useState<'all' | 'monthly' | 'daily' | 'pending' | 'paid'>('all');
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [activeTab, setActiveTab] = useState<'overview' | 'commissions' | 'withdrawals' | 'profile' | 'requests' | 'reports' | 'referrals'>('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
 
@@ -166,6 +210,17 @@ export default function EnhancedAffiliateDashboard() {
     hospitalName: '',
   });
   const [requestSubmitting, setRequestSubmitting] = useState(false);
+
+  // Photo upload state for referral patients
+  const [selectedPatient, setSelectedPatient] = useState<ReferralPatient | null>(null);
+  const [photoUploadDialogOpen, setPhotoUploadDialogOpen] = useState(false);
+  const [selectedPhotos, setSelectedPhotos] = useState<File[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoUploadForm, setPhotoUploadForm] = useState({
+    doctorName: '',
+    hospitalName: '',
+  });
 
   useEffect(() => {
     const affiliateData = localStorage.getItem("affiliate");
@@ -237,6 +292,22 @@ export default function EnhancedAffiliateDashboard() {
     }
   };
 
+  const fetchReferralPatients = async (affiliateCode: string) => {
+    setReferralLoading(true);
+    try {
+      const response = await fetch(`/api/affiliate/referrals?affiliateCode=${affiliateCode}`);
+      const data = await response.json();
+      if (response.ok) {
+        setReferralPatients(data.appointments || []);
+        setReferralStats(data.stats || null);
+      }
+    } catch (error) {
+      console.error('Error fetching referral patients:', error);
+    } finally {
+      setReferralLoading(false);
+    }
+  };
+
   const handleRequestSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!affiliate?.id) return;
@@ -274,13 +345,205 @@ export default function EnhancedAffiliateDashboard() {
     }
   };
 
+  const hasProofBeenSent = (patientId: string) => {
+    return requests.some(req => 
+      req.appointmentId === patientId && 
+      (req.proofPhoto || (req.proofPhotos && req.proofPhotos.length > 0))
+    );
+  };
+
+  const getRequestStatus = (patientId: string) => {
+    const request = requests.find(req => req.appointmentId === patientId);
+    return request ? request.status : null;
+  };
+
+  const handlePatientClick = (patient: ReferralPatient) => {
+    // Don't open dialog if proof already sent
+    if (hasProofBeenSent(patient._id)) {
+      return;
+    }
+    setSelectedPatient(patient);
+    setPhotoUploadForm({
+      doctorName: patient.doctorId?.name || '',
+      hospitalName: patient.chamberName || '',
+    });
+    setPhotoUploadDialogOpen(true);
+  };
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    const validFiles: File[] = [];
+    const previews: string[] = [];
+
+    files.forEach((file) => {
+      if (!file.type.startsWith('image/')) {
+        showToast.error(`${file.name} is not an image file`);
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        showToast.error(`${file.name} is larger than 10MB`);
+        return;
+      }
+      validFiles.push(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        previews.push(reader.result as string);
+        if (previews.length === validFiles.length) {
+          setPhotoPreviews([...previews]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    setSelectedPhotos([...selectedPhotos, ...validFiles]);
+  };
+
+  const removePhoto = (index: number) => {
+    setSelectedPhotos(selectedPhotos.filter((_, i) => i !== index));
+    setPhotoPreviews(photoPreviews.filter((_, i) => i !== index));
+  };
+
+  const handlePhotoUpload = async () => {
+    if (selectedPhotos.length === 0 || !selectedPatient || !affiliate?.id) {
+      showToast.error('Please select at least one photo');
+      return;
+    }
+
+    if (!photoUploadForm.doctorName || !photoUploadForm.hospitalName) {
+      showToast.error('Please fill in doctor and hospital name');
+      return;
+    }
+
+    setUploadingPhoto(true);
+    try {
+      // Upload all photos to imgbb
+      const uploadPromises = selectedPhotos.map(async (photo) => {
+        const formData = new FormData();
+        formData.append('image', photo);
+
+        const uploadResponse = await fetch('/api/upload/imgbb', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const uploadData = await uploadResponse.json();
+
+        if (!uploadResponse.ok || !uploadData.url) {
+          throw new Error(uploadData.error || 'Failed to upload photo');
+        }
+
+        return uploadData.url;
+      });
+
+      const photoUrls = await Promise.all(uploadPromises);
+
+      // Create request with photos
+      const response = await fetch('/api/affiliate/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          affiliateId: affiliate.id,
+          patientName: selectedPatient.patientName,
+          patientPhone: selectedPatient.mobileNumber,
+          doctorName: photoUploadForm.doctorName,
+          hospitalName: photoUploadForm.hospitalName,
+          proofPhotos: photoUrls,
+          appointmentId: selectedPatient._id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showToast.success("Photos submitted successfully!");
+        setPhotoUploadDialogOpen(false);
+        setSelectedPhotos([]);
+        setPhotoPreviews([]);
+        setSelectedPatient(null);
+        setPhotoUploadForm({ doctorName: '', hospitalName: '' });
+        fetchRequests(affiliate.id);
+      } else {
+        showToast.error(data.error || "Failed to submit photos");
+      }
+    } catch (error: any) {
+      showToast.error(error.message || "An error occurred. Please try again.");
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
   const refreshData = async () => {
     if (affiliate?.affiliateCode) {
       setLoading(true);
       await fetchWalletData(affiliate.affiliateCode);
+      if (activeTab === 'reports') {
+        await fetchReports();
+      }
+      if (activeTab === 'referrals') {
+        await fetchReferralPatients(affiliate.affiliateCode);
+      }
       showToast.success("Data refreshed!");
     }
   };
+
+  const fetchReports = useCallback(async () => {
+    if (!affiliate?.affiliateCode) return;
+    
+    setReportsLoading(true);
+    try {
+      const params = new URLSearchParams({
+        affiliateCode: affiliate.affiliateCode,
+        type: reportType,
+      });
+      
+      if (reportType === 'monthly') {
+        params.append('month', selectedMonth.toString());
+        params.append('year', selectedYear.toString());
+      }
+      
+      const response = await fetch(`/api/affiliate/reports?${params}`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        setReports(data);
+      } else {
+        showToast.error(data.error || "Failed to fetch reports");
+      }
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+      showToast.error("Failed to fetch reports");
+    } finally {
+      setReportsLoading(false);
+    }
+  }, [affiliate?.affiliateCode, reportType, selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    if (activeTab === 'reports' && affiliate?.affiliateCode) {
+      fetchReports();
+    }
+  }, [activeTab, fetchReports, affiliate?.affiliateCode]);
+
+  useEffect(() => {
+    if (activeTab === 'referrals' && affiliate?.affiliateCode) {
+      fetchReferralPatients(affiliate.affiliateCode);
+      // Also fetch requests to check which patients have proof sent
+      if (affiliate.id) {
+        fetchRequests(affiliate.id);
+      }
+      
+      // Auto-refresh every 30 seconds when on referrals tab
+      const interval = setInterval(() => {
+        fetchReferralPatients(affiliate.affiliateCode);
+        if (affiliate.id) {
+          fetchRequests(affiliate.id);
+        }
+      }, 30000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [activeTab, affiliate?.affiliateCode, affiliate?.id]);
 
   const handleLogout = () => {
     localStorage.removeItem("affiliate");
@@ -441,8 +704,10 @@ export default function EnhancedAffiliateDashboard() {
 
   const sidebarItems = [
     { id: 'overview', label: 'Overview', labelBn: 'ওভারভিউ', icon: BarChart3 },
+    { id: 'referrals', label: 'Referral Patients', labelBn: 'রেফারেল রোগী', icon: Users },
     { id: 'commissions', label: 'Commissions', labelBn: 'কমিশন', icon: DollarSign },
     { id: 'withdrawals', label: 'Withdrawals', labelBn: 'উত্তোলন', icon: Wallet },
+    { id: 'reports', label: 'Reports', labelBn: 'রিপোর্ট', icon: FileText },
     { id: 'requests', label: 'Requests', labelBn: 'রিকোয়েস্ট', icon: FileText },
     { id: 'profile', label: 'Profile', labelBn: 'প্রোফাইল', icon: UserCircle },
   ];
@@ -738,6 +1003,351 @@ export default function EnhancedAffiliateDashboard() {
               </motion.div>
             )}
 
+            {/* Referral Patients Tab */}
+            {activeTab === 'referrals' && (
+              <motion.div
+                key="referrals"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                {/* Referral Stats Cards */}
+                {referralStats && (
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                    <Card className="p-4 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 border-blue-500/20">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-blue-400">{referralStats.total}</p>
+                        <p className="text-xs text-gray-400">মোট রোগী</p>
+                      </div>
+                    </Card>
+                    <Card className="p-4 bg-gradient-to-br from-orange-500/10 to-amber-600/10 border-orange-500/20">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-orange-400">{referralStats.pending}</p>
+                        <p className="text-xs text-gray-400">পেন্ডিং</p>
+                      </div>
+                    </Card>
+                    <Card className="p-4 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border-cyan-500/20">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-cyan-400">{referralStats.confirmed}</p>
+                        <p className="text-xs text-gray-400">কনফার্মড</p>
+                      </div>
+                    </Card>
+                    <Card className="p-4 bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-500/20">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-green-400">{referralStats.completed}</p>
+                        <p className="text-xs text-gray-400">সম্পন্ন</p>
+                      </div>
+                    </Card>
+                    <Card className="p-4 bg-gradient-to-br from-red-500/10 to-rose-600/10 border-red-500/20">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-red-400">{referralStats.cancelled}</p>
+                        <p className="text-xs text-gray-400">বাতিল</p>
+                      </div>
+                    </Card>
+                  </div>
+                )}
+
+                <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-1">
+                        <Users className="h-6 w-6 text-cyan-400" />
+                        রেফারেল রোগী তালিকা
+                      </h3>
+                      <p className="text-sm text-gray-400">
+                        আপনার রেফারেল কোড ব্যবহার করে বুক করা রোগীদের তথ্য
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => affiliate?.affiliateCode && fetchReferralPatients(affiliate.affiliateCode)}
+                      variant="outline"
+                      size="sm"
+                      disabled={referralLoading}
+                      className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 bg-transparent"
+                    >
+                      <RefreshCw className={`h-4 w-4 mr-2 ${referralLoading ? 'animate-spin' : ''}`} />
+                      রিফ্রেশ
+                    </Button>
+                  </div>
+
+                  {referralLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <RefreshCw className="h-8 w-8 animate-spin text-cyan-400" />
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-white/10">
+                            <th className="text-left py-3 px-4 font-semibold text-gray-300">সিরিয়াল</th>
+                            <th className="text-left py-3 px-4 font-semibold text-gray-300">রোগীর নাম</th>
+                            <th className="text-left py-3 px-4 font-semibold text-gray-300">মোবাইল</th>
+                            <th className="text-left py-3 px-4 font-semibold text-gray-300">ডাক্তার</th>
+                            <th className="text-left py-3 px-4 font-semibold text-gray-300">চেম্বার</th>
+                            <th className="text-left py-3 px-4 font-semibold text-gray-300">তারিখ</th>
+                            <th className="text-center py-3 px-4 font-semibold text-gray-300">রোগীর ধরন</th>
+                            <th className="text-center py-3 px-4 font-semibold text-gray-300">স্ট্যাটাস</th>
+                            <th className="text-center py-3 px-4 font-semibold text-gray-300">অ্যাকশন</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {referralPatients.length === 0 ? (
+                            <tr>
+                              <td colSpan={9} className="text-center py-12 text-gray-500">
+                                <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                                <p>এখনো কোন রোগী আপনার রেফারেল কোড ব্যবহার করেনি</p>
+                                <p className="text-xs mt-2">আপনার কোড: <span className="text-cyan-400 font-bold">{affiliate?.affiliateCode}</span></p>
+                              </td>
+                            </tr>
+                          ) : (
+                            referralPatients.map((patient) => (
+                              <tr key={patient._id} className="border-b border-white/5 hover:bg-white/5">
+                                <td className="py-4 px-4 text-sm font-mono">
+                                  {patient.serialNumber ? (
+                                    <span className="text-cyan-400">{patient.serialNumber}</span>
+                                  ) : (
+                                    <span className="text-yellow-400 text-xs px-2 py-1 bg-yellow-500/20 rounded">অপেক্ষমান</span>
+                                  )}
+                                </td>
+                                <td className="py-4 px-4 text-sm text-white">
+                                  <div className="font-medium">{patient.patientName}</div>
+                                  {patient.gender && (
+                                    <div className="text-xs text-gray-500">
+                                      {patient.gender === 'male' ? 'পুরুষ' : patient.gender === 'female' ? 'মহিলা' : 'অন্যান্য'}
+                                      {patient.age && `, ${patient.age} বছর`}
+                                    </div>
+                                  )}
+                                </td>
+                                <td className="py-4 px-4 text-sm text-gray-400">
+                                  {patient.mobileNumber}
+                                </td>
+                                <td className="py-4 px-4 text-sm text-white">
+                                  {patient.doctorId ? (
+                                    <div>
+                                      <div className="font-medium">{patient.doctorId.name}</div>
+                                      <div className="text-xs text-gray-500">{patient.doctorId.qualification}</div>
+                                    </div>
+                                  ) : (
+                                    'N/A'
+                                  )}
+                                </td>
+                                <td className="py-4 px-4 text-sm text-gray-400">
+                                  {patient.chamberName}
+                                </td>
+                                <td className="py-4 px-4 text-sm text-gray-400">
+                                  {format(new Date(patient.appointmentDate), 'MMM dd, yyyy')}
+                                </td>
+                                <td className="py-4 px-4 text-center">
+                                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                    patient.patientType === 'new'
+                                      ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                      : patient.patientType === 'old'
+                                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                                      : 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                                  }`}>
+                                    {patient.patientType === 'new' ? 'নতুন' : patient.patientType === 'old' ? 'পুরাতন' : 'রিপোর্ট'}
+                                  </span>
+                                </td>
+                                <td className="py-4 px-4 text-center">
+                                  <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
+                                    patient.status === 'completed'
+                                      ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                      : patient.status === 'confirmed'
+                                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                                      : patient.status === 'cancelled'
+                                      ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                      : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                                  }`}>
+                                    {patient.status === 'completed' ? (
+                                      <CheckCircle className="h-3 w-3" />
+                                    ) : patient.status === 'confirmed' ? (
+                                      <CheckCircle className="h-3 w-3" />
+                                    ) : patient.status === 'cancelled' ? (
+                                      <XCircle className="h-3 w-3" />
+                                    ) : (
+                                      <Clock className="h-3 w-3" />
+                                    )}
+                                    {patient.status === 'pending' ? 'পেন্ডিং' : 
+                                     patient.status === 'confirmed' ? 'কনফার্মড' : 
+                                     patient.status === 'completed' ? 'সম্পন্ন' : 'বাতিল'}
+                                  </span>
+                                </td>
+                                <td className="py-4 px-4 text-center">
+                                  {hasProofBeenSent(patient._id) ? (
+                                    <div className="flex flex-col items-center gap-1">
+                                      <Button
+                                        size="sm"
+                                        disabled
+                                        className="bg-green-500/20 text-green-400 border border-green-500/30 cursor-not-allowed"
+                                      >
+                                        <CheckCircle className="h-4 w-4 mr-1" />
+                                        সম্পন্ন
+                                      </Button>
+                                      {getRequestStatus(patient._id) && (
+                                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                          getRequestStatus(patient._id) === 'approved'
+                                            ? 'bg-green-500/20 text-green-400'
+                                            : getRequestStatus(patient._id) === 'rejected'
+                                            ? 'bg-red-500/20 text-red-400'
+                                            : 'bg-orange-500/20 text-orange-400'
+                                        }`}>
+                                          {getRequestStatus(patient._id) === 'approved' ? 'অনুমোদিত' : 
+                                           getRequestStatus(patient._id) === 'rejected' ? 'বাতিল' : 
+                                           'পেন্ডিং'}
+                                        </span>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <Button
+                                      onClick={() => handlePatientClick(patient)}
+                                      size="sm"
+                                      className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700"
+                                    >
+                                      <Upload className="h-4 w-4 mr-1" />
+                                      প্রমাণ পাঠান
+                                    </Button>
+                                  )}
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </Card>
+
+                {/* Photo Upload Dialog */}
+                <Dialog open={photoUploadDialogOpen} onOpenChange={setPhotoUploadDialogOpen}>
+                  <DialogContent className="max-w-2xl bg-slate-900 border-white/10 text-white">
+                    <DialogHeader>
+                      <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
+                        <ImageIcon className="h-6 w-6 text-cyan-400" />
+                        প্রমাণ ফটো পাঠান
+                      </DialogTitle>
+                    </DialogHeader>
+                    {selectedPatient && (
+                      <div className="space-y-4 mt-4">
+                        <div className="bg-white/5 rounded-lg p-4">
+                          <p className="text-sm text-gray-400 mb-1">রোগীর নাম</p>
+                          <p className="text-white font-medium">{selectedPatient.patientName}</p>
+                          <p className="text-sm text-gray-400 mt-2 mb-1">মোবাইল</p>
+                          <p className="text-white">{selectedPatient.mobileNumber}</p>
+                        </div>
+
+                        <div>
+                          <Label className="text-gray-300 mb-2">ডাক্তারের নাম *</Label>
+                          <Input
+                            value={photoUploadForm.doctorName}
+                            onChange={(e) => setPhotoUploadForm({...photoUploadForm, doctorName: e.target.value})}
+                            className="bg-white/5 border-white/10 text-white"
+                            placeholder="ডাক্তারের নাম"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <Label className="text-gray-300 mb-2">হাসপাতাল/চেম্বারের নাম *</Label>
+                          <Input
+                            value={photoUploadForm.hospitalName}
+                            onChange={(e) => setPhotoUploadForm({...photoUploadForm, hospitalName: e.target.value})}
+                            className="bg-white/5 border-white/10 text-white"
+                            placeholder="হাসপাতাল/চেম্বারের নাম"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <Label className="text-gray-300 mb-2">প্রমাণ ফটো * (একাধিক ফটো নির্বাচন করতে পারেন)</Label>
+                          <div className="mt-2">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              onChange={handlePhotoSelect}
+                              className="hidden"
+                              id="photo-upload"
+                            />
+                            <label
+                              htmlFor="photo-upload"
+                              className="flex items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:border-cyan-500/50 transition-colors bg-white/5"
+                            >
+                              <div className="text-center">
+                                <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                                <p className="text-sm text-gray-400">ক্লিক করে ফটো নির্বাচন করুন</p>
+                                <p className="text-xs text-gray-500 mt-1">একাধিক ফটো নির্বাচন করতে পারেন</p>
+                              </div>
+                            </label>
+                          </div>
+                          {photoPreviews.length > 0 && (
+                            <div className="mt-4 grid grid-cols-2 gap-3">
+                              {photoPreviews.map((preview, index) => (
+                                <div key={index} className="relative">
+                                  <img src={preview} alt={`Preview ${index + 1}`} className="w-full h-32 object-cover rounded-lg" />
+                                  <button
+                                    onClick={() => removePhoto(index)}
+                                    className="absolute top-2 right-2 p-1 bg-red-500 rounded-full text-white hover:bg-red-600"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </button>
+                                  <p className="text-xs text-gray-400 mt-1 truncate">{selectedPhotos[index]?.name}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex gap-3 pt-4">
+                          <Button
+                            onClick={() => {
+                              setPhotoUploadDialogOpen(false);
+                              setSelectedPhotos([]);
+                              setPhotoPreviews([]);
+                              setSelectedPatient(null);
+                              setPhotoUploadForm({ doctorName: '', hospitalName: '' });
+                            }}
+                            variant="outline"
+                            className="flex-1 border-white/10 text-gray-400 hover:text-white"
+                          >
+                            বাতিল
+                          </Button>
+                          <Button
+                            onClick={handlePhotoUpload}
+                            disabled={selectedPhotos.length === 0 || uploadingPhoto || !photoUploadForm.doctorName || !photoUploadForm.hospitalName}
+                            className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700"
+                          >
+                            {uploadingPhoto ? (
+                              <>
+                                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                আপলোড হচ্ছে...
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="h-4 w-4 mr-2" />
+                                পাঠান
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </DialogContent>
+                </Dialog>
+
+                {/* Info Card */}
+                <Card className="mt-6 p-4 bg-gradient-to-r from-cyan-500/10 to-blue-600/10 border-cyan-500/20">
+                  <div className="flex items-start gap-3">
+                    <Shield className="h-5 w-5 text-cyan-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-gray-300">
+                        <span className="font-semibold text-cyan-400">নোট:</span> এই তালিকায় শুধুমাত্র সেই রোগীরা দেখানো হচ্ছে যারা বুকিং এর সময় আপনার রেফারেল কোড (<span className="font-bold text-cyan-400">{affiliate?.affiliateCode}</span>) ব্যবহার করেছেন। আপনি রোগীদের তথ্য এবং অ্যাপয়েন্টমেন্ট স্ট্যাটাস দেখতে পারবেন, কিন্তু স্ট্যাটাস পরিবর্তন করতে পারবেন না।
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            )}
+
             {/* Commissions Tab */}
             {activeTab === 'commissions' && (
               <motion.div
@@ -973,13 +1583,14 @@ export default function EnhancedAffiliateDashboard() {
                             <th className="text-left py-3 px-4 font-semibold text-gray-300">Date</th>
                             <th className="text-left py-3 px-4 font-semibold text-gray-300">Patient</th>
                             <th className="text-left py-3 px-4 font-semibold text-gray-300">Doctor/Hospital</th>
+                            <th className="text-center py-3 px-4 font-semibold text-gray-300">Photos</th>
                             <th className="text-center py-3 px-4 font-semibold text-gray-300">Status</th>
                           </tr>
                         </thead>
                         <tbody>
                           {requests.length === 0 ? (
                             <tr>
-                              <td colSpan={4} className="text-center py-12 text-gray-500">
+                              <td colSpan={5} className="text-center py-12 text-gray-500">
                                 <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
                                 <p>No requests submitted yet</p>
                               </td>
@@ -999,6 +1610,50 @@ export default function EnhancedAffiliateDashboard() {
                                   <div className="text-xs text-gray-500">{req.hospitalName}</div>
                                 </td>
                                 <td className="py-4 px-4 text-center">
+                                  {(req.proofPhotos && req.proofPhotos.length > 0) || req.proofPhoto ? (
+                                    <Dialog>
+                                      <DialogTrigger asChild>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          className="text-cyan-400 hover:text-cyan-300"
+                                        >
+                                          <ImageIcon className="h-4 w-4 mr-1" />
+                                          {((req.proofPhotos && req.proofPhotos.length > 0) ? req.proofPhotos.length : 1)} Photo(s)
+                                        </Button>
+                                      </DialogTrigger>
+                                      <DialogContent className="max-w-4xl bg-slate-900 border-white/10">
+                                        <DialogHeader>
+                                          <DialogTitle className="text-white">Proof Photos</DialogTitle>
+                                        </DialogHeader>
+                                        <div className="mt-4 grid grid-cols-2 gap-4 max-h-[70vh] overflow-y-auto">
+                                          {req.proofPhotos && req.proofPhotos.length > 0 ? (
+                                            req.proofPhotos.map((photo, idx) => (
+                                              <div key={idx} className="relative">
+                                                <img
+                                                  src={photo}
+                                                  alt={`Proof ${idx + 1}`}
+                                                  className="w-full h-auto rounded-lg"
+                                                />
+                                              </div>
+                                            ))
+                                          ) : req.proofPhoto ? (
+                                            <div className="relative">
+                                              <img
+                                                src={req.proofPhoto}
+                                                alt="Proof"
+                                                className="w-full h-auto rounded-lg"
+                                              />
+                                            </div>
+                                          ) : null}
+                                        </div>
+                                      </DialogContent>
+                                    </Dialog>
+                                  ) : (
+                                    <span className="text-gray-500 text-xs">No photos</span>
+                                  )}
+                                </td>
+                                <td className="py-4 px-4 text-center">
                                   <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
                                     req.status === 'approved'
                                       ? 'bg-green-500/20 text-green-400 border border-green-500/30'
@@ -1016,6 +1671,324 @@ export default function EnhancedAffiliateDashboard() {
                       </table>
                     </div>
                   </Card>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Reports Tab */}
+            {activeTab === 'reports' && (
+              <motion.div
+                key="reports"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <div className="space-y-6">
+                  {/* Report Type Selector */}
+                  <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                    <div className="flex flex-wrap items-center gap-4 mb-6">
+                      <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                        <BarChart3 className="h-6 w-6 text-cyan-400" />
+                        রিপোর্ট
+                      </h3>
+                      <div className="flex gap-2 ml-auto">
+                        {(['all', 'monthly', 'daily', 'pending', 'paid'] as const).map((type) => (
+                          <Button
+                            key={type}
+                            onClick={() => setReportType(type)}
+                            variant={reportType === type ? "default" : "outline"}
+                            className={
+                              reportType === type
+                                ? "bg-gradient-to-r from-cyan-500 to-blue-600"
+                                : "border-white/10 text-gray-400 hover:text-white"
+                            }
+                            size="sm"
+                          >
+                            {type === 'all' ? 'সব' : type === 'monthly' ? 'মাসিক' : type === 'daily' ? 'দৈনিক' : type === 'pending' ? 'পেন্ডিং' : 'পেইড'}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {reportType === 'monthly' && (
+                      <div className="flex gap-4 items-center">
+                        <div>
+                          <Label className="text-gray-300">মাস</Label>
+                          <select
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                            className="mt-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                          >
+                            {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                              <option key={m} value={m} className="bg-slate-900">
+                                {new Date(2000, m - 1).toLocaleString('default', { month: 'long' })}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <Label className="text-gray-300">বছর</Label>
+                          <select
+                            value={selectedYear}
+                            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                            className="mt-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                          >
+                            {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((y) => (
+                              <option key={y} value={y} className="bg-slate-900">
+                                {y}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    )}
+                  </Card>
+
+                  {reportsLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <RefreshCw className="h-8 w-8 animate-spin text-cyan-400" />
+                    </div>
+                  ) : reports ? (
+                    <>
+                      {/* Summary Cards */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <Card className="p-6 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 border-blue-500/20">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-sm text-gray-400">অ্যাফিলিয়েট কোড সাবমিশন</p>
+                            <Users className="h-5 w-5 text-blue-400" />
+                          </div>
+                          <p className="text-3xl font-bold text-white">
+                            {reports.summary?.totalAffiliateCodeSubmissions || 0}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">মোট বুকিং</p>
+                        </Card>
+
+                        <Card className="p-6 bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-500/20">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-sm text-gray-400">মোট পেইড</p>
+                            <CheckCircle className="h-5 w-5 text-green-400" />
+                          </div>
+                          <p className="text-3xl font-bold text-white">
+                            ৳{(reports.summary?.totalPaid || 0).toLocaleString()}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">অনুমোদিত কমিশন</p>
+                        </Card>
+
+                        <Card className="p-6 bg-gradient-to-br from-orange-500/10 to-red-600/10 border-orange-500/20">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-sm text-gray-400">মোট আনপেইড</p>
+                            <Clock className="h-5 w-5 text-orange-400" />
+                          </div>
+                          <p className="text-3xl font-bold text-white">
+                            ৳{(reports.summary?.totalUnpaid || 0).toLocaleString()}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">পেন্ডিং + অনুমোদিত</p>
+                        </Card>
+
+                        <Card className="p-6 bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-purple-500/20">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-sm text-gray-400">পেন্ডিং</p>
+                            <TrendingDownIcon className="h-5 w-5 text-purple-400" />
+                          </div>
+                          <p className="text-3xl font-bold text-white">
+                            ৳{(reports.summary?.totalPending || 0).toLocaleString()}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">অপেক্ষমান কমিশন</p>
+                        </Card>
+                      </div>
+
+                      {/* Monthly Breakdown Chart */}
+                      {reports.monthlyBreakdown && reports.monthlyBreakdown.length > 0 && (
+                        <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                          <h4 className="text-lg font-bold text-white mb-4">মাসিক রিপোর্ট</h4>
+                          <ResponsiveContainer width="100%" height={300}>
+                            <BarChart data={reports.monthlyBreakdown}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                              <XAxis dataKey="month" stroke="#94a3b8" />
+                              <YAxis stroke="#94a3b8" />
+                              <Tooltip
+                                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }}
+                                formatter={(value: any) => `৳${value.toLocaleString()}`}
+                              />
+                              <Legend />
+                              <Bar dataKey="paid" fill="#10b981" name="পেইড" />
+                              <Bar dataKey="unpaid" fill="#f59e0b" name="আনপেইড" />
+                              <Bar dataKey="pending" fill="#ef4444" name="পেন্ডিং" />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </Card>
+                      )}
+
+                      {/* Daily Breakdown Chart */}
+                      {reportType === 'daily' || reportType === 'all' ? (
+                        <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                          <h4 className="text-lg font-bold text-white mb-4">দৈনিক রিপোর্ট (শেষ ৩০ দিন)</h4>
+                          <ResponsiveContainer width="100%" height={300}>
+                            <AreaChart data={reports.dailyBreakdown}>
+                              <defs>
+                                <linearGradient id="colorDaily" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
+                                  <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                              <XAxis dataKey="dateFormatted" stroke="#94a3b8" />
+                              <YAxis stroke="#94a3b8" />
+                              <Tooltip
+                                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }}
+                                formatter={(value: any) => `৳${value.toLocaleString()}`}
+                              />
+                              <Legend />
+                              <Area type="monotone" dataKey="commissions" stroke="#06b6d4" fill="url(#colorDaily)" name="কমিশন" />
+                              <Area type="monotone" dataKey="appointments" stroke="#10b981" fill="url(#colorDaily)" name="অ্যাপয়েন্টমেন্ট" />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </Card>
+                      ) : null}
+
+                      {/* Pending Report Table */}
+                      {reportType === 'pending' || reportType === 'all' ? (
+                        <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                          <div className="flex items-center justify-between mb-6">
+                            <h4 className="text-lg font-bold text-white">পেন্ডিং কমিশন</h4>
+                            <span className="px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-sm">
+                              {reports.pendingCommissions?.length || 0} টি
+                            </span>
+                          </div>
+                          <div className="overflow-x-auto">
+                            <table className="w-full">
+                              <thead>
+                                <tr className="border-b border-white/10">
+                                  <th className="text-left py-3 px-4 font-semibold text-gray-300">তারিখ</th>
+                                  <th className="text-left py-3 px-4 font-semibold text-gray-300">রোগী</th>
+                                  <th className="text-right py-3 px-4 font-semibold text-gray-300">বিল</th>
+                                  <th className="text-right py-3 px-4 font-semibold text-gray-300">কমিশন</th>
+                                  <th className="text-center py-3 px-4 font-semibold text-gray-300">স্ট্যাটাস</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {reports.pendingCommissions?.length === 0 ? (
+                                  <tr>
+                                    <td colSpan={5} className="text-center py-12 text-gray-500">
+                                      কোন পেন্ডিং কমিশন নেই
+                                    </td>
+                                  </tr>
+                                ) : (
+                                  reports.pendingCommissions?.map((commission: any) => (
+                                    <tr key={commission._id} className="border-b border-white/5 hover:bg-white/5">
+                                      <td className="py-4 px-4 text-sm text-gray-400">
+                                        {format(new Date(commission.createdAt), 'MMM dd, yyyy')}
+                                      </td>
+                                      <td className="py-4 px-4 text-sm text-white">
+                                        {commission.appointmentId?.patientName || 'N/A'}
+                                      </td>
+                                      <td className="py-4 px-4 text-sm text-right text-white">
+                                        ৳{commission.totalBill?.toLocaleString() || 0}
+                                      </td>
+                                      <td className="py-4 px-4 text-sm text-right font-medium text-orange-400">
+                                        ৳{commission.commissionAmount?.toLocaleString() || 0}
+                                      </td>
+                                      <td className="py-4 px-4 text-center">
+                                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                                          <Clock className="h-3 w-3" />
+                                          {commission.status}
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  ))
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </Card>
+                      ) : null}
+
+                      {/* Paid/Unpaid Summary Table */}
+                      {(reportType === 'paid' || reportType === 'all') && (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                            <div className="flex items-center justify-between mb-6">
+                              <h4 className="text-lg font-bold text-white">পেইড কমিশন</h4>
+                              <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
+                                {reports.paidCommissions?.length || 0} টি
+                              </span>
+                            </div>
+                            <div className="overflow-x-auto">
+                              <table className="w-full">
+                                <thead>
+                                  <tr className="border-b border-white/10">
+                                    <th className="text-left py-2 px-3 font-semibold text-gray-300 text-sm">তারিখ</th>
+                                    <th className="text-right py-2 px-3 font-semibold text-gray-300 text-sm">কমিশন</th>
+                                    <th className="text-center py-2 px-3 font-semibold text-gray-300 text-sm">স্ট্যাটাস</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {reports.paidCommissions?.slice(0, 5).map((commission: any) => (
+                                    <tr key={commission._id} className="border-b border-white/5 hover:bg-white/5">
+                                      <td className="py-3 px-3 text-xs text-gray-400">
+                                        {format(new Date(commission.createdAt), 'MMM dd')}
+                                      </td>
+                                      <td className="py-3 px-3 text-xs text-right font-medium text-green-400">
+                                        ৳{commission.commissionAmount?.toLocaleString() || 0}
+                                      </td>
+                                      <td className="py-3 px-3 text-center">
+                                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+                                          <CheckCircle className="h-3 w-3" />
+                                          Paid
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </Card>
+
+                          <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                            <div className="flex items-center justify-between mb-6">
+                              <h4 className="text-lg font-bold text-white">আনপেইড কমিশন</h4>
+                              <span className="px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-sm">
+                                {reports.unpaidCommissions?.length || 0} টি
+                              </span>
+                            </div>
+                            <div className="overflow-x-auto">
+                              <table className="w-full">
+                                <thead>
+                                  <tr className="border-b border-white/10">
+                                    <th className="text-left py-2 px-3 font-semibold text-gray-300 text-sm">তারিখ</th>
+                                    <th className="text-right py-2 px-3 font-semibold text-gray-300 text-sm">কমিশন</th>
+                                    <th className="text-center py-2 px-3 font-semibold text-gray-300 text-sm">স্ট্যাটাস</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {reports.unpaidCommissions?.slice(0, 5).map((commission: any) => (
+                                    <tr key={commission._id} className="border-b border-white/5 hover:bg-white/5">
+                                      <td className="py-3 px-3 text-xs text-gray-400">
+                                        {format(new Date(commission.createdAt), 'MMM dd')}
+                                      </td>
+                                      <td className="py-3 px-3 text-xs text-right font-medium text-orange-400">
+                                        ৳{commission.commissionAmount?.toLocaleString() || 0}
+                                      </td>
+                                      <td className="py-3 px-3 text-center">
+                                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                                          commission.status === 'approved'
+                                            ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                                            : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                                        }`}>
+                                          {commission.status === 'approved' ? <CheckCircle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                                          {commission.status}
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </Card>
+                        </div>
+                      )}
+                    </>
+                  ) : null}
                 </div>
               </motion.div>
             )}
@@ -1174,8 +2147,6 @@ export default function EnhancedAffiliateDashboard() {
                             <option value="" className="bg-slate-900">Select payment method</option>
                             <option value="bkash" className="bg-slate-900">bKash</option>
                             <option value="nagad" className="bg-slate-900">Nagad</option>
-                            <option value="rocket" className="bg-slate-900">Rocket</option>
-                            <option value="bank" className="bg-slate-900">Bank Transfer</option>
                           </Select>
                         ) : (
                           <p className="text-white text-lg capitalize">{affiliate.paymentMethod || 'Not set'}</p>

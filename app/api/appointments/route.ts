@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb';
 import Appointment from '@/models/Appointment';
 import Doctor from '@/models/Doctor';
 import Affiliate from '@/models/Affiliate';
+import User from '@/models/User';
 
 // GET - Fetch all appointments or filter by doctorId
 export async function GET(request: NextRequest) {
@@ -44,8 +45,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Generate unique serial number
-async function generateSerialNumber(): Promise<string> {
+// Generate unique serial number (used when admin confirms appointment)
+export async function generateSerialNumber(): Promise<string> {
   const today = new Date();
   const year = today.getFullYear().toString().slice(-2);
   const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -53,9 +54,6 @@ async function generateSerialNumber(): Promise<string> {
   const prefix = `MT${year}${month}${day}`;
   
   // Find the last appointment for today to get the next sequence number
-  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
-  
   const lastAppointment = await Appointment.findOne({
     serialNumber: { $regex: `^${prefix}` }
   }).sort({ serialNumber: -1 });
@@ -111,10 +109,20 @@ export async function POST(request: NextRequest) {
     // Validate affiliate code if provided
     let affiliateId = undefined;
     if (affiliateCode) {
-      const affiliate = await Affiliate.findOne({ 
+      // Check in User model first (new system)
+      let affiliate: any = await User.findOne({ 
         affiliateCode: affiliateCode.toUpperCase(),
+        userType: 'affiliate',
         isActive: true 
       });
+
+      // Fallback to Affiliate model (old system) if not found in User
+      if (!affiliate) {
+         affiliate = await Affiliate.findOne({ 
+          affiliateCode: affiliateCode.toUpperCase(),
+          isActive: true 
+        });
+      }
       
       if (affiliate) {
         affiliateId = affiliate._id;
@@ -124,13 +132,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate unique serial number
-    const serialNumber = await generateSerialNumber();
-
-    // Create appointment
+    // Create appointment (serial number will be assigned by admin when confirming)
     const appointment = await Appointment.create({
       doctorId,
-      serialNumber,
       patientName,
       mobileNumber,
       gender: gender || undefined,

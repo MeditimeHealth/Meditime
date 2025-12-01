@@ -6,6 +6,10 @@ export interface IAffiliateRequest extends Document {
   patientPhone: string;
   doctorName: string;
   hospitalName: string;
+  proofPhoto?: string; // imgbb URL (deprecated, use proofPhotos)
+  proofPhotos?: string[]; // Array of imgbb URLs for multiple photos
+  appointmentId?: mongoose.Types.ObjectId; // Reference to appointment if linked
+  commissionAmount?: number; // Flat rate commission set by admin
   status: 'pending' | 'approved' | 'rejected';
   createdAt: Date;
   updatedAt: Date;
@@ -37,6 +41,22 @@ const AffiliateRequestSchema: Schema = new Schema(
       type: String,
       required: [true, 'Hospital name is required'],
       trim: true,
+    },
+    proofPhoto: {
+      type: String,
+      trim: true,
+    },
+    proofPhotos: {
+      type: [String],
+      default: [],
+    },
+    appointmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Appointment',
+    },
+    commissionAmount: {
+      type: Number,
+      min: [0, 'Commission amount must be positive'],
     },
     status: {
       type: String,

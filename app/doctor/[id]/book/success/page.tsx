@@ -49,18 +49,6 @@ const getGenderLabel = (gender: string) => {
   return labels[gender as keyof typeof labels] || gender;
 };
 
-// Generate fallback serial number for old appointments
-const generateFallbackSerial = (id: string, date: string | Date): string => {
-  const appointmentDate = new Date(date);
-  const year = appointmentDate.getFullYear().toString().slice(-2);
-  const month = String(appointmentDate.getMonth() + 1).padStart(2, '0');
-  const day = String(appointmentDate.getDate()).padStart(2, '0');
-  
-  // Use last 4 characters of ID as sequence
-  const idSuffix = id ? id.slice(-4).toUpperCase() : "0001";
-  
-  return `MT${year}${month}${day}${idSuffix}`;
-};
 
 export default function BookingSuccessPage() {
   const params = useParams();
@@ -219,15 +207,20 @@ export default function BookingSuccessPage() {
                   </p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-xs opacity-80 mb-1" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>সিরিয়াল নম্বর</p>
-                <p className="font-mono font-bold text-lg tracking-wider bg-white/20 px-2 py-1 rounded inline-block">
-                  {appointment.serialNumber || generateFallbackSerial(
-                    appointment._id || appointment.id || '000000000000000000000000', 
-                    appointment.createdAt || appointment.appointmentDate || new Date()
-                  )}
-                </p>
-              </div>
+              {appointment.serialNumber ? (
+                <div className="text-right">
+                  <p className="text-xs opacity-80 mb-1" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>সিরিয়াল নম্বর</p>
+                  <p className="font-mono font-bold text-lg tracking-wider bg-white/20 px-2 py-1 rounded inline-block">
+                    {appointment.serialNumber}
+                  </p>
+                </div>
+              ) : (
+                <div className="text-right">
+                  <p className="text-xs opacity-80 mb-1 bg-yellow-500/30 px-2 py-1 rounded" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                    অপেক্ষমান
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 

@@ -1,17 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
+import Appointment from "@/models/Appointment";
 import bcrypt from "bcryptjs";
 
 // Generate unique affiliate code
 function generateAffiliateCode(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let randomPart = '';
-  for (let i = 0; i < 6; i++) {
-    randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  const timestampPart = Date.now().toString().slice(-6);
-  return `AFF-${randomPart}-${timestampPart}`;
+  // Generate a random 4-digit number between 1000 and 9999
+  const min = 1000;
+  const max = 9999;
+  const code = Math.floor(Math.random() * (max - min + 1)) + min;
+  return code.toString();
 }
 
 export async function POST(request: NextRequest) {
@@ -105,6 +104,22 @@ export async function POST(request: NextRequest) {
 
     // Create user
     const user = await User.create(userData);
+
+    // Link existing appointments with this phone number to the new user account
+    try {
+      await Appointment.updateMany(
+        { 
+          mobileNumber: phoneNumber,
+          userId: { $exists: false } // Only link appointments that don't have a userId yet
+        },
+        { 
+          $set: { userId: user._id } 
+        }
+      );
+    } catch (error) {
+      console.error("Error linking appointments:", error);
+      // Don't fail signup if appointment linking fails
+    }
 
     // Return user data (without password)
     const responseData: any = {

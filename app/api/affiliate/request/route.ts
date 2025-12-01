@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const body = await request.json();
-    const { affiliateId, patientName, patientPhone, doctorName, hospitalName } = body;
+    const { affiliateId, patientName, patientPhone, doctorName, hospitalName, proofPhoto, proofPhotos, appointmentId } = body;
 
     if (!affiliateId || !patientName || !patientPhone || !doctorName || !hospitalName) {
       return NextResponse.json(
@@ -23,6 +23,9 @@ export async function POST(request: NextRequest) {
       patientPhone,
       doctorName,
       hospitalName,
+      proofPhoto: proofPhoto || undefined, // Keep for backward compatibility
+      proofPhotos: proofPhotos || (proofPhoto ? [proofPhoto] : []),
+      appointmentId: appointmentId || undefined,
     });
 
     return NextResponse.json({

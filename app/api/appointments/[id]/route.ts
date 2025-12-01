@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Appointment from '@/models/Appointment';
 
-// PATCH - Update appointment status
+// PATCH - Update appointment status and serial number
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -12,7 +12,7 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await request.json();
-    const { status, userId } = body;
+    const { status, userId, serialNumber } = body;
 
     if (!status) {
       return NextResponse.json(
@@ -55,9 +55,37 @@ export async function PATCH(
       }
     }
 
+    // When confirming, serial number is required
+    if (status === 'confirmed' && !existingAppointment.serialNumber && !serialNumber) {
+      return NextResponse.json(
+        { error: 'Serial number is required when confirming appointment' },
+        { status: 400 }
+      );
+    }
+
+    // Check if serial number already exists (if provided)
+    if (serialNumber) {
+      const existingSerial = await Appointment.findOne({ 
+        serialNumber: serialNumber.toUpperCase(),
+        _id: { $ne: id }
+      });
+      if (existingSerial) {
+        return NextResponse.json(
+          { error: 'This serial number is already in use' },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Build update object
+    const updateData: any = { status };
+    if (serialNumber) {
+      updateData.serialNumber = serialNumber.toUpperCase();
+    }
+
     const appointment = await Appointment.findByIdAndUpdate(
       id,
-      { status },
+      updateData,
       { new: true }
     ).populate('doctorId', 'name qualification department hospital image')
      .populate('userId', 'fullName email phoneNumber');

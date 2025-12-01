@@ -26,8 +26,14 @@ import {
   EyeOff,
   Camera,
   X,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  MapPin,
+  Stethoscope,
 } from "lucide-react";
 import { showToast } from "@/lib/toast";
+import { format } from "date-fns";
 
 const profileSchema = z
   .object({
@@ -68,9 +74,27 @@ interface UserProfile {
   createdAt?: string;
 }
 
+interface Appointment {
+  _id: string;
+  serialNumber?: string;
+  patientName: string;
+  mobileNumber: string;
+  appointmentDate: string;
+  chamberName: string;
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  doctorId?: {
+    name: string;
+    qualification?: string;
+    hospital?: string;
+  };
+  createdAt: string;
+}
+
 export default function UserProfilePage() {
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [appointmentsLoading, setAppointmentsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -113,6 +137,11 @@ export default function UserProfilePage() {
       if (parsedData.photo) {
         setImagePreview(parsedData.photo);
       }
+      
+      // Fetch user appointments
+      if (parsedData.id) {
+        fetchAppointments(parsedData.id);
+      }
     } catch (error) {
       console.error("Error parsing user data:", error);
       router.push("/");
@@ -120,6 +149,55 @@ export default function UserProfilePage() {
       setLoading(false);
     }
   }, [router, setValue]);
+
+  const fetchAppointments = async (userId: string) => {
+    setAppointmentsLoading(true);
+    try {
+      const response = await fetch(`/api/appointments?userId=${userId}`);
+      const data = await response.json();
+      if (response.ok && data.appointments) {
+        setAppointments(data.appointments);
+      }
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    } finally {
+      setAppointmentsLoading(false);
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    const styles = {
+      pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
+      confirmed: "bg-green-100 text-green-800 border-green-300",
+      cancelled: "bg-red-100 text-red-800 border-red-300",
+      completed: "bg-blue-100 text-blue-800 border-blue-300",
+    };
+
+    const labels = {
+      pending: "অপেক্ষমান",
+      confirmed: "নিশ্চিত",
+      cancelled: "বাতিল",
+      completed: "সম্পন্ন",
+    };
+
+    const icons = {
+      pending: AlertCircle,
+      confirmed: CheckCircle,
+      cancelled: XCircle,
+      completed: CheckCircle,
+    };
+
+    const Icon = icons[status as keyof typeof icons] || AlertCircle;
+
+    return (
+      <span
+        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold border-2 ${styles[status as keyof typeof styles] || styles.pending}`}
+      >
+        <Icon className="h-4 w-4" />
+        {labels[status as keyof typeof labels] || status}
+      </span>
+    );
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -599,7 +677,7 @@ export default function UserProfilePage() {
                 <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Activity className="h-6 w-6 text-blue-600" />
                 </div>
-                <p className="text-3xl font-bold text-gray-900 mb-1">0</p>
+                <p className="text-3xl font-bold text-gray-900 mb-1">{appointments.length}</p>
                 <p className="text-sm text-gray-600">Total Appointments</p>
               </Card>
 
@@ -607,7 +685,9 @@ export default function UserProfilePage() {
                 <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Calendar className="h-6 w-6 text-green-600" />
                 </div>
-                <p className="text-3xl font-bold text-gray-900 mb-1">0</p>
+                <p className="text-3xl font-bold text-gray-900 mb-1">
+                  {appointments.filter(a => a.status === 'completed').length}
+                </p>
                 <p className="text-sm text-gray-600">Completed</p>
               </Card>
 
@@ -615,10 +695,100 @@ export default function UserProfilePage() {
                 <div className="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Clock className="h-6 w-6 text-orange-600" />
                 </div>
-                <p className="text-3xl font-bold text-gray-900 mb-1">0</p>
+                <p className="text-3xl font-bold text-gray-900 mb-1">
+                  {appointments.filter(a => a.status === 'pending' || a.status === 'confirmed').length}
+                </p>
                 <p className="text-sm text-gray-600">Upcoming</p>
               </Card>
             </div>
+          )}
+
+          {/* Appointments List */}
+          {!isEditing && (
+            <Card className="p-6 mb-8">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">My Appointments</h3>
+                <Button
+                  onClick={() => router.push('/appointments')}
+                  variant="outline"
+                  size="sm"
+                >
+                  View All
+                </Button>
+              </div>
+
+              {appointmentsLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                </div>
+              ) : appointments.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <Calendar className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p>No appointments found</p>
+                  <Button
+                    onClick={() => router.push('/doctor')}
+                    className="mt-4"
+                    variant="outline"
+                  >
+                    Book Appointment
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {appointments.slice(0, 5).map((appointment) => (
+                    <div
+                      key={appointment._id}
+                      className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Stethoscope className="h-5 w-5 text-primary" />
+                            <h4 className="font-semibold text-gray-900">
+                              {appointment.doctorId?.name || 'Unknown Doctor'}
+                            </h4>
+                          </div>
+                          {appointment.doctorId?.qualification && (
+                            <p className="text-sm text-gray-600 mb-2">
+                              {appointment.doctorId.qualification}
+                            </p>
+                          )}
+                        </div>
+                        {getStatusBadge(appointment.status)}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <Calendar className="h-4 w-4" />
+                          <span>
+                            {format(new Date(appointment.appointmentDate), 'MMM dd, yyyy')}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <MapPin className="h-4 w-4" />
+                          <span>{appointment.chamberName}</span>
+                        </div>
+                        {appointment.serialNumber && (
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <Activity className="h-4 w-4" />
+                            <span className="font-mono">Serial: {appointment.serialNumber}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {appointments.length > 5 && (
+                    <Button
+                      onClick={() => router.push('/appointments')}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      View All {appointments.length} Appointments
+                    </Button>
+                  )}
+                </div>
+              )}
+            </Card>
           )}
 
           {/* Actions */}

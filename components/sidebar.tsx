@@ -19,7 +19,10 @@ import {
   Image,
   Briefcase,
   Building2,
-  Clock
+  Clock,
+  Wallet,
+  Camera,
+  FileText
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -116,6 +119,21 @@ const menuItems = [
     icon: Users,
     href: "/admin/affiliate-management",
   },
+  {
+    title: "Photo Requests",
+    icon: Camera,
+    href: "/admin/affiliate-photo-requests",
+  },
+  {
+    title: "Affiliate Overview",
+    icon: Wallet,
+    href: "/admin/affiliate-overview",
+  },
+  {
+    title: "Completed Reports",
+    icon: FileText,
+    href: "/admin/affiliate-reports/completed",
+  },
 ];
 
 export default function Sidebar({ user, onLogout }: SidebarProps) {
@@ -189,15 +207,15 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
           <div className="border-t border-gray-200 p-4">
             {user ? (
               <div className="space-y-3">
-                <div className="flex items-center gap-3 px-2">
+                <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-primary font-semibold text-sm">
-                      {user.fullName?.charAt(0)?.toUpperCase() || 'U'}
+                    <span className="text-primary font-semibold">
+                      {user.fullName.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">
-                      {user.fullName || 'User'}
+                      {user.fullName}
                     </p>
                     {user.email && (
                       <p className="text-xs text-gray-500 truncate">{user.email}</p>
@@ -206,15 +224,21 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
                 </div>
                 <button
                   onClick={onLogout}
-                  className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                 >
-                  <LogOut className="h-5 w-5" />
-                  <span>Logout</span>
+                  <LogOut className="h-4 w-4" />
+                  Logout
                 </button>
               </div>
             ) : (
               <div className="text-center py-4">
-                <p className="text-sm text-gray-500">Not logged in</p>
+                <p className="text-sm text-gray-500 mb-2">Not logged in</p>
+                <Link
+                  href="/login"
+                  className="text-sm text-primary hover:underline"
+                >
+                  Login
+                </Link>
               </div>
             )}
           </div>
@@ -223,4 +247,3 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
     </>
   );
 }
-

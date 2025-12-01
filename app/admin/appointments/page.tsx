@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, Phone, MapPin, Loader2, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Calendar, Clock, User, Phone, MapPin, Loader2, CheckCircle, XCircle, AlertCircle, Ticket, X, Stethoscope } from "lucide-react";
 
 interface Appointment {
   _id: string;
@@ -14,6 +16,7 @@ interface Appointment {
     department?: string;
     hospital?: string;
   };
+  serialNumber?: string;
   patientName: string;
   mobileNumber: string;
   gender?: string;
@@ -29,6 +32,7 @@ interface Appointment {
     email?: string;
     phoneNumber?: string;
   };
+  affiliateCode?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -103,14 +107,19 @@ export default function AppointmentsPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
+  const [showSerialModal, setShowSerialModal] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [serialNumber, setSerialNumber] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchAppointments();
   }, [filter]);
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = async (showLoading = true) => {
     try {
-      setLoading(true);
+      if (showLoading) setLoading(true);
       const url = filter !== "all" ? `/api/appointments?status=${filter}` : "/api/appointments";
       const response = await fetch(url);
       const data = await response.json();
@@ -120,28 +129,85 @@ export default function AppointmentsPage() {
     } catch (error) {
       console.error("Error fetching appointments:", error);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
-  const updateStatus = async (appointmentId: string, newStatus: string) => {
+  const updateStatus = async (appointmentId: string, newStatus: string, serial?: string) => {
     try {
+      const body: any = { status: newStatus };
+      if (serial) {
+        body.serialNumber = serial;
+      }
+
       const response = await fetch(`/api/appointments/${appointmentId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify(body),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        fetchAppointments();
+        fetchAppointments(false);
+        return { success: true };
       } else {
-        alert("Failed to update status");
+        return { success: false, error: data.error || "Failed to update status" };
       }
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Failed to update status");
+      return { success: false, error: "Failed to update status" };
+    }
+  };
+
+  // Open serial modal for confirmation
+  const handleConfirmClick = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setSerialNumber("");
+    setError("");
+    setShowSerialModal(true);
+  };
+
+  // Submit confirmation with serial number
+  const handleConfirmWithSerial = async () => {
+    if (!selectedAppointment) return;
+    
+    if (!serialNumber.trim()) {
+      setError("সিরিয়াল নম্বর দিন");
+      return;
+    }
+
+    setSubmitting(true);
+    setError("");
+
+    const result = await updateStatus(selectedAppointment._id, "confirmed", serialNumber.trim());
+    
+    if (result.success) {
+      setShowSerialModal(false);
+      setSelectedAppointment(null);
+      setSerialNumber("");
+    } else {
+      setError(result.error || "Failed to confirm appointment");
+    }
+    
+    setSubmitting(false);
+  };
+
+  // Cancel appointment (no serial needed)
+  const handleCancelAppointment = async (appointmentId: string) => {
+    const result = await updateStatus(appointmentId, "cancelled");
+    if (!result.success) {
+      alert(result.error || "Failed to cancel appointment");
+    }
+  };
+
+  // Complete appointment
+  const handleCompleteAppointment = async (appointmentId: string) => {
+    const result = await updateStatus(appointmentId, "completed");
+    if (!result.success) {
+      alert(result.error || "Failed to complete appointment");
     }
   };
 
@@ -209,171 +275,303 @@ export default function AppointmentsPage() {
       ) : (
         <div className="grid grid-cols-1 gap-6">
           {appointments.map((appointment) => (
-            <Card key={appointment._id} className="p-6 hover:shadow-lg transition-shadow">
-              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                <div className="flex-1 space-y-4">
-                  {/* Header */}
-                  <div className="flex items-start justify-between">
+            <Card key={appointment._id} className="overflow-hidden hover:shadow-lg transition-shadow border-gray-200">
+              <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
+                {/* Patient Section */}
+                <div className="p-6 bg-white">
+                  <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
+                    <User className="h-5 w-5 text-primary" />
+                    <h4 
+                      className="font-bold text-lg text-gray-800"
+                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                    >
+                      রোগীর তথ্য
+                    </h4>
+                  </div>
+
+                  <div className="space-y-4">
                     <div>
-                      <h3
-                        className="text-xl font-bold text-gray-900 mb-1"
+                      <p className="text-sm text-gray-500 mb-1">রোগীর নাম</p>
+                      <h3 
+                        className="text-xl font-bold text-gray-900"
                         style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                       >
                         {appointment.patientName}
                       </h3>
-                      <p
-                        className="text-gray-600"
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex items-start gap-2">
+                        <Phone className="h-4 w-4 text-gray-400 mt-1" />
+                        <div>
+                          <p className="text-xs text-gray-500">মোবাইল</p>
+                          <p className="font-medium text-gray-900">{appointment.mobileNumber}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-2">
+                        <User className="h-4 w-4 text-gray-400 mt-1" />
+                        <div>
+                          <p className="text-xs text-gray-500">রোগীর ধরন</p>
+                          <p 
+                            className="font-medium text-gray-900"
+                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                          >
+                            {getPatientTypeLabel(appointment.patientType)}
+                          </p>
+                        </div>
+                      </div>
+
+                      {(appointment.age || appointment.gender) && (
+                        <div className="col-span-2 flex items-start gap-2">
+                          <User className="h-4 w-4 text-gray-400 mt-1" />
+                          <div>
+                            <p className="text-xs text-gray-500">বয়স ও লিঙ্গ</p>
+                            <p 
+                              className="font-medium text-gray-900"
+                              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                            >
+                              {appointment.age ? `${toBengaliNumber(appointment.age)} বছর` : ''}
+                              {appointment.age && appointment.gender ? ' • ' : ''}
+                              {appointment.gender === "male" ? "পুরুষ" : appointment.gender === "female" ? "মহিলা" : appointment.gender === "other" ? "অন্যান্য" : ""}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Doctor & Appointment Section */}
+                <div className="p-6 bg-gray-50/50">
+                  <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <Stethoscope className="h-5 w-5 text-primary" />
+                      <h4 
+                        className="font-bold text-lg text-gray-800"
                         style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                       >
-                        {appointment.doctorId?.name || "Unknown Doctor"}
-                      </p>
+                        ডাক্তার ও অ্যাপয়েন্টমেন্ট
+                      </h4>
                     </div>
                     {getStatusBadge(appointment.status)}
                   </div>
 
-                  {/* Details Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3">
-                      <Phone className="h-5 w-5 text-primary shrink-0" />
-                      <div>
-                        <p className="text-sm text-gray-500">মোবাইল নম্বর</p>
-                        <p
-                          className="font-semibold text-gray-900"
-                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                        >
-                          {appointment.mobileNumber}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <Calendar className="h-5 w-5 text-primary shrink-0" />
-                      <div>
-                        <p className="text-sm text-gray-500">তারিখ</p>
-                        <p
-                          className="font-semibold text-gray-900"
-                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                        >
-                          {formatDate(appointment.appointmentDate)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <MapPin className="h-5 w-5 text-primary shrink-0" />
-                      <div>
-                        <p className="text-sm text-gray-500">চেম্বার</p>
-                        <p
-                          className="font-semibold text-gray-900"
-                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                        >
-                          {appointment.chamberName}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <User className="h-5 w-5 text-primary shrink-0" />
-                      <div>
-                        <p className="text-sm text-gray-500">রোগীর ধরন</p>
-                        <p
-                          className="font-semibold text-gray-900"
-                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                        >
-                          {getPatientTypeLabel(appointment.patientType)}
-                        </p>
-                      </div>
-                    </div>
-
-                    {appointment.age && (
-                      <div className="flex items-center gap-3">
-                        <User className="h-5 w-5 text-primary shrink-0" />
-                        <div>
-                          <p className="text-sm text-gray-500">বয়স</p>
-                          <p
-                            className="font-semibold text-gray-900"
-                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                          >
-                            {toBengaliNumber(appointment.age)} বছর
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {appointment.gender && (
-                      <div className="flex items-center gap-3">
-                        <User className="h-5 w-5 text-primary shrink-0" />
-                        <div>
-                          <p className="text-sm text-gray-500">লিঙ্গ</p>
-                          <p
-                            className="font-semibold text-gray-900"
-                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                          >
-                            {appointment.gender === "male" ? "পুরুষ" : appointment.gender === "female" ? "মহিলা" : "অন্যান্য"}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Doctor Info */}
-                  {appointment.doctorId && (
-                    <div className="pt-4 border-t border-gray-200">
-                      <p className="text-sm text-gray-500 mb-1">ডাক্তার তথ্য</p>
-                      <p
-                        className="font-semibold text-gray-900"
+                  <div className="space-y-4">
+                    {/* Doctor Info */}
+                    <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                      <p className="text-xs text-gray-500 mb-1">ডাক্তার</p>
+                      <p 
+                        className="font-bold text-gray-900"
                         style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                       >
-                        {appointment.doctorId.qualification && `${appointment.doctorId.qualification}, `}
-                        {appointment.doctorId.department && `${appointment.doctorId.department}, `}
-                        {appointment.doctorId.hospital && appointment.doctorId.hospital}
+                        {appointment.doctorId?.name || "Unknown Doctor"}
+                      </p>
+                      <p 
+                        className="text-xs text-gray-600 mt-1"
+                        style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                      >
+                        {appointment.doctorId?.qualification && `${appointment.doctorId.qualification}`}
+                        {appointment.doctorId?.hospital && ` • ${appointment.doctorId.hospital}`}
                       </p>
                     </div>
-                  )}
-                </div>
 
-                {/* Action Buttons */}
-                {appointment.status === "pending" && (
-                  <div className="flex flex-col gap-2 md:min-w-[200px]">
-                    <Button
-                      onClick={() => updateStatus(appointment._id, "confirmed")}
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                    >
-                      নিশ্চিত করুন
-                    </Button>
-                    <Button
-                      onClick={() => updateStatus(appointment._id, "cancelled")}
-                      variant="outline"
-                      className="border-red-300 text-red-600 hover:bg-red-50"
-                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                    >
-                      বাতিল করুন
-                    </Button>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex items-start gap-2">
+                        <Calendar className="h-4 w-4 text-gray-400 mt-1" />
+                        <div>
+                          <p className="text-xs text-gray-500">তারিখ</p>
+                          <p 
+                            className="font-medium text-gray-900"
+                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                          >
+                            {formatDate(appointment.appointmentDate)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-4 w-4 text-gray-400 mt-1" />
+                        <div>
+                          <p className="text-xs text-gray-500">চেম্বার</p>
+                          <p 
+                            className="font-medium text-gray-900"
+                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                          >
+                            {appointment.chamberName}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Serial Number Display */}
+                    {appointment.serialNumber && (
+                      <div className="flex items-center gap-2 bg-green-50 p-2 rounded border border-green-100">
+                        <Ticket className="h-4 w-4 text-green-600" />
+                        <span className="text-sm text-green-800 font-medium">সিরিয়াল:</span>
+                        <span className="font-bold text-green-700 font-mono text-lg">{appointment.serialNumber}</span>
+                      </div>
+                    )}
+
+                    {/* Affiliate Code */}
+                    {appointment.affiliateCode && (
+                      <div className="flex items-center gap-2 text-purple-600 bg-purple-50 p-2 rounded border border-purple-100">
+                        <Ticket className="h-4 w-4" />
+                        <span className="text-xs">রেফারেল: <strong>{appointment.affiliateCode}</strong></span>
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="pt-2 flex gap-2">
+                      {appointment.status === "pending" && (
+                        <>
+                          <Button
+                            onClick={() => handleConfirmClick(appointment)}
+                            className="flex-1 bg-green-600 hover:bg-green-700 text-white h-9 text-sm"
+                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                          >
+                            নিশ্চিত করুন
+                          </Button>
+                          <Button
+                            onClick={() => handleCancelAppointment(appointment._id)}
+                            variant="outline"
+                            className="flex-1 border-red-300 text-red-600 hover:bg-red-50 h-9 text-sm"
+                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                          >
+                            বাতিল করুন
+                          </Button>
+                        </>
+                      )}
+                      {appointment.status === "confirmed" && (
+                        <>
+                          <Button
+                            onClick={() => handleCompleteAppointment(appointment._id)}
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-9 text-sm"
+                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                          >
+                            সম্পন্ন করুন
+                          </Button>
+                          <Button
+                            onClick={() => handleCancelAppointment(appointment._id)}
+                            variant="outline"
+                            className="flex-1 border-red-300 text-red-600 hover:bg-red-50 h-9 text-sm"
+                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                          >
+                            বাতিল করুন
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </div>
-                )}
-                {appointment.status === "confirmed" && (
-                  <div className="flex flex-col gap-2 md:min-w-[200px]">
-                    <Button
-                      onClick={() => updateStatus(appointment._id, "completed")}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                    >
-                      সম্পন্ন করুন
-                    </Button>
-                    <Button
-                      onClick={() => updateStatus(appointment._id, "cancelled")}
-                      variant="outline"
-                      className="border-red-300 text-red-600 hover:bg-red-50"
-                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                    >
-                      বাতিল করুন
-                    </Button>
-                  </div>
-                )}
+                </div>
               </div>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Serial Number Modal */}
+      {showSerialModal && selectedAppointment && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md p-6 bg-white">
+            <div className="flex items-center justify-between mb-6">
+              <h3
+                className="text-xl font-bold text-gray-900"
+                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+              >
+                সিরিয়াল নম্বর দিন
+              </h3>
+              <button
+                onClick={() => {
+                  setShowSerialModal(false);
+                  setSelectedAppointment(null);
+                  setSerialNumber("");
+                  setError("");
+                }}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Patient Info */}
+            <div className="bg-gray-50 p-4 rounded-lg mb-6">
+              <p className="text-sm text-gray-500 mb-1">রোগী</p>
+              <p
+                className="font-bold text-gray-900"
+                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+              >
+                {selectedAppointment.patientName}
+              </p>
+              <p className="text-sm text-gray-600 mt-1">
+                মোবাইল: {selectedAppointment.mobileNumber}
+              </p>
+              <p className="text-sm text-gray-600">
+                ডাক্তার: {selectedAppointment.doctorId?.name}
+              </p>
+            </div>
+
+            {/* Serial Input */}
+            <div className="mb-6">
+              <Label
+                htmlFor="serialNumber"
+                className="text-gray-700 mb-2 block"
+                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+              >
+                সিরিয়াল নম্বর <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="serialNumber"
+                type="text"
+                value={serialNumber}
+                onChange={(e) => setSerialNumber(e.target.value.toUpperCase())}
+                placeholder="যেমন: MT2411300001"
+                className="text-lg font-mono uppercase"
+                autoFocus
+              />
+              {error && (
+                <p className="text-red-500 text-sm mt-2" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                  {error}
+                </p>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <Button
+                onClick={() => {
+                  setShowSerialModal(false);
+                  setSelectedAppointment(null);
+                  setSerialNumber("");
+                  setError("");
+                }}
+                variant="outline"
+                className="flex-1"
+                disabled={submitting}
+                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+              >
+                বাতিল
+              </Button>
+              <Button
+                onClick={handleConfirmWithSerial}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                disabled={submitting}
+                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    অপেক্ষা করুন...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    নিশ্চিত করুন
+                  </>
+                )}
+              </Button>
+            </div>
+          </Card>
         </div>
       )}
     </div>

@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IAppointment extends Document {
   doctorId: mongoose.Types.ObjectId;
-  serialNumber: string;
+  serialNumber?: string;
   patientName: string;
   mobileNumber: string;
   gender?: string;
@@ -30,7 +30,7 @@ const AppointmentSchema: Schema = new Schema(
     serialNumber: {
       type: String,
       unique: true,
-      required: [true, 'Serial number is required'],
+      sparse: true, // Allow multiple null values
     },
     patientName: {
       type: String,
@@ -100,8 +100,9 @@ const AppointmentSchema: Schema = new Schema(
 AppointmentSchema.index({ doctorId: 1, appointmentDate: 1 });
 AppointmentSchema.index({ mobileNumber: 1 });
 AppointmentSchema.index({ status: 1 });
-AppointmentSchema.index({ serialNumber: 1 });
+AppointmentSchema.index({ serialNumber: 1 }, { sparse: true });
 
+// Use existing model or create new one
 const Appointment = mongoose.models.Appointment || mongoose.model<IAppointment>('Appointment', AppointmentSchema);
 
 export default Appointment;
