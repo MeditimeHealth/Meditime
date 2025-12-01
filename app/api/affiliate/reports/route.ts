@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const affiliateId = affiliate._id;
+    const affiliateId = affiliate._id as any;
 
     // Base query for appointments with this affiliate code
     const baseAppointmentQuery: any = {
@@ -196,7 +196,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       affiliateCode: affiliateCode.toUpperCase(),
-      affiliateId: affiliateId.toString(),
+      affiliateId: affiliateId?.toString?.() ?? '',
       summary: {
         totalAffiliateCodeSubmissions: affiliateCodeSubmissions,
         totalCommissions: allCommissions.length,
