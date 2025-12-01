@@ -50,6 +50,11 @@ export async function POST(request: NextRequest) {
     affiliate.totalEarned = currentTotalEarned + addAmount;
     await affiliate.save();
 
+    const displayName =
+      (affiliate as any).fullName ||
+      (affiliate as any).name ||
+      "";
+
     return NextResponse.json({
       message: "Funds added successfully",
       wallet: {
@@ -60,8 +65,8 @@ export async function POST(request: NextRequest) {
       },
       affiliate: {
         _id: affiliate._id,
-        name: affiliate.fullName || affiliate.name,
-        affiliateCode: affiliate.affiliateCode,
+        name: displayName,
+        affiliateCode: (affiliate as any).affiliateCode,
       },
     });
 
