@@ -309,7 +309,7 @@ export default function BookingSuccessPage() {
               </div>
 
               {/* Affiliate Code if exists */}
-              {appointment.affiliateCode && (
+              {/* {appointment.affiliateCode && (
                 <div className="flex items-center justify-between py-2">
                   <div className="flex items-center gap-2 text-gray-500">
                     <Ticket className="h-4 w-4" />
@@ -317,7 +317,7 @@ export default function BookingSuccessPage() {
                   </div>
                   <span className="font-mono font-semibold text-gray-900">{appointment.affiliateCode}</span>
                 </div>
-              )}
+              )} */}
             </div>
 
             {/* Status Badge - Compact */}

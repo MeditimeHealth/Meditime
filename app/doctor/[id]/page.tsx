@@ -467,19 +467,19 @@ export default function DoctorProfilePage() {
           {/* Right Column - Desktop */}
           <div className="hidden lg:block space-y-6">
             {/* Book Appointment */}
-            <Card className="p-6 bg-gradient-to-br from-white to-emerald-50 border-2 border-primary/20 shadow-xl">
-              <h2
+            <div >
+              {/* <h2
                 className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
                 style={{
                   fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                 }}
               >
                 অ্যাপয়েন্টমেন্ট বুক করুন
-              </h2>
+              </h2> */}
               <div className="space-y-5">
                 <Link href={`/doctor/${doctorId}/book`}>
                   <Button
-                    className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all"
+                    className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-6 shadow-lg hover:shadow-xl transition-all"
                     style={{
                       fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                     }}
@@ -488,7 +488,7 @@ export default function DoctorProfilePage() {
                   </Button>
                 </Link>
               </div>
-            </Card>
+            </div>
 
             {/* Fees Section */}
             <Card className="p-6 bg-gradient-to-br from-white to-amber-50 border-2 border-primary/20 shadow-xl">
