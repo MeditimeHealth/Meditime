@@ -1,279 +1,197 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Plus, Building2, MapPin, Phone, Trash2, Edit } from "lucide-react";
+import { showToast } from "@/lib/toast";
 
-const hospitalSchema = z.object({
-  name: z.string().min(2, "Hospital name is required"),
-  division: z.string().min(1, "Division is required"),
-  district: z.string().min(1, "District is required"),
-  thana: z.string().min(1, "Thana is required"),
-  address: z.string().optional(),
-  phone: z.string().optional(),
-});
-
-type HospitalFormValues = z.infer<typeof hospitalSchema>;
-
-export default function AddHospitalPage() {
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-
-  // Location state
-  const [divisions, setDivisions] = useState<Array<{_id: string; name: string}>>([]);
-  const [districts, setDistricts] = useState<Array<{_id: string; name: string}>>([]);
-  const [thanas, setThanas] = useState<Array<{_id: string; name: string}>>([]);
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm<HospitalFormValues>({
-    resolver: zodResolver(hospitalSchema),
-    defaultValues: {
-      name: "",
-      division: "",
-      district: "",
-      thana: "",
-      address: "",
-      phone: "",
-    },
-  });
-
-  const watchedDivision = watch("division");
-  const watchedDistrict = watch("district");
-
-  // Fetch divisions on mount
-  useEffect(() => {
-    const fetchDivisions = async () => {
-      try {
-        const res = await fetch("/api/locations/divisions");
-        const data = await res.json();
-        if (data.divisions) setDivisions(data.divisions);
-      } catch (error) {
-        console.error("Error fetching divisions:", error);
-      }
+interface Hospital {
+  _id: string;
+  name: string;
+  address?: string;
+  phone?: string;
+  thana?: {
+    _id: string;
+    name: string;
+    district?: {
+      _id: string;
+      name: string;
+      division?: {
+        _id: string;
+        name: string;
+      };
     };
-    fetchDivisions();
-  }, []);
+  };
+}
 
-  // Fetch districts when division changes
+export default function HospitalsListPage() {
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [total, setTotal] = useState(0);
+
   useEffect(() => {
-    if (watchedDivision) {
-      const division = divisions.find(d => d.name === watchedDivision);
-      if (division) {
-        fetch(`/api/locations/districts?division=${division._id}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.districts) setDistricts(data.districts);
-          })
-          .catch(err => console.error("Error fetching districts:", err));
-      }
-      // Only reset if the value actually changed (this might be tricky with useEffect, 
-      // but since we are watching the value, this runs when value changes)
-      // We need to be careful not to reset if we are just loading existing data, 
-      // but here we are creating new, so it's fine.
-      // However, this runs on mount if default is empty string? No, empty string is falsy.
-      // But if user selects a division, this runs.
-      // We should probably check if the current district is valid for the new division?
-      // Actually, simply resetting is safer when division changes.
-      setValue("district", "");
-      setValue("thana", "");
-      setThanas([]);
-    }
-  }, [watchedDivision, divisions, setValue]);
+    fetchHospitals();
+  }, [page]);
 
-  // Fetch thanas when district changes
-  useEffect(() => {
-    if (watchedDistrict) {
-      const district = districts.find(d => d.name === watchedDistrict);
-      if (district) {
-        fetch(`/api/locations/thanas?district=${district._id}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.thanas) setThanas(data.thanas);
-          })
-          .catch(err => console.error("Error fetching thanas:", err));
-      }
-      setValue("thana", "");
-    }
-  }, [watchedDistrict, districts, setValue]);
-
-  const onSubmit = async (data: HospitalFormValues) => {
-    setIsLoading(true);
+  const fetchHospitals = async () => {
     try {
-      // Find the thana ID based on the selected name
-      const selectedThana = thanas.find(t => t.name === data.thana);
+      setLoading(true);
+      const response = await fetch(`/api/locations/hospitals?page=${page}&limit=20`);
+      const data = await response.json();
       
-      if (!selectedThana) {
-        alert("Invalid location selection");
-        setIsLoading(false);
-        return;
-      }
-
-      const response = await fetch("/api/locations/hospitals", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: data.name,
-          thana: selectedThana._id,
-          address: data.address,
-          phone: data.phone,
-        }),
-      });
-
-      const result = await response.json();
-
       if (response.ok) {
-        alert("Hospital added successfully!");
-        reset();
+        if (page === 1) {
+          setHospitals(data.hospitals || []);
+        } else {
+          setHospitals(prev => [...prev, ...(data.hospitals || [])]);
+        }
+        setHasMore(data.hasMore || false);
+        setTotal(data.total || 0);
       } else {
-        alert(result.error || "Failed to add hospital");
+        showToast.error(data.error || "Failed to fetch hospitals");
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("An error occurred. Please try again.");
+      console.error("Error fetching hospitals:", error);
+      showToast.error("Failed to fetch hospitals");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
+
+    try {
+      const response = await fetch(`/api/locations/hospitals/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setHospitals(hospitals.filter((hospital) => hospital._id !== id));
+        setTotal(prev => prev - 1);
+        showToast.success("Hospital deleted successfully");
+      } else {
+        const data = await response.json();
+        showToast.error(data.error || "Failed to delete hospital");
+      }
+    } catch (error) {
+      console.error("Error deleting hospital:", error);
+      showToast.error("Failed to delete hospital");
+    }
+  };
+
+  const getFullLocation = (hospital: Hospital) => {
+    const parts = [];
+    if (hospital.thana?.name) parts.push(hospital.thana.name);
+    if (hospital.thana?.district?.name) parts.push(hospital.thana.district.name);
+    if (hospital.thana?.district?.division?.name) parts.push(hospital.thana.district.division.name);
+    return parts.join(", ");
+  };
+
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">Add Hospital Info</h1>
-
-      <Card className="p-6 bg-white">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-        <div className="space-y-2">
-          <Label htmlFor="name" className="text-base font-semibold text-gray-700">
-            Hospital Name
-          </Label>
-          <Input
-            id="name"
-            {...register("name")}
-            placeholder="Name"
-            className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
-          />
-          {errors.name && (
-            <p className="text-sm text-red-500">{errors.name.message}</p>
-          )}
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">All Hospitals</h1>
+          <p className="text-gray-600 mt-2">
+            Manage hospital information ({total} total)
+          </p>
         </div>
-
-        <div className="space-y-2">
-          <Label className="text-base font-semibold text-gray-700">
-            Location
-          </Label>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="relative">
-              <select
-                {...register("division")}
-                className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500"
-              >
-                <option value="">By Division</option>
-                {divisions.map((div) => (
-                  <option key={div._id} value={div.name}>
-                    {div.name}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-              </div>
-            </div>
-
-            <div className="relative">
-              <select
-                {...register("district")}
-                disabled={!watchedDivision}
-                className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500 disabled:bg-gray-50 disabled:text-gray-400"
-              >
-                <option value="">By District</option>
-                {districts.map((dist) => (
-                  <option key={dist._id} value={dist.name}>
-                    {dist.name}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-              </div>
-            </div>
-
-            <div className="relative">
-              <select
-                {...register("thana")}
-                disabled={!watchedDistrict}
-                className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500 disabled:bg-gray-50 disabled:text-gray-400"
-              >
-                <option value="">By Thana</option>
-                {thanas.map((thana) => (
-                  <option key={thana._id} value={thana.name}>
-                    {thana.name}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-              </div>
-            </div>
-          </div>
-          {errors.division && <p className="text-sm text-red-500 mt-1">Division is required</p>}
-          {!errors.division && errors.district && <p className="text-sm text-red-500 mt-1">District is required</p>}
-          {!errors.division && !errors.district && errors.thana && <p className="text-sm text-red-500 mt-1">Thana is required</p>}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="address" className="text-base font-semibold text-gray-700">
-            Hospital Address
-          </Label>
-          <Input
-            id="address"
-            {...register("address")}
-            placeholder="Hospital Address"
-            className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="phone" className="text-base font-semibold text-gray-700">
-            Hospital contact no
-          </Label>
-          <Input
-            id="phone"
-            {...register("phone")}
-            placeholder="+880123456789"
-            className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
-          />
-        </div>
-
-        <div className="pt-4">
-          <Button 
-            type="submit" 
-            className="w-full md:w-auto px-8 py-3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-colors"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              "Save Hospital Info"
-            )}
+        <Link href="/admin/hospitals/create">
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Hospital
           </Button>
+        </Link>
+      </div>
+
+      {loading && page === 1 ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-gray-500">Loading hospitals...</div>
         </div>
-      </form>
-      </Card>
+      ) : hospitals.length === 0 ? (
+        <Card className="p-12 text-center">
+          <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-500 mb-4">No hospitals found</p>
+          <Link href="/admin/hospitals/create">
+            <Button>Add First Hospital</Button>
+          </Link>
+        </Card>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {hospitals.map((hospital) => (
+              <Card key={hospital._id} className="p-6 hover:shadow-lg transition-shadow">
+                <div className="space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-purple-100 rounded-lg">
+                        <Building2 className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {hospital.name}
+                        </h3>
+                        {getFullLocation(hospital) && (
+                          <div className="flex items-start gap-1 mt-1">
+                            <MapPin className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                            <p className="text-sm text-gray-600">
+                              {getFullLocation(hospital)}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {hospital.address && (
+                    <div className="flex items-start gap-2">
+                      <div className="text-sm text-gray-600">
+                        <span className="font-medium">Address:</span> {hospital.address}
+                      </div>
+                    </div>
+                  )}
+
+                  {hospital.phone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-gray-400" />
+                      <p className="text-sm text-gray-600">{hospital.phone}</p>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2 pt-2 border-t border-gray-100">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => handleDelete(hospital._id, hospital.name)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {hasMore && (
+            <div className="flex justify-center">
+              <Button
+                variant="outline"
+                onClick={() => setPage(prev => prev + 1)}
+                disabled={loading}
+              >
+                {loading ? "Loading..." : "Load More"}
+              </Button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

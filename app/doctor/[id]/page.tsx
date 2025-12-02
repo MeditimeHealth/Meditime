@@ -88,6 +88,7 @@ export default function DoctorProfilePage() {
   const [loading, setLoading] = useState(true);
   const [selectedChamber, setSelectedChamber] = useState<string>("");
   const [affiliateCode, setAffiliateCode] = useState<string>("");
+  const [departmentDiseases, setDepartmentDiseases] = useState<string[]>([]);
 
   useEffect(() => {
     if (doctorId) {
@@ -103,6 +104,11 @@ export default function DoctorProfilePage() {
       const data = await response.json();
       if (response.ok && data.doctor) {
         setDoctor(data.doctor);
+        
+        // Fetch diseases for the doctor's department
+        if (data.doctor.department) {
+          fetchDepartmentDiseases(data.doctor.department);
+        }
       } else {
         router.push("/doctor");
       }
@@ -111,6 +117,32 @@ export default function DoctorProfilePage() {
       router.push("/doctor");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchDepartmentDiseases = async (departmentName: string) => {
+    try {
+      // First, get the department ID by name
+      const deptResponse = await fetch(`/api/departments?name=${encodeURIComponent(departmentName)}`);
+      const deptData = await deptResponse.json();
+      
+      if (deptData.departments && deptData.departments.length > 0) {
+        const department = deptData.departments[0];
+        
+        // Then fetch diseases for this department
+        const diseaseResponse = await fetch(`/api/diseases?department=${department._id}`);
+        const diseaseData = await diseaseResponse.json();
+        
+        if (diseaseData.diseases && diseaseData.diseases.length > 0) {
+          // Extract bangla names from diseases
+          const diseaseBanglaNames = diseaseData.diseases
+            .map((disease: { bangla: string }) => disease.bangla)
+            .filter((name: string) => name); // Filter out empty names
+          setDepartmentDiseases(diseaseBanglaNames);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching department diseases:", error);
     }
   };
 
@@ -290,8 +322,8 @@ export default function DoctorProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Desktop and Tablet */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Diseases Treated Section */}
-            {doctor.diseases && doctor.diseases.length > 0 && (
+            {/* Diseases Treated Section - Show diseases based on department */}
+            {departmentDiseases.length > 0 && (
               <Card className="p-8 bg-gradient-to-br from-white to-blue-50 border-2 border-primary/20 shadow-xl">
                 <h2
                   className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
@@ -302,20 +334,38 @@ export default function DoctorProfilePage() {
                   যে সকল রোগের চিকিৎসা করা হয়
                 </h2>
                 <div className="bg-white p-6 rounded-xl border-2 border-primary/10 shadow-md">
-                  <ul className="space-y-3">
-                    {doctor.diseases.map((disease, index) => (
-                      <li
-                        key={index}
-                        className="flex items-start gap-3 text-base md:text-lg font-semibold text-gray-800"
-                        style={{
-                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
-                      >
-                        <span className="text-primary mt-1">•</span>
-                        <span>{disease}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* First Column */}
+                    <ul className="space-y-3">
+                      {departmentDiseases.slice(0, Math.ceil(departmentDiseases.length / 2)).map((disease, index) => (
+                        <li
+                          key={index}
+                          className="flex items-start gap-3 text-base md:text-lg font-semibold text-gray-800"
+                          style={{
+                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                          }}
+                        >
+                          <span className="text-primary mt-1">•</span>
+                          <span>{disease}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    {/* Second Column */}
+                    <ul className="space-y-3">
+                      {departmentDiseases.slice(Math.ceil(departmentDiseases.length / 2)).map((disease, index) => (
+                        <li
+                          key={index}
+                          className="flex items-start gap-3 text-base md:text-lg font-semibold text-gray-800"
+                          style={{
+                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                          }}
+                        >
+                          <span className="text-primary mt-1">•</span>
+                          <span>{disease}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </Card>
             )}

@@ -5,7 +5,18 @@ import Disease from "@/models/Disease";
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
-    const diseases = await Disease.find({})
+    
+    // Get query parameters
+    const searchParams = request.nextUrl.searchParams;
+    const departmentFilter = searchParams.get("department");
+    
+    // Build query
+    const query: any = {};
+    if (departmentFilter) {
+      query.department = departmentFilter;
+    }
+    
+    const diseases = await Disease.find(query)
       .populate('department', 'name bangla emoji')
       .sort({ bangla: 1 });
     return NextResponse.json({ diseases }, { status: 200 });
@@ -22,14 +33,7 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { name, bangla, departmentId } = body;
-
-    if (!name || !bangla) {
-      return NextResponse.json(
-        { error: "Name and Bengali name are required" },
-        { status: 400 }
-      );
-    }
+    const { name, names, bangla, departmentId } = body;
 
     // Validate department if provided
     if (departmentId) {
@@ -43,9 +47,57 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Handle bulk creation
+    if (names && Array.isArray(names) && names.length > 0) {
+      const diseasesToCreate = names.map((n: string) => ({
+        name: n,
+        bangla: bangla || n, // Use same name if bangla not provided
+        department: departmentId || undefined
+      }));
+
+      // Use insertMany but we need to handle potential duplicates gracefully
+      // However, insertMany with ordered: false might be better, or just loop
+      // For simplicity and error reporting, let's loop or use Promise.all
+      
+      const createdDiseases = [];
+      const errors = [];
+
+      for (const diseaseData of diseasesToCreate) {
+        try {
+          // Check for duplicate
+          const existing = await Disease.findOne({ name: diseaseData.name });
+          if (existing) {
+            errors.push(`Disease '${diseaseData.name}' already exists`);
+            continue;
+          }
+          const disease = await Disease.create(diseaseData);
+          createdDiseases.push(disease);
+        } catch (err: any) {
+          errors.push(`Failed to create '${diseaseData.name}': ${err.message}`);
+        }
+      }
+
+      return NextResponse.json(
+        { 
+          message: `Processed ${names.length} diseases`, 
+          created: createdDiseases,
+          errors: errors.length > 0 ? errors : undefined
+        },
+        { status: 201 }
+      );
+    }
+
+    // Handle single creation (legacy support or single entry)
+    if (!name) {
+      return NextResponse.json(
+        { error: "Name is required" },
+        { status: 400 }
+      );
+    }
+
     const disease = await Disease.create({ 
       name, 
-      bangla, 
+      bangla: bangla || name, 
       department: departmentId || undefined 
     });
     

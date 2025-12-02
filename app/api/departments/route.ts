@@ -5,7 +5,18 @@ import Department from "@/models/Department";
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
-    const departments = await Department.find({}).sort({ name: 1 });
+    
+    // Get query parameters
+    const searchParams = request.nextUrl.searchParams;
+    const nameFilter = searchParams.get("name");
+    
+    // Build query
+    const query: any = {};
+    if (nameFilter) {
+      query.name = nameFilter;
+    }
+    
+    const departments = await Department.find(query).sort({ name: 1 });
     return NextResponse.json({ departments }, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching departments:", error);

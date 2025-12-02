@@ -305,7 +305,7 @@ export default function DepartmentsPage() {
                     <img src={department.image} alt={department.name} className="w-12 h-12 object-cover rounded" />
                   )}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 truncate">
+                    <h3 className="font-semibold text-gray-900 break-words">
                       {department.name}
                     </h3>
                   </div>

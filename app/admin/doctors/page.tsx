@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { showToast } from "@/lib/toast";
 
 interface Doctor {
   _id: string;
@@ -61,14 +62,14 @@ export default function DoctorsPage() {
       if (response.ok) {
         // Remove doctor from list
         setDoctors(doctors.filter((doctor) => doctor._id !== id));
-        alert("Doctor deleted successfully");
+        showToast.success("Doctor deleted successfully");
       } else {
         const data = await response.json();
-        alert(data.error || "Failed to delete doctor");
+        showToast.error(data.error || "Failed to delete doctor");
       }
     } catch (error) {
       console.error("Error deleting doctor:", error);
-      alert("Failed to delete doctor");
+      showToast.error("Failed to delete doctor");
     }
   };
 

@@ -18,7 +18,7 @@ const DiseaseSchema: Schema = new Schema(
     },
     bangla: {
       type: String,
-      required: [true, 'Bengali name is required'],
+      required: false,
       trim: true,
     },
     department: {

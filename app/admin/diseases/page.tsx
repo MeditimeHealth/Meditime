@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { Plus, X, Edit, Trash2, Filter } from "lucide-react";
+import { Plus, X, Edit, Trash2, Filter, Minus } from "lucide-react";
 
 interface Department {
   _id: string;
@@ -28,11 +28,10 @@ export default function DiseasesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState<string>("all");
-  const [formData, setFormData] = useState({
-    name: "",
-    bangla: "",
-    departmentId: "",
-  });
+  
+  // Form state
+  const [departmentId, setDepartmentId] = useState<string>("");
+  const [diseaseNames, setDiseaseNames] = useState<string[]>([""]);
 
   useEffect(() => {
     fetchDiseases();
@@ -66,6 +65,22 @@ export default function DiseasesPage() {
     }
   };
 
+  const handleAddNameField = () => {
+    setDiseaseNames([...diseaseNames, ""]);
+  };
+
+  const handleRemoveNameField = (index: number) => {
+    const newNames = [...diseaseNames];
+    newNames.splice(index, 1);
+    setDiseaseNames(newNames);
+  };
+
+  const handleNameChange = (index: number, value: string) => {
+    const newNames = [...diseaseNames];
+    newNames[index] = value;
+    setDiseaseNames(newNames);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -76,10 +91,23 @@ export default function DiseasesPage() {
         : "/api/diseases";
       const method = editingId ? "PUT" : "POST";
 
+      // Filter out empty names
+      const validNames = diseaseNames.filter(n => n.trim() !== "");
+      
+      if (validNames.length === 0) {
+        alert("Please enter at least one disease name");
+        setLoading(false);
+        return;
+      }
+
+      const payload = editingId 
+        ? { name: validNames[0], departmentId } // For edit, we only take the first name
+        : { names: validNames, departmentId }; // For create, we send array
+
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
@@ -88,8 +116,14 @@ export default function DiseasesPage() {
         await fetchDiseases();
         setShowForm(false);
         setEditingId(null);
-        setFormData({ name: "", bangla: "", departmentId: "" });
-        alert(editingId ? "Disease updated successfully" : "Disease created successfully");
+        setDepartmentId("");
+        setDiseaseNames([""]);
+        
+        if (result.errors && result.errors.length > 0) {
+          alert(`Some diseases were created, but errors occurred:\n${result.errors.join("\n")}`);
+        } else {
+          alert(editingId ? "Disease updated successfully" : "Diseases created successfully");
+        }
       } else {
         alert(result.error || "Failed to save disease");
       }
@@ -103,11 +137,8 @@ export default function DiseasesPage() {
 
   const handleEdit = (disease: Disease) => {
     setEditingId(disease._id);
-    setFormData({
-      name: disease.name,
-      bangla: disease.bangla,
-      departmentId: disease.department?._id || "",
-    });
+    setDepartmentId(disease.department?._id || "");
+    setDiseaseNames([disease.name]);
     setShowForm(true);
   };
 
@@ -153,7 +184,7 @@ export default function DiseasesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">সকল রোগ (All Diseases)</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Manage Diseases</h1>
         <p className="text-gray-600 mt-2">Create and manage diseases/conditions</p>
       </div>
 
@@ -184,7 +215,8 @@ export default function DiseasesPage() {
           onClick={() => {
             setShowForm(!showForm);
             setEditingId(null);
-            setFormData({ name: "", bangla: "", departmentId: "" });
+            setDepartmentId("");
+            setDiseaseNames([""]);
           }}
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -197,7 +229,7 @@ export default function DiseasesPage() {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">
-              {editingId ? "Edit Disease" : "Create Disease"}
+              {editingId ? "Edit Disease" : "Create Diseases"}
             </h2>
             <Button
               variant="ghost"
@@ -205,7 +237,8 @@ export default function DiseasesPage() {
               onClick={() => {
                 setShowForm(false);
                 setEditingId(null);
-                setFormData({ name: "", bangla: "", departmentId: "" });
+                setDepartmentId("");
+                setDiseaseNames([""]);
               }}
             >
               <X className="h-4 w-4" />
@@ -213,60 +246,60 @@ export default function DiseasesPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">
-                  Disease Name (English) <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  placeholder="Breast Cancer"
-                  required
-                  className="mt-1"
-                />
-              </div>
+            <div>
+              <Label htmlFor="department">Department (Optional)</Label>
+              <Select
+                id="department"
+                value={departmentId}
+                onChange={(e) => setDepartmentId(e.target.value)}
+                className="mt-1"
+              >
+                <option value="">None</option>
+                {departments.map((dept) => (
+                  <option key={dept._id} value={dept._id}>
+                    {dept.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
 
-              <div>
-                <Label htmlFor="bangla">
-                  Disease Name (Bengali) <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="bangla"
-                  value={formData.bangla}
-                  onChange={(e) =>
-                    setFormData({ ...formData, bangla: e.target.value })
-                  }
-                  placeholder="ব্রেস্ট ক্যান্সার"
-                  required
-                  className="mt-1"
-                  style={{
-                    fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="department">Department (Optional)</Label>
-                <Select
-                  id="department"
-                  value={formData.departmentId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, departmentId: e.target.value })
-                  }
-                  className="mt-1"
+            <div className="space-y-3">
+              <Label>Disease Names</Label>
+              {diseaseNames.map((name, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    value={name}
+                    onChange={(e) => handleNameChange(index, e.target.value)}
+                    placeholder="Enter disease name"
+                    required={index === 0} // Only first one required
+                    className="flex-1"
+                  />
+                  {!editingId && diseaseNames.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleRemoveNameField(index)}
+                      className="shrink-0 px-2"
+                    >
+                      <Minus className="h-4 w-4 text-red-500" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              
+              {!editingId && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddNameField}
+                  className="mt-2"
                 >
-                  <option value="">None</option>
-                  {departments.map((dept) => (
-                    <option key={dept._id} value={dept._id}>
-                      {dept.name}
-                    </option>
-                  ))}
-                </Select>
-              </div>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Another Name
+                </Button>
+              )}
             </div>
 
             <div className="flex gap-2 pt-4">
@@ -275,7 +308,7 @@ export default function DiseasesPage() {
                   ? "Saving..."
                   : editingId
                   ? "Update Disease"
-                  : "Create Disease"}
+                  : "Create Diseases"}
               </Button>
               <Button
                 type="button"
@@ -283,7 +316,8 @@ export default function DiseasesPage() {
                 onClick={() => {
                   setShowForm(false);
                   setEditingId(null);
-                  setFormData({ name: "", bangla: "", departmentId: "" });
+                  setDepartmentId("");
+                  setDiseaseNames([""]);
                 }}
               >
                 Cancel
@@ -314,15 +348,6 @@ export default function DiseasesPage() {
                       {disease.name}
                     </h3>
                   </div>
-                  <p
-                    className="text-sm text-gray-600 mt-1"
-                    style={{
-                      fontFamily:
-                        "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
-                  >
-                    {disease.bangla}
-                  </p>
                   {disease.department && (
                     <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
                       <span>{disease.department.name}</span>
@@ -354,4 +379,3 @@ export default function DiseasesPage() {
     </div>
   );
 }
-

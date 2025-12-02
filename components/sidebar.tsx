@@ -56,9 +56,14 @@ const menuItems = [
     href: "/admin/doctors",
   },
   {
-    title: "Add Hospital",
+    title: "Hospitals",
     icon: Building2,
     href: "/admin/hospitals",
+  },
+  {
+    title: "Doctor-Hospital",
+    icon: Stethoscope,
+    href: "/admin/doctor-hospitals",
   },
   {
     title: "Blood Donors",

@@ -11,13 +11,14 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import { Plus, X } from "lucide-react";
+import { showToast } from "@/lib/toast";
 const doctorSchema = z.object({
   name: z.string().min(2, "Name is required"),
   qualification: z.string().min(2, "Qualification is required"),
   currentPosition: z.string().optional(),
   experience: z.preprocess(
     (val) => (val === "" || val === undefined ? undefined : Number(val)),
-    z.number().min(0, "Experience must be at least 0")
+    z.number().min(0, "Experience must be at least 0").optional()
   ),
   hospital: z.string().optional(),
   division: z.string().optional(),
@@ -37,7 +38,6 @@ const doctorSchema = z.object({
     (val) => (val === "" || val === undefined ? undefined : Number(val)),
     z.number().min(0, "New patient fee must be at least 0").optional()
   ),
-  diseases: z.array(z.string()).optional(),
   bio: z.string().optional(),
   image: z.string().optional(),
   availabilitySlots: z.array(z.object({
@@ -116,8 +116,6 @@ export default function CreateDoctorPage() {
   const [selectedHospitalName, setSelectedHospitalName] = useState("");
   const hospitalDropdownRef = useRef<HTMLDivElement>(null);
   const [departments, setDepartments] = useState<Array<{_id: string; name: string; image?: string}>>([]);
-  const [diseases, setDiseases] = useState<Array<{_id: string; name: string; bangla: string}>>([]);
-  const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
 
   const [availabilitySlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>([
     { days: [], startTime: "", endTime: "", chamber: "" },
@@ -242,15 +240,6 @@ export default function CreateDoctorPage() {
       .then((res) => res.json())
       .then((data) => {
         if (data.departments) setDepartments(data.departments);
-      });
-  }, []);
-
-  // Fetch diseases on mount
-  useEffect(() => {
-    fetch("/api/diseases")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.diseases) setDiseases(data.diseases);
       });
   }, []);
 
@@ -402,13 +391,13 @@ export default function CreateDoctorPage() {
     if (file) {
       // Validate file type
       if (!file.type.startsWith("image/")) {
-        alert("Please select an image file");
+        showToast.error("Please select an image file");
         return;
       }
       
       // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
-        alert("Image size must be less than 10MB");
+        showToast.error("Image size must be less than 10MB");
         return;
       }
 
@@ -453,7 +442,7 @@ export default function CreateDoctorPage() {
           imageUrl = await uploadImage(selectedImage);
           setValue("image", imageUrl);
         } catch (error: any) {
-          alert(error.message || "Failed to upload image. Please try again.");
+          showToast.error(error.message || "Failed to upload image. Please try again.");
           setIsLoading(false);
           setIsUploading(false);
           return;
@@ -477,13 +466,14 @@ export default function CreateDoctorPage() {
       const result = await response.json();
 
       if (response.ok) {
+        showToast.success("Doctor profile created successfully!");
         router.push("/admin/doctors");
-        alert("Doctor profile created successfully!");
       } else {
-        alert(result.error || "Failed to create doctor profile");
+        showToast.error(result.error || "Failed to create doctor profile");
       }
-    } catch (error) {
-      alert("An error occurred. Please try again.");
+    } catch (err) {
+      console.error("Error creating doctor:", err);
+      showToast.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -543,7 +533,7 @@ export default function CreateDoctorPage() {
 
             <div>
               <Label htmlFor="experience">
-                Experience (Years) <span className="text-red-500">*</span>
+                Experience (Years) <span className="text-gray-500 text-xs">(Optional)</span>
               </Label>
               <Input
                 id="experience"
@@ -762,58 +752,6 @@ export default function CreateDoctorPage() {
                 <p className="text-sm text-red-500 mt-1">{errors.oldPatientFee.message}</p>
               )}
             </div>
-
-            {/* <div className="md:col-span-2">
-              <Label className="mb-3 block font-semibold text-gray-900">
-                যে সকল রোগের চিকিৎসা করা হয় (Diseases Treated) <span className="text-gray-500 text-xs">(Optional)</span>
-              </Label>
-              <div className="max-h-60 overflow-y-auto border-2 border-gray-300 rounded-lg p-4 bg-white">
-                {diseases.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">
-                    No diseases available. Please add diseases from the admin panel.
-                  </p>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {diseases.map((disease) => (
-                      <label
-                        key={disease._id}
-                        className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedDiseases.includes(disease.bangla)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              const updated = [...selectedDiseases, disease.bangla];
-                              setSelectedDiseases(updated);
-                              setValue("diseases", updated);
-                            } else {
-                              const updated = selectedDiseases.filter(d => d !== disease.bangla);
-                              setSelectedDiseases(updated);
-                              setValue("diseases", updated);
-                            }
-                          }}
-                          className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
-                        />
-                        <span
-                          className="text-sm"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {disease.bangla}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {selectedDiseases.length > 0 && (
-                <p className="text-xs text-gray-500 mt-2">
-                  {selectedDiseases.length} disease(s) selected
-                </p>
-              )}
-            </div> */}
 
             <div className="md:col-span-2">
               <Label htmlFor="image">Profile Image</Label>
