@@ -1,18 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
+import Doctor from "@/models/Doctor";
 import bcrypt from "bcryptjs";
 
-// PUT - Update doctor profile (username and password)
+// PUT - Update doctor profile (username, password, and doctor details)
 export async function PUT(request: NextRequest) {
   try {
     await dbConnect();
 
     const body = await request.json();
-    const { username, password } = body;
-
-    // Get user ID from request body (sent from client)
-    const userId = body.userId;
+    const { 
+      username, 
+      password, 
+      userId,
+      // Doctor details
+      hospital,
+      specialty,
+      qualification,
+      experience,
+      consultationFee,
+      oldPatientFee,
+      newPatientFee,
+      division,
+      district,
+      thana,
+      chamber,
+      department,
+      bio,
+      image,
+      currentPosition
+    } = body;
 
     if (!userId) {
       return NextResponse.json(
@@ -61,6 +79,31 @@ export async function PUT(request: NextRequest) {
     }
 
     await user.save();
+
+    // Update Doctor details if phone number exists
+    if (user.phoneNumber) {
+      const doctor = await Doctor.findOne({ phoneNumber: user.phoneNumber });
+      
+      if (doctor) {
+        if (hospital !== undefined) doctor.hospital = hospital;
+        if (specialty !== undefined) doctor.specialty = specialty;
+        if (qualification !== undefined) doctor.qualification = qualification;
+        if (experience !== undefined) doctor.experience = experience;
+        if (consultationFee !== undefined) doctor.consultationFee = consultationFee;
+        if (oldPatientFee !== undefined) doctor.oldPatientFee = oldPatientFee;
+        if (newPatientFee !== undefined) doctor.newPatientFee = newPatientFee;
+        if (division !== undefined) doctor.division = division;
+        if (district !== undefined) doctor.district = district;
+        if (thana !== undefined) doctor.thana = thana;
+        if (chamber !== undefined) doctor.chamber = chamber;
+        if (department !== undefined) doctor.department = department;
+        if (bio !== undefined) doctor.bio = bio;
+        if (image !== undefined) doctor.image = image;
+        if (currentPosition !== undefined) doctor.currentPosition = currentPosition;
+        
+        await doctor.save();
+      }
+    }
 
     // Return updated user (without password)
     const userData = {
