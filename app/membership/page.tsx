@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Crown, Sparkles, Star, Building2, Check, Phone, User, Users, MapPin } from "lucide-react";
+import { Crown, Sparkles, Star, Building2, Check } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import { useRouter } from "next/navigation";
 
 const membershipPlans = [
   {
@@ -89,122 +89,11 @@ const membershipPlans = [
 ];
 
 export default function MembershipPage() {
-  const [selectedPlan, setSelectedPlan] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    mobileNumber: "",
-    cardPackage: "",
-    membersCovered: 0,
-    deliveryAddress: "",
-    company: "",
-    companyIdNumber: "",
-  });
-
-  const CARD_FEE = 500;
-  const DELIVERY_CHARGE = 150;
-
-  const getMembersCovered = (packageType: string) => {
-    switch (packageType) {
-      case "silver":
-        return 2;
-      case "gold":
-        return 3;
-      case "platinum":
-        return 5;
-      case "corporate":
-        return 0; // Will be custom
-      default:
-        return 0;
-    }
-  };
-
-  const getMembershipPrice = (packageType: string) => {
-    switch (packageType) {
-      case "silver":
-        return 1000;
-      case "gold":
-        return 2500;
-      case "platinum":
-        return 5000;
-      case "corporate":
-        return 0; // Custom pricing
-      default:
-        return 0;
-    }
-  };
-
-  const calculateTotal = (packageType: string) => {
-    const membershipPrice = getMembershipPrice(packageType);
-    if (packageType === "corporate") {
-      return null; // Custom pricing for corporate
-    }
-    return membershipPrice + CARD_FEE + DELIVERY_CHARGE;
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    
-    if (name === "cardPackage") {
-      const membersCovered = getMembersCovered(value);
-      setFormData(prev => ({ 
-        ...prev, 
-        [name]: value,
-        membersCovered: membersCovered
-      }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
-  };
-
+  const router = useRouter();
+  
   const handleSelectPlan = (planId: string) => {
     // Navigate to detail page
-    window.location.href = `/membership/${planId}`;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      // Create membership application
-      const response = await fetch("/api/memberships", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Initiate payment
-        const paymentResponse = await fetch("/api/memberships/payment", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ membershipId: data.membershipId }),
-        });
-
-        const paymentData = await paymentResponse.json();
-
-        if (paymentResponse.ok && paymentData.gatewayUrl) {
-          // Redirect to payment gateway
-          window.location.href = paymentData.gatewayUrl;
-        } else {
-          alert("Failed to initiate payment. Please try again.");
-        }
-      } else {
-        alert(data.error || "Failed to submit membership application");
-      }
-    } catch (error) {
-      console.error("Error submitting membership:", error);
-      alert("An error occurred. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    router.push(`/membership/${planId}`);
   };
 
   return (
@@ -245,11 +134,9 @@ export default function MembershipPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`relative bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 flex flex-col h-full ${
-                  selectedPlan === plan.id ? "border-primary scale-105" : "border-gray-100"
-                }`}
+                className="relative bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 border-gray-100 flex flex-col h-full"
               >
-                {plan.popular && (
+                {'popular' in plan && plan.popular && (
                   <div className="absolute top-4 right-4 bg-gradient-to-r from-primary to-primary-dark text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg z-10">
                     Most Popular
                   </div>
