@@ -4,6 +4,7 @@ import SearchSection from "@/components/search-section";
 import ServicesSection from "@/components/services-section";
 import WhyChooseSection from "@/components/why-choose-section";
 import DepartmentSection from "@/components/department-section";
+import MembershipSection from "@/components/membership-section";
 import StatsSection from "@/components/stats-section";
 import PatientReviewSection from "@/components/patient-review-section";
 import HospitalPartnersSection from "@/components/hospital-partners-section";
@@ -21,6 +22,7 @@ export default function Home() {
       <ServicesSection />
       <WhyChooseSection />
       <DepartmentSection />
+      <MembershipSection />
       <StatsSection />
       <PatientReviewSection />
       <HospitalPartnersSection />

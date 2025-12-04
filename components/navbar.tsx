@@ -157,7 +157,7 @@ export default function Navbar() {
                   alt="Logo" 
                   width={120} 
                   height={120} 
-                  className="h-10 sm:h-10 md:h-10 w-auto cursor-pointer" 
+                  className="h-8 sm:h-8 md:h-8 w-auto cursor-pointer" 
                   priority
                 />
               </Link>

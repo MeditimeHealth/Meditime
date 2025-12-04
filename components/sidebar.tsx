@@ -23,7 +23,8 @@ import {
   Wallet,
   Camera,
   FileText,
-  DollarSign
+  DollarSign,
+  CreditCard
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -114,6 +115,11 @@ const menuItems = [
     title: "Service Sections",
     icon: Briefcase,
     href: "/admin/service-sections",
+  },
+  {
+    title: "Memberships",
+    icon: CreditCard,
+    href: "/admin/memberships",
   },
   {
     title: "Settings",
