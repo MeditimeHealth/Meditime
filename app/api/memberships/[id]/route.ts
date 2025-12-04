@@ -4,13 +4,13 @@ import Membership from "@/models/Membership";
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
 
     const body = await request.json();
-    const { id } = params;
+    const { id } = await params;
 
     const membership = await Membership.findByIdAndUpdate(
       id,
@@ -41,12 +41,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await params;
 
     const membership = await Membership.findByIdAndDelete(id);
 
