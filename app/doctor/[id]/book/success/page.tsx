@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,7 +50,7 @@ const getGenderLabel = (gender: string) => {
 };
 
 
-export default function BookingSuccessPage() {
+function BookingSuccessContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const doctorId = params?.id as string;
@@ -424,5 +424,20 @@ export default function BookingSuccessPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function BookingSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">লোড হচ্ছে...</p>
+        </div>
+      </div>
+    }>
+      <BookingSuccessContent />
+    </Suspense>
   );
 }

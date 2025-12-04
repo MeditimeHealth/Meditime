@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { CheckCircle, ArrowRight } from "lucide-react";
@@ -7,15 +8,12 @@ import Link from "next/link";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 
-export default function PaymentSuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const transactionId = searchParams.get("tran_id") || "";
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
-      
-      <div className="min-h-[80vh] flex items-center justify-center py-16 px-4">
+    <div className="min-h-[80vh] flex items-center justify-center py-16 px-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -87,7 +85,25 @@ export default function PaymentSuccessPage() {
           </div>
         </motion.div>
       </div>
+  );
+}
 
+export default function PaymentSuccessPage() {
+  return (
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      <Suspense
+        fallback={
+          <div className="min-h-[80vh] flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading...</p>
+            </div>
+          </div>
+        }
+      >
+        <SuccessContent />
+      </Suspense>
       <Footer />
     </div>
   );
