@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Membership from "@/models/Membership";
-import { initiateSSLCommerzPayment } from "@/lib/sslcommerz";
+import { initiatePayment } from "@/lib/sslcommerz";
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,10 +34,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Prepare SSLCommerz payment data
+    const tran_id = `MEMBERSHIP_${membership._id}_${Date.now()}`;
+    
     const paymentData = {
       total_amount: membership.totalAmount,
       currency: "BDT",
-      tran_id: `MEMBERSHIP_${membership._id}_${Date.now()}`,
+      tran_id: tran_id,
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/membership/payment/success`,
       fail_url: `${process.env.NEXT_PUBLIC_APP_URL}/membership/payment/fail`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/membership/payment/cancel`,
@@ -46,34 +48,26 @@ export async function POST(request: NextRequest) {
       product_category: "Membership",
       product_profile: "general",
       cus_name: membership.name,
-      cus_email: "customer@meditime.com", // You might want to add email to membership
+      cus_email: "customer@meditime.com",
       cus_phone: membership.mobileNumber,
       cus_add1: membership.deliveryAddress,
       cus_city: "Dhaka",
       cus_country: "Bangladesh",
       shipping_method: "YES",
-      num_of_item: 1,
-      value_a: membershipId, // Pass membership ID for reference
     };
 
-    const paymentResponse = await initiateSSLCommerzPayment(paymentData);
+    // initiatePayment returns the gateway URL directly
+    const gatewayUrl = await initiatePayment(paymentData);
 
-    if (paymentResponse.status === "SUCCESS") {
-      // Update membership with transaction ID
-      membership.transactionId = paymentData.tran_id;
-      await membership.save();
+    // Update membership with transaction ID
+    membership.transactionId = tran_id;
+    await membership.save();
 
-      return NextResponse.json({
-        success: true,
-        gatewayUrl: paymentResponse.GatewayPageURL,
-        transactionId: paymentData.tran_id,
-      });
-    } else {
-      return NextResponse.json(
-        { error: "Failed to initiate payment" },
-        { status: 500 }
-      );
-    }
+    return NextResponse.json({
+      success: true,
+      gatewayUrl: gatewayUrl,
+      transactionId: tran_id,
+    });
   } catch (error) {
     console.error("Error initiating payment:", error);
     return NextResponse.json(
