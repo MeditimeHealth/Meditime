@@ -109,7 +109,7 @@ export default function MembershipSection() {
 
               <Link href="/membership">
                 <button className="bg-gradient-to-r from-primary to-primary-dark text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2 w-full lg:w-auto justify-center">
-                  Join Now
+                  View All Plans
                   <ArrowRight className="w-5 h-5" />
                 </button>
               </Link>
