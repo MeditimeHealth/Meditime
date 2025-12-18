@@ -12,50 +12,92 @@ import "swiper/css/navigation";
 const hospitals = [
   {
     id: 1,
-    name: "ঢাকা মেডিকেল কলেজ হাসপাতাল",
-    location: "ঢাকা",
+    name: "Popular Diagnostic Center Ltd.",
+    location: "Savar",
     logo: null,
   },
   {
     id: 2,
-    name: "বঙ্গবন্ধু শেখ মুজিব মেডিকেল বিশ্ববিদ্যালয়",
-    location: "ঢাকা",
+    name: "KPJ Specialized Hospital & Nursing College",
+    location: "C/12, Nabinagar - Chandra Road, Near DEPZ Tetuibari",
     logo: null,
   },
   {
     id: 3,
-    name: "চট্টগ্রাম মেডিকেল কলেজ হাসপাতাল",
-    location: "চট্টগ্রাম",
+    name: "Enam Medical College Hospital",
+    location: "Savar, Dhaka",
     logo: null,
   },
   {
     id: 4,
-    name: "সিলেট এম.এ.জি. ওসমানী মেডিকেল কলেজ হাসপাতাল",
-    location: "সিলেট",
+    name: "Modern Hospital & Diagnostic Centre",
+    location: "Aricha Road, Talbag Savar Dhaka",
     logo: null,
   },
   {
     id: 5,
-    name: "রাজশাহী মেডিকেল কলেজ হাসপাতাল",
-    location: "রাজশাহী",
+    name: "LabOne Hospital",
+    location: "Tetuibari, DEPZ Road Mojarmil Bus Stand, Kashimpur, Gazipur",
     logo: null,
   },
   {
     id: 6,
-    name: "খুলনা মেডিকেল কলেজ হাসপাতাল",
-    location: "খুলনা",
+    name: "Islamia Digital Lab And Hospital",
+    location: "Savar - Paurashava, Savar Upazila, Dhaka Division",
     logo: null,
   },
   {
     id: 7,
-    name: "ময়মনসিংহ মেডিকেল কলেজ হাসপাতাল",
-    location: "ময়মনসিংহ",
+    name: "Savar Prime Hospital Limited",
+    location: "Thana Rd, Bus Stand, Savar 1340",
     logo: null,
   },
   {
     id: 8,
-    name: "কুমিল্লা মেডিকেল কলেজ হাসপাতাল",
-    location: "কুমিল্লা",
+    name: "Tanha Health Care Hospital",
+    location: "Shafipur, Kaliakair, Dhaka-Tangail Highway, Shafipur Bazar, Gazipur",
+    logo: null,
+  },
+  {
+    id: 9,
+    name: "Savar Care Hospital",
+    location: "Savar Thana Bus Stand, Talbagh, N5, Savar 1340",
+    logo: null,
+  },
+  {
+    id: 10,
+    name: "Nari O Shishu Hospital (AWCH)",
+    location: "Jamgora, Dhaka - Ashulia Hwy, Dhaka 1349",
+    logo: null,
+  },
+  {
+    id: 11,
+    name: "Konabari Clinic and Diagnostic Center",
+    location: "Konabari Bus Stand Market, Ambag Rd, Gazipur 1700",
+    logo: null,
+  },
+  {
+    id: 12,
+    name: "Happy General Hospital",
+    location: "324 Baipail, Savar, Bangladesh",
+    logo: null,
+  },
+  {
+    id: 13,
+    name: "Modern Diagnostic Center",
+    location: "Chowrasta, Tangail Rd, Gazipur",
+    logo: null,
+  },
+  {
+    id: 14,
+    name: "Ibn Sina Diagnostic Center",
+    location: "Savar Bazar Bus stand, House # B-31/6, Jaleshwar, Aricha Road, Savar, Dhaka-1340",
+    logo: null,
+  },
+  {
+    id: 15,
+    name: "Lab One Diagnostic Center",
+    location: "Ashulia Hwy, Jamgora, Dhaka",
     logo: null,
   },
 ];
@@ -74,18 +116,14 @@ export default function HospitalPartnersSection() {
             className="text-4xl md:text-5xl font-bold mb-4"
             style={{
               color: "#009A98",
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
             }}
           >
-            আমাদের হাসপাতাল পার্টনার
+            Partner Hospitals
           </h2>
           <p
             className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto"
-            style={{
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
           >
-            বাংলাদেশের শীর্ষস্থানীয় হাসপাতালগুলোর সাথে আমাদের অংশীদারিত্ব
+            Our partnership with leading hospitals across Savar and surrounding areas
           </p>
         </div>
 

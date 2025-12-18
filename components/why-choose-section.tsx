@@ -1,34 +1,34 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Calendar, Clock, Shield, Heart } from "lucide-react";
+import { Smartphone, CreditCard, Clock, HeadphonesIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 export default function WhyChooseSection() {
   const features = [
     {
-      icon: Calendar,
-      title: "সহজ অ্যাপয়েন্টমেন্ট বুকিং",
+      icon: Smartphone,
+      title: "Anytime Doctor - From Anywhere",
       description:
-        "মাত্র কয়েকটি ক্লিকে যোগ্য ডাক্তারের সাথে অ্যাপয়েন্টমেন্ট বুক করুন। আপনার পছন্দের সময় এবং তারিখ বেছে নিন।",
+        "Meditime website and mobile app are designed to help you find doctors, schedule appointments, compare the prices of diagnostic tests in different hospitals, and many more in just one place. Smooth to use even for new users, fast, and packed with data.",
+    },
+    {
+      icon: CreditCard,
+      title: "No Advance Payments of Fees",
+      description:
+        "To enjoy any of our services like finding doctor information, booking a consultation, access to an extended list of blood donors and ambulance contacts are completely free. There is no hidden charge for the medical services you receive.",
     },
     {
       icon: Clock,
-      title: "২৪/৭ উপলব্ধতা",
+      title: "Available 24/7",
       description:
-        "যেকোনো সময়, যেকোনো জায়গায় স্বাস্থ্যসেবা অ্যাক্সেস করুন। জরুরি পরামর্শ সারাদিন উপলব্ধ।",
+        "You can book doctor appointments anytime that is convenient for you, seven days a week, every hour of the day. Use the Doctor Search to find and book appointments with the doctor who best fits your area, budget, and medical needs.",
     },
     {
-      icon: Shield,
-      title: "নিরাপদ ও গোপনীয়",
+      icon: HeadphonesIcon,
+      title: "Expert Help",
       description:
-        "আপনার স্বাস্থ্য ডেটা ব্যাংক-লেভেল নিরাপত্তা দিয়ে সুরক্ষিত। সম্পূর্ণ গোপনীয়তা নিশ্চিত।",
-    },
-    {
-      icon: Heart,
-      title: "মানসম্মত স্বাস্থ্যসেবা",
-      description:
-        "বাংলাদেশ জুড়ে প্রত্যয়িত ডাক্তার এবং স্বাস্থ্যসেবা পেশাদারদের সাথে সংযুক্ত হন।",
+        "The Meditime Customer Support team is always ready to help you with any difficulties you may encounter while using our platform. We assist you through every process, whether booking an online doctor appointment or finding the best diagnostic test option.",
     },
   ];
 
@@ -46,18 +46,14 @@ export default function WhyChooseSection() {
           className="text-4xl md:text-5xl font-bold mb-4"
           style={{
             color: "#009A98",
-            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
           }}
         >
-          কেন মেডিটাইম বেছে নিবেন?
+          Choose Meditime - Because You Deserve Quality Medical Services In Time
         </h2>
         <p
-          className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto"
-          style={{
-            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-          }}
+          className="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto"
         >
-          আধুনিক বাংলাদেশের জন্য ডিজাইন করা আমাদের ব্যাপক ডিজিটাল প্ল্যাটফর্মের সাথে আগের মতো স্বাস্থ্যসেবা উপভোগ করুন।
+          We strongly believe that as human beings all of us deserve the right to get the most updated information that makes lives easier in the tough days of sickness. Choosing Meditime helps you bring speed in your doctor appointment booking process which significantly reduces the risk of being late to receive quality medical services.
         </p>
       </motion.div>
 
@@ -86,9 +82,6 @@ export default function WhyChooseSection() {
                 {/* Title */}
                 <h3
                   className="text-sm sm:text-base md:text-xl font-bold text-gray-900 mb-1 sm:mb-2 md:mb-3 text-center sm:text-left"
-                  style={{
-                    fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   {feature.title}
                 </h3>
@@ -96,9 +89,6 @@ export default function WhyChooseSection() {
                 {/* Description */}
                 <p
                   className="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed grow text-center sm:text-left"
-                  style={{
-                    fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   {feature.description}
                 </p>
@@ -110,4 +100,3 @@ export default function WhyChooseSection() {
     </div>
   );
 }
-

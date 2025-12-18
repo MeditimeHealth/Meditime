@@ -120,18 +120,14 @@ export default function BlogSection() {
             className="text-4xl md:text-5xl font-bold mb-4"
             style={{
               color: "#009A98",
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
             }}
           >
-            স্বাস্থ্য টিপস ও ব্লগ
+            Health & Wellness Blog
           </h2>
           <p
             className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto"
-            style={{
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
           >
-            স্বাস্থ্য সম্পর্কিত সর্বশেষ তথ্য ও পরামর্শ
+            Latest health tips and medical information
           </p>
         </div>
 

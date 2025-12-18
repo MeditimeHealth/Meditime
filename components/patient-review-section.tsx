@@ -12,75 +12,30 @@ import "swiper/css/navigation";
 const reviews = [
   {
     id: 1,
-    name: "রহিমা খাতুন",
-    location: "ঢাকা",
+    name: "Motiur Rahman",
+    location: "Ex Army Personnel, Home Owner in Gazipur",
     rating: 5,
     review:
-      "মেডিটাইমের মাধ্যমে ডাক্তারের সাথে অ্যাপয়েন্টমেন্ট নেওয়া খুবই সহজ হয়েছে। ডাক্তার খুবই ভালো পরামর্শ দিয়েছেন এবং সময়মতো দেখা করেছেন। সত্যিই অসাধারণ সেবা!",
-    date: "২ সপ্তাহ আগে",
+      "Found the best Diabetic Specialist in Savar I have ever met in the last 7 years. Recommended",
+    date: "2 weeks ago",
   },
   {
     id: 2,
-    name: "আবুল কাশেম",
-    location: "চট্টগ্রাম",
+    name: "Asma Jannat Noyon",
+    location: "House Wife, Ashulia, Savar DOHS",
     rating: 5,
     review:
-      "অনলাইনে ঔষধ অর্ডার করার সুবিধা পেয়ে খুবই খুশি। দ্রুত ডেলিভারি এবং মূল্যেও সাশ্রয়ী। সবসময় এই সেবা ব্যবহার করব।",
-    date: "১ মাস আগে",
+      "Easily Booked doctor appointment in Ibn Sina for My 80 Year Old Mother Suffering from Kidney complications.",
+    date: "1 month ago",
   },
   {
     id: 3,
-    name: "ফাতেমা বেগম",
-    location: "সিলেট",
+    name: "SM Jahidul Islam",
+    location: "Merchandise Manager at ABA Group, Tongi",
     rating: 5,
     review:
-      "ভিডিও কনসালটেশনের মাধ্যমে বাড়ি থেকে ডাক্তারের পরামর্শ নেওয়া খুবই সুবিধাজনক। বিশেষ করে বর্ষাকালে যখন বাইরে যাওয়া কঠিন। ধন্যবাদ মেডিটাইম!",
-    date: "৩ সপ্তাহ আগে",
-  },
-  {
-    id: 4,
-    name: "করিম উদ্দিন",
-    location: "রাজশাহী",
-    rating: 5,
-    review:
-      "ল্যাব টেস্টের জন্য বাড়িতে স্যাম্পল কালেকশন সার্ভিস খুবই ভালো। সময় বাঁচিয়েছে এবং ঝামেলা কমিয়েছে। পেশাদার সেবা পেয়েছি।",
-    date: "২ মাস আগে",
-  },
-  {
-    id: 5,
-    name: "আয়েশা সুলতানা",
-    location: "খুলনা",
-    rating: 5,
-    review:
-      "২৪/৭ সাপোর্ট পাওয়া যায়, যা খুবই গুরুত্বপূর্ণ। যেকোনো সমস্যায় দ্রুত সমাধান পেয়েছি। সত্যিই বিশ্বস্ত প্ল্যাটফর্ম।",
-    date: "১ সপ্তাহ আগে",
-  },
-  {
-    id: 6,
-    name: "মোঃ সেলিম",
-    location: "বরিশাল",
-    rating: 5,
-    review:
-      "স্বাস্থ্যসেবা প্যাকেজের মাধ্যমে অনেক টাকা সাশ্রয় হয়েছে। সব পরিষেবা এক জায়গায় পাওয়া যায়। খুবই সন্তুষ্ট।",
-    date: "১ মাস আগে",
-  },
-  {
-    id: 7,
-    name: "নাসরিন আক্তার",
-    location: "কুমিল্লা",
-    rating: 5,
-    review:
-      "ডাক্তারদের প্রোফাইল দেখে পছন্দমতো ডাক্তার বেছে নেওয়া যায়। রিভিউ পড়ে সিদ্ধান্ত নেওয়া সহজ হয়েছে। অসাধারণ অভিজ্ঞতা!",
-    date: "২ সপ্তাহ আগে",
-  },
-  {
-    id: 8,
-    name: "মোঃ হাসান",
-    location: "ময়মনসিংহ",
-    rating: 5,
-    review:
-      "অ্যাপ ব্যবহার করা খুবই সহজ। সবকিছু সুন্দরভাবে সাজানো আছে। দ্রুত অ্যাপয়েন্টমেন্ট বুক করতে পারি। খুবই ভালো লাগছে।",
-    date: "৩ সপ্তাহ আগে",
+      "Tested My lipid panel found the platform useful, enjoyed a 15% discount using my corporate membership card.",
+    date: "3 weeks ago",
   },
 ];
 
@@ -98,18 +53,14 @@ export default function PatientReviewSection() {
             className="text-4xl md:text-5xl font-bold mb-4"
             style={{
               color: "#009A98",
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
             }}
           >
-            রোগীদের পর্যালোচনা
+            Patient Reviews
           </h2>
           <p
             className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto"
-            style={{
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
           >
-            আমাদের রোগীরা কী বলছেন দেখুন
+            See what our patients are saying about their experience
           </p>
         </div>
 

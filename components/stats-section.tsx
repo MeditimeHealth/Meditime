@@ -5,20 +5,20 @@ import { motion } from "framer-motion";
 export default function StatsSection() {
   const stats = [
     {
-      number: "৫০০+",
-      label: "যোগ্য ডাক্তার",
+      number: "1000+",
+      label: "Happy Patients",
     },
     {
-      number: "১০K+",
-      label: "সুখী রোগী",
+      number: "30+",
+      label: "Hospitals",
     },
     {
-      number: "৫০+",
-      label: "বিশেষজ্ঞতা",
+      number: "1000+",
+      label: "Doctors",
     },
     {
-      number: "২৪/৭",
-      label: "সাপোর্ট",
+      number: "24/7",
+      label: "Support",
     },
   ];
 
@@ -39,16 +39,12 @@ export default function StatsSection() {
                 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2"
                 style={{
                   color: "#009A98",
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                 }}
               >
                 {stat.number}
               </div>
               <div
                 className="text-sm md:text-base lg:text-lg text-gray-600"
-                style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
               >
                 {stat.label}
               </div>
@@ -59,4 +55,3 @@ export default function StatsSection() {
     </div>
   );
 }
-

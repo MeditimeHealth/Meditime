@@ -13,22 +13,31 @@ import "swiper/css/effect-fade";
 
 const slides = [
   {
-    title: "হোম স্যাম্পল কালেকশন সার্ভিস সহ ঝামেলামুক্ত ল্যাব টেস্ট",
+    title: "Book a Doctor Appointment in Minutes",
+    subtitle: "20+ Departments, 1000+ Physicians from 30+ Renowned Hospitals",
     description:
-      "আমরা জানি ল্যাব টেস্ট করা কঠিন হতে পারে, বিশেষ করে ব্যস্ত সময়সূচী, খারাপ আবহাওয়া এবং ভারী ট্রাফিকের সময়, তাই আমরা বাড়িতে ল্যাব টেস্টের সুবিধা প্রদান করি",
+      "Handpicked list of most experienced doctors from top hospitals near Savar and surroundings. Schedule your appointment with a doctor in just a few simple steps. Choose based on your health issues and area of residence.",
     image: "/slide.jpg",
+    ctaText: "Book Doctor Appointment",
+    ctaLink: "/doctor",
   },
   {
-    title: "আপনার বাড়ির আরামে বিশেষজ্ঞ চিকিৎসা সেবা",
+    title: "Get Your Meditime Membership Card",
+    subtitle: "Save Up to 15% on Medical Bills",
     description:
-      "আমাদের অভিজ্ঞ ডাক্তার এবং চিকিৎসা পেশাদারদের দল দিয়ে আপনার দোরগোড়ায় পেশাদার স্বাস্থ্যসেবা পেতে পারেন",
+      "Enjoy on spot discounts in your medical bills using Meditime Health Discount Cards, fill the form to apply, get delivered within 7 working days, and enjoy amazing discounts on various medical services for next 12 months at a network of clinics, diagnostic centres, and general hospitals near you.",
     image: "/slide2.jpg",
+    ctaText: "See Membership Pricings",
+    ctaLink: "/membership",
   },
   {
-    title: "আপনার স্বাস্থ্য, আমাদের অগ্রাধিকার",
+    title: "Download the Medicare Mobile App",
+    subtitle: "Take Control of Your Medical Services",
     description:
-      "সুবিধা এবং যত্ন সহ আপনার সমস্ত চিকিৎসা প্রয়োজনের জন্য তৈরি করা সম্পূর্ণ স্বাস্থ্যসেবা সমাধান",
+      "Doctor's Appointment Booking, Diagnostic Test Price Comparison, Online Doctor Consultation, Ambulance Contact, Trusted Blood Donors all in your pocket within a single app. It is an easy to use Healthcare app, effective, and makes you incredibly confident in any situation.",
     image: "/slide3.jpg",
+    ctaText: "Download the App",
+    ctaLink: "https://play.google.com/store",
   },
 ];
 
@@ -102,34 +111,21 @@ export default function HeroSection() {
                   <div className={`mx-auto max-w-3xl text-center text-white transition-all duration-1000 ${
                     !isAnimating ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                   }`}>
-                    <h1 className="mb-6 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+                    <h1 className="mb-2 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
                       {slide.title}
                     </h1>
+                    {slide.subtitle && (
+                      <p className="mb-4 text-lg font-semibold text-white/90 sm:text-xl lg:text-2xl">
+                        {slide.subtitle}
+                      </p>
+                    )}
                     <p className="mb-8 text-base leading-relaxed sm:text-lg lg:text-xl">
                       {slide.description}
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                      <Link href="/doctor">
-                        <Button className="bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base px-6 py-3 w-full sm:w-auto">
-                          অ্যাপয়েন্টমেন্ট বুক করুন
-                          <svg
-                            className="ml-2 h-5 w-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 5l7 7-7 7"
-                            />
-                          </svg>
-                        </Button>
-                      </Link>
-                      <Link href="/doctor">
-                        <Button className="bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base px-6 py-3 w-full sm:w-auto">
-                          লাইভ কনসালটেন্ট
+                    <div className="flex justify-center items-center">
+                      <Link href={slide.ctaLink} target={slide.ctaLink.startsWith('http') ? '_blank' : '_self'}>
+                        <Button className="bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all">
+                          {slide.ctaText}
                           <svg
                             className="ml-2 h-5 w-5"
                             fill="none"

@@ -9,38 +9,38 @@ export default function ServicesSection() {
   const services = [
     {
       image: "/impression-1.png",
-      title: "ডাক্তার",
+      title: "Doctor Appointment Booking",
       description:
-        "বিশেষজ্ঞ ডাক্তারের তালিকা থেকে খুঁজে নিন আপনার প্রয়োজনীয় ডাক্তারের চেম্বার ও সময়সূচি।",
+        "Find the Most Experienced Physician from 20+ Specialities and Departments. Easy booking, guaranteed visit, with no advance payment. Pay only when you visit the doctor's chamber.",
       href: "/doctor",
     },
     {
       image: "/impression-2.png",
-      title: "হাসপাতাল",
+      title: "Find the Best Hospitals Near You",
       description:
-        "বিশেষায়িত হাসপাতালের তালিকা থেকে খুঁজে নিন আপনার লোকেশনে পছন্দকৃত হাসপাতাল।",
+        "Find Specialized and General Hospitals Near You in the Dhaka Surroundings. From semi-government hospitals to private clinics, our network covers it all. We have compiled 30+ hospitals.",
       href: "/hospital",
     },
     {
       image: "/impression-3.png",
-      title: "লাইভ ডাক্তার",
+      title: "Video Call with Doctor",
       description:
-        "আপনার প্রয়োজনীয় মূহুর্তে বিশেষজ্ঞ ডাক্তারের পরামর্শ নিন ভিডিও কলের মাধ্যমে।",
+        "Known as Online Doctor Appointment, this service lets you talk directly with a doctor from your home. Ideal for seniors, pregnant women, and people with disabilities.",
       href: "/",
     },
     {
       image: "/impression-4.png",
-      title: "হেলথ টিপস্",
+      title: "Most Affordable Diagnostic Tests",
       description:
-        "বছরজুড়ে নানা রকম স্বাস্থ্যসেবা সম্পর্কিত টিপস পেতে যুক্ত থাকুন আমাদের সাথে।",
-      href: "/blog",
+        "Find the most affordable options for medical tests such as blood tests, urine tests, CBC tests, CMP, and more. Compare prices and save your money and time.",
+      href: "/diagnostic",
     },
     {
       image: "/impression-1.png",
-      title: "ডায়াগনস্টিক টেস্ট",
+      title: "Health Tips",
       description:
-        "বিভিন্ন ধরনের ডায়াগনস্টিক টেস্ট বুক করুন এবং সেরা মূল্যে পরীক্ষা করান।",
-      href: "/diagnostic",
+        "The More You Know About a Problem, the Easier It Becomes to Solve. Read blogs that will help you find simple solutions for your medical issues.",
+      href: "/blog",
     },
   ];
 
@@ -58,28 +58,21 @@ export default function ServicesSection() {
           className="text-4xl md:text-5xl font-bold mb-6 text-left"
           style={{
             color: "#009A98",
-            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
           }}
         >
-          আমাদের সেবা সমূহ
+          Our Services – You are the only one we care about
         </h2>
         
         <div className="space-y-4 mb-8">
           <p
             className="text-base md:text-lg text-gray-700 leading-relaxed"
-            style={{
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
           >
-            মেডিকেয়ার একটি বিশেষায়িত স্বাস্থ্যসেবা প্রদানকারী প্লাটফর্ম। এখানে মোবাইল অ্যাপের মাধ্যমে নিবন্ধন করে আপনি খুব সহজে সিরিয়াল না দিয়েই দেখাতে পারেন বিশেষজ্ঞ ডাক্তার।
+            With a broad range of health information and services, we have been a proud partner in booking 1,000+ doctor appointments online, minimizing the effort, time, and resources used in searching fresh and reliable medical information.
           </p>
           <p
             className="text-base md:text-lg text-gray-700 leading-relaxed"
-            style={{
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
           >
-            অ্যাপের নিবন্ধন প্রক্রিয়া খুবই সহজ। গুগল প্লে স্টোর থেকে বিনামূল্যে ডাউনলোড করে নিন মেডিকেয়ার অ্যাপ।
+            Our lab test booking services have simplified the process of finding the most dependable and affordable diagnostic test options near you in Savar, Konabari, Gazipur, and beyond.
           </p>
         </div>
       </motion.div>
@@ -114,9 +107,6 @@ export default function ServicesSection() {
                 <div className="mb-4">
                   <h3
                     className="text-xl font-bold text-gray-900 mb-2"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
                   >
                     {service.title}
                   </h3>
@@ -126,9 +116,6 @@ export default function ServicesSection() {
                 {/* Description */}
                 <p
                   className="text-sm md:text-base text-gray-600 leading-relaxed grow"
-                  style={{
-                    fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   {service.description}
                 </p>

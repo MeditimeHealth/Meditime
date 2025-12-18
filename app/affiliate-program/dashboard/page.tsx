@@ -222,6 +222,36 @@ export default function EnhancedAffiliateDashboard() {
     hospitalName: '',
   });
 
+  // Hospital search state
+  const [hospitalSearchRequest, setHospitalSearchRequest] = useState('');
+  const [hospitalSearchPhoto, setHospitalSearchPhoto] = useState('');
+  const [showHospitalDropdownRequest, setShowHospitalDropdownRequest] = useState(false);
+  const [showHospitalDropdownPhoto, setShowHospitalDropdownPhoto] = useState(false);
+
+  // Common hospital list
+  const hospitals = [
+    'Square Hospital',
+    'United Hospital',
+    'Apollo Hospital',
+    'Labaid Hospital',
+    'Popular Diagnostic Centre',
+    'Ibn Sina Hospital',
+    'Evercare Hospital',
+    'Bangladesh Medical College Hospital',
+    'Holy Family Red Crescent Hospital',
+    'National Heart Foundation',
+    'Dhaka Medical College Hospital',
+    'Bangabandhu Sheikh Mujib Medical University',
+    'Birdem General Hospital',
+    'Ad-Din Hospital',
+    'Islami Bank Hospital',
+    'Delta Medical College Hospital',
+    'Anwar Khan Modern Hospital',
+    'Central Hospital',
+    'Green Life Hospital',
+    'Japan Bangladesh Friendship Hospital',
+  ];
+
   useEffect(() => {
     const affiliateData = localStorage.getItem("affiliate");
     if (!affiliateData) {
@@ -724,16 +754,16 @@ export default function EnhancedAffiliateDashboard() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-              <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-cyan-500/30">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 lg:gap-6">
+              <div className="flex items-center gap-3 lg:gap-4 w-full lg:w-auto">
+                <div className="h-12 w-12 lg:h-16 lg:w-16 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-white font-bold text-xl lg:text-2xl shadow-lg shadow-cyan-500/30">
                   {(affiliate.fullName || affiliate.name || 'A').charAt(0).toUpperCase()}
                 </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-white">
+                <div className="flex-1">
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
                     স্বাগতম, {affiliate.fullName || affiliate.name}!
                   </h1>
-                  <p className="text-cyan-300">{affiliate.email}</p>
+                  <p className="text-cyan-300 text-sm lg:text-base truncate">{affiliate.email}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
                       <CheckCircle className="h-3 w-3 mr-1" />
@@ -742,22 +772,22 @@ export default function EnhancedAffiliateDashboard() {
                   </div>
                 </div>
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-2 lg:gap-3 w-full lg:w-auto">
                 <Button
                   onClick={refreshData}
                   variant="outline"
-                  className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 bg-transparent"
+                  className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 bg-transparent flex-1 lg:flex-none text-sm lg:text-base"
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh
+                  <RefreshCw className="h-4 w-4 lg:mr-2" />
+                  <span className="hidden sm:inline">Refresh</span>
                 </Button>
                 <Button
                   onClick={handleLogout}
                   variant="outline"
-                  className="border-red-500/50 text-red-400 hover:bg-red-500/10 bg-transparent"
+                  className="border-red-500/50 text-red-400 hover:bg-red-500/10 bg-transparent flex-1 lg:flex-none text-sm lg:text-base"
                 >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
+                  <LogOut className="h-4 w-4 lg:mr-2" />
+                  <span className="hidden sm:inline">Logout</span>
                 </Button>
               </div>
             </div>
@@ -770,21 +800,21 @@ export default function EnhancedAffiliateDashboard() {
             transition={{ delay: 0.1 }}
             className="mb-8"
           >
-            <div className="flex gap-2 p-1 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-x-auto">
+            <div className="flex gap-2 p-1 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-x-auto scrollbar-hide">
               {sidebarItems.map((item) => {
                 const IconComponent = item.icon;
                 return (
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id as any)}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all whitespace-nowrap ${
+                    className={`flex items-center gap-2 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 rounded-xl text-sm sm:text-base font-medium transition-all whitespace-nowrap ${
                       activeTab === item.id
                         ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30'
                         : 'text-gray-400 hover:text-white hover:bg-white/5'
                     }`}
                   >
-                    <IconComponent className="h-5 w-5" />
-                    <span>{item.labelBn}</span>
+                    <IconComponent className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="hidden sm:inline">{item.labelBn}</span>
                   </button>
                 );
               })}
@@ -850,14 +880,15 @@ export default function EnhancedAffiliateDashboard() {
                     transition={{ delay: 0.4 }}
                     className="lg:col-span-2"
                   >
-                    <Card className="p-6 h-full bg-white/5 backdrop-blur-xl border-white/10">
-                      <div className="flex items-center justify-between mb-6">
+                    <Card className="p-4 sm:p-6 h-full bg-white/5 backdrop-blur-xl border-white/10">
+                      <div className="flex items-center justify-between mb-4 sm:mb-6">
                         <div>
-                          <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                            <HiOutlineChartBar className="h-6 w-6 text-cyan-400" />
-                            Earnings Overview
+                          <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                            <HiOutlineChartBar className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
+                            <span className="hidden sm:inline">Earnings Overview</span>
+                            <span className="sm:hidden">Earnings</span>
                           </h3>
-                          <p className="text-sm text-gray-400">Monthly commission trends</p>
+                          <p className="text-xs sm:text-sm text-gray-400">Monthly commission trends</p>
                         </div>
                       </div>
                       
@@ -894,13 +925,14 @@ export default function EnhancedAffiliateDashboard() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.5 }}
                   >
-                    <Card className="p-6 h-full bg-white/5 backdrop-blur-xl border-white/10">
+                    <Card className="p-4 sm:p-6 h-full bg-white/5 backdrop-blur-xl border-white/10">
                       <div className="mb-4">
-                        <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                        <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
                           <FiActivity className="h-5 w-5 text-cyan-400" />
-                          Commission Status
+                          <span className="hidden sm:inline">Commission Status</span>
+                          <span className="sm:hidden">Status</span>
                         </h3>
-                        <p className="text-sm text-gray-400">Breakdown by status</p>
+                        <p className="text-xs sm:text-sm text-gray-400">Breakdown by status</p>
                       </div>
                       
                       <ResponsiveContainer width="100%" height={240}>
@@ -1013,48 +1045,48 @@ export default function EnhancedAffiliateDashboard() {
               >
                 {/* Referral Stats Cards */}
                 {referralStats && (
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                    <Card className="p-4 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 border-blue-500/20">
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                    <Card className="p-3 sm:p-4 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 border-blue-500/20">
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-blue-400">{referralStats.total}</p>
-                        <p className="text-xs text-gray-400">মোট রোগী</p>
+                        <p className="text-xl sm:text-2xl font-bold text-blue-400">{referralStats.total}</p>
+                        <p className="text-[10px] sm:text-xs text-gray-400">মোট রোগী</p>
                       </div>
                     </Card>
-                    <Card className="p-4 bg-gradient-to-br from-orange-500/10 to-amber-600/10 border-orange-500/20">
+                    <Card className="p-3 sm:p-4 bg-gradient-to-br from-orange-500/10 to-amber-600/10 border-orange-500/20">
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-orange-400">{referralStats.pending}</p>
-                        <p className="text-xs text-gray-400">পেন্ডিং</p>
+                        <p className="text-xl sm:text-2xl font-bold text-orange-400">{referralStats.pending}</p>
+                        <p className="text-[10px] sm:text-xs text-gray-400">পেন্ডিং</p>
                       </div>
                     </Card>
-                    <Card className="p-4 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border-cyan-500/20">
+                    <Card className="p-3 sm:p-4 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border-cyan-500/20">
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-cyan-400">{referralStats.confirmed}</p>
-                        <p className="text-xs text-gray-400">কনফার্মড</p>
+                        <p className="text-xl sm:text-2xl font-bold text-cyan-400">{referralStats.confirmed}</p>
+                        <p className="text-[10px] sm:text-xs text-gray-400">কনফার্মড</p>
                       </div>
                     </Card>
-                    <Card className="p-4 bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-500/20">
+                    <Card className="p-3 sm:p-4 bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-500/20">
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-green-400">{referralStats.completed}</p>
-                        <p className="text-xs text-gray-400">সম্পন্ন</p>
+                        <p className="text-xl sm:text-2xl font-bold text-green-400">{referralStats.completed}</p>
+                        <p className="text-[10px] sm:text-xs text-gray-400">সম্পন্ন</p>
                       </div>
                     </Card>
-                    <Card className="p-4 bg-gradient-to-br from-red-500/10 to-rose-600/10 border-red-500/20">
+                    <Card className="p-3 sm:p-4 bg-gradient-to-br from-red-500/10 to-rose-600/10 border-red-500/20">
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-red-400">{referralStats.cancelled}</p>
-                        <p className="text-xs text-gray-400">বাতিল</p>
+                        <p className="text-xl sm:text-2xl font-bold text-red-400">{referralStats.cancelled}</p>
+                        <p className="text-[10px] sm:text-xs text-gray-400">বাতিল</p>
                       </div>
                     </Card>
                   </div>
                 )}
 
-                <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
-                  <div className="flex items-center justify-between mb-6">
+                <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
                     <div>
-                      <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-1">
-                        <Users className="h-6 w-6 text-cyan-400" />
+                      <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2 mb-1">
+                        <Users className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
                         রেফারেল রোগী তালিকা
                       </h3>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-xs sm:text-sm text-gray-400">
                         আপনার রেফারেল কোড ব্যবহার করে বুক করা রোগীদের তথ্য
                       </p>
                     </div>
@@ -1063,10 +1095,10 @@ export default function EnhancedAffiliateDashboard() {
                       variant="outline"
                       size="sm"
                       disabled={referralLoading}
-                      className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 bg-transparent"
+                      className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 bg-transparent w-full sm:w-auto"
                     >
-                      <RefreshCw className={`h-4 w-4 mr-2 ${referralLoading ? 'animate-spin' : ''}`} />
-                      রিফ্রেশ
+                      <RefreshCw className={`h-4 w-4 sm:mr-2 ${referralLoading ? 'animate-spin' : ''}`} />
+                      <span className="hidden sm:inline">রিফ্রেশ</span>
                     </Button>
                   </div>
 
@@ -1075,19 +1107,19 @@ export default function EnhancedAffiliateDashboard() {
                       <RefreshCw className="h-8 w-8 animate-spin text-cyan-400" />
                     </div>
                   ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
+                    <div className="overflow-x-auto -mx-4 sm:mx-0">
+                      <table className="w-full min-w-[900px]">
                         <thead>
                           <tr className="border-b border-white/10">
-                            <th className="text-left py-3 px-4 font-semibold text-gray-300">সিরিয়াল</th>
-                            <th className="text-left py-3 px-4 font-semibold text-gray-300">রোগীর নাম</th>
-                            <th className="text-left py-3 px-4 font-semibold text-gray-300">মোবাইল</th>
-                            <th className="text-left py-3 px-4 font-semibold text-gray-300">ডাক্তার</th>
-                            <th className="text-left py-3 px-4 font-semibold text-gray-300">চেম্বার</th>
-                            <th className="text-left py-3 px-4 font-semibold text-gray-300">তারিখ</th>
-                            <th className="text-center py-3 px-4 font-semibold text-gray-300">রোগীর ধরন</th>
-                            <th className="text-center py-3 px-4 font-semibold text-gray-300">স্ট্যাটাস</th>
-                            <th className="text-center py-3 px-4 font-semibold text-gray-300">অ্যাকশন</th>
+                            <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">সিরিয়াল</th>
+                            <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">রোগীর নাম</th>
+                            <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">মোবাইল</th>
+                            <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">ডাক্তার</th>
+                            <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">চেম্বার</th>
+                            <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">তারিখ</th>
+                            <th className="text-center py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">রোগীর ধরন</th>
+                            <th className="text-center py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">স্ট্যাটাস</th>
+                            <th className="text-center py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">অ্যাকশন</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1102,14 +1134,14 @@ export default function EnhancedAffiliateDashboard() {
                           ) : (
                             referralPatients.map((patient) => (
                               <tr key={patient._id} className="border-b border-white/5 hover:bg-white/5">
-                                <td className="py-4 px-4 text-sm font-mono">
+                                <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm font-mono">
                                   {patient.serialNumber ? (
                                     <span className="text-cyan-400">{patient.serialNumber}</span>
                                   ) : (
                                     <span className="text-yellow-400 text-xs px-2 py-1 bg-yellow-500/20 rounded">অপেক্ষমান</span>
                                   )}
                                 </td>
-                                <td className="py-4 px-4 text-sm text-white">
+                                <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-white">
                                   <div className="font-medium">{patient.patientName}</div>
                                   {patient.gender && (
                                     <div className="text-xs text-gray-500">
@@ -1219,7 +1251,7 @@ export default function EnhancedAffiliateDashboard() {
 
                 {/* Photo Upload Dialog */}
                 <Dialog open={photoUploadDialogOpen} onOpenChange={setPhotoUploadDialogOpen}>
-                  <DialogContent className="max-w-2xl bg-slate-900 border-white/10 text-white">
+                  <DialogContent className="max-w-[95vw] sm:max-w-2xl bg-slate-900 border-white/10 text-white max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
                         <ImageIcon className="h-6 w-6 text-cyan-400" />
@@ -1246,15 +1278,48 @@ export default function EnhancedAffiliateDashboard() {
                           />
                         </div>
 
-                        <div>
+                        <div className="relative">
                           <Label className="text-gray-300 mb-2">হাসপাতাল/চেম্বারের নাম *</Label>
                           <Input
-                            value={photoUploadForm.hospitalName}
-                            onChange={(e) => setPhotoUploadForm({...photoUploadForm, hospitalName: e.target.value})}
+                            value={hospitalSearchPhoto || photoUploadForm.hospitalName}
+                            onChange={(e) => {
+                              setHospitalSearchPhoto(e.target.value);
+                              setPhotoUploadForm({...photoUploadForm, hospitalName: e.target.value});
+                              setShowHospitalDropdownPhoto(true);
+                            }}
+                            onFocus={() => setShowHospitalDropdownPhoto(true)}
                             className="bg-white/5 border-white/10 text-white"
-                            placeholder="হাসপাতাল/চেম্বারের নাম"
+                            placeholder="হাসপাতাল/চেম্বারের নাম অনুসন্ধান করুন"
                             required
                           />
+                          {showHospitalDropdownPhoto && (
+                            <>
+                              <div 
+                                className="fixed inset-0 z-10" 
+                                onClick={() => setShowHospitalDropdownPhoto(false)}
+                              />
+                              <div className="absolute z-20 w-full mt-1 max-h-60 overflow-auto bg-slate-800 border border-white/10 rounded-lg shadow-xl">
+                                {hospitals
+                                  .filter(h => h.toLowerCase().includes((hospitalSearchPhoto || photoUploadForm.hospitalName).toLowerCase()))
+                                  .map((hospital, index) => (
+                                    <div
+                                      key={index}
+                                      onClick={() => {
+                                        setPhotoUploadForm({...photoUploadForm, hospitalName: hospital});
+                                        setHospitalSearchPhoto(hospital);
+                                        setShowHospitalDropdownPhoto(false);
+                                      }}
+                                      className="px-4 py-2 hover:bg-cyan-500/20 cursor-pointer text-white transition-colors"
+                                    >
+                                      {hospital}
+                                    </div>
+                                  ))}
+                                {hospitals.filter(h => h.toLowerCase().includes((hospitalSearchPhoto || photoUploadForm.hospitalName).toLowerCase())).length === 0 && (
+                                  <div className="px-4 py-2 text-gray-400">কোন হাসপাতাল পাওয়া যায়নি</div>
+                                )}
+                              </div>
+                            </>
+                          )}
                         </div>
 
                         <div>
@@ -1280,7 +1345,7 @@ export default function EnhancedAffiliateDashboard() {
                             </label>
                           </div>
                           {photoPreviews.length > 0 && (
-                            <div className="mt-4 grid grid-cols-2 gap-3">
+                            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                               {photoPreviews.map((preview, index) => (
                                 <div key={index} className="relative">
                                   <img src={preview} alt={`Preview ${index + 1}`} className="w-full h-32 object-cover rounded-lg" />
@@ -1356,23 +1421,23 @@ export default function EnhancedAffiliateDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                      <DollarSign className="h-6 w-6 text-cyan-400" />
+                <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                  <div className="flex items-center justify-between mb-4 sm:mb-6">
+                    <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                      <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
                       Commission History
                     </h3>
                   </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
+                  <div className="overflow-x-auto -mx-4 sm:mx-0">
+                    <table className="w-full min-w-[640px]">
                       <thead>
                         <tr className="border-b border-white/10">
-                          <th className="text-left py-3 px-4 font-semibold text-gray-300">Date</th>
-                          <th className="text-left py-3 px-4 font-semibold text-gray-300">Patient</th>
-                          <th className="text-right py-3 px-4 font-semibold text-gray-300">Bill</th>
-                          <th className="text-right py-3 px-4 font-semibold text-gray-300">Commission</th>
-                          <th className="text-center py-3 px-4 font-semibold text-gray-300">Status</th>
+                          <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Date</th>
+                          <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Patient</th>
+                          <th className="text-right py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Bill</th>
+                          <th className="text-right py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Commission</th>
+                          <th className="text-center py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Status</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1386,19 +1451,20 @@ export default function EnhancedAffiliateDashboard() {
                         ) : (
                           commissions.map((commission) => (
                             <tr key={commission._id} className="border-b border-white/5 hover:bg-white/5">
-                              <td className="py-4 px-4 text-sm text-gray-400">
-                                {format(new Date(commission.createdAt), 'MMM dd, yyyy')}
+                              <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-gray-400">
+                                <span className="hidden sm:inline">{format(new Date(commission.createdAt), 'MMM dd, yyyy')}</span>
+                                <span className="sm:hidden">{format(new Date(commission.createdAt), 'MMM dd')}</span>
                               </td>
-                              <td className="py-4 px-4 text-sm text-white">
+                              <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-white">
                                 {commission.appointmentId?.patientName || 'N/A'}
                               </td>
-                              <td className="py-4 px-4 text-sm text-right text-white">
+                              <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-right text-white">
                                 ৳{commission.totalBill.toLocaleString()}
                               </td>
-                              <td className="py-4 px-4 text-sm text-right font-medium text-emerald-400">
+                              <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-right font-medium text-emerald-400">
                                 ৳{commission.commissionAmount.toLocaleString()}
                               </td>
-                              <td className="py-4 px-4 text-center">
+                              <td className="py-3 sm:py-4 px-2 sm:px-4 text-center">
                                 <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
                                   commission.status === 'approved' || commission.status === 'paid'
                                     ? 'bg-green-500/20 text-green-400 border border-green-500/30'
@@ -1430,30 +1496,31 @@ export default function EnhancedAffiliateDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                      <Wallet className="h-6 w-6 text-cyan-400" />
+                <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
+                    <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                      <Wallet className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
                       Withdrawal History
                     </h3>
                     <Button
                       onClick={() => router.push('/affiliate-program/withdrawal')}
-                      className="bg-gradient-to-r from-emerald-500 to-green-600"
+                      className="bg-gradient-to-r from-emerald-500 to-green-600 text-sm sm:text-base w-full sm:w-auto"
                       disabled={(affiliate.walletBalance || 0) === 0}
                     >
                       <DollarSign className="h-4 w-4 mr-2" />
-                      New Withdrawal
+                      <span className="hidden sm:inline">New Withdrawal</span>
+                      <span className="sm:hidden">Withdraw</span>
                     </Button>
                   </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
+                  <div className="overflow-x-auto -mx-4 sm:mx-0">
+                    <table className="w-full min-w-[560px]">
                       <thead>
                         <tr className="border-b border-white/10">
-                          <th className="text-left py-3 px-4 font-semibold text-gray-300">Date</th>
-                          <th className="text-right py-3 px-4 font-semibold text-gray-300">Amount</th>
-                          <th className="text-center py-3 px-4 font-semibold text-gray-300">Status</th>
-                          <th className="text-left py-3 px-4 font-semibold text-gray-300">Processed</th>
+                          <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Date</th>
+                          <th className="text-right py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Amount</th>
+                          <th className="text-center py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Status</th>
+                          <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Processed</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1467,13 +1534,14 @@ export default function EnhancedAffiliateDashboard() {
                         ) : (
                           withdrawals.map((withdrawal) => (
                             <tr key={withdrawal._id} className="border-b border-white/5 hover:bg-white/5">
-                              <td className="py-4 px-4 text-sm text-gray-400">
-                                {format(new Date(withdrawal.createdAt), 'MMM dd, yyyy')}
+                              <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-gray-400">
+                                <span className="hidden sm:inline">{format(new Date(withdrawal.createdAt), 'MMM dd, yyyy')}</span>
+                                <span className="sm:hidden">{format(new Date(withdrawal.createdAt), 'MMM dd')}</span>
                               </td>
-                              <td className="py-4 px-4 text-sm text-right font-medium text-white">
+                              <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-right font-medium text-white">
                                 ৳{withdrawal.amount.toLocaleString()}
                               </td>
-                              <td className="py-4 px-4 text-center">
+                              <td className="py-3 sm:py-4 px-2 sm:px-4 text-center">
                                 <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
                                   withdrawal.status === 'approved'
                                     ? 'bg-green-500/20 text-green-400 border border-green-500/30'
@@ -1515,9 +1583,9 @@ export default function EnhancedAffiliateDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
                   {/* Request Form */}
-                  <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10 lg:col-span-1 h-fit">
+                  <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border-white/10 lg:col-span-1 h-fit">
                     <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                       <FileText className="h-6 w-6 text-cyan-400" />
                       Submit New Request
@@ -1553,15 +1621,48 @@ export default function EnhancedAffiliateDashboard() {
                           placeholder="Enter doctor name"
                         />
                       </div>
-                      <div>
+                      <div className="relative">
                         <Label className="text-gray-300">Hospital Name</Label>
                         <Input
                           required
-                          value={requestForm.hospitalName}
-                          onChange={(e) => setRequestForm({...requestForm, hospitalName: e.target.value})}
+                          value={hospitalSearchRequest || requestForm.hospitalName}
+                          onChange={(e) => {
+                            setHospitalSearchRequest(e.target.value);
+                            setRequestForm({...requestForm, hospitalName: e.target.value});
+                            setShowHospitalDropdownRequest(true);
+                          }}
+                          onFocus={() => setShowHospitalDropdownRequest(true)}
                           className="bg-white/5 border-white/10 text-white mt-1"
-                          placeholder="Enter hospital name"
+                          placeholder="Search or enter hospital name"
                         />
+                        {showHospitalDropdownRequest && (
+                          <>
+                            <div 
+                              className="fixed inset-0 z-10" 
+                              onClick={() => setShowHospitalDropdownRequest(false)}
+                            />
+                            <div className="absolute z-20 w-full mt-1 max-h-60 overflow-auto bg-slate-800 border border-white/10 rounded-lg shadow-xl">
+                              {hospitals
+                                .filter(h => h.toLowerCase().includes((hospitalSearchRequest || requestForm.hospitalName).toLowerCase()))
+                                .map((hospital, index) => (
+                                  <div
+                                    key={index}
+                                    onClick={() => {
+                                      setRequestForm({...requestForm, hospitalName: hospital});
+                                      setHospitalSearchRequest(hospital);
+                                      setShowHospitalDropdownRequest(false);
+                                    }}
+                                    className="px-4 py-2 hover:bg-cyan-500/20 cursor-pointer text-white transition-colors"
+                                  >
+                                    {hospital}
+                                  </div>
+                                ))}
+                              {hospitals.filter(h => h.toLowerCase().includes((hospitalSearchRequest || requestForm.hospitalName).toLowerCase())).length === 0 && (
+                                <div className="px-4 py-2 text-gray-400">No hospitals found</div>
+                              )}
+                            </div>
+                          </>
+                        )}
                       </div>
                       <Button 
                         type="submit" 
@@ -1574,17 +1675,17 @@ export default function EnhancedAffiliateDashboard() {
                   </Card>
 
                   {/* Requests List */}
-                  <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10 lg:col-span-2">
-                    <h3 className="text-xl font-bold text-white mb-6">Request History</h3>
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
+                  <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border-white/10 lg:col-span-2">
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Request History</h3>
+                    <div className="overflow-x-auto -mx-4 sm:mx-0">
+                      <table className="w-full min-w-[640px]">
                         <thead>
                           <tr className="border-b border-white/10">
-                            <th className="text-left py-3 px-4 font-semibold text-gray-300">Date</th>
-                            <th className="text-left py-3 px-4 font-semibold text-gray-300">Patient</th>
-                            <th className="text-left py-3 px-4 font-semibold text-gray-300">Doctor/Hospital</th>
-                            <th className="text-center py-3 px-4 font-semibold text-gray-300">Photos</th>
-                            <th className="text-center py-3 px-4 font-semibold text-gray-300">Status</th>
+                            <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Date</th>
+                            <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Patient</th>
+                            <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Doctor/Hospital</th>
+                            <th className="text-center py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Photos</th>
+                            <th className="text-center py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">Status</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1598,18 +1699,19 @@ export default function EnhancedAffiliateDashboard() {
                           ) : (
                             requests.map((req) => (
                               <tr key={req._id} className="border-b border-white/5 hover:bg-white/5">
-                                <td className="py-4 px-4 text-sm text-gray-400">
-                                  {format(new Date(req.createdAt), 'MMM dd, yyyy')}
+                                <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-gray-400">
+                                  <span className="hidden sm:inline">{format(new Date(req.createdAt), 'MMM dd, yyyy')}</span>
+                                  <span className="sm:hidden">{format(new Date(req.createdAt), 'MMM dd')}</span>
                                 </td>
-                                <td className="py-4 px-4 text-sm text-white">
+                                <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-white">
                                   <div className="font-medium">{req.patientName}</div>
                                   <div className="text-xs text-gray-500">{req.patientPhone}</div>
                                 </td>
-                                <td className="py-4 px-4 text-sm text-white">
+                                <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-white">
                                   <div className="font-medium">{req.doctorName}</div>
                                   <div className="text-xs text-gray-500">{req.hospitalName}</div>
                                 </td>
-                                <td className="py-4 px-4 text-center">
+                                <td className="py-3 sm:py-4 px-2 sm:px-4 text-center">
                                   {(req.proofPhotos && req.proofPhotos.length > 0) || req.proofPhoto ? (
                                     <Dialog>
                                       <DialogTrigger asChild>
@@ -1622,11 +1724,11 @@ export default function EnhancedAffiliateDashboard() {
                                           {((req.proofPhotos && req.proofPhotos.length > 0) ? req.proofPhotos.length : 1)} Photo(s)
                                         </Button>
                                       </DialogTrigger>
-                                      <DialogContent className="max-w-4xl bg-slate-900 border-white/10">
+                                      <DialogContent className="max-w-[95vw] sm:max-w-4xl bg-slate-900 border-white/10">
                                         <DialogHeader>
                                           <DialogTitle className="text-white">Proof Photos</DialogTitle>
                                         </DialogHeader>
-                                        <div className="mt-4 grid grid-cols-2 gap-4 max-h-[70vh] overflow-y-auto">
+                                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-h-[70vh] overflow-y-auto">
                                           {req.proofPhotos && req.proofPhotos.length > 0 ? (
                                             req.proofPhotos.map((photo, idx) => (
                                               <div key={idx} className="relative">
@@ -1683,15 +1785,15 @@ export default function EnhancedAffiliateDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {/* Report Type Selector */}
-                  <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
-                    <div className="flex flex-wrap items-center gap-4 mb-6">
-                      <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                        <BarChart3 className="h-6 w-6 text-cyan-400" />
+                  <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                    <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                      <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                        <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
                         রিপোর্ট
                       </h3>
-                      <div className="flex gap-2 ml-auto">
+                      <div className="flex gap-2 overflow-x-auto w-full sm:w-auto sm:ml-auto scrollbar-hide">
                         {(['all', 'monthly', 'daily', 'pending', 'paid'] as const).map((type) => (
                           <Button
                             key={type}
@@ -1699,8 +1801,8 @@ export default function EnhancedAffiliateDashboard() {
                             variant={reportType === type ? "default" : "outline"}
                             className={
                               reportType === type
-                                ? "bg-gradient-to-r from-cyan-500 to-blue-600"
-                                : "border-white/10 text-gray-400 hover:text-white"
+                                ? "bg-gradient-to-r from-cyan-500 to-blue-600 whitespace-nowrap"
+                                : "border-white/10 text-gray-400 hover:text-white whitespace-nowrap"
                             }
                             size="sm"
                           >
@@ -1711,13 +1813,13 @@ export default function EnhancedAffiliateDashboard() {
                     </div>
 
                     {reportType === 'monthly' && (
-                      <div className="flex gap-4 items-center">
-                        <div>
-                          <Label className="text-gray-300">মাস</Label>
+                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center">
+                        <div className="w-full sm:w-auto">
+                          <Label className="text-gray-300 text-sm sm:text-base">মাস</Label>
                           <select
                             value={selectedMonth}
                             onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                            className="mt-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                            className="mt-1 w-full sm:w-auto px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm sm:text-base"
                           >
                             {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
                               <option key={m} value={m} className="bg-slate-900">
@@ -1726,12 +1828,12 @@ export default function EnhancedAffiliateDashboard() {
                             ))}
                           </select>
                         </div>
-                        <div>
-                          <Label className="text-gray-300">বছর</Label>
+                        <div className="w-full sm:w-auto">
+                          <Label className="text-gray-300 text-sm sm:text-base">বছর</Label>
                           <select
                             value={selectedYear}
                             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                            className="mt-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                            className="mt-1 w-full sm:w-auto px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm sm:text-base"
                           >
                             {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((y) => (
                               <option key={y} value={y} className="bg-slate-900">
@@ -1751,8 +1853,8 @@ export default function EnhancedAffiliateDashboard() {
                   ) : reports ? (
                     <>
                       {/* Summary Cards */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <Card className="p-6 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 border-blue-500/20">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                        <Card className="p-4 sm:p-6 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 border-blue-500/20">
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-sm text-gray-400">অ্যাফিলিয়েট কোড সাবমিশন</p>
                             <Users className="h-5 w-5 text-blue-400" />
@@ -1763,29 +1865,29 @@ export default function EnhancedAffiliateDashboard() {
                           <p className="text-xs text-gray-500 mt-1">মোট বুকিং</p>
                         </Card>
 
-                        <Card className="p-6 bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-500/20">
+                        <Card className="p-4 sm:p-6 bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-500/20">
                           <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm text-gray-400">মোট পেইড</p>
-                            <CheckCircle className="h-5 w-5 text-green-400" />
+                            <p className="text-xs sm:text-sm text-gray-400">মোট পেইড</p>
+                            <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-400" />
                           </div>
-                          <p className="text-3xl font-bold text-white">
+                          <p className="text-2xl sm:text-3xl font-bold text-white">
                             ৳{(reports.summary?.totalPaid || 0).toLocaleString()}
                           </p>
                           <p className="text-xs text-gray-500 mt-1">অনুমোদিত কমিশন</p>
                         </Card>
 
-                        <Card className="p-6 bg-gradient-to-br from-orange-500/10 to-red-600/10 border-orange-500/20">
+                        <Card className="p-4 sm:p-6 bg-gradient-to-br from-orange-500/10 to-red-600/10 border-orange-500/20">
                           <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm text-gray-400">মোট আনপেইড</p>
-                            <Clock className="h-5 w-5 text-orange-400" />
+                            <p className="text-xs sm:text-sm text-gray-400">মোট আনপেইড</p>
+                            <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-orange-400" />
                           </div>
-                          <p className="text-3xl font-bold text-white">
+                          <p className="text-2xl sm:text-3xl font-bold text-white">
                             ৳{(reports.summary?.totalUnpaid || 0).toLocaleString()}
                           </p>
                           <p className="text-xs text-gray-500 mt-1">পেন্ডিং + অনুমোদিত</p>
                         </Card>
 
-                        <Card className="p-6 bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-purple-500/20">
+                        <Card className="p-4 sm:p-6 bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-purple-500/20">
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-sm text-gray-400">পেন্ডিং</p>
                             <TrendingDownIcon className="h-5 w-5 text-purple-400" />
@@ -1799,8 +1901,8 @@ export default function EnhancedAffiliateDashboard() {
 
                       {/* Monthly Breakdown Chart */}
                       {reports.monthlyBreakdown && reports.monthlyBreakdown.length > 0 && (
-                        <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
-                          <h4 className="text-lg font-bold text-white mb-4">মাসিক রিপোর্ট</h4>
+                        <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                          <h4 className="text-base sm:text-lg font-bold text-white mb-4">মাসিক রিপোর্ট</h4>
                           <ResponsiveContainer width="100%" height={300}>
                             <BarChart data={reports.monthlyBreakdown}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -1821,8 +1923,8 @@ export default function EnhancedAffiliateDashboard() {
 
                       {/* Daily Breakdown Chart */}
                       {reportType === 'daily' || reportType === 'all' ? (
-                        <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
-                          <h4 className="text-lg font-bold text-white mb-4">দৈনিক রিপোর্ট (শেষ ৩০ দিন)</h4>
+                        <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                          <h4 className="text-base sm:text-lg font-bold text-white mb-4">দৈনিক রিপোর্ট (শেষ ৩০ দিন)</h4>
                           <ResponsiveContainer width="100%" height={300}>
                             <AreaChart data={reports.dailyBreakdown}>
                               <defs>
@@ -1848,22 +1950,22 @@ export default function EnhancedAffiliateDashboard() {
 
                       {/* Pending Report Table */}
                       {reportType === 'pending' || reportType === 'all' ? (
-                        <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
-                          <div className="flex items-center justify-between mb-6">
-                            <h4 className="text-lg font-bold text-white">পেন্ডিং কমিশন</h4>
-                            <span className="px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-sm">
+                        <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                          <div className="flex items-center justify-between mb-4 sm:mb-6">
+                            <h4 className="text-base sm:text-lg font-bold text-white">পেন্ডিং কমিশন</h4>
+                            <span className="px-2 sm:px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-xs sm:text-sm">
                               {reports.pendingCommissions?.length || 0} টি
                             </span>
                           </div>
-                          <div className="overflow-x-auto">
-                            <table className="w-full">
+                          <div className="overflow-x-auto -mx-4 sm:mx-0">
+                            <table className="w-full min-w-[640px]">
                               <thead>
                                 <tr className="border-b border-white/10">
-                                  <th className="text-left py-3 px-4 font-semibold text-gray-300">তারিখ</th>
-                                  <th className="text-left py-3 px-4 font-semibold text-gray-300">রোগী</th>
-                                  <th className="text-right py-3 px-4 font-semibold text-gray-300">বিল</th>
-                                  <th className="text-right py-3 px-4 font-semibold text-gray-300">কমিশন</th>
-                                  <th className="text-center py-3 px-4 font-semibold text-gray-300">স্ট্যাটাস</th>
+                                  <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">তারিখ</th>
+                                  <th className="text-left py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">রোগী</th>
+                                  <th className="text-right py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">বিল</th>
+                                  <th className="text-right py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">কমিশন</th>
+                                  <th className="text-center py-3 px-2 sm:px-4 font-semibold text-gray-300 text-xs sm:text-sm">স্ট্যাটাস</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1876,19 +1978,20 @@ export default function EnhancedAffiliateDashboard() {
                                 ) : (
                                   reports.pendingCommissions?.map((commission: any) => (
                                     <tr key={commission._id} className="border-b border-white/5 hover:bg-white/5">
-                                      <td className="py-4 px-4 text-sm text-gray-400">
-                                        {format(new Date(commission.createdAt), 'MMM dd, yyyy')}
+                                      <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-gray-400">
+                                        <span className="hidden sm:inline">{format(new Date(commission.createdAt), 'MMM dd, yyyy')}</span>
+                                        <span className="sm:hidden">{format(new Date(commission.createdAt), 'MMM dd')}</span>
                                       </td>
-                                      <td className="py-4 px-4 text-sm text-white">
+                                      <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-white">
                                         {commission.appointmentId?.patientName || 'N/A'}
                                       </td>
-                                      <td className="py-4 px-4 text-sm text-right text-white">
+                                      <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-right text-white">
                                         ৳{commission.totalBill?.toLocaleString() || 0}
                                       </td>
-                                      <td className="py-4 px-4 text-sm text-right font-medium text-orange-400">
+                                      <td className="py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm text-right font-medium text-orange-400">
                                         ৳{commission.commissionAmount?.toLocaleString() || 0}
                                       </td>
-                                      <td className="py-4 px-4 text-center">
+                                      <td className="py-3 sm:py-4 px-2 sm:px-4 text-center">
                                         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-orange-500/20 text-orange-400 border border-orange-500/30">
                                           <Clock className="h-3 w-3" />
                                           {commission.status}
@@ -1905,15 +2008,15 @@ export default function EnhancedAffiliateDashboard() {
 
                       {/* Paid/Unpaid Summary Table */}
                       {(reportType === 'paid' || reportType === 'all') && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                          <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
-                            <div className="flex items-center justify-between mb-6">
-                              <h4 className="text-lg font-bold text-white">পেইড কমিশন</h4>
-                              <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                          <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                            <div className="flex items-center justify-between mb-4 sm:mb-6">
+                              <h4 className="text-base sm:text-lg font-bold text-white">পেইড কমিশন</h4>
+                              <span className="px-2 sm:px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs sm:text-sm">
                                 {reports.paidCommissions?.length || 0} টি
                               </span>
                             </div>
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto -mx-4 sm:mx-0">
                               <table className="w-full">
                                 <thead>
                                   <tr className="border-b border-white/10">
@@ -1944,14 +2047,14 @@ export default function EnhancedAffiliateDashboard() {
                             </div>
                           </Card>
 
-                          <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
-                            <div className="flex items-center justify-between mb-6">
-                              <h4 className="text-lg font-bold text-white">আনপেইড কমিশন</h4>
-                              <span className="px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-sm">
+                          <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                            <div className="flex items-center justify-between mb-4 sm:mb-6">
+                              <h4 className="text-base sm:text-lg font-bold text-white">আনপেইড কমিশন</h4>
+                              <span className="px-2 sm:px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-xs sm:text-sm">
                                 {reports.unpaidCommissions?.length || 0} টি
                               </span>
                             </div>
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto -mx-4 sm:mx-0">
                               <table className="w-full">
                                 <thead>
                                   <tr className="border-b border-white/10">
@@ -2001,23 +2104,24 @@ export default function EnhancedAffiliateDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <Card className="p-6 bg-white/5 backdrop-blur-xl border-white/10">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                      <UserCircle className="h-6 w-6 text-cyan-400" />
+                <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border-white/10">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
+                    <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                      <UserCircle className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
                       Profile Settings
                     </h3>
                     {!isEditingProfile ? (
                       <Button
                         onClick={() => setIsEditingProfile(true)}
                         variant="outline"
-                        className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 bg-transparent"
+                        className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 bg-transparent text-sm sm:text-base w-full sm:w-auto"
                       >
-                        <Edit3 className="h-4 w-4 mr-2" />
-                        Edit Profile
+                        <Edit3 className="h-4 w-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Edit Profile</span>
+                        <span className="sm:hidden ml-2">Edit</span>
                       </Button>
                     ) : (
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 w-full sm:w-auto">
                         <Button
                           onClick={() => {
                             setIsEditingProfile(false);
@@ -2034,32 +2138,33 @@ export default function EnhancedAffiliateDashboard() {
                             });
                           }}
                           variant="outline"
-                          className="border-gray-500/50 text-gray-400 hover:bg-gray-500/10 bg-transparent"
+                          className="border-gray-500/50 text-gray-400 hover:bg-gray-500/10 bg-transparent flex-1 sm:flex-none text-sm sm:text-base"
                         >
-                          <X className="h-4 w-4 mr-2" />
-                          Cancel
+                          <X className="h-4 w-4 sm:mr-2" />
+                          <span className="hidden sm:inline">Cancel</span>
                         </Button>
                         <Button
                           onClick={handleProfileUpdate}
                           disabled={profileLoading}
-                          className="bg-gradient-to-r from-cyan-500 to-blue-600"
+                          className="bg-gradient-to-r from-cyan-500 to-blue-600 flex-1 sm:flex-none text-sm sm:text-base"
                         >
                           {profileLoading ? (
-                            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                            <RefreshCw className="h-4 w-4 sm:mr-2 animate-spin" />
                           ) : (
-                            <Save className="h-4 w-4 mr-2" />
+                            <Save className="h-4 w-4 sm:mr-2" />
                           )}
-                          Save Changes
+                          <span className="hidden sm:inline">Save Changes</span>
+                          <span className="sm:hidden ml-2">Save</span>
                         </Button>
                       </div>
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                     {/* Personal Information */}
-                    <div className="space-y-6">
-                      <h4 className="text-lg font-semibold text-white flex items-center gap-2">
-                        <User className="h-5 w-5 text-cyan-400" />
+                    <div className="space-y-4 sm:space-y-6">
+                      <h4 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
+                        <User className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-400" />
                         Personal Information
                       </h4>
                       
@@ -2130,9 +2235,9 @@ export default function EnhancedAffiliateDashboard() {
                     </div>
 
                     {/* Payment & Security */}
-                    <div className="space-y-6">
-                      <h4 className="text-lg font-semibold text-white flex items-center gap-2">
-                        <CreditCard className="h-5 w-5 text-cyan-400" />
+                    <div className="space-y-4 sm:space-y-6">
+                      <h4 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
+                        <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-400" />
                         Payment Settings
                       </h4>
 

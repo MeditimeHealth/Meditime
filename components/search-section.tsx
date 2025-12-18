@@ -193,20 +193,14 @@ export default function SearchSection() {
           className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
           style={{
             color: "#009A98",
-            fontFamily:
-              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
           }}
         >
-          সাস্থ্য সেবার সাথে মাত্র ১০ মিনিটে ডাক্তারের অ্যাপয়েন্টমেন্ট বুক করুন
+          Book an Appointment with Physicians Using Your Smartphone
         </h1>
         <p
           className="text-base md:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed"
-          style={{
-            fontFamily:
-              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-          }}
         >
-          অনন্ত ফোন কল এবং দীর্ঘ লাইনের কথা ভুলে যান। ডাক্তারের অ্যাপয়েন্টমেন্ট, ভিডিও কনসালটেশন, অ্যাম্বুলেন্স সেবা, মেডিকেল রেকর্ড পরিচালনা এবং আরও অনেক কিছু বুক করুন। ভাল স্বাস্থ্যের দিকে প্রথম পদক্ষেপ নিন।
+          Finding the doctor that best fits your location and schedule can be difficult. We have simplified the process with a compiled list of experienced doctors from 20+ departments serving in prominent hospitals across 40+ locations near Savar, Ashulia, Gazipur, and surrounding areas, making it simple and easy for you to choose from the best doctors and diagnostic test options available.
         </p>
       </motion.div>
 

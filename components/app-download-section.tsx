@@ -17,30 +17,26 @@ export default function AppDownloadSection() {
             className="space-y-6"
           >
             <div>
+              <p className="text-lg text-primary font-semibold mb-2">
+                Meditime App - Bringing all Medical Information in Your Pocket
+              </p>
               <h2
                 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
                 style={{
                   color: "#009A98",
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                 }}
               >
-                আমাদের অ্যাপ ডাউনলোড করুন
+                Download Meditime App - Book Doctor Appointment Anytime from Anywhere
               </h2>
               <p
                 className="text-lg md:text-xl text-gray-800 mb-2 font-semibold"
-                style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
               >
-                বিনামূল্যে আমাদের অ্যাপ ডাউনলোড করুন এবং নিবন্ধন করুন এবং বিশেষ স্বাস্থ্যসেবা সুবিধা পান।
+                Consider Meditime your expert medical service assistant—your go-to guide for everything from hospitals to doctors, test prices to appointment schedules.
               </p>
               <p
                 className="text-base md:text-lg text-gray-600"
-                style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
               >
-                আপনার মোবাইলে অ্যাপ ডাউনলোড করতে, Play Store এ যান বা QR কোড স্ক্যান করুন।
+                Simple, effective, and designed to give you complete control over your medical needs exactly when you need it most.
               </p>
             </div>
 
