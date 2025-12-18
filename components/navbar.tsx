@@ -70,7 +70,7 @@ export default function Navbar() {
       }
     };
 
-    checkUser();
+    checkUser(); 
 
     // Listen for storage changes (e.g., when user logs in from another tab)
     window.addEventListener("storage", checkUser);
