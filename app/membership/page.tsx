@@ -1,10 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Crown, Sparkles, Star, Building2, Check } from "lucide-react";
+import { Crown, Sparkles, Star, Building2, ChevronDown, ChevronUp } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const membershipPlans = [
   {
@@ -15,14 +16,7 @@ const membershipPlans = [
     gradient: "from-gray-300 to-gray-500",
     price: "৳ 1,000",
     period: "/year",
-    features: [
-      "5% discount on consultations",
-      "Free health checkup (annual)",
-      "Priority appointment booking",
-      "24/7 helpline support",
-      "Access to health articles",
-      "Medicine discount: 5%",
-    ],
+    description: "You and 1 other member of your family can use this card and enjoy 15% discounts on medical bills.",
   },
   {
     id: "gold",
@@ -33,16 +27,7 @@ const membershipPlans = [
     price: "৳ 2,500",
     period: "/year",
     popular: true,
-    features: [
-      "10% discount on consultations",
-      "Free health checkup (bi-annual)",
-      "VIP appointment booking",
-      "24/7 priority helpline",
-      "Access to wellness programs",
-      "Medicine discount: 10%",
-      "Free home sample collection",
-      "Diagnostic test discount: 15%",
-    ],
+    description: "You and 2 other members of your family can use this card and enjoy 15% discounts on medical bills.",
   },
   {
     id: "platinum",
@@ -52,18 +37,7 @@ const membershipPlans = [
     gradient: "from-purple-300 to-purple-600",
     price: "৳ 5,000",
     period: "/year",
-    features: [
-      "15% discount on consultations",
-      "Free comprehensive checkup (quarterly)",
-      "VIP+ appointment booking",
-      "Dedicated health manager",
-      "Premium wellness programs",
-      "Medicine discount: 15%",
-      "Free home sample collection",
-      "Diagnostic test discount: 20%",
-      "Ambulance service discount: 25%",
-      "Free telemedicine consultations",
-    ],
+    description: "You and 4 other members of your family can use this card and enjoy 15% discounts on medical bills.",
   },
   {
     id: "corporate",
@@ -73,27 +47,49 @@ const membershipPlans = [
     gradient: "from-blue-400 to-blue-700",
     price: "Custom",
     period: "",
-    features: [
-      "Customized group packages",
-      "Employee health screenings",
-      "On-site health camps",
-      "Dedicated account manager",
-      "Flexible coverage options",
-      "Up to 20% discounts",
-      "Wellness workshops",
-      "Monthly health reports",
-      "Emergency support 24/7",
-      "Custom benefits package",
-    ],
+    description: "Only You can use this card and enjoy 20% discounts on medical bills.",
+  },
+];
+
+const howToGetSteps = [
+  "Choose a membership package from the cards below.",
+  "Check the discount percentage and how many family members can use the card.",
+  "After choosing the package, check the price and click \"Order Now.\"",
+  "Read the medical benefits of the package you have selected carefully and make sure you agree.",
+  "Fill out the Meditime Health Discount Card Request Form to confirm your order.",
+  "After the card is delivered to you, start using it at hospitals in our network.",
+  "With this card, you can enjoy up to 15% discount on covered medical services. The card can be used anytime during the year.",
+];
+
+const faqs = [
+  {
+    question: "What is a Health Discount Card?",
+    answer: "A health discount card is a medical service privilege card. If you have an authorized one, you will be eligible for discounts on medical service bills at hospitals within the provider's network. For example, by using the Meditime Health Discount Card, a user can enjoy up to 15% discount on different medical services at a network of 30+ hospitals near Savar and surrounding areas.",
+  },
+  {
+    question: "Why Do You Need a Health Discount Card?",
+    answer: "You need a health discount card to save money on medical expenses. It helps you get discounts on hospital services, tests, and treatments at network hospitals, making healthcare more affordable for you and your family.",
+  },
+  {
+    question: "Can I Use the Meditime Health Card in All Hospitals in Savar?",
+    answer: "Yes, almost every renowned hospital in Savar, Ashulia, Kaliyakoir, and Dhamarai is in the Meditime network.",
+  },
+  {
+    question: "How Many Hospitals Are in the Network?",
+    answer: "More than 40 hospitals are already in the network and the number is always increasing with our expanding customer base.",
   },
 ];
 
 export default function MembershipPage() {
   const router = useRouter();
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   
   const handleSelectPlan = (planId: string) => {
-    // Navigate to detail page
     router.push(`/membership/${planId}`);
+  };
+
+  const toggleFaq = (index: number) => {
+    setOpenFaq(openFaq === index ? null : index);
   };
 
   return (
@@ -101,29 +97,76 @@ export default function MembershipPage() {
       <Navbar />
       
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary to-primary-dark text-white py-16 mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-4xl md:text-5xl font-bold mb-4"
-          >
-            Choose Your Membership Plan
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-xl max-w-3xl mx-auto"
-          >
-            Invest in your health with exclusive benefits, discounts, and priority access to quality healthcare services
-          </motion.p>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative mt-20 h-[400px] md:h-[500px] w-full overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/50 to-primary-dark/60 z-10" />
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1920&q=80')",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+          }}
+        />
+        <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 drop-shadow-2xl leading-tight">
+                Meditime Health Card
+              </h1>
+              <p className="text-xl md:text-2xl text-white/95 mb-6 drop-shadow-lg font-semibold">
+                Your Pass to Affordable Medical Services
+              </p>
+              <p className="text-lg md:text-xl text-white/90 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
+                Meditime health card is a one time payment medical privilege membership card. Frequently referred to as medical discount or health discount cards, Health cards from Meditime decreases your medical expenses up to 15%.
+              </p>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Membership Plans */}
+      {/* How to Get Your Health Discount Card Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-16"
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-[#009A98] mb-8 text-center">
+            How to Get Your Health Discount Card
+          </h2>
+          <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-8">
+            <ol className="space-y-4">
+              {howToGetSteps.map((step, index) => (
+                <motion.li
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  className="flex items-start gap-4"
+                >
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
+                    {index + 1}
+                  </div>
+                  <p className="text-gray-700 text-lg leading-relaxed pt-1">{step}</p>
+                </motion.li>
+              ))}
+            </ol>
+          </div>
+        </motion.div>
+
+        {/* Membership Plans */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           {membershipPlans.map((plan, index) => {
             const IconComponent = plan.icon;
@@ -162,15 +205,10 @@ export default function MembershipPage() {
                     </div>
                   </div>
 
-                  {/* Features List */}
-                  <ul className="space-y-3 mb-8 flex-grow">
-                    {plan.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start">
-                        <Check className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" style={{ color: plan.color }} />
-                        <span className="text-gray-700">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  {/* Description */}
+                  <p className="text-gray-700 text-lg leading-relaxed mb-8 flex-grow">
+                    {plan.description}
+                  </p>
 
                   {/* CTA Button */}
                   <button
@@ -180,13 +218,60 @@ export default function MembershipPage() {
                       backgroundImage: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
                     }}
                   >
-                    Select {plan.title} Plan
+                    Order Now
                   </button>
                 </div>
               </motion.div>
             );
           })}
         </div>
+
+        {/* FAQ Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-[#009A98] mb-8 text-center">
+            FAQ about Health Discount Cards
+          </h2>
+          <div className="space-y-4 max-w-4xl mx-auto">
+            {faqs.map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="border border-gray-200 rounded-xl overflow-hidden"
+              >
+                <button
+                  onClick={() => toggleFaq(index)}
+                  className="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors"
+                >
+                  <span className="text-lg font-semibold text-gray-900">{faq.question}</span>
+                  {openFaq === index ? (
+                    <ChevronUp className="w-5 h-5 text-primary flex-shrink-0" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                  )}
+                </button>
+                {openFaq === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="px-6 pb-5 bg-gray-50"
+                  >
+                    <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+                  </motion.div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
       <Footer />
     </div>

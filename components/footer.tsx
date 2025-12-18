@@ -17,6 +17,7 @@ export default function Footer() {
   ];
 
   const services = [
+    { href: "/ambulance", label: "Ambulance" },
     { href: "/service", label: "ভিডিও কনসালটেশন" },
     { href: "/service", label: "ঔষধ অর্ডার" },
     { href: "/service", label: "ল্যাব টেস্ট" },

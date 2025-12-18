@@ -30,9 +30,9 @@ interface Department {
 }
 
 const banglaLabels = {
-  findDoctor: "আপনার ডাক্তার খুঁজুন",
-  searchPlaceholder: "নাম, বিশেষতা, হাসপাতাল, যোগ্যতা বা বায়ো দিয়ে খুঁজুন...",
-  findByLocation: "অবস্থান দিয়ে ডাক্তার খুঁজুন",
+  findDoctor: "Top Doctors in Savar and Surroundings",
+  searchPlaceholder: "Search by name, specialty, hospital, qualification or bio...",
+  findByLocation: "Find The Best Doctor Near You",
   division: "বিভাগ",
   district: "জেলা",
   thana: "থানা/উপজেলা",
@@ -772,21 +772,13 @@ function DoctorListPageContent() {
             >
               <h1
                 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
               >
                 {banglaLabels.findDoctor}
               </h1>
               <p
                 className="text-xl md:text-2xl text-white/95 mb-8 drop-shadow-lg"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
               >
-                আমাদের বিশেষজ্ঞ চিকিৎসা পেশাদারদের মধ্যে খুঁজুন এবং ফিল্টার করুন
+                Doctor Appointments & Services. Search over 300 Top doctors across dozens of specialties. See doctor list and book appointments online.
               </p>
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -799,12 +791,8 @@ function DoctorListPageContent() {
                 </div>
                 <span
                   className="text-white/90 text-lg font-semibold"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
-                  বিশ্বস্ত চিকিৎসা সেবা
+                  Trusted Medical Service
                 </span>
               </motion.div>
             </motion.div>
@@ -828,21 +816,18 @@ function DoctorListPageContent() {
               <div className="flex-1">
                 <h2
                   className="text-3xl md:text-4xl font-bold text-gray-900 mb-3"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
-                  সব ডাক্তার
+                  Find a doctor in Savar and Nearby areas
                 </h2>
                 <p
                   className="text-lg text-gray-600 leading-relaxed"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
-                  আমাদের বিশেষজ্ঞ চিকিৎসা পেশাদারদের মধ্যে খুঁজুন এবং ফিল্টার করুন
+                  When it comes to your health and the health of your family, seeing a doctor who fits your needs is important. Our database of Meditime top doctors in Savar and nearby areas makes it easy to search for and connect with the right doctor for you.
+                </p>
+                <p
+                  className="text-base text-gray-500 leading-relaxed mt-3"
+                >
+                  Doctors do not pay to appear on our lists. Through peer nomination, research, review, and screening, we have compiled an extensive list of top doctors from 30+ hospitals in locations such as Ashulia, Savar, Kaliyakoir, and beyond. For best results, fill in as many search filter options as you feel comfortable with.
                 </p>
               </div>
             </div>
@@ -1015,12 +1000,8 @@ function DoctorListPageContent() {
             <div className="mb-6 pb-4 border-b-2 border-gray-100">
               <h2
                 className="text-2xl md:text-3xl font-bold text-gray-900 text-center"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
               >
-                বিভাগ অনুযায়ী ডাক্তার খুঁজুন
+                Search Doctor By Department
               </h2>
             </div>
             <div className="relative">

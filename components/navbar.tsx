@@ -106,12 +106,12 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { href: "/doctor", label: "ডাক্তার" },
-    { href: "/hospital", label: "হাসপাতাল" },
-    { href: "/service", label: "সেবা সমূহ" },
-    { href: "/diagnostic", label: "ডায়াগনস্টিক টেস্ট" },
-    { href: "/blog", label: "স্বাস্থ্য টিপস" },
-    { href: "/contact", label: "যোগাযোগ" },
+    { href: "/doctor", label: "Doctors" },
+    { href: "/hospital", label: "Hospitals" },
+    { href: "/service", label: "Services" },
+    { href: "/diagnostic", label: "Diagnostic Tests" },
+    { href: "/blog", label: "Health Tips" },
+    { href: "/contact", label: "Contact" },
   ];
 
   // Close mobile menu when route changes
@@ -139,8 +139,8 @@ export default function Navbar() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? "bg-white/98 backdrop-blur-xl shadow-lg border-b border-gray-100"
-            : "bg-white/90 backdrop-blur-lg shadow-md"
+            ? "glass shadow-sm py-2"
+            : "bg-white/50 backdrop-blur-md py-4"
         }`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 ">
@@ -182,8 +182,8 @@ export default function Navbar() {
                       <span
                         className={`text-lg xl:text-xl font-semibold transition-all duration-300 ${
                           isActive
-                            ? "text-primary"
-                            : "text-gray-700 group-hover:text-primary"
+                            ? "text-primary font-bold"
+                            : "text-slate-600 group-hover:text-primary font-medium"
                         }`}
                       >
                         {link.label}
@@ -345,16 +345,16 @@ export default function Navbar() {
                       className="text-base font-semibold text-gray-700 hover:text-primary transition-colors duration-300 px-3 py-2 rounded-lg hover:bg-primary/5"
                       style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                     >
-                      লগইন
+                      Login
                     </Link>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link
                       href="/signup"
-                      className="px-5 py-2.5 bg-gradient-to-r from-primary-light via-primary to-primary-dark hover:from-primary hover:via-primary-dark hover:to-primary text-white text-base font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl"
+                      className="px-6 py-2.5 btn-primary text-white text-base shadow-lg hover:shadow-primary/30"
                       style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                     >
-                      নিবন্ধন
+                      Register
                     </Link>
                   </motion.div>
                 </>
@@ -406,7 +406,7 @@ export default function Navbar() {
                     className="text-xl font-bold text-gray-900"
                     style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                   >
-                    মেনু
+                    Menu
                   </h2>
                   <button
                     onClick={() => setMobileMenuOpen(false)}
@@ -483,7 +483,7 @@ export default function Navbar() {
                           className="block w-full px-4 py-3 bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base font-semibold rounded-lg transition-all duration-300 shadow-lg text-center"
                           style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                         >
-                          ড্যাশবোর্ড
+                          Dashboard
                         </Link>
                       )}
                       <button
@@ -494,7 +494,7 @@ export default function Navbar() {
                         className="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 text-base font-semibold rounded-lg transition-all duration-300 border border-gray-200"
                         style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                       >
-                        লগআউট
+                        Logout
                       </button>
                     </>
                   ) : (
@@ -505,7 +505,7 @@ export default function Navbar() {
                         className="block w-full px-4 py-3 text-center text-base font-semibold text-gray-700 hover:text-primary transition-colors duration-300 rounded-lg hover:bg-primary/5 border-2 border-gray-200"
                         style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                       >
-                        লগইন
+                        Login
                       </Link>
                       <Link
                         href="/signup"
@@ -513,7 +513,7 @@ export default function Navbar() {
                         className="block w-full px-4 py-3 bg-gradient-to-r from-primary-light via-primary to-primary-dark hover:from-primary hover:via-primary-dark hover:to-primary text-white text-base font-semibold rounded-lg transition-all duration-300 shadow-lg text-center"
                         style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                       >
-                        নিবন্ধন
+                        Register
                       </Link>
                     </>
                   )}

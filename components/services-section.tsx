@@ -55,10 +55,7 @@ export default function ServicesSection() {
         className="mb-8"
       >
         <h2
-          className="text-4xl md:text-5xl font-bold mb-6 text-left"
-          style={{
-            color: "#009A98",
-          }}
+          className="text-4xl md:text-5xl font-bold mb-6 text-left text-primary"
         >
           Our Services – You are the only one we care about
         </h2>
@@ -88,37 +85,48 @@ export default function ServicesSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Link href={service.href} className="block h-full">
-                <Card className="p-6 bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow h-full flex flex-col cursor-pointer">
-                {/* Icon */}
-                <div className="mb-4 flex justify-center">
-                  <div className="relative w-12 h-12 flex items-center justify-center">
-                    <Image
-                      src={service.image}
-                      alt={service.title}
-                      width={48}
-                      height={48}
-                      className="object-contain"
-                    />
+              <Link href={service.href} className="block h-full group">
+                <Card className="p-8 bg-white border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 h-full flex flex-col cursor-pointer rounded-2xl group-hover:-translate-y-2 relative overflow-hidden">
+                  {/* Hover Gradient Background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-teal-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  
+                  {/* Icon */}
+                  <div className="mb-6 flex justify-start">
+                    <div className="relative w-16 h-16 flex items-center justify-center bg-teal-50 rounded-2xl group-hover:bg-white group-hover:shadow-md transition-all duration-300 p-3">
+                      <Image
+                        src={service.image}
+                        alt={service.title}
+                        width={48}
+                        height={48}
+                        className="object-contain"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                {/* Title with red underline */}
-                <div className="mb-4">
-                  <h3
-                    className="text-xl font-bold text-gray-900 mb-2"
+                  {/* Title */}
+                  <div className="mb-4">
+                    <h3
+                      className="text-xl font-bold text-slate-800 mb-2 group-hover:text-primary transition-colors"
+                    >
+                      {service.title}
+                    </h3>
+                  </div>
+
+                  {/* Description */}
+                  <p
+                    className="text-sm md:text-base text-slate-600 leading-relaxed grow"
                   >
-                    {service.title}
-                  </h3>
-                  <div className="w-12 h-1 bg-red-500"></div>
-                </div>
-
-                {/* Description */}
-                <p
-                  className="text-sm md:text-base text-gray-600 leading-relaxed grow"
-                >
-                  {service.description}
-                </p>
+                    {service.description}
+                  </p>
+                  
+                  {/* Arrow Indicator */}
+                   <div className="mt-4 flex justify-end opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
               </Card>
               </Link>
             </motion.div>

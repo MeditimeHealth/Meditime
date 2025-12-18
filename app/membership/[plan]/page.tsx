@@ -2,16 +2,16 @@
 
 import { useState, use } from "react";
 import { motion } from "framer-motion";
-import { Crown, Sparkles, Star, Building2, Check, Phone, User, Users, MapPin, Shield, Heart, Clock, Award, Package, ArrowRight } from "lucide-react";
+import { Crown, Sparkles, Star, Building2, Check, Phone, User, Users, MapPin, ArrowRight } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 const membershipPlans = {
   silver: {
     id: "silver",
-    title: "Silver Membership",
+    title: "Meditime Health Card - Silver Membership",
+    shortTitle: "Silver",
     icon: Star,
     color: "#9CA3AF",
     gradient: "from-gray-300 to-gray-500",
@@ -21,27 +21,17 @@ const membershipPlans = {
     yearlyPrice: 1000,
     period: "/year",
     membersCovered: 2,
-    image: "/membership-silver.jpg",
-    description: "Perfect for individuals seeking quality healthcare with basic benefits and discounts on consultations.",
-    features: [
-      { icon: Check, text: "5% discount on consultations" },
-      { icon: Check, text: "Free health checkup (annual)" },
-      { icon: Check, text: "Priority appointment booking" },
-      { icon: Check, text: "24/7 helpline support" },
-      { icon: Check, text: "Access to health articles" },
-      { icon: Check, text: "Medicine discount: 5%" },
-    ],
-    benefits: [
-      "Valid for 1 year from activation",
-      "Covers 2 family members",
-      "Emergency consultation support",
-      "Health tips and wellness content",
-      "Exclusive member events access",
+    whatsIncluded: [
+      "Applicable for Total 2 Persons - You and Another 1 Member of your Family",
+      "15% discount on Medical Bills",
+      "Network of 30+ Hospitals",
+      "12 Months Validity for Unlimited Time Visits",
     ],
   },
   gold: {
     id: "gold",
-    title: "Gold Membership",
+    title: "Meditime Health Card - Gold Membership",
+    shortTitle: "Gold",
     icon: Sparkles,
     color: "#F59E0B",
     gradient: "from-yellow-300 to-yellow-600",
@@ -52,30 +42,17 @@ const membershipPlans = {
     period: "/year",
     membersCovered: 3,
     popular: true,
-    image: "/membership-gold.jpg",
-    description: "Enhanced benefits with priority booking, extended discounts, and access to premium healthcare services.",
-    features: [
-      { icon: Check, text: "10% discount on consultations" },
-      { icon: Check, text: "Free health checkup (bi-annual)" },
-      { icon: Check, text: "VIP appointment booking" },
-      { icon: Check, text: "24/7 priority helpline" },
-      { icon: Check, text: "Access to wellness programs" },
-      { icon: Check, text: "Medicine discount: 10%" },
-      { icon: Check, text: "Free home sample collection" },
-      { icon: Check, text: "Diagnostic test discount: 15%" },
-    ],
-    benefits: [
-      "Valid for 1 year from activation",
-      "Covers 3 family members",
-      "Priority emergency services",
-      "Quarterly health reports",
-      "Free nutritionist consultation",
-      "Yoga & fitness class access",
+    whatsIncluded: [
+      "Applicable for Total 3 Persons - You and Another 2 Members of your Family",
+      "15% discount on Medical Bills",
+      "Network of 30+ Hospitals",
+      "12 Months Validity for Unlimited Time Visits",
     ],
   },
   platinum: {
     id: "platinum",
-    title: "Platinum Membership",
+    title: "Meditime Health Card - Platinum Membership",
+    shortTitle: "Platinum",
     icon: Crown,
     color: "#9333EA",
     gradient: "from-purple-300 to-purple-600",
@@ -85,33 +62,17 @@ const membershipPlans = {
     yearlyPrice: 5000,
     period: "/year",
     membersCovered: 5,
-    image: "/membership-platinum.jpg",
-    description: "Premium healthcare experience with VIP access, maximum discounts, and exclusive wellness programs.",
-    features: [
-      { icon: Check, text: "15% discount on consultations" },
-      { icon: Check, text: "Free comprehensive checkup (quarterly)" },
-      { icon: Check, text: "VIP+ appointment booking" },
-      { icon: Check, text: "Dedicated health manager" },
-      { icon: Check, text: "Premium wellness programs" },
-      { icon: Check, text: "Medicine discount: 15%" },
-      { icon: Check, text: "Free home sample collection" },
-      { icon: Check, text: "Diagnostic test discount: 20%" },
-      { icon: Check, text: "Ambulance service discount: 25%" },
-      { icon: Check, text: "Free telemedicine consultations" },
-    ],
-    benefits: [
-      "Valid for 1 year from activation",
-      "Covers 5 family members",
-      "Dedicated health concierge",
-      "Monthly health monitoring",
-      "Free annual vaccination",
-      "Exclusive wellness retreats",
-      "Priority surgery bookings",
+    whatsIncluded: [
+      "Applicable for Total 5 Persons - You and Another 4 Members of your Family",
+      "15% discount on Medical Bills",
+      "Network of 30+ Hospitals",
+      "12 Months Validity for Unlimited Time Visits",
     ],
   },
   corporate: {
     id: "corporate",
-    title: "Corporate Membership",
+    title: "Meditime Health Card - Corporate Membership",
+    shortTitle: "Corporate",
     icon: Building2,
     color: "#3B82F6",
     gradient: "from-blue-400 to-blue-700",
@@ -121,27 +82,11 @@ const membershipPlans = {
     yearlyPrice: 0,
     period: "",
     membersCovered: 0,
-    image: "/membership-corporate.jpg",
-    description: "Comprehensive healthcare solutions for organizations, offering employee wellness and group benefits.",
-    features: [
-      { icon: Check, text: "Customized group packages" },
-      { icon: Check, text: "Employee health screenings" },
-      { icon: Check, text: "On-site health camps" },
-      { icon: Check, text: "Dedicated account manager" },
-      { icon: Check, text: "Flexible coverage options" },
-      { icon: Check, text: "Up to 20% discounts" },
-      { icon: Check, text: "Wellness workshops" },
-      { icon: Check, text: "Monthly health reports" },
-      { icon: Check, text: "Emergency support 24/7" },
-      { icon: Check, text: "Custom benefits package" },
-    ],
-    benefits: [
-      "Customizable validity period",
-      "Flexible member coverage",
-      "Company-wide health analytics",
-      "Employee engagement programs",
-      "Preventive health initiatives",
-      "Mental wellness support",
+    whatsIncluded: [
+      "Applicable for You Only",
+      "15% discount on Medical Bills",
+      "Network of 30+ Hospitals",
+      "12 Months Validity for Unlimited Time Visits",
     ],
   },
 };
@@ -168,7 +113,7 @@ export default function MembershipDetailPage({ params }: { params: Promise<{ pla
     return (
       <div className="min-h-screen bg-white">
         <Navbar />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center mt-20">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Plan not found</h1>
           <button
             onClick={() => router.push("/membership")}
@@ -241,84 +186,72 @@ export default function MembershipDetailPage({ params }: { params: Promise<{ pla
     <div className="min-h-screen bg-white">
       <Navbar />
       
-      {/* Breadcrumb */}
-      <div className="bg-gray-50 py-4 mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <button onClick={() => router.push("/")} className="hover:text-primary">Home</button>
-            <span>/</span>
-            <button onClick={() => router.push("/membership")} className="hover:text-primary">Memberships</button>
-            <span>/</span>
-            <span className="text-gray-900 font-medium">{plan.title}</span>
+      {/* Hero Section - Same as membership main page */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative mt-20 h-[350px] md:h-[400px] w-full overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/50 to-primary-dark/60 z-10" />
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1920&q=80')",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+          }}
+        />
+        <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-2xl leading-tight">
+                Meditime Health Card
+              </h1>
+              <p className="text-xl md:text-2xl text-white/95 mb-6 drop-shadow-lg font-semibold">
+                Your Pass to Affordable Medical Services
+              </p>
+            </motion.div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {!showForm ? (
           <>
-            {/* Product Detail Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-              {/* Left Side - Image */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="space-y-4"
-              >
-                <div className="relative h-[500px] bg-gradient-to-br rounded-2xl overflow-hidden shadow-2xl" style={{ background: `linear-gradient(135deg, ${plan.color}20, ${plan.color}40)` }}>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <IconComponent className="w-64 h-64 opacity-20" style={{ color: plan.color }} />
+            {/* Card Details Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-12"
+            >
+              <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-gray-100">
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8">
+                  <div
+                    className="w-20 h-20 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: `${plan.color}20` }}
+                  >
+                    <IconComponent className="w-10 h-10" style={{ color: plan.color }} />
                   </div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <IconComponent className="w-32 h-32" style={{ color: plan.color }} />
-                  </div>
-                  {'popular' in plan && plan.popular && (
-                    <div className="absolute top-4 right-4 bg-gradient-to-r from-primary to-primary-dark text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                      Most Popular
-                    </div>
-                  )}
-                </div>
-
-                {/* Trust Badges */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-blue-50 rounded-lg p-4 text-center">
-                    <Shield className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                    <p className="text-xs font-semibold text-gray-700">Secure Payment</p>
-                  </div>
-                  <div className="bg-green-50 rounded-lg p-4 text-center">
-                    <Heart className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                    <p className="text-xs font-semibold text-gray-700">Health Assured</p>
-                  </div>
-                  <div className="bg-purple-50 rounded-lg p-4 text-center">
-                    <Award className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                    <p className="text-xs font-semibold text-gray-700">Premium Quality</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Right Side - Details */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="space-y-6"
-              >
-                {/* Title and Icon */}
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${plan.color}20` }}>
-                    <IconComponent className="w-8 h-8" style={{ color: plan.color }} />
-                  </div>
-                  <div>
-                    <h1 className="text-3xl md:text-4xl font-bold mb-2" style={{ color: plan.color }}>
+                  <div className="flex-1">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-2" style={{ color: plan.color }}>
                       {plan.title}
-                    </h1>
-                    <p className="text-gray-600">{plan.description}</p>
+                    </h2>
+                    {'popular' in plan && plan.popular && (
+                      <span className="inline-block bg-gradient-to-r from-primary to-primary-dark text-white px-4 py-1 rounded-full text-sm font-bold">
+                        Most Popular
+                      </span>
+                    )}
                   </div>
                 </div>
 
                 {/* Price */}
-                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mb-8">
                   <div className="flex items-baseline gap-2 mb-4">
                     <span className="text-4xl font-bold text-gray-900">
                       {plan.id === "corporate" ? "Custom" : `৳${plan.yearlyPrice.toLocaleString()}`}
@@ -347,109 +280,36 @@ export default function MembershipDetailPage({ params }: { params: Promise<{ pla
                   )}
                 </div>
 
-                {/* Members Covered */}
-                <div className="flex items-center gap-3 bg-blue-50 rounded-lg p-4">
-                  <Users className="w-6 h-6 text-blue-600" />
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      {plan.id === "corporate" ? "Custom Coverage" : `Covers ${plan.membersCovered} Members`}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {plan.id === "corporate" ? "Flexible for your organization" : "Perfect for your family"}
-                    </p>
-                  </div>
-                </div>
-
                 {/* Buy Now Button */}
                 <button
                   onClick={() => setShowForm(true)}
                   className="w-full bg-gradient-to-r from-primary to-primary-dark text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 text-lg"
                 >
-                  {plan.id === "corporate" ? "Request Quote" : "Buy Now"}
+                  {plan.id === "corporate" ? "Request Quote" : "Order Now"}
                   <ArrowRight className="w-6 h-6" />
                 </button>
-
-                {/* Quick Info */}
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-gray-400" />
-                    <span className="text-sm text-gray-600">Valid for 1 year</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Package className="w-5 h-5 text-gray-400" />
-                    <span className="text-sm text-gray-600">5-7 days delivery</span>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Features Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="mb-16"
-            >
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">What's Included</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {plan.features.map((feature, idx) => (
-                  <div key={idx} className="flex items-start gap-3 bg-gray-50 rounded-lg p-4">
-                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: plan.color }} />
-                    <span className="text-gray-700">{feature.text}</span>
-                  </div>
-                ))}
               </div>
             </motion.div>
 
-            {/* Benefits Section */}
+            {/* What's Included Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mb-16"
+              transition={{ duration: 0.5 }}
+              className="mb-12"
             >
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Additional Benefits</h2>
-              <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-8 border border-gray-200">
-                <ul className="space-y-3">
-                  {plan.benefits.map((benefit, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <span className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: plan.color }}></span>
-                      <span className="text-gray-700">{benefit}</span>
-                    </li>
+              <h2 className="text-3xl font-bold text-[#009A98] mb-6">What&apos;s Included</h2>
+              <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-8">
+                <div className="space-y-4">
+                  {plan.whatsIncluded.map((item, idx) => (
+                    <div key={idx} className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+                        <Check className="w-5 h-5" />
+                      </div>
+                      <p className="text-gray-700 text-lg leading-relaxed pt-1">{item}</p>
+                    </div>
                   ))}
-                </ul>
-              </div>
-            </motion.div>
-
-            {/* About Card Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 md:p-12"
-            >
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">About Your Membership Card</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
-                    <Award className="w-8 h-8 text-blue-600" />
-                  </div>
-                  <h3 className="font-bold text-gray-900 mb-2">Premium Design</h3>
-                  <p className="text-sm text-gray-600">High-quality PVC card with elegant design and your details</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
-                    <Shield className="w-8 h-8 text-green-600" />
-                  </div>
-                  <h3 className="font-bold text-gray-900 mb-2">Unique ID</h3>
-                  <p className="text-sm text-gray-600">Each card has a unique ID for easy verification and access</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
-                    <Package className="w-8 h-8 text-purple-600" />
-                  </div>
-                  <h3 className="font-bold text-gray-900 mb-2">Secure Delivery</h3>
-                  <p className="text-sm text-gray-600">Delivered to your doorstep within 5-7 business days</p>
                 </div>
               </div>
             </motion.div>

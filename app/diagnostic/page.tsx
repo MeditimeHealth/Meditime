@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Search, X, ShoppingCart, MapPin, Percent, FileText, Download } from "lucide-react";
 import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 
 interface DiagnosticTest {
   _id: string;
@@ -307,11 +308,30 @@ Thank you for choosing Medi Time!
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
                   <div className="mx-auto max-w-3xl text-center text-white">
                     <h1 className="mb-6 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-                      Diagnostic Tests
+                      Find the Most Affordable Diagnostic Options
                     </h1>
                     <p className="mb-8 text-base leading-relaxed sm:text-lg lg:text-xl">
-                      Book diagnostic tests and get the best prices
+                      Save up to 15% Using our membership cards in all types of Diagnostic Tests.
                     </p>
+                    <a 
+                      href="/membership"
+                      className="inline-flex items-center bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all font-semibold"
+                    >
+                      Order Membership Card
+                      <svg
+                        className="ml-2 h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -678,6 +698,8 @@ Thank you for choosing Medi Time!
           </div>
         )}
       </div>
+      <Footer />
     </div>
+    
   );
 }

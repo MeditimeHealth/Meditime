@@ -46,12 +46,8 @@ export default function SearchSection() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const heroSection = document.getElementById("hero-text-section");
-      if (heroSection) {
-        const rect = heroSection.getBoundingClientRect();
-        // Make sticky when hero section is scrolled past
-        setIsSticky(rect.bottom <= 100);
-      }
+      // Make sticky after scrolling past the hero area (approx 400px)
+      setIsSticky(window.scrollY > 400);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -181,29 +177,6 @@ export default function SearchSection() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Hero Text Section */}
-      <motion.div
-        id="hero-text-section"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-8 text-center"
-      >
-        <h1
-          className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
-          style={{
-            color: "#009A98",
-          }}
-        >
-          Book an Appointment with Physicians Using Your Smartphone
-        </h1>
-        <p
-          className="text-base md:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed"
-        >
-          Finding the doctor that best fits your location and schedule can be difficult. We have simplified the process with a compiled list of experienced doctors from 20+ departments serving in prominent hospitals across 40+ locations near Savar, Ashulia, Gazipur, and surrounding areas, making it simple and easy for you to choose from the best doctors and diagnostic test options available.
-        </p>
-      </motion.div>
-
       {/* Spacer to prevent layout shift when sticky */}
       {isSticky && <div className="h-28 mb-10"></div>}
 
@@ -215,11 +188,11 @@ export default function SearchSection() {
         transition={{ duration: 0.5, delay: 0.1 }}
         className={`mb-10 transition-all duration-300 ${
           isSticky
-            ? "fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-7xl px-4 sm:px-6 lg:px-8 z-50"
-            : "relative"
+            ? "fixed top-24 left-1/2 -translate-x-1/2 w-full max-w-7xl px-4 sm:px-6 lg:px-8 z-40"
+            : "relative -mt-20 z-10"
         }`}
       >
-        <Card className="p-6 bg-white border-2 border-primary/10 shadow-lg">
+        <Card className="p-6 glass-card border-0 shadow-2xl rounded-2xl">
           <div className="relative">
             <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
             <Input

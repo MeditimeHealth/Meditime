@@ -51,9 +51,9 @@ interface Thana {
 }
 
 const banglaLabels = {
-  findHospitals: "হাসপাতাল খুঁজুন",
-  searchPlaceholder: "নাম, ঠিকানা, অবস্থান, ফোন বা ইমেইল দিয়ে খুঁজুন...",
-  findByLocation: "অবস্থান দিয়ে হাসপাতাল খুঁজুন",
+  findHospitals: "See doctor list of 40+ Hospitals in Just Few Minutes",
+  searchPlaceholder: "Search by name, address, location, phone or email...",
+  findByLocation: "Find Hospital By Location",
   division: "বিভাগ",
   district: "জেলা",
   thana: "থানা/উপজেলা",
@@ -367,21 +367,13 @@ export default function HospitalListPage() {
             >
               <h1
                 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
               >
                 {banglaLabels.findHospitals}
               </h1>
               <p
                 className="text-xl md:text-2xl text-white/95 mb-8 drop-shadow-lg"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
               >
-                আমাদের নেটওয়ার্ক থেকে হাসপাতাল খুঁজুন এবং ফিল্টার করুন
+                Different Locations, 20+ Specialities, and 400+ Doctors near Savar from 40+ Hospitals.
               </p>
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -394,12 +386,8 @@ export default function HospitalListPage() {
                 </div>
                 <span
                   className="text-white/90 text-lg font-semibold"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
-                  বিশ্বস্ত স্বাস্থ্য সেবা
+                  Trusted Healthcare
                 </span>
               </motion.div>
             </motion.div>
@@ -423,21 +411,13 @@ export default function HospitalListPage() {
               <div className="flex-1">
                 <h2
                   className="text-3xl md:text-4xl font-bold text-gray-900 mb-3"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
-                  সব হাসপাতাল
+                  List of All Doctors from 40+ Hospitals Near Savar
                 </h2>
                 <p
                   className="text-lg text-gray-600 leading-relaxed"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
-                  আমাদের নেটওয়ার্ক থেকে হাসপাতাল খুঁজুন এবং ফিল্টার করুন
+                  Find doctors using your location to see the best options near you. For example, if your residence is in Kaliyakoir, type the location into the search box and you will see a list of hospitals near Kaliyakoir.
                 </p>
               </div>
             </div>

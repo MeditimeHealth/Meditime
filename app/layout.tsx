@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import ScrollToTopButton from '@/components/ScrollToTopButton';
-import SmoothScroll from '@/components/smooth-scroll';
 import { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
@@ -34,7 +33,7 @@ export default function RootLayout({
         className={`${poppins.variable} font-sans antialiased`}
       >
         <ScrollToTopButton />
-        <SmoothScroll>{children}</SmoothScroll>
+        {children}
         <Toaster
           position="top-right"
           toastOptions={{
