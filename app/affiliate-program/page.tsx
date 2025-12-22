@@ -23,27 +23,27 @@ export default function AffiliateProgramPage() {
   const features = [
     {
       icon: CheckCircle,
-      title: "Scannable",
+      title: "High Trust & Conversion",
       description:
-        "আমাদের সহজ এবং স্বচ্ছ সিস্টেম দিয়ে আপনার কর্মক্ষমতা ট্র্যাক করুন। রিয়েল-টাইম ড্যাশবোর্ডে সব তথ্য দেখুন।",
+        "Meditime is an authority in online health information services, so customers trust the platform, leading to better conversion rates for affiliate links.",
     },
     {
       icon: DollarSign,
-      title: "Instant Income",
+      title: "Ease of Use",
       description:
-        "প্রতিটি সফল রেফারেলের জন্য তাৎক্ষণিক কমিশন পান। দ্রুত এবং নিরাপদ পেমেন্ট প্রক্রিয়া।",
+        "The Meditime Affiliate Program provides a simple and easy-to-use affiliate code, simplifying the process of monetizing your social network.",
     },
     {
       icon: TrendingUp,
-      title: "Clear Payment Process",
+      title: "Reliable Payouts",
       description:
-        "কোন লুকানো ফি নেই। স্বচ্ছ এবং সহজ পেমেন্ট সিস্টেম যা আপনি বিশ্বাস করতে পারেন।",
+        "Meditime is known for paying commissions consistently and on time.",
     },
     {
       icon: Users,
-      title: "Affiliate Support",
+      title: "Passive Income Potential in BD",
       description:
-        "ডেডিকেটেড অ্যাফিলিয়েট সাপোর্ট টিম সবসময় আপনার সাফল্যের জন্য প্রস্তুত।",
+        "Once a patient is referred, it can generate passive income over time with minimal ongoing effort.",
     },
   ];
 
@@ -76,20 +76,13 @@ export default function AffiliateProgramPage() {
           >
             <h1 
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
-              style={{
-                fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-              }}
             >
-              মেডিটাইম অ্যাফিলিয়েট পার্টনার হন
+              Be a Meditime Affiliate – Promote Meditime Diagnostic Tests and Earn Money Along the Way
             </h1>
             <p 
               className="text-lg sm:text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed"
-              style={{
-                fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-              }}
             >
-              বাংলাদেশের সবচেয়ে বিশ্বস্ত হেলথকেয়ার প্ল্যাটফর্মের সাথে কাজ করুন এবং
-              অসীম আয়ের সুযোগ পান
+              Joining the Meditime Affiliate Program is fast and free. We provide you with a code once the affiliate registration is complete. Tell your audience to use the code when booking a diagnostic test and earn commissions from the amount spent by the patients you refer.
             </p>
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -98,11 +91,8 @@ export default function AffiliateProgramPage() {
               <Button
                 onClick={handleScrollToSignup}
                 className="bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-lg px-8 py-6 rounded-xl shadow-2xl"
-                style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
               >
-                এখনই যোগদান করুন
+                Start Earning Now
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </motion.div>
@@ -123,20 +113,14 @@ export default function AffiliateProgramPage() {
             className="text-4xl md:text-5xl font-bold mb-6"
             style={{
               color: "#009A98",
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
             }}
           >
-            একটি বিশ্বস্ত পার্টনারশিপ
+            How To Make Money By Becoming an Affiliate
           </h2>
           <p
             className="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed"
-            style={{
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
           >
-            মেডিটাইম অ্যাফিলিয়েট প্রোগ্রাম আপনাকে স্বাস্থ্যসেবা শিল্পে একটি সফল ব্যবসা গড়ে তুলতে সাহায্য করে। 
-            আপনার নেটওয়ার্ক ব্যবহার করে মানুষকে মানসম্মত স্বাস্থ্যসেবায় পৌঁছাতে সাহায্য করুন এবং 
-            প্রতিটি রেফারেলে আকর্ষণীয় কমিশন অর্জন করুন।
+            The process is easy and straightforward. Click the register button in the upper right corner. Fill out the registration form. Once the form is completed and registration is successful, you will receive a Meditime Affiliate Code. Use this code to refer a patient.
           </p>
         </motion.div>
 
@@ -152,10 +136,9 @@ export default function AffiliateProgramPage() {
             className="text-3xl md:text-4xl font-bold mb-8 text-center"
             style={{
               color: "#009A98",
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
             }}
           >
-            কেন আমাদের সাথে কাজ করবেন?
+            Why Choose Meditime Affiliate Programme
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -185,9 +168,6 @@ export default function AffiliateProgramPage() {
                     {/* Title */}
                     <h3
                       className="text-xl font-bold text-gray-900 mb-3"
-                      style={{
-                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
                     >
                       {feature.title}
                     </h3>
@@ -195,9 +175,6 @@ export default function AffiliateProgramPage() {
                     {/* Description */}
                     <p
                       className="text-gray-600 leading-relaxed grow"
-                      style={{
-                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
                     >
                       {feature.description}
                     </p>
@@ -223,11 +200,8 @@ export default function AffiliateProgramPage() {
             <Button
               onClick={handleScrollToSignup}
               className="bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-lg px-12 py-6 rounded-xl shadow-2xl"
-              style={{
-                fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-              }}
             >
-              এখনই শুরু করুন
+              Start Earning Now
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </motion.div>
@@ -261,11 +235,8 @@ function AffiliateAuthForms({ showSignupByDefault }: { showSignupByDefault: bool
               ? "bg-primary text-white"
               : "bg-gray-50 text-gray-600 hover:bg-gray-100"
           }`}
-          style={{
-            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-          }}
         >
-          নতুন নিবন্ধন
+          Register
         </button>
         <button
           onClick={() => setIsSignup(false)}
@@ -274,11 +245,8 @@ function AffiliateAuthForms({ showSignupByDefault }: { showSignupByDefault: bool
               ? "bg-primary text-white"
               : "bg-gray-50 text-gray-600 hover:bg-gray-100"
           }`}
-          style={{
-            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-          }}
         >
-          লগইন
+          Login
         </button>
       </div>
 
