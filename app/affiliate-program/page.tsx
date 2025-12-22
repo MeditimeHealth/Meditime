@@ -75,9 +75,10 @@ export default function AffiliateProgramPage() {
             transition={{ duration: 0.6 }}
           >
             <h1 
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight"
             >
-              Be a Meditime Affiliate – Promote Meditime Diagnostic Tests and Earn Money Along the Way
+              Be a Meditime Affiliate<br />
+              <span className="text-2xl sm:text-3xl lg:text-4xl">Promote Meditime Diagnostic Tests and Earn Money Along the Way</span>
             </h1>
             <p 
               className="text-lg sm:text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed"
