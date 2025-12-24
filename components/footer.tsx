@@ -322,6 +322,15 @@ export default function Footer() {
               >
                 আমাদের সম্পর্কে
               </Link>
+              <Link
+                href="/affiliate-program"
+                className="hover:text-[#009A98] transition-colors"
+                style={{
+                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                }}
+              >
+                অ্যাফিলিয়েট প্রোগ্রাম
+              </Link>
             </div>
           </div>
         </div>

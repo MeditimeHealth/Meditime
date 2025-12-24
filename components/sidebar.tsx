@@ -122,6 +122,11 @@ const menuItems = [
     href: "/admin/memberships",
   },
   {
+    title: "Membership Cards",
+    icon: CreditCard,
+    href: "/admin/membership-cards",
+  },
+  {
     title: "Settings",
     icon: Settings,
     href: "/admin/settings",

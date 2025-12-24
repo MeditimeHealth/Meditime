@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    domains: ["i.ibb.co", "wordpress.meditime.com.bd", "cdn.codeopx.com", "i.imgbb.com"],
+    domains: ["i.ibb.co", "i.ibb.co.com", "wordpress.meditime.com.bd", "cdn.codeopx.com", "i.imgbb.com"],
     remotePatterns: [
       {
         protocol: "https",
