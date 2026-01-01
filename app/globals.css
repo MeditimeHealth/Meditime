@@ -37,19 +37,6 @@
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f172a;
-    /* Slate 900 */
-    --foreground: #f8fafc;
-    /* Slate 50 */
-    --primary: #14b8a6;
-    /* Teal 500 */
-    --primary-light: #2dd4bf;
-    /* Teal 400 */
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
