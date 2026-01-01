@@ -4,15 +4,15 @@ export interface IDoctor extends Document {
   name: string;
   specialty?: string;
   qualification: string;
-  currentPosition?: string;
-  experience: number;
+
+
   email?: string;
   phoneNumber?: string;
   hospital?: string;
   division?: string;
   district?: string;
   thana?: string;
-  chamber?: string;
+
   department?: string;
   consultationFee: number;
   oldPatientFee?: number;
@@ -21,9 +21,7 @@ export interface IDoctor extends Document {
   slotDuration?: number;
   availability: Array<{
     days: string[];
-    startTime: string;
-    endTime: string;
-    chamber?: string;
+    time: string;
   }>;
   bio?: string;
   image?: string;
@@ -48,15 +46,8 @@ const DoctorSchema: Schema = new Schema(
       required: [true, 'Qualification is required'],
       trim: true,
     },
-    currentPosition: {
-      type: String,
-      trim: true,
-    },
-    experience: {
-      type: Number,
-      required: [true, 'Experience is required'],
-      min: [0, 'Experience must be at least 0 years'],
-    },
+
+
     email: {
       type: String,
       lowercase: true,
@@ -83,10 +74,7 @@ const DoctorSchema: Schema = new Schema(
       type: String,
       trim: true,
     },
-    chamber: {
-      type: String,
-      trim: true,
-    },
+
     department: {
       type: String,
       trim: true,
@@ -128,10 +116,8 @@ const DoctorSchema: Schema = new Schema(
                 slot.days &&
                 Array.isArray(slot.days) &&
                 slot.days.length > 0 &&
-                slot.startTime &&
-                typeof slot.startTime === 'string' &&
-                slot.endTime &&
-                typeof slot.endTime === 'string'
+                slot.time &&
+                typeof slot.time === 'string'
               );
             });
           } else if (v && typeof v === 'object' && !Array.isArray(v)) {

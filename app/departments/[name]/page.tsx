@@ -25,8 +25,8 @@ interface Doctor {
   name: string;
   specialty: string;
   qualification: string;
-  currentPosition?: string;
-  experience: number;
+
+
   phoneNumber: string;
   email?: string;
   hospital?: string;
@@ -44,15 +44,13 @@ interface Doctor {
         days: string[];
         startTime: string;
         endTime: string;
-        chamber?: string;
       }>
     | {
         days: string[];
         startTime: string;
         endTime: string;
-        chamber?: string;
       };
-  chamber?: string;
+
   bio?: string;
   image?: string;
   rating?: number;
@@ -64,9 +62,8 @@ const banglaLabels = {
   noDoctors: "এই বিভাগে কোন ডাক্তার পাওয়া যায়নি",
   loading: "ডাক্তার লোড হচ্ছে...",
   bookAppointment: "বুক অ্যাপয়েন্টমেন্ট",
-  experienceLabel: "অভিজ্ঞতা",
-  years: "বছর",
-  availability: "চেম্বার সময়সূচী",
+
+  availability: "সময়সূচী",
   found: "খুঁজে পাওয়া গেছে",
   doctors: "জন ডাক্তার",
   departmentNotFound: "বিভাগ পাওয়া যায়নি",
@@ -123,9 +120,8 @@ const formatAvailability = (
         days: string[];
         startTime: string;
         endTime: string;
-        chamber?: string;
       }>
-    | { days: string[]; startTime: string; endTime: string; chamber?: string }
+    | { days: string[]; startTime: string; endTime: string; }
 ): string => {
   const slots = Array.isArray(availability) ? availability : [availability];
 
@@ -149,9 +145,6 @@ const formatAvailability = (
         timeRange = `${firstDay} থেকে ${lastDay} ${startTime} থেকে ${endTime}`;
       }
 
-      if (slot.chamber) {
-        return `${timeRange} (চেম্বার: ${slot.chamber})`;
-      }
       return timeRange;
     })
     .join("। ");
@@ -412,7 +405,7 @@ export default function DepartmentDoctorsPage() {
                           fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                         }}
                       >
-                        {[doctor.currentPosition, doctor.qualification].filter(Boolean).join(", ") || "বিশেষজ্ঞ"}
+                        {doctor.qualification || "বিশেষজ্ঞ"}
                       </p>
 
                       {/* Department */}

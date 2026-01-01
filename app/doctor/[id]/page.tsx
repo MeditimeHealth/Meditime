@@ -25,8 +25,8 @@ interface Doctor {
   _id: string;
   name: string;
   qualification: string;
-  currentPosition?: string;
-  experience: number;
+
+
   hospital?: string;
   division?: string;
   district?: string;
@@ -38,14 +38,10 @@ interface Doctor {
   diseases?: string[];
   availability: Array<{
     days: string[];
-    startTime: string;
-    endTime: string;
-    chamber?: string;
+    time: string;
   }> | {
     days: string[];
-    startTime: string;
-    endTime: string;
-    chamber?: string;
+    time: string;
   };
   bio?: string;
   image?: string;
@@ -86,7 +82,7 @@ export default function DoctorProfilePage() {
   const [doctor, setDoctor] = useState<Doctor | null>(null);
   const [relatedDoctors, setRelatedDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedChamber, setSelectedChamber] = useState<string>("");
+
   const [affiliateCode, setAffiliateCode] = useState<string>("");
   const [departmentDiseases, setDepartmentDiseases] = useState<string[]>([]);
 
@@ -279,7 +275,7 @@ export default function DoctorProfilePage() {
                       }}
                     >
                       {[
-                        doctor.currentPosition,
+
                         doctor.qualification,
                         doctor.department
                       ].filter(Boolean).join(", ")}
@@ -297,19 +293,7 @@ export default function DoctorProfilePage() {
                         </p>
                       </div>
                     )}
-                    {doctor.experience && (
-                      <div className="flex items-center gap-2">
-                        <Award className="h-5 w-5 text-primary" />
-                        <p
-                          className="text-base md:text-lg lg:text-xl text-gray-600"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {doctor.experience} বছর অভিজ্ঞতা
-                        </p>
-                      </div>
-                    )}
+
                   </div>
                 </div>
               </div>
@@ -448,7 +432,6 @@ export default function DoctorProfilePage() {
                                 }}
                               >
                                 {[
-                                  relatedDoctor.currentPosition,
                                   relatedDoctor.qualification,
                                   relatedDoctor.department
                                 ].filter(Boolean).join(", ")}
@@ -542,7 +525,7 @@ export default function DoctorProfilePage() {
               </div>
             </Card>
 
-            {/* Chamber Schedule */}
+            {/* Hospital Schedule */}
             <Card className="p-6 bg-gradient-to-br from-white to-indigo-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
@@ -550,12 +533,12 @@ export default function DoctorProfilePage() {
                   fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                 }}
               >
-                চেম্বার সময়সূচী
+                সময়সূচী
               </h2>
               <div className="space-y-5">
                 {availabilityArray.map((slot, index) => (
                   <div key={index} className="bg-white p-5 rounded-xl border-2 border-primary/10 shadow-md last:mb-0">
-                    {slot.chamber && (
+                    {doctor.hospital && (
                       <div className="flex items-center gap-2 mb-4">
                         <MapPin className="h-5 w-5 text-primary shrink-0" />
                         <p
@@ -564,7 +547,7 @@ export default function DoctorProfilePage() {
                             fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           }}
                         >
-                          {slot.chamber}
+                          {doctor.hospital}
                         </p>
                       </div>
                     )}
@@ -581,7 +564,7 @@ export default function DoctorProfilePage() {
                               fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                             }}
                           >
-                            {getBengaliDay(day)}: {slot.startTime} - {slot.endTime}
+                            {getBengaliDay(day)}: {slot.time}
                           </span>
                         </div>
                       ))}
@@ -698,7 +681,7 @@ export default function DoctorProfilePage() {
               </div>
             </Card>
 
-            {/* Chamber Schedule - Mobile */}
+            {/* Hospital Schedule - Mobile */}
             <Card className="p-6 bg-gradient-to-br from-white to-indigo-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
@@ -706,12 +689,12 @@ export default function DoctorProfilePage() {
                   fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                 }}
               >
-                চেম্বার সময়সূচী
+                সময়সূচী
               </h2>
               <div className="space-y-5">
                 {availabilityArray.map((slot, index) => (
                   <div key={index} className="bg-white p-5 rounded-xl border-2 border-primary/10 shadow-md last:mb-0">
-                    {slot.chamber && (
+                    {doctor.hospital && (
                       <div className="flex items-center gap-2 mb-4">
                         <MapPin className="h-5 w-5 text-primary shrink-0" />
                         <p
@@ -720,7 +703,7 @@ export default function DoctorProfilePage() {
                             fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           }}
                         >
-                          {slot.chamber}
+                          {doctor.hospital}
                         </p>
                       </div>
                     )}
@@ -737,7 +720,7 @@ export default function DoctorProfilePage() {
                               fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                             }}
                           >
-                            {getBengaliDay(day)}: {slot.startTime} - {slot.endTime}
+                            {getBengaliDay(day)}: {slot.time}
                           </span>
                         </div>
                       ))}
@@ -824,7 +807,6 @@ export default function DoctorProfilePage() {
                               }}
                             >
                               {[
-                                relatedDoctor.currentPosition,
                                 relatedDoctor.qualification,
                                 relatedDoctor.department
                               ].filter(Boolean).join(", ")}

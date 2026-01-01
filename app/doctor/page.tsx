@@ -52,11 +52,11 @@ const banglaLabels = {
   clearFilters: "ফিল্টার সাফ করুন",
   sortBy: "সাজান",
   name: "নাম",
-  experience: "অভিজ্ঞতা",
   consultationFee: "কনসালটেশন ফি",
   rating: "রেটিং",
   specialty: "বিশেষতা",
   found: "খুঁজে পাওয়া গেছে",
+
   doctors: "জন ডাক্তার",
   matching: "ম্যাচিং",
   showing: "দেখানো হচ্ছে",
@@ -66,16 +66,13 @@ const banglaLabels = {
   clearSearch: "সার্চ সাফ করুন",
   bookAppointment: "বুক অ্যাপয়েন্টমেন্ট",
   bookNow: "এখনই বুক করুন",
-  experienceLabel: "অভিজ্ঞতা",
-  years: "বছর",
-  availability: "চেম্বার সময়সূচী",
+  availability: "সময়সূচী",
   loading: "ডাক্তার লোড হচ্ছে...",
   specialtyFilter: "বিশেষতা",
   hospitalFilter: "হাসপাতাল",
   qualificationFilter: "যোগ্যতা",
   allSpecialties: "সব বিশেষতা",
   allQualifications: "সব যোগ্যতা",
-  experienceYears: "অভিজ্ঞতা (বছর)",
   min: "ন্যূনতম",
   max: "সর্বোচ্চ",
   minimumRating: "ন্যূনতম রেটিং",
@@ -89,8 +86,8 @@ interface Doctor {
   name: string;
   specialty: string;
   qualification: string;
-  currentPosition?: string;
-  experience: number;
+
+
   phoneNumber: string;
   email?: string;
   hospital?: string;
@@ -105,16 +102,12 @@ interface Doctor {
   slotDuration?: number;
   availability: Array<{
     days: string[];
-    startTime: string;
-    endTime: string;
-    chamber?: string;
+    time: string;
   }> | {
     days: string[];
-    startTime: string;
-    endTime: string;
-    chamber?: string;
+    time: string;
   };
-  chamber?: string;
+
   bio?: string;
   image?: string;
   rating?: number;
@@ -122,7 +115,7 @@ interface Doctor {
 
 type SortOption =
   | "name"
-  | "experience"
+
   | "consultationFee"
   | "rating"
   | "specialty"
@@ -169,8 +162,7 @@ function DoctorListPageContent() {
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [selectedHospital, setSelectedHospital] = useState("");
   const [selectedQualification, setSelectedQualification] = useState("");
-  const [minExperience, setMinExperience] = useState("");
-  const [maxExperience, setMaxExperience] = useState("");
+
   const [minFee, setMinFee] = useState("");
   const [maxFee, setMaxFee] = useState("");
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -232,7 +224,7 @@ function DoctorListPageContent() {
   };
 
   // Format availability in Bengali (e.g., "শনিবার থেকে শুক্রবার ১০টা থেকে ১২টা")
-  const formatAvailability = (availability: Array<{ days: string[]; startTime: string; endTime: string; chamber?: string }> | { days: string[]; startTime: string; endTime: string; chamber?: string }): string => {
+  const formatAvailability = (availability: Array<{ days: string[]; time: string; }> | { days: string[]; time: string; }): string => {
     // Handle backward compatibility - convert old format to array
     const slots = Array.isArray(availability) ? availability : [availability];
     
@@ -244,20 +236,13 @@ function DoctorListPageContent() {
       let timeRange = "";
       if (sortedDays.length === 1) {
         const day = getBengaliDay(sortedDays[0]);
-        const startTime = formatTimeToBengali(slot.startTime);
-        const endTime = formatTimeToBengali(slot.endTime);
-        timeRange = `${day} ${startTime} থেকে ${endTime}`;
+        const time = slot.time || "";
+        timeRange = `${day} ${time}`;
       } else {
         const firstDay = getBengaliDay(sortedDays[0]);
         const lastDay = getBengaliDay(sortedDays[sortedDays.length - 1]);
-        const startTime = formatTimeToBengali(slot.startTime);
-        const endTime = formatTimeToBengali(slot.endTime);
-        timeRange = `${firstDay} থেকে ${lastDay} ${startTime} থেকে ${endTime}`;
-      }
-      
-      // Add chamber info if available
-      if (slot.chamber) {
-        return `${timeRange} (চেম্বার: ${slot.chamber})`;
+        const time = slot.time || "";
+        timeRange = `${firstDay} থেকে ${lastDay} ${time}`;
       }
       return timeRange;
     }).join("। ");
@@ -515,17 +500,7 @@ function DoctorListPageContent() {
       );
     }
 
-    // Experience filter
-    if (minExperience) {
-      filtered = filtered.filter(
-        (doctor) => doctor.experience >= parseInt(minExperience)
-      );
-    }
-    if (maxExperience) {
-      filtered = filtered.filter(
-        (doctor) => doctor.experience <= parseInt(maxExperience)
-      );
-    }
+
 
     // Fee filter
     if (minFee) {
@@ -567,10 +542,7 @@ function DoctorListPageContent() {
           aVal = a.name.toLowerCase();
           bVal = b.name.toLowerCase();
           break;
-        case "experience":
-          aVal = a.experience;
-          bVal = b.experience;
-          break;
+
         case "consultationFee":
           aVal = a.consultationFee;
           bVal = b.consultationFee;
@@ -603,8 +575,7 @@ function DoctorListPageContent() {
     selectedSpecialty,
     selectedHospital,
     selectedQualification,
-    minExperience,
-    maxExperience,
+
     minFee,
     maxFee,
     minRating,
@@ -619,8 +590,7 @@ function DoctorListPageContent() {
     setSelectedSpecialty("");
     setSelectedHospital("");
     setSelectedQualification("");
-    setMinExperience("");
-    setMaxExperience("");
+
     setMinFee("");
     setMaxFee("");
     setMinRating("");
@@ -695,8 +665,7 @@ function DoctorListPageContent() {
       selectedSpecialty ||
       selectedHospital ||
       selectedQualification ||
-      minExperience ||
-      maxExperience ||
+
       minFee ||
       maxFee ||
       minRating ||
@@ -706,8 +675,7 @@ function DoctorListPageContent() {
     selectedSpecialty,
     selectedHospital,
     selectedQualification,
-    minExperience,
-    maxExperience,
+
     minFee,
     maxFee,
     minRating,
@@ -1451,41 +1419,7 @@ function DoctorListPageContent() {
                   </div>
 
                   {/* Experience Range */}
-                  <div>
-                    <Label
-                      className="mb-3 block text-base font-semibold text-gray-700"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
-                    >
-                      {banglaLabels.experienceYears}
-                    </Label>
-                    <div className="flex gap-3">
-                      <Input
-                        type="number"
-                        placeholder={banglaLabels.min}
-                        value={minExperience}
-                        onChange={(e) => setMinExperience(e.target.value)}
-                        className="w-full px-4 py-3 border-2 rounded-xl shadow-sm hover:shadow-md transition-all"
-                        style={{
-                          fontFamily:
-                            "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
-                      />
-                      <Input
-                        type="number"
-                        placeholder={banglaLabels.max}
-                        value={maxExperience}
-                        onChange={(e) => setMaxExperience(e.target.value)}
-                        className="w-full px-4 py-3 border-2 rounded-xl shadow-sm hover:shadow-md transition-all"
-                        style={{
-                          fontFamily:
-                            "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
-                      />
-                    </div>
-                  </div>
+
 
                   {/* Fee Range */}
                   <div>
@@ -1737,18 +1671,7 @@ function DoctorListPageContent() {
                       >
                         {doctor.name}
                       </h3>
-
-                      {/* Position & Qualification */}
-                      <p
-                        className="text-sm text-[#4A90A4] leading-relaxed"
-                        style={{
-                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
-                      >
-                        {[doctor.currentPosition, doctor.qualification].filter(Boolean).join(", ") || "বিশেষজ্ঞ"}
-                      </p>
-
-                      {/* Department */}
+    {/* Department */}
                       {doctor.department && (
                         <p
                           className="text-sm text-[#4A90A4]"
@@ -1759,6 +1682,17 @@ function DoctorListPageContent() {
                           {doctor.department}
                         </p>
                       )}
+                      {/* Position & Qualification */}
+                      <p
+                        className="text-sm text-[#4A90A4] leading-relaxed"
+                        style={{
+                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                        }}
+                      >
+                        {doctor.qualification || "বিশেষজ্ঞ"}
+                      </p>
+
+                  
 
                       {/* Red Divider Line */}
                       <div className="w-12 h-0.5 bg-[#8B4513] my-3"></div>

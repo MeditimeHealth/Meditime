@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/navbar";
-import { ArrowLeft, MapPin, Loader2, RotateCcw, ChevronDown, Ticket } from "lucide-react";
+import { ArrowLeft, MapPin, Loader2, RotateCcw, Ticket, Building2 } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "@/lib/toast";
 
@@ -20,7 +20,6 @@ interface Doctor {
     days: string[];
     startTime: string;
     endTime: string;
-    chamber?: string;
   }>;
 }
 
@@ -57,7 +56,6 @@ export default function BookAppointmentPage() {
   const [doctor, setDoctor] = useState<Doctor | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [selectedChamber, setSelectedChamber] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [existingAppointments, setExistingAppointments] = useState<string[]>([]);
@@ -77,13 +75,6 @@ export default function BookAppointmentPage() {
       const data = await response.json();
       if (response.ok && data.doctor) {
         setDoctor(data.doctor);
-        // Set first chamber as default
-        const availabilityArray = Array.isArray(data.doctor.availability)
-          ? data.doctor.availability
-          : [data.doctor.availability];
-        if (availabilityArray.length > 0 && availabilityArray[0].chamber) {
-          setSelectedChamber(availabilityArray[0].chamber);
-        }
       }
     } catch (error) {
       console.error("Error fetching doctor:", error);
@@ -111,27 +102,22 @@ export default function BookAppointmentPage() {
     }
   }, [doctorId]);
 
-  // Get available chambers from doctor's availability
-  const getAvailableChambers = () => {
+  // Get available days from doctor's availability (all slots combined)
+  const getAvailableDays = useCallback((): string[] => {
     if (!doctor) return [];
     const availabilityArray = Array.isArray(doctor.availability)
       ? doctor.availability
       : [doctor.availability];
-    const chambers = availabilityArray
-      .map((slot) => slot.chamber)
-      .filter((chamber): chamber is string => !!chamber);
-    return Array.from(new Set(chambers));
-  };
-
-  // Get available days for selected chamber
-  const getAvailableDays = useCallback((): string[] => {
-    if (!doctor || !selectedChamber) return [];
-    const availabilityArray = Array.isArray(doctor.availability)
-      ? doctor.availability
-      : [doctor.availability];
-    const slot = availabilityArray.find((s) => s.chamber === selectedChamber);
-    return slot ? slot.days : [];
-  }, [doctor, selectedChamber]);
+    
+    // Combine all days from all availability slots
+    const allDays = new Set<string>();
+    availabilityArray.forEach((slot) => {
+      if (slot?.days) {
+        slot.days.forEach((day: string) => allDays.add(day));
+      }
+    });
+    return Array.from(allDays);
+  }, [doctor]);
 
   // Helper function to get date string in YYYY-MM-DD format
   const getDateString = (date: Date): string => {
@@ -144,7 +130,7 @@ export default function BookAppointmentPage() {
 
   // Get all available dates and update latest 2
   const updateLatestAvailableDates = useCallback(() => {
-    if (!selectedChamber || !doctor) {
+    if (!doctor) {
       setLatestAvailableDates([]);
       return;
     }
@@ -181,7 +167,7 @@ export default function BookAppointmentPage() {
     const latestTwo = sortedDates.slice(0, 2);
     // Ensure we only set maximum 2 dates
     setLatestAvailableDates(latestTwo.length > 2 ? latestTwo.slice(0, 2) : latestTwo);
-  }, [selectedChamber, doctor, existingAppointments, getAvailableDays]);
+  }, [doctor, existingAppointments, getAvailableDays]);
 
   useEffect(() => {
     if (doctorId) {
@@ -210,12 +196,12 @@ export default function BookAppointmentPage() {
     }
   }, []);
 
-  // Update latest available dates when chamber or appointments change
+  // Update latest available dates when doctor or appointments change
   useEffect(() => {
-    if (selectedChamber && doctor) {
+    if (doctor) {
       updateLatestAvailableDates();
     }
-  }, [selectedChamber, doctor, existingAppointments, updateLatestAvailableDates]);
+  }, [doctor, existingAppointments, updateLatestAvailableDates]);
 
   // Check if date is in the first 2 available dates (can be booked)
   const isDateAvailable = useCallback((date: Date): boolean => {
@@ -231,7 +217,7 @@ export default function BookAppointmentPage() {
 
   // Check if date matches doctor's schedule and is not booked (to show all available dates)
   const isDateInSchedule = useCallback((date: Date): boolean => {
-    if (!doctor || !selectedChamber) return false;
+    if (!doctor) return false;
     
     const availableDays = getAvailableDays();
     if (availableDays.length === 0) return false;
@@ -250,7 +236,7 @@ export default function BookAppointmentPage() {
     }
     
     return false;
-  }, [doctor, selectedChamber, existingAppointments, getAvailableDays]);
+  }, [doctor, existingAppointments, getAvailableDays]);
 
   // Check if date matches doctor's schedule but is not in first 2 available dates
   const isDateInScheduleButNotAvailable = useCallback((date: Date): boolean => {
@@ -298,8 +284,8 @@ export default function BookAppointmentPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedChamber || !selectedDate) {
-      alert("Please select a chamber and date");
+    if (!doctor?.hospital || !selectedDate) {
+      alert("Please select a date");
       return;
     }
 
@@ -320,7 +306,7 @@ export default function BookAppointmentPage() {
           gender: gender || undefined,
           age: age ? parseInt(age) : undefined,
           patientType,
-          chamberName: selectedChamber,
+          hospitalName: doctor.hospital,
           appointmentDate: selectedDate.toISOString(),
           userId: user?._id || user?.id || undefined,
           affiliateCode: affiliateCode || undefined,
@@ -377,7 +363,6 @@ export default function BookAppointmentPage() {
     );
   }
 
-  const availableChambers = getAvailableChambers();
   const calendarDays = getCalendarDays();
   const currentYear = currentMonth.getFullYear();
   const currentMonthIndex = currentMonth.getMonth();
@@ -404,61 +389,42 @@ export default function BookAppointmentPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Calendar */}
+          {/* Left Column - Hospital Info & Calendar */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Chamber Selection - Dropdown */}
+            {/* Hospital Info Display */}
             <Card className="p-6 bg-gradient-to-br from-white to-blue-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-2xl font-bold text-gray-900 mb-5"
                 style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
               >
-                চেম্বার নির্বাচন করুন <span className="text-red-500">*</span>
+                হাসপাতাল
               </h2>
               <div className="relative">
-                {availableChambers.length > 0 ? (
-                  <div className="relative">
-                    <select
-                      value={selectedChamber}
-                      onChange={(e) => setSelectedChamber(e.target.value)}
-                      className={`w-full p-4 pr-12 rounded-xl border-2 transition-all appearance-none cursor-pointer text-lg font-semibold
-                        ${selectedChamber 
-                          ? "bg-primary text-white border-primary shadow-lg" 
-                          : "bg-white border-primary/20 hover:border-primary/50 text-gray-700"
-                        }`}
-                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                    >
-                      <option value="" className="text-gray-700 bg-white">চেম্বার নির্বাচন করুন</option>
-                      {availableChambers.map((chamber, index) => (
-                        <option key={index} value={chamber} className="text-gray-700 bg-white">
-                          {chamber}
-                        </option>
-                      ))}
-                    </select>
-                    <div className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${selectedChamber ? 'text-white' : 'text-gray-500'}`}>
-                      <ChevronDown className="h-6 w-6" />
-                    </div>
-                    <div className={`absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none ${selectedChamber ? 'text-white' : 'text-primary'}`}>
-                     
-                    </div>
+                {doctor.hospital ? (
+                  <div className="p-4 bg-primary text-white rounded-xl border-2 border-primary shadow-lg">
+                    <p className="text-lg font-semibold flex items-center gap-2" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                      <Building2 className="h-5 w-5" />
+                      {doctor.hospital}
+                    </p>
                   </div>
                 ) : (
                   <p className="text-gray-500 p-4 bg-gray-50 rounded-xl" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
-                    কোন চেম্বার পাওয়া যায়নি
+                    কোন হাসপাতাল নির্ধারিত নেই
                   </p>
                 )}
               </div>
-              {selectedChamber && (
+              {doctor.hospital && (
                 <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-xl">
                   <p className="text-green-700 font-medium flex items-center gap-2" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
                     <MapPin className="h-4 w-4" />
-                    নির্বাচিত চেম্বার: {selectedChamber}
+                    অ্যাপয়েন্টমেন্ট হবে: {doctor.hospital}
                   </p>
                 </div>
               )}
             </Card>
 
             {/* Calendar */}
-            {selectedChamber && (
+            {doctor.hospital && (
               <Card className="p-6 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
                 <h2
                   className="text-2xl font-bold text-gray-900 mb-5"
@@ -718,11 +684,11 @@ export default function BookAppointmentPage() {
                 </div>
 
                 {/* Validation Warning */}
-                {(!selectedChamber || !selectedDate) && (
+                {(!doctor.hospital || !selectedDate) && (
                   <div className="p-3 bg-yellow-50 border border-yellow-300 rounded-lg">
                     <p className="text-sm text-yellow-700" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
-                      {!selectedChamber && "⚠️ চেম্বার নির্বাচন করুন"}
-                      {!selectedChamber && !selectedDate && " এবং "}
+                      {!doctor.hospital && "⚠️ হাসপাতাল নির্ধারিত নেই"}
+                      {!doctor.hospital && !selectedDate && " এবং "}
                       {!selectedDate && "⚠️ তারিখ নির্বাচন করুন"}
                     </p>
                   </div>
@@ -730,7 +696,7 @@ export default function BookAppointmentPage() {
 
                 <Button
                   type="submit"
-                  disabled={!selectedChamber || !selectedDate || !patientName || !mobileNumber || submitting}
+                  disabled={!doctor.hospital || !selectedDate || !patientName || !mobileNumber || submitting}
                   className="w-full bg-gradient-to-r from-primary to-orange-600 hover:from-orange-600 hover:to-primary text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
@@ -751,4 +717,3 @@ export default function BookAppointmentPage() {
     </div>
   );
 }
-

@@ -11,7 +11,7 @@ export default function ServicesSection() {
       image: "/impression-1.png",
       title: "Doctor Appointment Booking",
       description:
-        "Find the Most Experienced Physician from 20+ Specialities and Departments. Easy booking, guaranteed visit, with no advance payment. Pay only when you visit the doctor's chamber.",
+        "Find the Most Experienced Physician from 20+ Specialities and Departments. Easy booking, guaranteed visit, with no advance payment. Pay only when you visit the hospital.",
       href: "/doctor",
     },
     {

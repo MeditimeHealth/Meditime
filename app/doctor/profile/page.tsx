@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -21,15 +21,15 @@ const profileSchema = z.object({
   hospital: z.string().optional(),
   specialty: z.string().optional(),
   qualification: z.string().optional(),
-  currentPosition: z.string().optional(),
-  experience: z.coerce.number().min(0, "Experience must be at least 0").optional(),
+
+
   consultationFee: z.coerce.number().min(0, "Fee must be at least 0").optional(),
   oldPatientFee: z.coerce.number().min(0, "Fee must be at least 0").optional(),
   newPatientFee: z.coerce.number().min(0, "Fee must be at least 0").optional(),
   division: z.string().optional(),
   district: z.string().optional(),
   thana: z.string().optional(),
-  chamber: z.string().optional(),
+
   department: z.string().optional(),
   bio: z.string().optional(),
   image: z.string().optional(),
@@ -51,6 +51,18 @@ export default function DoctorProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  // Hospital Search State
+  const [hospitals, setHospitals] = useState<any[]>([]);
+  const [availableHospitals, setAvailableHospitals] = useState<string[]>([]);
+  const [hospitalSearchTerm, setHospitalSearchTerm] = useState("");
+  const [hospitalPage, setHospitalPage] = useState(1);
+  const [hasMoreHospitals, setHasMoreHospitals] = useState(false);
+  const [isHospitalLoading, setIsHospitalLoading] = useState(false);
+  const [showHospitalDropdown, setShowHospitalDropdown] = useState(false);
+  const [selectedHospitalName, setSelectedHospitalName] = useState("");
+  const hospitalDropdownRef = useRef<HTMLDivElement>(null);
+  const hospitalSearchInitialized = useRef(false);
+
   const {
     register,
     handleSubmit,
@@ -66,15 +78,15 @@ export default function DoctorProfilePage() {
       hospital: "",
       specialty: "",
       qualification: "",
-      currentPosition: "",
-      experience: 0,
+
+
       consultationFee: 0,
       oldPatientFee: 0,
       newPatientFee: 0,
       division: "",
       district: "",
       thana: "",
-      chamber: "",
+
       department: "",
       bio: "",
       image: "",
@@ -89,6 +101,125 @@ export default function DoctorProfilePage() {
       }
     }
   }, []);
+
+  const fetchHospitals = async (searchValue: string = "", pageToLoad = 1) => {
+    setIsHospitalLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (searchValue) {
+        params.set("search", searchValue);
+      }
+      params.set("page", pageToLoad.toString());
+      params.set("limit", "20");
+
+      const response = await fetch(`/api/locations/hospitals?${params.toString()}`);
+      const data = await response.json();
+
+      if (response.ok && data.hospitals) {
+        setHospitals((prev) => {
+          const nextHospitals =
+            pageToLoad === 1
+              ? data.hospitals
+              : [
+                  ...prev,
+                  ...data.hospitals.filter(
+                    (newHospital: any) =>
+                      !prev.some((existing) => existing._id === newHospital._id)
+                  ),
+                ];
+
+          setAvailableHospitals(nextHospitals.map((hospital: any) => hospital.name));
+          return nextHospitals;
+        });
+        setHasMoreHospitals(Boolean(data.hasMore));
+        setHospitalPage(pageToLoad);
+      } else {
+        if (pageToLoad === 1) {
+          setHospitals([]);
+          setAvailableHospitals([]);
+        }
+        setHasMoreHospitals(false);
+      }
+    } catch (error) {
+      console.error("Error fetching hospitals:", error);
+      if (pageToLoad === 1) {
+        setHospitals([]);
+        setAvailableHospitals([]);
+      }
+      setHasMoreHospitals(false);
+    } finally {
+      setIsHospitalLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchHospitals("", 1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!hospitalSearchInitialized.current) {
+      hospitalSearchInitialized.current = true;
+      return;
+    }
+
+    const debounce = setTimeout(() => {
+      fetchHospitals(hospitalSearchTerm, 1);
+    }, 400);
+
+    return () => clearTimeout(debounce);
+  }, [hospitalSearchTerm]);
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        hospitalDropdownRef.current &&
+        !hospitalDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowHospitalDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []); 
+
+  // Handle hospital selection - auto-populate location
+  const handleHospitalSelect = (hospitalName: string) => {
+    setSelectedHospitalName(hospitalName);
+    setValue("hospital", hospitalName);
+    setShowHospitalDropdown(false);
+    setHospitalSearchTerm(hospitalName);
+    
+    if (hospitalName) {
+      const selectedHospital = hospitals.find(h => h.name === hospitalName);
+      
+      if (selectedHospital && selectedHospital.thana) {
+        const thana = selectedHospital.thana;
+        const district = thana.district;
+        const division = district?.division;
+        
+        // Auto-populate location fields
+        if (division && division.name) {
+          setValue("division", division.name);
+        }
+        if (district && district.name) {
+          setValue("district", district.name);
+        }
+        if (thana.name) {
+          setValue("thana", thana.name);
+        }
+      }
+    }
+  };
+
+  const loadMoreHospitals = () => {
+    if (isHospitalLoading || !hasMoreHospitals) return;
+    fetchHospitals(hospitalSearchTerm, hospitalPage + 1);
+  };
 
   useEffect(() => {
     if (user?.phoneNumber) {
@@ -111,17 +242,21 @@ export default function DoctorProfilePage() {
           // Populate form with existing data
           setValue("username", user.username || "");
           setValue("hospital", foundDoctor.hospital || "");
+          if (foundDoctor.hospital) {
+            setHospitalSearchTerm(foundDoctor.hospital);
+            setSelectedHospitalName(foundDoctor.hospital);
+          }
           setValue("specialty", foundDoctor.specialty || "");
           setValue("qualification", foundDoctor.qualification || "");
-          setValue("currentPosition", foundDoctor.currentPosition || "");
-          setValue("experience", foundDoctor.experience || 0);
+
+
           setValue("consultationFee", foundDoctor.consultationFee || 0);
           setValue("oldPatientFee", foundDoctor.oldPatientFee || 0);
           setValue("newPatientFee", foundDoctor.newPatientFee || 0);
           setValue("division", foundDoctor.division || "");
           setValue("district", foundDoctor.district || "");
           setValue("thana", foundDoctor.thana || "");
-          setValue("chamber", foundDoctor.chamber || "");
+
           setValue("department", foundDoctor.department || "");
           setValue("bio", foundDoctor.bio || "");
           setValue("image", foundDoctor.image || "");
@@ -275,14 +410,66 @@ export default function DoctorProfilePage() {
             <h3 className="text-lg font-semibold border-b pb-2">Professional Information</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="md:col-span-2 relative" ref={hospitalDropdownRef}>
                 <Label htmlFor="hospital">Hospital Name</Label>
                 <Input
                   id="hospital"
-                  {...register("hospital")}
-                  placeholder="e.g. City Hospital"
+                  type="text"
+                  placeholder="Search or select hospital..."
+                  value={hospitalSearchTerm}
+                  onChange={(e) => {
+                    setHospitalSearchTerm(e.target.value);
+                    setShowHospitalDropdown(true);
+                    if (!e.target.value) {
+                      setSelectedHospitalName("");
+                      setValue("hospital", "");
+                    }
+                  }}
+                  onFocus={() => setShowHospitalDropdown(true)}
                   className="mt-1"
+                  autoComplete="off"
                 />
+                {showHospitalDropdown && (
+                  <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                    {isHospitalLoading && availableHospitals.length === 0 ? (
+                      <div className="p-3 text-sm text-gray-500 text-center">
+                        Loading hospitals...
+                      </div>
+                    ) : availableHospitals.length === 0 ? (
+                      <div className="p-3 text-sm text-gray-500 text-center">
+                        No hospitals found
+                      </div>
+                    ) : (
+                      <>
+                        {availableHospitals.map((hosp) => (
+                          <div
+                            key={hosp}
+                            onClick={() => handleHospitalSelect(hosp)}
+                            className={`px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm ${
+                              selectedHospitalName === hosp ? "bg-primary/10" : ""
+                            }`}
+                          >
+                            {hosp}
+                          </div>
+                        ))}
+                        {hasMoreHospitals && (
+                          <div className="border-t border-gray-200 p-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="w-full"
+                              onClick={loadMoreHospitals}
+                              disabled={isHospitalLoading}
+                            >
+                              {isHospitalLoading ? "Loading..." : "Load more hospitals"}
+                            </Button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
               <div>
                 <Label htmlFor="department">Department</Label>
@@ -304,31 +491,16 @@ export default function DoctorProfilePage() {
               </div>
               <div>
                 <Label htmlFor="qualification">Qualification</Label>
-                <Input
+                <Textarea
                   id="qualification"
                   {...register("qualification")}
                   placeholder="e.g. MBBS, FCPS"
                   className="mt-1"
+                  rows={4}
                 />
               </div>
-              <div>
-                <Label htmlFor="currentPosition">Current Position</Label>
-                <Input
-                  id="currentPosition"
-                  {...register("currentPosition")}
-                  placeholder="e.g. Senior Consultant"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="experience">Experience (Years)</Label>
-                <Input
-                  id="experience"
-                  type="number"
-                  {...register("experience")}
-                  className="mt-1"
-                />
-              </div>
+
+
             </div>
           </div>
 
@@ -366,48 +538,7 @@ export default function DoctorProfilePage() {
             </div>
           </div>
 
-          {/* Location */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold border-b pb-2">Location & Chamber</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="division">Division</Label>
-                <Input
-                  id="division"
-                  {...register("division")}
-                  placeholder="e.g. Dhaka"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="district">District</Label>
-                <Input
-                  id="district"
-                  {...register("district")}
-                  placeholder="e.g. Dhaka"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="thana">Thana</Label>
-                <Input
-                  id="thana"
-                  {...register("thana")}
-                  placeholder="e.g. Dhanmondi"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="chamber">Chamber Address</Label>
-                <Input
-                  id="chamber"
-                  {...register("chamber")}
-                  placeholder="Full address of your chamber"
-                  className="mt-1"
-                />
-              </div>
-            </div>
-          </div>
+
 
           {/* Other Details */}
           <div className="space-y-4">

@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 
     const [commissions, total] = await Promise.all([
       AffiliateCommission.find(query)
-        .populate('appointmentId', 'patientName mobileNumber appointmentDate chamberName')
+        .populate('appointmentId', 'patientName mobileNumber appointmentDate hospitalName')
         .populate('affiliateId', 'name affiliateCode email phoneNumber')
         .populate('approvedBy', 'fullName email')
         .sort({ createdAt: -1 })

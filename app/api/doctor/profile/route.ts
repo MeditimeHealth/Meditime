@@ -18,18 +18,18 @@ export async function PUT(request: NextRequest) {
       hospital,
       specialty,
       qualification,
-      experience,
+
       consultationFee,
       oldPatientFee,
       newPatientFee,
       division,
       district,
       thana,
-      chamber,
+
       department,
       bio,
       image,
-      currentPosition
+
     } = body;
 
     if (!userId) {
@@ -88,18 +88,18 @@ export async function PUT(request: NextRequest) {
         if (hospital !== undefined) doctor.hospital = hospital;
         if (specialty !== undefined) doctor.specialty = specialty;
         if (qualification !== undefined) doctor.qualification = qualification;
-        if (experience !== undefined) doctor.experience = experience;
+
         if (consultationFee !== undefined) doctor.consultationFee = consultationFee;
         if (oldPatientFee !== undefined) doctor.oldPatientFee = oldPatientFee;
         if (newPatientFee !== undefined) doctor.newPatientFee = newPatientFee;
         if (division !== undefined) doctor.division = division;
         if (district !== undefined) doctor.district = district;
         if (thana !== undefined) doctor.thana = thana;
-        if (chamber !== undefined) doctor.chamber = chamber;
+
         if (department !== undefined) doctor.department = department;
         if (bio !== undefined) doctor.bio = bio;
         if (image !== undefined) doctor.image = image;
-        if (currentPosition !== undefined) doctor.currentPosition = currentPosition;
+
         
         await doctor.save();
       }

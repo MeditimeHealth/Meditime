@@ -146,7 +146,7 @@ interface ReferralPatient {
   gender?: string;
   age?: number;
   patientType: 'old' | 'new' | 'report';
-  chamberName: string;
+  hospitalName: string;
   appointmentDate: string;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   createdAt: string;
@@ -395,7 +395,7 @@ export default function EnhancedAffiliateDashboard() {
     setSelectedPatient(patient);
     setPhotoUploadForm({
       doctorName: patient.doctorId?.name || '',
-      hospitalName: patient.chamberName || '',
+      hospitalName: patient.hospitalName || '',
     });
     setPhotoUploadDialogOpen(true);
   };
@@ -1164,7 +1164,7 @@ export default function EnhancedAffiliateDashboard() {
                                   )}
                                 </td>
                                 <td className="py-4 px-4 text-sm text-gray-400">
-                                  {patient.chamberName}
+                                  {patient.hospitalName}
                                 </td>
                                 <td className="py-4 px-4 text-sm text-gray-400">
                                   {format(new Date(patient.appointmentDate), 'MMM dd, yyyy')}
@@ -1279,7 +1279,7 @@ export default function EnhancedAffiliateDashboard() {
                         </div>
 
                         <div className="relative">
-                          <Label className="text-gray-300 mb-2">হাসপাতাল/চেম্বারের নাম *</Label>
+                          <Label className="text-gray-300 mb-2">হাসপাতালের নাম *</Label>
                           <Input
                             value={hospitalSearchPhoto || photoUploadForm.hospitalName}
                             onChange={(e) => {
@@ -1289,7 +1289,7 @@ export default function EnhancedAffiliateDashboard() {
                             }}
                             onFocus={() => setShowHospitalDropdownPhoto(true)}
                             className="bg-white/5 border-white/10 text-white"
-                            placeholder="হাসপাতাল/চেম্বারের নাম অনুসন্ধান করুন"
+                            placeholder="হাসপাতালের নাম অনুসন্ধান করুন"
                             required
                           />
                           {showHospitalDropdownPhoto && (

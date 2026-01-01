@@ -21,7 +21,7 @@ interface Appointment {
   patientName: string;
   mobileNumber: string;
   appointmentDate: string;
-  chamberName: string;
+  hospitalName: string;
   doctorId: {
     name: string;
     qualification: string;
@@ -239,7 +239,7 @@ export default function AffiliateCommissionsPage() {
                     </div>
                     <div className="flex items-center gap-2 text-gray-600">
                       <Building2 className="h-4 w-4" />
-                      <span>{appointment.chamberName}</span>
+                      <span>{appointment.hospitalName}</span>
                     </div>
                   </div>
 

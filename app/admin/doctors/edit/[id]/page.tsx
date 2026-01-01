@@ -15,13 +15,13 @@ import { Plus, X } from "lucide-react";
 const doctorSchema = z.object({
   name: z.string().min(2, "Name is required"),
   qualification: z.string().min(2, "Qualification is required"),
-  currentPosition: z.string().optional(),
-  experience: z.coerce.number().min(0, "Experience must be at least 0"),
+
+
   hospital: z.string().optional(),
   division: z.string().optional(),
   district: z.string().optional(),
   thana: z.string().optional(),
-  chamber: z.string().optional(),
+
   department: z.string().optional(),
   consultationFee: z.coerce.number().min(0, "Consultation fee must be at least 0").optional(),
   oldPatientFee: z.coerce.number().min(0, "Old patient fee must be at least 0").optional(),
@@ -31,9 +31,7 @@ const doctorSchema = z.object({
   image: z.string().optional(),
   availabilitySlots: z.array(z.object({
     days: z.array(z.string()).min(1, "Select at least one day"),
-    startTime: z.string().min(1, "Start time is required"),
-    endTime: z.string().min(1, "End time is required"),
-    chamber: z.string().optional(),
+    time: z.string().min(1, "Time is required"),
   })).min(1, "Add at least one availability slot"),
 });
 
@@ -61,9 +59,7 @@ const banglaDays = [
 
 interface AvailabilitySlot {
   days: string[];
-  startTime: string;
-  endTime: string;
-  chamber?: string;
+  time: string;
 }
 
 export default function EditDoctorPage() {
@@ -77,18 +73,25 @@ export default function EditDoctorPage() {
   const params = useParams();
   const doctorId = params?.id as string;
 
-  // Location state
-  const [divisions, setDivisions] = useState<Array<{_id: string; name: string}>>([]);
-  const [districts, setDistricts] = useState<Array<{_id: string; name: string}>>([]);
-  const [thanas, setThanas] = useState<Array<{_id: string; name: string}>>([]);
-  const [, setHospitals] = useState<Array<{_id: string; name: string}>>([]);
+
+
+  // Hospital Search State
+  const [hospitals, setHospitals] = useState<any[]>([]);
   const [availableHospitals, setAvailableHospitals] = useState<string[]>([]);
+  const [hospitalSearchTerm, setHospitalSearchTerm] = useState("");
+  const [hospitalPage, setHospitalPage] = useState(1);
+  const [hasMoreHospitals, setHasMoreHospitals] = useState(false);
+  const [isHospitalLoading, setIsHospitalLoading] = useState(false);
+  const [showHospitalDropdown, setShowHospitalDropdown] = useState(false);
+  const [selectedHospitalName, setSelectedHospitalName] = useState("");
+  const hospitalDropdownRef = useRef<HTMLDivElement>(null);
+  const hospitalSearchInitialized = useRef(false);
   const [departments, setDepartments] = useState<Array<{_id: string; name: string; image?: string}>>([]);
   const [diseases, setDiseases] = useState<Array<{_id: string; name: string; bangla: string}>>([]);
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
 
   const [availabilitySlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>([
-    { days: [], startTime: "", endTime: "", chamber: "" },
+    { days: [], time: "" },
   ]);
 
   const {
@@ -101,23 +104,131 @@ export default function EditDoctorPage() {
   } = useForm<DoctorFormValues>({
     resolver: zodResolver(doctorSchema) as any,
     defaultValues: {
-      availabilitySlots: [{ days: [], startTime: "", endTime: "", chamber: "" }],
+      availabilitySlots: [{ days: [], time: "" }],
     },
   });
-  const watchedDivision = watch("division");
-  const watchedDistrict = watch("district");
-  const watchedThana = watch("thana");
+  const fetchHospitals = async (searchValue: string = "", pageToLoad = 1) => {
+    setIsHospitalLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (searchValue) {
+        params.set("search", searchValue);
+      }
+      params.set("page", pageToLoad.toString());
+      params.set("limit", "20");
 
-  // Fetch divisions and departments on mount
+      const response = await fetch(`/api/locations/hospitals?${params.toString()}`);
+      const data = await response.json();
+
+      if (response.ok && data.hospitals) {
+        setHospitals((prev) => {
+          const nextHospitals =
+            pageToLoad === 1
+              ? data.hospitals
+              : [
+                  ...prev,
+                  ...data.hospitals.filter(
+                    (newHospital: any) =>
+                      !prev.some((existing) => existing._id === newHospital._id)
+                  ),
+                ];
+
+          setAvailableHospitals(nextHospitals.map((hospital: any) => hospital.name));
+          return nextHospitals;
+        });
+        setHasMoreHospitals(Boolean(data.hasMore));
+        setHospitalPage(pageToLoad);
+      } else {
+        if (pageToLoad === 1) {
+          setHospitals([]);
+          setAvailableHospitals([]);
+        }
+        setHasMoreHospitals(false);
+      }
+    } catch (error) {
+      console.error("Error fetching hospitals:", error);
+      if (pageToLoad === 1) {
+        setHospitals([]);
+        setAvailableHospitals([]);
+      }
+      setHasMoreHospitals(false);
+    } finally {
+      setIsHospitalLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchHospitals("", 1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!hospitalSearchInitialized.current) {
+      hospitalSearchInitialized.current = true;
+      return;
+    }
+
+    const debounce = setTimeout(() => {
+      fetchHospitals(hospitalSearchTerm, 1);
+    }, 400);
+
+    return () => clearTimeout(debounce);
+  }, [hospitalSearchTerm]);
+
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        hospitalDropdownRef.current &&
+        !hospitalDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowHospitalDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []); 
+
+  // Handle hospital selection - auto-populate location
+  const handleHospitalSelect = (hospitalName: string) => {
+    setSelectedHospitalName(hospitalName);
+    setValue("hospital", hospitalName);
+    setShowHospitalDropdown(false);
+    setHospitalSearchTerm(hospitalName);
+    
+    if (hospitalName) {
+      const selectedHospital = hospitals.find(h => h.name === hospitalName);
+      
+      if (selectedHospital && selectedHospital.thana) {
+        const thana = selectedHospital.thana;
+        const district = thana.district;
+        const division = district?.division;
+        
+        // Auto-populate location fields
+        if (division && division.name) {
+          setValue("division", division.name);
+        }
+        if (district && district.name) {
+          setValue("district", district.name);
+        }
+        if (thana.name) {
+          setValue("thana", thana.name);
+        }
+      }
+    }
+  };
+
+  const loadMoreHospitals = () => {
+    if (isHospitalLoading || !hasMoreHospitals) return;
+    fetchHospitals(hospitalSearchTerm, hospitalPage + 1);
+  };
+
   useEffect(() => {
     const loadInitialData = async () => {
-      // Load divisions
-      const divisionsRes = await fetch("/api/locations/divisions");
-      const divisionsData = await divisionsRes.json();
-      if (divisionsData.divisions) {
-        setDivisions(divisionsData.divisions);
-      }
-
       // Load departments
       const deptsRes = await fetch("/api/departments");
       const deptsData = await deptsRes.json();
@@ -132,9 +243,9 @@ export default function EditDoctorPage() {
         setDiseases(diseasesData.diseases);
       }
 
-      // Load doctor data after divisions are loaded
+      // Load doctor data
       if (doctorId) {
-        await fetchDoctor(divisionsData.divisions || []);
+        await fetchDoctor();
       }
     };
 
@@ -142,7 +253,7 @@ export default function EditDoctorPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doctorId]);
 
-  const fetchDoctor = async (divisionsList: Array<{_id: string; name: string}> = []) => {
+  const fetchDoctor = async () => {
     try {
       setIsFetching(true);
       const response = await fetch(`/api/doctors/${doctorId}`);
@@ -156,21 +267,17 @@ export default function EditDoctorPage() {
         if (Array.isArray(doctor.availability)) {
           availabilityArray = doctor.availability.map((slot: any) => ({
             days: Array.isArray(slot.days) ? slot.days : [],
-            startTime: slot.startTime || "",
-            endTime: slot.endTime || "",
-            chamber: slot.chamber || "",
+            time: slot.time || (slot.startTime && slot.endTime ? `${slot.startTime} - ${slot.endTime}` : "") || "",
           }));
         } else if (doctor.availability) {
           availabilityArray = [{
             days: Array.isArray(doctor.availability.days) ? doctor.availability.days : [],
-            startTime: doctor.availability.startTime || "",
-            endTime: doctor.availability.endTime || "",
-            chamber: doctor.availability.chamber || "",
+            time: doctor.availability.time || (doctor.availability.startTime && doctor.availability.endTime ? `${doctor.availability.startTime} - ${doctor.availability.endTime}` : "") || "",
           }];
         }
 
         if (availabilityArray.length === 0) {
-          availabilityArray = [{ days: [], startTime: "", endTime: "", chamber: "" }];
+          availabilityArray = [{ days: [], time: "" }];
         }
 
         setAvailabilitySlots(availabilityArray);
@@ -184,13 +291,13 @@ export default function EditDoctorPage() {
         reset({
           name: doctor.name || "",
           qualification: doctor.qualification || "",
-          currentPosition: doctor.currentPosition || "",
-          experience: doctor.experience || 0,
+
+
           hospital: doctor.hospital || "",
           division: doctor.division || "",
           district: doctor.district || "",
           thana: doctor.thana || "",
-          chamber: doctor.chamber || "",
+
           department: doctor.department || "",
           consultationFee: doctor.consultationFee || 0,
           oldPatientFee: doctor.oldPatientFee || 0,
@@ -206,16 +313,9 @@ export default function EditDoctorPage() {
           setImagePreview(doctor.image);
         }
 
-        // Load location cascades if location data exists
-        const divisionsToUse = divisionsList.length > 0 ? divisionsList : divisions;
-        if (doctor.division && divisionsToUse.length > 0) {
-          const loadedDistricts = await loadDistricts(doctor.division, divisionsToUse);
-          if (doctor.district && loadedDistricts.length > 0) {
-            const loadedThanas = await loadThanas(doctor.district);
-            if (doctor.thana && loadedThanas.length > 0) {
-              await loadHospitals(doctor.thana);
-            }
-          }
+        if (doctor.hospital) {
+          setHospitalSearchTerm(doctor.hospital);
+          setSelectedHospitalName(doctor.hospital);
         }
       } else {
         alert(data.error || "Failed to fetch doctor data");
@@ -230,83 +330,11 @@ export default function EditDoctorPage() {
     }
   };
 
-  const loadDistricts = async (divisionName: string, divisionsList?: Array<{_id: string; name: string}>) => {
-    const divisionsToSearch = divisionsList || divisions;
-    const division = divisionsToSearch.find(d => d.name === divisionName);
-    if (division) {
-      const response = await fetch(`/api/locations/districts?division=${division._id}`);
-      const data = await response.json();
-      if (data.districts) {
-        setDistricts(data.districts);
-        return data.districts;
-      }
-    }
-    return [];
-  };
 
-  const loadThanas = async (districtName: string) => {
-    const district = districts.find(d => d.name === districtName);
-    if (district) {
-      const response = await fetch(`/api/locations/thanas?district=${district._id}`);
-      const data = await response.json();
-      if (data.thanas) {
-        setThanas(data.thanas);
-        return data.thanas;
-      }
-    }
-    return [];
-  };
-
-  const loadHospitals = async (thanaName: string) => {
-    const thana = thanas.find(t => t.name === thanaName);
-    if (thana) {
-      const response = await fetch(`/api/locations/hospitals?thana=${thana._id}`);
-      const data = await response.json();
-      if (data.hospitals) {
-        setHospitals(data.hospitals);
-        const hospitalNames = data.hospitals.map((h: {name: string}) => h.name);
-        setAvailableHospitals(hospitalNames);
-        return data.hospitals;
-      }
-    }
-    return [];
-  };
-
-  // Fetch districts when division changes
-  useEffect(() => {
-    if (watchedDivision && !isFetching) {
-      loadDistricts(watchedDivision);
-      setValue("district", "");
-      setValue("thana", "");
-      setValue("hospital", "");
-      setAvailableHospitals([]);
-      setThanas([]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchedDivision, divisions, setValue, isFetching]);
-
-  // Fetch thanas when district changes
-  useEffect(() => {
-    if (watchedDistrict && !isFetching) {
-      loadThanas(watchedDistrict);
-      setValue("thana", "");
-      setValue("hospital", "");
-      setAvailableHospitals([]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchedDistrict, districts, setValue, isFetching]);
-
-  // Fetch hospitals when thana changes
-  useEffect(() => {
-    if (watchedThana && !isFetching) {
-      loadHospitals(watchedThana);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchedThana, thanas, setValue, watch, isFetching]);
 
   // Add new availability slot
   const addAvailabilitySlot = () => {
-    const newSlot = { days: [], startTime: "", endTime: "", chamber: "" };
+    const newSlot = { days: [], time: "" };
     setAvailabilitySlots([...availabilitySlots, newSlot]);
     setValue("availabilitySlots", [...availabilitySlots, newSlot]);
   };
@@ -334,20 +362,14 @@ export default function EditDoctorPage() {
   };
 
   // Update time for a specific slot
-  const updateSlotTime = (slotIndex: number, field: "startTime" | "endTime", value: string) => {
+  const updateSlotTime = (slotIndex: number, value: string) => {
     const updated = [...availabilitySlots];
-    updated[slotIndex][field] = value;
+    updated[slotIndex].time = value;
     setAvailabilitySlots(updated);
     setValue("availabilitySlots", updated);
   };
 
-  // Update chamber for a specific slot
-  const updateSlotChamber = (slotIndex: number, value: string) => {
-    const updated = [...availabilitySlots];
-    updated[slotIndex].chamber = value;
-    setAvailabilitySlots(updated);
-    setValue("availabilitySlots", updated);
-  };
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -478,44 +500,21 @@ export default function EditDoctorPage() {
               <Label htmlFor="qualification">
                 Qualification <span className="text-red-500">*</span>
               </Label>
-              <Input
+              <textarea
                 id="qualification"
                 {...register("qualification")}
                 placeholder="MBBS, MD"
-                className="mt-1"
+                rows={4}
+                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
               />
               {errors.qualification && (
                 <p className="text-sm text-red-500 mt-1">{errors.qualification.message}</p>
               )}
             </div>
 
-            <div>
-              <Label htmlFor="currentPosition">
-                Current Position <span className="text-gray-500 text-xs">(Optional)</span>
-              </Label>
-              <Input
-                id="currentPosition"
-                {...register("currentPosition")}
-                placeholder="Assistant Professor, Senior Consultant, etc."
-                className="mt-1"
-              />
-            </div>
 
-            <div>
-              <Label htmlFor="experience">
-                Experience (Years) <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="experience"
-                type="number"
-                {...register("experience")}
-                placeholder="10"
-                className="mt-1"
-              />
-              {errors.experience && (
-                <p className="text-sm text-red-500 mt-1">{errors.experience.message}</p>
-              )}
-            </div>
+
+
 
 
             {/* Location Selection Section */}
@@ -525,115 +524,69 @@ export default function EditDoctorPage() {
               </Label>
             </div>
 
-            <div>
-              <Label htmlFor="division">Division</Label>
-              <select
-                id="division"
-                {...register("division")}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                onChange={(e) => {
-                  setValue("division", e.target.value);
-                  setValue("district", "");
-                  setValue("thana", "");
-                  setValue("hospital", "");
-                }}
-              >
-                <option value="">Select Division</option>
-                {divisions.map((div) => (
-                  <option key={div._id} value={div.name}>
-                    {div.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <Label htmlFor="district">District</Label>
-              <select
-                id="district"
-                {...register("district")}
-                disabled={!watchedDivision}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                onChange={(e) => {
-                  setValue("district", e.target.value);
-                  setValue("thana", "");
-                  setValue("hospital", "");
-                }}
-              >
-                <option value="">Select District</option>
-                {districts.map((dist) => (
-                  <option key={dist._id} value={dist.name}>
-                    {dist.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <Label htmlFor="thana">Thana/Upazila</Label>
-              <select
-                id="thana"
-                {...register("thana")}
-                disabled={!watchedDistrict || !watchedDivision}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                onChange={(e) => {
-                  setValue("thana", e.target.value);
-                  setValue("hospital", "");
-                }}
-              >
-                <option value="">Select Thana</option>
-                {thanas.map((thana) => (
-                  <option key={thana._id} value={thana.name}>
-                    {thana.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
+            <div className="relative" ref={hospitalDropdownRef}>
               <Label htmlFor="hospital">Hospital</Label>
-              <select
+              <Input
                 id="hospital"
-                {...register("hospital")}
-                disabled={!watchedThana || availableHospitals.length === 0}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-              >
-                <option value="">
-                  {availableHospitals.length === 0
-                    ? watchedThana
-                      ? "No hospitals in this area"
-                      : "Select Thana first"
-                    : "Select Hospital"}
-                </option>
-                {availableHospitals.map((hosp) => (
-                  <option key={hosp} value={hosp}>
-                    {hosp}
-                  </option>
-                ))}
-              </select>
-              {availableHospitals.length === 0 && watchedThana && (
-                <Input
-                  {...register("hospital")}
-                  placeholder="Or enter hospital name manually"
-                  className="mt-2"
-                />
+                type="text"
+                placeholder="Search or select hospital..."
+                value={hospitalSearchTerm}
+                onChange={(e) => {
+                  setHospitalSearchTerm(e.target.value);
+                  setShowHospitalDropdown(true);
+                  if (!e.target.value) {
+                    setSelectedHospitalName("");
+                    setValue("hospital", "");
+                  }
+                }}
+                onFocus={() => setShowHospitalDropdown(true)}
+                className="mt-1"
+                autoComplete="off"
+              />
+              {showHospitalDropdown && (
+                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                  {isHospitalLoading && availableHospitals.length === 0 ? (
+                    <div className="p-3 text-sm text-gray-500 text-center">
+                      Loading hospitals...
+                    </div>
+                  ) : availableHospitals.length === 0 ? (
+                    <div className="p-3 text-sm text-gray-500 text-center">
+                      No hospitals found
+                    </div>
+                  ) : (
+                    <>
+                      {availableHospitals.map((hosp) => (
+                        <div
+                          key={hosp}
+                          onClick={() => handleHospitalSelect(hosp)}
+                          className={`px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm ${
+                            selectedHospitalName === hosp ? "bg-primary/10" : ""
+                          }`}
+                        >
+                          {hosp}
+                        </div>
+                      ))}
+                      {hasMoreHospitals && (
+                        <div className="border-t border-gray-200 p-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            onClick={loadMoreHospitals}
+                            disabled={isHospitalLoading}
+                          >
+                            {isHospitalLoading ? "Loading..." : "Load more hospitals"}
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
               )}
             </div>
 
-            <div>
-              <Label htmlFor="chamber">
-                চেম্বার (Chamber) <span className="text-gray-500 text-xs">(Optional)</span>
-              </Label>
-              <Input
-                id="chamber"
-                {...register("chamber")}
-                placeholder="চেম্বারের নাম বা ঠিকানা"
-                className="mt-1"
-                style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
-              />
-            </div>
+
 
             <div>
               <Label htmlFor="department">
@@ -859,50 +812,23 @@ export default function EditDoctorPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 gap-6">
                     <div>
-                      <Label htmlFor={`startTime-${slotIndex}`}>
-                        শুরু সময় (Start Time) <span className="text-red-500">*</span>
+                      <Label htmlFor={`time-${slotIndex}`}>
+                        সময় (Time) <span className="text-red-500">*</span>
                       </Label>
                       <Input
-                        id={`startTime-${slotIndex}`}
-                        type="time"
-                        value={slot.startTime}
-                        onChange={(e) => updateSlotTime(slotIndex, "startTime", e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor={`endTime-${slotIndex}`}>
-                        শেষ সময় (End Time) <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id={`endTime-${slotIndex}`}
-                        type="time"
-                        value={slot.endTime}
-                        onChange={(e) => updateSlotTime(slotIndex, "endTime", e.target.value)}
+                        id={`time-${slotIndex}`}
+                        type="text"
+                        placeholder="e.g. 10:00 AM - 04:00 PM"
+                        value={slot.time}
+                        onChange={(e) => updateSlotTime(slotIndex, e.target.value)}
                         className="mt-1"
                       />
                     </div>
                   </div>
 
-                  <div>
-                    <Label htmlFor={`chamber-${slotIndex}`}>
-                      চেম্বার (Chamber) <span className="text-gray-500 text-xs">(Optional)</span>
-                    </Label>
-                    <Input
-                      id={`chamber-${slotIndex}`}
-                      type="text"
-                      value={slot.chamber || ""}
-                      onChange={(e) => updateSlotChamber(slotIndex, e.target.value)}
-                      placeholder="এই সময়ের জন্য চেম্বার (যদি থাকে)"
-                      className="mt-1"
-                      style={{
-                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
-                    />
-                  </div>
+
                 </div>
               </Card>
             ))}

@@ -111,6 +111,8 @@ export default function Navbar() {
     { href: "/service", label: "Services" },
     { href: "/diagnostic", label: "Diagnostic Tests" },
     { href: "/blog", label: "Health Tips" },
+    { href: "/membership", label: "Discount Cards" },
+    { href: "/affiliate", label: "Be a Partner" },
     { href: "/contact", label: "Contact" },
   ];
 

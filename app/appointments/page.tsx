@@ -39,7 +39,7 @@ interface Appointment {
   gender?: string;
   age?: number;
   patientType: 'old' | 'new' | 'report';
-  chamberName: string;
+  hospitalName: string;
   appointmentDate: string;
   appointmentTime?: string;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
@@ -390,12 +390,12 @@ export default function AppointmentsPage() {
                         <div className="flex items-center gap-3">
                           <MapPin className="h-5 w-5 text-primary shrink-0" />
                           <div>
-                            <p className="text-sm text-gray-500">চেম্বার</p>
+                            <p className="text-sm text-gray-500">হাসপাতাল</p>
                             <p
                               className="font-semibold text-gray-900"
                               style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                             >
-                              {appointment.chamberName}
+                              {appointment.hospitalName}
                             </p>
                           </div>
                         </div>

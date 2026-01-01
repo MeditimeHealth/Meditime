@@ -44,15 +44,15 @@ export async function PUT(
     const {
       name,
       qualification,
-      currentPosition,
-      experience,
+
+
       email,
       phoneNumber,
       hospital,
       division,
       district,
       thana,
-      chamber,
+
       department,
       consultationFee,
       oldPatientFee,
@@ -64,7 +64,7 @@ export async function PUT(
     } = body;
 
     // Validate required fields - consultationFee or newPatientFee is required
-    if (!name || !qualification || !experience || !availability) {
+    if (!name || !qualification || !availability) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -91,9 +91,9 @@ export async function PUT(
           { status: 400 }
         );
       }
-      if (!slot.startTime || !slot.endTime) {
+      if (!slot.time) {
         return NextResponse.json(
-          { error: "Each availability slot must have start time and end time" },
+          { error: "Each availability slot must have a time" },
           { status: 400 }
         );
       }
@@ -103,20 +103,20 @@ export async function PUT(
     const doctorData: any = {
       name,
       qualification,
-      experience,
+
       consultationFee: finalConsultationFee,
       availability: availabilityArray,
     };
 
     // Add optional fields only if they have values
-    if (currentPosition) doctorData.currentPosition = currentPosition;
+
     if (email) doctorData.email = email;
     if (phoneNumber) doctorData.phoneNumber = phoneNumber;
     if (hospital) doctorData.hospital = hospital;
     if (division) doctorData.division = division;
     if (district) doctorData.district = district;
     if (thana) doctorData.thana = thana;
-    if (chamber) doctorData.chamber = chamber;
+
     if (department) doctorData.department = department;
     if (oldPatientFee) doctorData.oldPatientFee = oldPatientFee;
     if (newPatientFee) doctorData.newPatientFee = newPatientFee;

@@ -297,14 +297,14 @@ function BookingSuccessContent() {
                 </span>
               </div>
 
-              {/* Chamber */}
+              {/* Hospital */}
               <div className="flex items-center justify-between py-2 bg-purple-50 -mx-4 px-4">
                 <div className="flex items-center gap-2 text-purple-700">
                   <MapPin className="h-4 w-4" />
-                  <span className="text-sm" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>চেম্বার</span>
+                  <span className="text-sm" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>হাসপাতাল</span>
                 </div>
                 <span className="font-bold text-purple-800 text-right max-w-[60%]" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
-                  {appointment.chamberName}
+                  {appointment.hospitalName}
                 </span>
               </div>
 

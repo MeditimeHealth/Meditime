@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
       gender,
       age,
       patientType,
-      chamberName,
+      hospitalName,
       appointmentDate,
       appointmentTime,
       userId,
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!doctorId || !patientName || !mobileNumber || !patientType || !chamberName || !appointmentDate) {
+    if (!doctorId || !patientName || !mobileNumber || !patientType || !hospitalName || !appointmentDate) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
       gender: gender || undefined,
       age: age || undefined,
       patientType,
-      chamberName,
+      hospitalName,
       appointmentDate: new Date(appointmentDate),
       appointmentTime: appointmentTime || undefined,
       userId: userId || undefined,

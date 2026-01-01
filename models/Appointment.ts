@@ -8,7 +8,7 @@ export interface IAppointment extends Document {
   gender?: string;
   age?: number;
   patientType: 'old' | 'new' | 'report';
-  chamberName: string;
+  hospitalName: string;
   appointmentDate: Date;
   appointmentTime?: string;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
@@ -56,9 +56,9 @@ const AppointmentSchema: Schema = new Schema(
       enum: ['old', 'new', 'report'],
       required: [true, 'Patient type is required'],
     },
-    chamberName: {
+    hospitalName: {
       type: String,
-      required: [true, 'Chamber name is required'],
+      required: [true, 'Hospital name is required'],
       trim: true,
     },
     appointmentDate: {

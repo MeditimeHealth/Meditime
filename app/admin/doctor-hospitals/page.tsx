@@ -64,7 +64,7 @@ export default function DoctorHospitalPage() {
                 _id: hospitalName,
                 name: hospitalName,
                 doctors: [],
-                address: doctor.chamber,
+                address: undefined,
                 thana: doctor.thana ? {
                   name: doctor.thana,
                   district: doctor.district ? {

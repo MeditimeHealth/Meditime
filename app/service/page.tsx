@@ -13,7 +13,7 @@ export default function ServicePage() {
     {
       id: 1,
       title: "Doctor Appointment Booking",
-      description: "Find the Most Experienced Physician from 20+ Specialities and Departments. Easy booking, guaranteed visit, with no advance payment. Pay only when you visit the doctor's chamber.",
+      description: "Find the Most Experienced Physician from 20+ Specialities and Departments. Easy booking, guaranteed visit, with no advance payment. Pay only when you visit the hospital.",
       icon: Stethoscope,
       iconBg: "bg-green-100 group-hover:bg-green-200",
       iconColor: "text-green-600",

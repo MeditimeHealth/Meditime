@@ -141,7 +141,7 @@ export async function GET(request: NextRequest) {
         mobileNumber: appointment.mobileNumber,
         doctor: appointment.doctorId?.name || "N/A",
         department: appointment.doctorId?.department || "N/A",
-        hospital: appointment.doctorId?.hospital || appointment.chamberName || "N/A",
+        hospital: appointment.doctorId?.hospital || appointment.hospitalName || "N/A",
         affiliateType: appointment.affiliateCode ? "Affiliate" : "Self",
         affiliateCode: appointment.affiliateCode || null,
         affiliateName: affiliateInfo?.name || null,

@@ -80,7 +80,7 @@ interface Appointment {
   patientName: string;
   mobileNumber: string;
   appointmentDate: string;
-  chamberName: string;
+  hospitalName: string;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   doctorId?: {
     name: string;
@@ -766,7 +766,7 @@ export default function UserProfilePage() {
                         </div>
                         <div className="flex items-center gap-2 text-gray-600">
                           <MapPin className="h-4 w-4" />
-                          <span>{appointment.chamberName}</span>
+                          <span>{appointment.hospitalName}</span>
                         </div>
                         {appointment.serialNumber && (
                           <div className="flex items-center gap-2 text-gray-600">

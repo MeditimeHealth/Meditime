@@ -15,16 +15,13 @@ import { showToast } from "@/lib/toast";
 const doctorSchema = z.object({
   name: z.string().min(2, "Name is required"),
   qualification: z.string().min(2, "Qualification is required"),
-  currentPosition: z.string().optional(),
-  experience: z.preprocess(
-    (val) => (val === "" || val === undefined ? undefined : Number(val)),
-    z.number().min(0, "Experience must be at least 0").optional()
-  ),
+
+
   hospital: z.string().optional(),
   division: z.string().optional(),
   district: z.string().optional(),
   thana: z.string().optional(),
-  chamber: z.string().optional(),
+
   department: z.string().optional(),
   consultationFee: z.preprocess(
     (val) => (val === "" || val === undefined ? undefined : Number(val)),
@@ -42,9 +39,7 @@ const doctorSchema = z.object({
   image: z.string().optional(),
   availabilitySlots: z.array(z.object({
     days: z.array(z.string()).min(1, "Select at least one day"),
-    startTime: z.string().min(1, "Start time is required"),
-    endTime: z.string().min(1, "End time is required"),
-    chamber: z.string().optional(),
+    time: z.string().min(1, "Time is required"),
   })).min(1, "Add at least one availability slot"),
 });
 
@@ -72,9 +67,7 @@ const banglaDays = [
 
 interface AvailabilitySlot {
   days: string[];
-  startTime: string;
-  endTime: string;
-  chamber?: string;
+  time: string;
 }
 
 type HospitalWithLocation = {
@@ -103,9 +96,7 @@ export default function CreateDoctorPage() {
   const router = useRouter();
 
   // Location state
-  const [divisions, setDivisions] = useState<Array<{_id: string; name: string}>>([]);
-  const [districts, setDistricts] = useState<Array<{_id: string; name: string}>>([]);
-  const [thanas, setThanas] = useState<Array<{_id: string; name: string}>>([]);
+
   const [hospitals, setHospitals] = useState<HospitalWithLocation[]>([]);
   const [availableHospitals, setAvailableHospitals] = useState<string[]>([]);
   const [hospitalSearchTerm, setHospitalSearchTerm] = useState("");
@@ -118,7 +109,7 @@ export default function CreateDoctorPage() {
   const [departments, setDepartments] = useState<Array<{_id: string; name: string; image?: string}>>([]);
 
   const [availabilitySlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>([
-    { days: [], startTime: "", endTime: "", chamber: "" },
+    { days: [], time: "" },
   ]);
 
   const {
@@ -130,11 +121,10 @@ export default function CreateDoctorPage() {
   } = useForm<DoctorFormValues>({
     resolver: zodResolver(doctorSchema) as any,
     defaultValues: {
-      availabilitySlots: [{ days: [], startTime: "", endTime: "", chamber: "" }],
+      availabilitySlots: [{ days: [], time: "" }],
     },
   });
-  const watchedDivision = watch("division");
-  const watchedDistrict = watch("district");
+
   const hospitalSearchInitialized = useRef(false);
 
   const fetchHospitals = useCallback(
@@ -208,14 +198,7 @@ export default function CreateDoctorPage() {
     return () => clearTimeout(debounce);
   }, [hospitalSearchTerm, fetchHospitals]);
 
-  // Fetch divisions on mount
-  useEffect(() => {
-    fetch("/api/locations/divisions")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.divisions) setDivisions(data.divisions);
-      });
-  }, []);
+
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -243,37 +226,7 @@ export default function CreateDoctorPage() {
       });
   }, []);
 
-  // Fetch districts when division changes
-  useEffect(() => {
-    if (watchedDivision) {
-      const division = divisions.find(d => d.name === watchedDivision);
-      if (division) {
-        fetch(`/api/locations/districts?division=${division._id}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.districts) setDistricts(data.districts);
-          });
-      }
-      setValue("district", "");
-      setValue("thana", "");
-      setThanas([]);
-    }
-  }, [watchedDivision, divisions, setValue]);
 
-  // Fetch thanas when district changes
-  useEffect(() => {
-    if (watchedDistrict) {
-      const district = districts.find(d => d.name === watchedDistrict);
-      if (district) {
-        fetch(`/api/locations/thanas?district=${district._id}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.thanas) setThanas(data.thanas);
-          });
-      }
-      setValue("thana", "");
-    }
-  }, [watchedDistrict, districts, setValue]);
 
   // Handle hospital selection - auto-populate location
   const handleHospitalSelect = (hospitalName: string) => {
@@ -290,47 +243,15 @@ export default function CreateDoctorPage() {
         const district = thana.district;
         const division = district?.division;
         
-        // Set division first
+        // Auto-populate location fields
         if (division && division.name) {
-          const divisionName = division.name;
-          setValue("division", divisionName);
-          
-          // Find division from divisions list to get _id
-          const divisionObj = divisions.find(d => d.name === divisionName);
-          if (divisionObj) {
-            // Fetch districts for the division
-            fetch(`/api/locations/districts?division=${divisionObj._id}`)
-              .then((res) => res.json())
-              .then((data) => {
-                if (data.districts) {
-                  setDistricts(data.districts);
-                  
-                  // Set district
-                  if (district && district.name) {
-                    const districtName = district.name;
-                    setValue("district", districtName);
-                    
-                    // Find district from districts list to get _id
-                    const districtObj = data.districts.find((d: {name: string}) => d.name === districtName);
-                    if (districtObj) {
-                      // Fetch thanas for the district
-                      fetch(`/api/locations/thanas?district=${districtObj._id}`)
-                        .then((res) => res.json())
-                        .then((data) => {
-                          if (data.thanas) {
-                            setThanas(data.thanas);
-                            
-                            // Set thana
-                            if (thana.name) {
-                              setValue("thana", thana.name);
-                            }
-                          }
-                        });
-                    }
-                  }
-                }
-              });
-          }
+          setValue("division", division.name);
+        }
+        if (district && district.name) {
+          setValue("district", district.name);
+        }
+        if (thana.name) {
+          setValue("thana", thana.name);
         }
       }
     }
@@ -343,7 +264,7 @@ export default function CreateDoctorPage() {
 
   // Add new availability slot
   const addAvailabilitySlot = () => {
-    const newSlot = { days: [], startTime: "", endTime: "", chamber: "" };
+    const newSlot = { days: [], time: "" };
     setAvailabilitySlots([...availabilitySlots, newSlot]);
     setValue("availabilitySlots", [...availabilitySlots, newSlot]);
   };
@@ -371,20 +292,14 @@ export default function CreateDoctorPage() {
   };
 
   // Update time for a specific slot
-  const updateSlotTime = (slotIndex: number, field: "startTime" | "endTime", value: string) => {
+  const updateSlotTime = (slotIndex: number, value: string) => {
     const updated = [...availabilitySlots];
-    updated[slotIndex][field] = value;
+    updated[slotIndex].time = value;
     setAvailabilitySlots(updated);
     setValue("availabilitySlots", updated);
   };
 
-  // Update chamber for a specific slot
-  const updateSlotChamber = (slotIndex: number, value: string) => {
-    const updated = [...availabilitySlots];
-    updated[slotIndex].chamber = value;
-    setAvailabilitySlots(updated);
-    setValue("availabilitySlots", updated);
-  };
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -508,114 +423,24 @@ export default function CreateDoctorPage() {
               <Label htmlFor="qualification">
                 Qualification <span className="text-red-500">*</span>
               </Label>
-              <Input
+              <textarea
                 id="qualification"
                 {...register("qualification")}
                 placeholder="MBBS, MD"
-                className="mt-1"
+                rows={4}
+                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
               />
               {errors.qualification && (
                 <p className="text-sm text-red-500 mt-1">{errors.qualification.message}</p>
               )}
             </div>
 
-            <div>
-              <Label htmlFor="currentPosition">
-                Current Position <span className="text-gray-500 text-xs">(Optional)</span>
-              </Label>
-              <Input
-                id="currentPosition"
-                {...register("currentPosition")}
-                placeholder="Assistant Professor, Senior Consultant, etc."
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="experience">
-                Experience (Years) <span className="text-gray-500 text-xs">(Optional)</span>
-              </Label>
-              <Input
-                id="experience"
-                type="number"
-                {...register("experience")}
-                placeholder="10"
-                className="mt-1"
-              />
-              {errors.experience && (
-                <p className="text-sm text-red-500 mt-1">{errors.experience.message}</p>
-              )}
-            </div>
 
 
-            {/* Location Selection Section */}
-            <div className="md:col-span-2">
-              <Label className="mb-2 block font-semibold text-gray-900">
-                Location & Hospital
-              </Label>
-            </div>
 
-            <div>
-              <Label htmlFor="division">Division</Label>
-              <select
-                id="division"
-                {...register("division")}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                onChange={(e) => {
-                  setValue("division", e.target.value);
-                  setValue("district", "");
-                  setValue("thana", "");
-                }}
-              >
-                <option value="">Select Division</option>
-                {divisions.map((div) => (
-                  <option key={div._id} value={div.name}>
-                    {div.name}
-                  </option>
-                ))}
-              </select>
-            </div>
 
-            <div>
-              <Label htmlFor="district">District</Label>
-              <select
-                id="district"
-                {...register("district")}
-                disabled={!watchedDivision}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                onChange={(e) => {
-                  setValue("district", e.target.value);
-                  setValue("thana", "");
-                }}
-              >
-                <option value="">Select District</option>
-                {districts.map((dist) => (
-                  <option key={dist._id} value={dist.name}>
-                    {dist.name}
-                  </option>
-                ))}
-              </select>
-            </div>
 
-            <div>
-              <Label htmlFor="thana">Thana/Upazila</Label>
-              <select
-                id="thana"
-                {...register("thana")}
-                disabled={!watchedDistrict || !watchedDivision}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                onChange={(e) => {
-                  setValue("thana", e.target.value);
-                }}
-              >
-                <option value="">Select Thana</option>
-                {thanas.map((thana) => (
-                  <option key={thana._id} value={thana.name}>
-                    {thana.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+
 
             <div className="relative" ref={hospitalDropdownRef}>
               <Label htmlFor="hospital">Hospital</Label>
@@ -679,20 +504,7 @@ export default function CreateDoctorPage() {
               )}
             </div>
 
-            <div>
-              <Label htmlFor="chamber">
-                চেম্বার (Chamber) <span className="text-gray-500 text-xs">(Optional)</span>
-              </Label>
-              <Input
-                id="chamber"
-                {...register("chamber")}
-                placeholder="চেম্বারের নাম বা ঠিকানা"
-                className="mt-1"
-                style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
-              />
-            </div>
+
 
             <div>
               <Label htmlFor="department">
@@ -866,50 +678,23 @@ export default function CreateDoctorPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 gap-6">
                     <div>
-                      <Label htmlFor={`startTime-${slotIndex}`}>
-                        শুরু সময় (Start Time) <span className="text-red-500">*</span>
+                      <Label htmlFor={`time-${slotIndex}`}>
+                        সময় (Time) <span className="text-red-500">*</span>
                       </Label>
                       <Input
-                        id={`startTime-${slotIndex}`}
-                        type="time"
-                        value={slot.startTime}
-                        onChange={(e) => updateSlotTime(slotIndex, "startTime", e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor={`endTime-${slotIndex}`}>
-                        শেষ সময় (End Time) <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id={`endTime-${slotIndex}`}
-                        type="time"
-                        value={slot.endTime}
-                        onChange={(e) => updateSlotTime(slotIndex, "endTime", e.target.value)}
+                        id={`time-${slotIndex}`}
+                        type="text"
+                        placeholder="e.g. 10:00 AM - 04:00 PM"
+                        value={slot.time}
+                        onChange={(e) => updateSlotTime(slotIndex, e.target.value)}
                         className="mt-1"
                       />
                     </div>
                   </div>
 
-                  <div>
-                    <Label htmlFor={`chamber-${slotIndex}`}>
-                      চেম্বার (Chamber) <span className="text-gray-500 text-xs">(Optional)</span>
-                    </Label>
-                    <Input
-                      id={`chamber-${slotIndex}`}
-                      type="text"
-                      value={slot.chamber || ""}
-                      onChange={(e) => updateSlotChamber(slotIndex, e.target.value)}
-                      placeholder="এই সময়ের জন্য চেম্বার (যদি থাকে)"
-                      className="mt-1"
-                      style={{
-                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
-                    />
-                  </div>
+
                 </div>
               </Card>
             ))}

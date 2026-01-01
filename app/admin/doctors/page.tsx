@@ -12,20 +12,17 @@ interface Doctor {
   name: string;
   specialty?: string;
   qualification: string;
-  currentPosition?: string;
-  experience: number;
+
+
   phoneNumber?: string;
   consultationFee: number;
   slotDuration?: number;
   availability: Array<{
     days: string[];
-    startTime: string;
-    endTime: string;
-    chamber?: string;
+    time: string;
   }> | {
     days: string[];
-    startTime: string;
-    endTime: string;
+    time: string;
   };
 }
 
@@ -120,16 +117,11 @@ export default function DoctorsPage() {
                 <div className="space-y-2 text-sm">
                   <div>
                     <span className="text-gray-600">Qualification: </span>
-                    <span className="text-gray-900">
-                      {doctor.currentPosition 
-                        ? `${doctor.currentPosition}, ${doctor.qualification}`
-                        : doctor.qualification}
-                    </span>
+                      <span className="text-gray-900">
+                        {doctor.qualification}
+                      </span>
                   </div>
-                  <div>
-                    <span className="text-gray-600">Experience: </span>
-                    <span className="text-gray-900">{doctor.experience} years</span>
-                  </div>
+
                   {doctor.phoneNumber && (
                     <div>
                       <span className="text-gray-600">Phone: </span>
@@ -151,15 +143,15 @@ export default function DoctorsPage() {
                     <span className="text-gray-900">
                       {Array.isArray(doctor.availability)
                         ? doctor.availability.map((slot, idx) => {
-                            const slots = doctor.availability as Array<{days: string[]; startTime: string; endTime: string}>;
+                            const slots = doctor.availability as Array<{days: string[]; time: string}>;
                             return (
                               <span key={idx}>
-                                {slot.days.join(", ")} ({slot.startTime} - {slot.endTime})
+                                {slot.days.join(", ")} ({slot.time})
                                 {idx < slots.length - 1 ? "; " : ""}
                               </span>
                             );
                           })
-                        : `${doctor.availability.days.join(", ")} (${doctor.availability.startTime} - ${doctor.availability.endTime})`}
+                        : `${doctor.availability.days.join(", ")} (${doctor.availability.time})`}
                     </span>
                   </div>
                 </div>

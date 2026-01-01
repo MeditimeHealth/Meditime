@@ -25,8 +25,8 @@ interface Doctor {
   name: string;
   specialty: string;
   qualification: string;
-  currentPosition?: string;
-  experience: number;
+
+
   phoneNumber: string;
   email?: string;
   hospital?: string;
@@ -41,14 +41,11 @@ interface Doctor {
     days: string[];
     startTime: string;
     endTime: string;
-    chamber?: string;
   }> | {
     days: string[];
     startTime: string;
     endTime: string;
-    chamber?: string;
   };
-  chamber?: string;
   bio?: string;
   image?: string;
   rating?: number;
@@ -76,7 +73,7 @@ interface Hospital {
 
 type SortOption =
   | "name"
-  | "experience"
+
   | "consultationFee"
   | "rating"
   | "specialty";
@@ -92,19 +89,17 @@ const banglaLabels = {
   checkLater: "পরবর্তীতে আবার চেক করুন",
   sortBy: "সাজান",
   name: "নাম",
-  experience: "অভিজ্ঞতা",
+
   consultationFee: "কনসালটেশন ফি",
   rating: "রেটিং",
   specialty: "বিশেষতা",
   bookAppointment: "বুক অ্যাপয়েন্টমেন্ট",
-  experienceLabel: "অভিজ্ঞতা",
-  years: "বছর",
   location: "অবস্থান",
   address: "ঠিকানা",
   contact: "যোগাযোগ",
   email: "ইমেইল",
   phone: "ফোন",
-  availability: "চেম্বার সময়সূচী",
+  availability: "হাসপাতাল সময়সূচী",
   loading: "হাসপাতালের তথ্য লোড হচ্ছে...",
 };
 
@@ -148,7 +143,7 @@ const getBengaliDay = (day: string): string => {
 };
 
 // Format availability in Bengali
-const formatAvailability = (availability: Array<{ days: string[]; startTime: string; endTime: string; chamber?: string }> | { days: string[]; startTime: string; endTime: string; chamber?: string }): string => {
+const formatAvailability = (availability: Array<{ days: string[]; startTime: string; endTime: string; }> | { days: string[]; startTime: string; endTime: string; }): string => {
   // Handle backward compatibility - convert old format to array
   const slots = Array.isArray(availability) ? availability : [availability];
   
@@ -171,10 +166,6 @@ const formatAvailability = (availability: Array<{ days: string[]; startTime: str
       timeRange = `${firstDay} থেকে ${lastDay} ${startTime} থেকে ${endTime}`;
     }
     
-    // Add chamber info if available
-    if (slot.chamber) {
-      return `${timeRange} (চেম্বার: ${slot.chamber})`;
-    }
     return timeRange;
   }).join("। ");
 };
@@ -281,10 +272,7 @@ export default function HospitalDetailPage() {
           aVal = a.name.toLowerCase();
           bVal = b.name.toLowerCase();
           break;
-        case "experience":
-          aVal = a.experience;
-          bVal = b.experience;
-          break;
+
         case "consultationFee":
           aVal = a.consultationFee;
           bVal = b.consultationFee;
@@ -319,9 +307,7 @@ export default function HospitalDetailPage() {
       const specialtyMatch = doctor.specialty?.toLowerCase().includes(query);
       const qualificationMatch = doctor.qualification?.toLowerCase().includes(query);
       const departmentMatch = doctor.department?.toLowerCase().includes(query);
-      const currentPositionMatch = doctor.currentPosition?.toLowerCase().includes(query);
-      
-      return nameMatch || specialtyMatch || qualificationMatch || departmentMatch || currentPositionMatch;
+      return nameMatch || specialtyMatch || qualificationMatch || departmentMatch;
     });
   }, [sortedDoctors, searchQuery]);
 
@@ -795,7 +781,7 @@ export default function HospitalDetailPage() {
                               }}
                             >
                               {[
-                                doctor.currentPosition,
+
                                 doctor.qualification,
                                 doctor.department
                               ].filter(Boolean).join(", ")}
@@ -859,35 +845,8 @@ export default function HospitalDetailPage() {
                               </span>
                             </div>
                           )}
-                          {doctor.chamber && (
-                            <div className="flex items-center gap-2 text-gray-600">
-                              <Building2 className="h-5 w-5 text-primary" />
-                              <span
-                                className="text-sm"
-                                style={{
-                                  fontFamily:
-                                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                                }}
-                              >
-                                চেম্বার: {doctor.chamber}
-                              </span>
-                            </div>
-                          )}
-                          <div className="flex items-center gap-2 text-gray-700">
-                            <Award className="h-5 w-5 text-primary" />
-                            <span
-                              className="text-base"
-                              style={{
-                                fontFamily:
-                                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                              }}
-                            >
-                              {banglaLabels.experienceLabel}:{" "}
-                              <span className="font-bold text-gray-900">
-                                {doctor.experience} {banglaLabels.years}
-                              </span>
-                            </span>
-                          </div>
+
+
                           {doctor.rating !== undefined && doctor.rating > 0 && (
                             <div className="flex items-center gap-2 text-gray-700">
                               <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
