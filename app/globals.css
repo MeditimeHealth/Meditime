@@ -96,21 +96,33 @@ body {
 }
 
 .swiper-pagination-bullet-custom {
-  width: 8px !important;
-  height: 8px !important;
+  width: 10px !important;
+  height: 10px !important;
   background: #cbd5e1 !important;
   /* Slate 300 for inactive */
   opacity: 1 !important;
-  margin: 0 6px !important;
+  margin: 0 8px !important;
   border-radius: 9999px !important;
   transition: all 0.3s ease;
+  cursor: pointer !important;
+  border: 2px solid transparent !important;
+}
+
+.swiper-pagination-bullet-custom:hover {
+  background: #94a3b8 !important;
+  /* Slate 400 on hover */
+  transform: scale(1.2);
+  border-color: var(--primary-light) !important;
 }
 
 .swiper-pagination-bullet-active-custom {
   background: var(--primary) !important;
   /* Primary for active */
-  width: 24px !important;
-  /* Elongated pill for active state */
+  width: 12px !important;
+  height: 12px !important;
+  /* Slightly larger circle for active state */
+  border-color: var(--primary-dark) !important;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.3);
 }
 
 /* Hide scrollbar for carousel */
