@@ -87,11 +87,11 @@ export default function WhyChooseSection() {
                 </h3>
 
                 {/* Description */}
-                <p
+                {/* <p
                   className="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed grow text-center sm:text-left"
                 >
                   {feature.description}
-                </p>
+                </p> */}
               </Card>
             </motion.div>
           );

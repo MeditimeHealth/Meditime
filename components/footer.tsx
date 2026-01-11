@@ -13,6 +13,7 @@ export default function Footer() {
     { href: "/service", label: "সেবা সমূহ" },
     { href: "/diagnostic", label: "ডায়াগনস্টিক টেস্ট" },
     { href: "/blog", label: "স্বাস্থ্য টিপস" },
+    { href: "/affiliate", label: "পার্টনার হোন" },
     { href: "/contact", label: "যোগাযোগ" },
   ];
 

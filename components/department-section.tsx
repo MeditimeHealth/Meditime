@@ -92,9 +92,9 @@ export default function DepartmentSection() {
                     </h3>
                     
                     {/* Description */}
-                    <p className="text-sm text-gray-600 leading-relaxed">
+                    {/* <p className="text-sm text-gray-600 leading-relaxed">
                       {department.description}
-                    </p>
+                    </p> */}
                   </div>
                 </Link>
               </motion.div>
