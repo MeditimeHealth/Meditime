@@ -756,12 +756,7 @@ function DoctorListPageContent() {
               >
                 <div className="p-3 bg-white/20 backdrop-blur-md rounded-full">
                   <Stethoscope className="h-8 w-8 text-white" />
-                </div>
-                <span
-                  className="text-white/90 text-lg font-semibold"
-                >
-                  Trusted Medical Service
-                </span>
+                </div>  
               </motion.div>
             </motion.div>
           </div>
@@ -790,13 +785,8 @@ function DoctorListPageContent() {
                 <p
                   className="text-lg text-gray-600 leading-relaxed"
                 >
-                  When it comes to your health and the health of your family, seeing a doctor who fits your needs is important. Our database of Meditime top doctors in Savar and nearby areas makes it easy to search for and connect with the right doctor for you.
-                </p>
-                <p
-                  className="text-base text-gray-500 leading-relaxed mt-3"
-                >
-                  Doctors do not pay to appear on our lists. Through peer nomination, research, review, and screening, we have compiled an extensive list of top doctors from 30+ hospitals in locations such as Ashulia, Savar, Kaliyakoir, and beyond. For best results, fill in as many search filter options as you feel comfortable with.
-                </p>
+                  At Meditime, you will find top doctors from 40+ hospitals in Savar, Ashulia, Gazipur, and nearby areas.
+                </p>                
               </div>
             </div>
           </Card>
