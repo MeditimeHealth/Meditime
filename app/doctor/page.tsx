@@ -743,11 +743,6 @@ function DoctorListPageContent() {
               >
                 {banglaLabels.findDoctor}
               </h1>
-              <p
-                className="text-xl md:text-2xl text-white/95 mb-8 drop-shadow-lg"
-              >
-                Doctor Appointments & Services. Search over 300 Top doctors across dozens of specialties. See doctor list and book appointments online.
-              </p>
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
