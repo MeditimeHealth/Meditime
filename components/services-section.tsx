@@ -46,7 +46,7 @@ export default function ServicesSection() {
         <h2
           className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 text-center text-primary leading-tight"
         >
-          Meditime Services
+          Our Services – You are the only one we care about
         </h2>
       </motion.div>
 
