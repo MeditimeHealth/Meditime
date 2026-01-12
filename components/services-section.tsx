@@ -10,25 +10,25 @@ export default function ServicesSection() {
     {
       image: "/impression-1.png",
       title: "Doctor Appointment Booking",
-      cta: "Book Doctor Appointment",
+      cta: "Book Appointment",
       href: "/doctor",
     },
     {
       image: "/impression-2.png",
       title: "Find the Best Hospitals Near You",
-      cta: "Best Hospital List",
+      cta: " Hospital List",
       href: "/hospital",
     },
     {
       image: "/impression-3.png",
       title: "Video Call with Doctor",
-      cta: "Book Video Consultation",
+      cta: "Book Consultation",
       href: "/",
     },
     {
       image: "/impression-4.png",
       title: "Most Affordable Diagnostic Tests",
-      cta: "Compare Diagnostic Price",
+      cta: "Compare Prices",
       href: "/diagnostic",
     },
   ];
