@@ -57,11 +57,6 @@ export default function PatientReviewSection() {
           >
             Patient Reviews
           </h2>
-          <p
-            className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto"
-          >
-            See what our patients are saying about their experience
-          </p>
         </div>
 
         {/* Reviews Carousel */}
