@@ -6,10 +6,6 @@ import { Crown, ArrowRight, Check } from "lucide-react";
 
 export default function MembershipSection() {
   const benefits = [
-    "Specialized Health Care Discount Cards for families with 2, 3, 5 Members",
-    "On-spot 15% Discount on covered medical services",
-    "One Time Medical Privilege Subscription, 12 Months Validity",
-    "Corporate Healthcare Discount Cards for Covered Organizations",
   ];
 
   return (
@@ -78,7 +74,7 @@ export default function MembershipSection() {
                   Meditime Health Discount Cards
                 </h2>
                 <p className="text-gray-600 text-lg leading-relaxed">
-                  Not all Healthcare Discount Cards are the same. We have designed 4 different, extremely affordable Medical Privilege Membership packages based on the distinct needs of different families and individuals. Enjoy discounts in 100+ medical services in 30+ hospitals near Savar and save up to 15% on medical bills.
+                Enjoy discounts in 100+ medical services in 30+ hospitals near Savar and save up to 15% on medical bills.
                 </p>
               </div>
 
