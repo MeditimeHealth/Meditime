@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Crown, ArrowRight, Check } from "lucide-react";
 
 export default function MembershipSection() {
-  const benefits = [
+  const benefits: any[] = [
   ];
 
   return (
