@@ -12,24 +12,28 @@ export default function ServicesSection() {
       title: "Doctor Appointment Booking",
       cta: "Book Appointment",
       href: "/doctor",
+      description:"Find the Most Experienced doctors in Savar and nearby areas from 1000+ Specialities and 20+ Departments."
     },
     {
       image: "/impression-2.png",
       title: "Find the Best Hospitals Near You",
       cta: " Hospital List",
       href: "/hospital",
+      description:"Find 40+ renowned Specialized and General Hospitals Near You in Ashulia, Savar, and surroundings."
     },
     {
       image: "/impression-3.png",
       title: "Video Call with Doctor",
       cta: "Book Consultation",
       href: "/",
+      description:"Talk With Doctors from 40+ Hospitals Seating at Your Home Using our Meditime Mobile Application."
     },
     {
       image: "/impression-4.png",
       title: "Most Affordable Diagnostic Tests",
       cta: "Compare Prices",
       href: "/diagnostic",
+      description:"Find the most affordable Diagnostic Tests Options in Gazipur, Ashulia, Kaliyakoir, Dhamrai, and Konabari."
     },
   ];
 
@@ -87,6 +91,9 @@ export default function ServicesSection() {
                       {service.title}
                     </h3>
                   </div>
+                  <p className="text-sm text-slate-600 mb-4">
+                    {service?.description}
+                  </p>
 
                   {/* CTA Button */}
                   <div className="mt-auto pt-2 sm:pt-4">

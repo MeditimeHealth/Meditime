@@ -176,9 +176,9 @@ export default function SearchSection() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto ">
       {/* Spacer to prevent layout shift when sticky */}
-      {isSticky && <div className="h-28 mb-10"></div>}
+      {isSticky && <div></div>}
 
       {/* Search Section */}
       <motion.div

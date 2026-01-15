@@ -164,6 +164,16 @@ export default function HospitalsListPage() {
                   )}
 
                   <div className="flex gap-2 pt-2 border-t border-gray-100">
+                    <Link href={`/admin/hospitals/${hospital._id}/edit`} className="flex-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
+                      </Button>
+                    </Link>
                     <Button
                       variant="outline"
                       size="sm"

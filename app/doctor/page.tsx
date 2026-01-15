@@ -768,9 +768,9 @@ function DoctorListPageContent() {
         >
           <Card className="p-6 md:p-8 bg-white border-2 border-primary/10 shadow-lg">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-              <div className="p-5 bg-gradient-to-br from-primary to-primary-dark rounded-2xl shadow-lg">
+              {/* <div className="p-5 bg-gradient-to-br from-primary to-primary-dark rounded-2xl shadow-lg">
                 <Stethoscope className="h-12 w-12 text-white" />
-              </div>
+              </div> */}
               <div className="flex-1">
                 <h2
                   className="text-3xl md:text-4xl font-bold text-gray-900 mb-3"
