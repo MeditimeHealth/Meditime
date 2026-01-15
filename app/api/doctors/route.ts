@@ -47,7 +47,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       name,
+      specialty,
       qualification,
+      designation,
 
 
       email,
@@ -106,7 +108,9 @@ export async function POST(request: NextRequest) {
     // Prepare doctor data, only including defined fields
     const doctorData: any = {
       name,
+      specialty,
       qualification,
+      designation,
 
       consultationFee: finalConsultationFee,
       availability: availabilityArray,

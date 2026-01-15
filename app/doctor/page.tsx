@@ -86,6 +86,7 @@ interface Doctor {
   name: string;
   specialty: string;
   qualification: string;
+  designation?: string;
 
 
   phoneNumber: string;
@@ -194,13 +195,13 @@ function DoctorListPageContent() {
     "Sunday",
   ];
   const banglaDays = [
-    "সোমবার",
-    "মঙ্গলবার",
-    "বুধবার",
-    "বৃহস্পতিবার",
-    "শুক্রবার",
-    "শনিবার",
-    "রবিবার",
+    "সোম",
+    "মঙ্গল",
+    "বুধ",
+    "বৃহস্পতি",
+    "শুক্র",
+    "শনি",
+    "রবি",
   ];
 
   // Convert English number to Bengali
@@ -1656,28 +1657,40 @@ function DoctorListPageContent() {
                       >
                         {doctor.name}
                       </h3>
-    {/* Department */}
-                      {doctor.department && (
+
+                      {/* Specialty (Replacing Department style) */}
+                      {doctor.specialty && (
                         <p
-                          className="text-sm text-[#4A90A4]"
+                          className="text-sm text-[#4A90A4] font-medium"
                           style={{
                             fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           }}
                         >
-                          {doctor.department}
+                          {doctor.specialty}
                         </p>
                       )}
-                      {/* Position & Qualification */}
+
+                      {/* Qualification */}
                       <p
-                        className="text-sm text-[#4A90A4] leading-relaxed"
+                        className="text-sm text-gray-600 leading-relaxed"
                         style={{
                           fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                         }}
                       >
-                        {doctor.qualification || "বিশেষজ্ঞ"}
+                        {doctor.qualification}
                       </p>
 
-                  
+                      {/* Designation */}
+                      {doctor.designation && (
+                        <p
+                          className="text-sm text-gray-600 leading-relaxed"
+                          style={{
+                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                          }}
+                        >
+                          {doctor.designation}
+                        </p>
+                      )}
 
                       {/* Red Divider Line */}
                       <div className="w-12 h-0.5 bg-[#8B4513] my-3"></div>
@@ -1693,6 +1706,21 @@ function DoctorListPageContent() {
                           {doctor.hospital}
                         </p>
                       )}
+
+                      {/* Time / Availability */}
+                      <div className="mt-3 bg-gray-50 rounded-lg p-2.5 border border-gray-100">
+                        <div className="flex items-start gap-2 text-sm text-gray-700">
+                          <Clock className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
+                          <span
+                            className="font-medium"
+                            style={{
+                              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            }}
+                          >
+                            {formatAvailability(doctor.availability)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </Card>
                 </Link>

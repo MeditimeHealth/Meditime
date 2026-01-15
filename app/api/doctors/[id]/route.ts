@@ -43,7 +43,9 @@ export async function PUT(
 
     const {
       name,
+      specialty,
       qualification,
+      designation,
 
 
       email,
@@ -110,6 +112,9 @@ export async function PUT(
 
     // Add optional fields only if they have values
 
+
+    if (specialty) doctorData.specialty = specialty;
+    if (designation) doctorData.designation = designation;
     if (email) doctorData.email = email;
     if (phoneNumber) doctorData.phoneNumber = phoneNumber;
     if (hospital) doctorData.hospital = hospital;

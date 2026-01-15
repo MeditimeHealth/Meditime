@@ -14,7 +14,9 @@ import { Plus, X } from "lucide-react";
 import { showToast } from "@/lib/toast";
 const doctorSchema = z.object({
   name: z.string().min(2, "Name is required"),
+  specialty: z.string().optional(),
   qualification: z.string().min(2, "Qualification is required"),
+  designation: z.string().optional(),
 
 
   hospital: z.string().optional(),
@@ -56,13 +58,13 @@ const daysOfWeek = [
 ];
 
 const banglaDays = [
-  "সোমবার",
-  "মঙ্গলবার",
-  "বুধবার",
-  "বৃহস্পতিবার",
-  "শুক্রবার",
-  "শনিবার",
-  "রবিবার",
+  "সোম",
+  "মঙ্গল",
+  "বুধ",
+  "বৃহস্পতি",
+  "শুক্র",
+  "শনি",
+  "রবি",
 ];
 
 interface AvailabilitySlot {
@@ -420,6 +422,21 @@ export default function CreateDoctorPage() {
             </div>
 
             <div>
+              <Label htmlFor="specialty">
+                Specialty
+              </Label>
+              <Input
+                id="specialty"
+                {...register("specialty")}
+                placeholder="e.g. Cardiologist"
+                className="mt-1"
+              />
+              {errors.specialty && (
+                <p className="text-sm text-red-500 mt-1">{errors.specialty.message}</p>
+              )}
+            </div>
+
+            <div>
               <Label htmlFor="qualification">
                 Qualification <span className="text-red-500">*</span>
               </Label>
@@ -427,11 +444,26 @@ export default function CreateDoctorPage() {
                 id="qualification"
                 {...register("qualification")}
                 placeholder="MBBS, MD"
-                rows={4}
+                rows={2}
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
               />
               {errors.qualification && (
                 <p className="text-sm text-red-500 mt-1">{errors.qualification.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="designation">
+                Designation
+              </Label>
+              <Input
+                id="designation"
+                {...register("designation")}
+                placeholder="e.g. Senior Consultant"
+                className="mt-1"
+              />
+              {errors.designation && (
+                <p className="text-sm text-red-500 mt-1">{errors.designation.message}</p>
               )}
             </div>
 

@@ -4,6 +4,7 @@ export interface IDoctor extends Document {
   name: string;
   specialty?: string;
   qualification: string;
+  designation?: string;
 
 
   email?: string;
@@ -46,7 +47,10 @@ const DoctorSchema: Schema = new Schema(
       required: [true, 'Qualification is required'],
       trim: true,
     },
-
+    designation: {
+      type: String,
+      trim: true,
+    },
 
     email: {
       type: String,
