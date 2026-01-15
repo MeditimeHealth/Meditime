@@ -342,15 +342,15 @@ Thank you for choosing Medi Time!
 
       <div className="max-w-7xl mt-10 mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Search Bar */}
-        <div className="mb-6">
+        <div className="mb-8">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
             <Input
               type="text"
               placeholder="Search tests..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-4 py-6 text-lg border-2 border-gray-300 focus:border-primary rounded-lg"
+              className="pl-14 pr-4 py-6 text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all"
             />
           </div>
         </div>

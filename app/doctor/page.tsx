@@ -795,7 +795,7 @@ function DoctorListPageContent() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mb-10"
         >
-          <Card className="p-6 bg-white border-2 border-primary/10 shadow-lg">
+
             <div className="relative">
             <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
             <Input
@@ -940,7 +940,7 @@ function DoctorListPageContent() {
               )}
             </AnimatePresence>
             </div>
-          </Card>
+
         </motion.div>
 
         {/* Department Carousel Section */}
