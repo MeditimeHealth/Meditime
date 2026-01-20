@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback, useRef, Suspense } from "react";
+import {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  Suspense,
+} from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -31,7 +38,8 @@ interface Department {
 
 const banglaLabels = {
   findDoctor: "Top Doctors in Savar and Surroundings",
-  searchPlaceholder: "Search by name, specialty, hospital, qualification or bio...",
+  searchPlaceholder:
+    "Search by name, specialty, hospital, qualification or bio...",
   findByLocation: "Find The Best Doctor Near You",
   division: "বিভাগ",
   district: "জেলা",
@@ -88,7 +96,6 @@ interface Doctor {
   qualification: string;
   designation?: string;
 
-
   phoneNumber: string;
   email?: string;
   hospital?: string;
@@ -101,13 +108,15 @@ interface Doctor {
   newPatientFee?: number;
   diseases?: string[];
   slotDuration?: number;
-  availability: Array<{
-    days: string[];
-    time: string;
-  }> | {
-    days: string[];
-    time: string;
-  };
+  availability:
+    | Array<{
+        days: string[];
+        time: string;
+      }>
+    | {
+        days: string[];
+        time: string;
+      };
 
   bio?: string;
   image?: string;
@@ -116,7 +125,6 @@ interface Doctor {
 
 type SortOption =
   | "name"
-
   | "consultationFee"
   | "rating"
   | "specialty"
@@ -195,19 +203,23 @@ function DoctorListPageContent() {
     "Sunday",
   ];
   const banglaDays = [
-    "সোম",
-    "মঙ্গল",
-    "বুধ",
-    "বৃহস্পতি",
-    "শুক্র",
-    "শনি",
-    "রবি",
+    "সোমবার",
+    "মঙ্গলবার",
+    "বুধবার",
+    "বৃহস্পতিবার",
+    "শুক্রবার",
+    "শনিবার",
+    "রবিবার",
   ];
 
   // Convert English number to Bengali
   const toBengaliNumber = (num: number): string => {
     const bengaliDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
-    return num.toString().split("").map(digit => bengaliDigits[parseInt(digit)]).join("");
+    return num
+      .toString()
+      .split("")
+      .map((digit) => bengaliDigits[parseInt(digit)])
+      .join("");
   };
 
   // Convert time to Bengali format (e.g., "10:00" -> "১০টা")
@@ -225,28 +237,34 @@ function DoctorListPageContent() {
   };
 
   // Format availability in Bengali (e.g., "শনিবার থেকে শুক্রবার ১০টা থেকে ১২টা")
-  const formatAvailability = (availability: Array<{ days: string[]; time: string; }> | { days: string[]; time: string; }): string => {
+  const formatAvailability = (
+    availability:
+      | Array<{ days: string[]; time: string }>
+      | { days: string[]; time: string },
+  ): string => {
     // Handle backward compatibility - convert old format to array
     const slots = Array.isArray(availability) ? availability : [availability];
-    
-    return slots.map(slot => {
-      const sortedDays = slot.days.sort((a, b) => {
-        return daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b);
-      });
-      
-      let timeRange = "";
-      if (sortedDays.length === 1) {
-        const day = getBengaliDay(sortedDays[0]);
-        const time = slot.time || "";
-        timeRange = `${day} ${time}`;
-      } else {
-        const firstDay = getBengaliDay(sortedDays[0]);
-        const lastDay = getBengaliDay(sortedDays[sortedDays.length - 1]);
-        const time = slot.time || "";
-        timeRange = `${firstDay} থেকে ${lastDay} ${time}`;
-      }
-      return timeRange;
-    }).join("। ");
+
+    return slots
+      .map((slot) => {
+        const sortedDays = slot.days.sort((a, b) => {
+          return daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b);
+        });
+
+        let timeRange = "";
+        if (sortedDays.length === 1) {
+          const day = getBengaliDay(sortedDays[0]);
+          const time = slot.time || "";
+          timeRange = `${day} ${time}`;
+        } else {
+          const firstDay = getBengaliDay(sortedDays[0]);
+          const lastDay = getBengaliDay(sortedDays[sortedDays.length - 1]);
+          const time = slot.time || "";
+          timeRange = `${firstDay} থেকে ${lastDay} ${time}`;
+        }
+        return timeRange;
+      })
+      .join("। ");
   };
 
   const fetchDoctors = async () => {
@@ -306,7 +324,7 @@ function DoctorListPageContent() {
         if (!division) return;
 
         const response = await fetch(
-          `/api/locations/districts?division=${division._id}`
+          `/api/locations/districts?division=${division._id}`,
         );
         const data = await response.json();
         if (response.ok) {
@@ -316,7 +334,7 @@ function DoctorListPageContent() {
         console.error("Error fetching districts:", error);
       }
     },
-    [divisions]
+    [divisions],
   );
 
   const fetchThanas = useCallback(
@@ -326,7 +344,7 @@ function DoctorListPageContent() {
         if (!district) return;
 
         const response = await fetch(
-          `/api/locations/thanas?district=${district._id}`
+          `/api/locations/thanas?district=${district._id}`,
         );
         const data = await response.json();
         if (response.ok) {
@@ -336,7 +354,7 @@ function DoctorListPageContent() {
         console.error("Error fetching thanas:", error);
       }
     },
-    [districts]
+    [districts],
   );
 
   useEffect(() => {
@@ -374,14 +392,14 @@ function DoctorListPageContent() {
   // Get unique values for filters
   const specialties = useMemo(() => {
     const unique = Array.from(
-      new Set(doctors.map((d) => d.specialty).filter(Boolean))
+      new Set(doctors.map((d) => d.specialty).filter(Boolean)),
     );
     return unique.sort();
   }, [doctors]);
 
   const hospitalNames = useMemo(() => {
     const fromDoctors = Array.from(
-      new Set(doctors.map((d) => d.hospital).filter(Boolean))
+      new Set(doctors.map((d) => d.hospital).filter(Boolean)),
     );
     const fromHospitals = hospitals.map((h) => h.name);
     return Array.from(new Set([...fromDoctors, ...fromHospitals])).sort();
@@ -389,7 +407,7 @@ function DoctorListPageContent() {
 
   const qualifications = useMemo(() => {
     const unique = Array.from(
-      new Set(doctors.map((d) => d.qualification).filter(Boolean))
+      new Set(doctors.map((d) => d.qualification).filter(Boolean)),
     );
     return unique.sort();
   }, [doctors]);
@@ -417,7 +435,7 @@ function DoctorListPageContent() {
         (doctor) =>
           doctor.name.toLowerCase().includes(query) ||
           doctor.specialty.toLowerCase().includes(query) ||
-          doctor.hospital?.toLowerCase().includes(query)
+          doctor.hospital?.toLowerCase().includes(query),
       )
       .slice(0, 5);
 
@@ -428,7 +446,7 @@ function DoctorListPageContent() {
       if (
         doctor.specialty.toLowerCase().includes(query) &&
         !results.some(
-          (r) => r.type === "Specialty" && r.value === doctor.specialty
+          (r) => r.type === "Specialty" && r.value === doctor.specialty,
         )
       ) {
         results.push({ type: "Specialty", value: doctor.specialty });
@@ -469,56 +487,54 @@ function DoctorListPageContent() {
           doctor.specialty.toLowerCase().includes(query) ||
           doctor.hospital?.toLowerCase().includes(query) ||
           doctor.qualification.toLowerCase().includes(query) ||
-          doctor.bio?.toLowerCase().includes(query)
+          doctor.bio?.toLowerCase().includes(query),
       );
     }
 
     // Specialty filter
     if (selectedSpecialty) {
       filtered = filtered.filter(
-        (doctor) => doctor.specialty === selectedSpecialty
+        (doctor) => doctor.specialty === selectedSpecialty,
       );
     }
 
     // Hospital filter
     if (selectedHospital) {
       filtered = filtered.filter(
-        (doctor) => doctor.hospital === selectedHospital
+        (doctor) => doctor.hospital === selectedHospital,
       );
     }
 
     // Department filter
     if (selectedDepartment) {
       filtered = filtered.filter(
-        (doctor) => doctor.department === selectedDepartment
+        (doctor) => doctor.department === selectedDepartment,
       );
     }
 
     // Qualification filter
     if (selectedQualification) {
       filtered = filtered.filter(
-        (doctor) => doctor.qualification === selectedQualification
+        (doctor) => doctor.qualification === selectedQualification,
       );
     }
-
-
 
     // Fee filter
     if (minFee) {
       filtered = filtered.filter(
-        (doctor) => doctor.consultationFee >= parseFloat(minFee)
+        (doctor) => doctor.consultationFee >= parseFloat(minFee),
       );
     }
     if (maxFee) {
       filtered = filtered.filter(
-        (doctor) => doctor.consultationFee <= parseFloat(maxFee)
+        (doctor) => doctor.consultationFee <= parseFloat(maxFee),
       );
     }
 
     // Rating filter
     if (minRating) {
       filtered = filtered.filter(
-        (doctor) => (doctor.rating || 0) >= parseFloat(minRating)
+        (doctor) => (doctor.rating || 0) >= parseFloat(minRating),
       );
     }
 
@@ -526,9 +542,11 @@ function DoctorListPageContent() {
     if (selectedDays.length > 0) {
       filtered = filtered.filter((doctor) => {
         // Handle backward compatibility - convert old format to array
-        const slots = Array.isArray(doctor.availability) ? doctor.availability : [doctor.availability];
+        const slots = Array.isArray(doctor.availability)
+          ? doctor.availability
+          : [doctor.availability];
         return slots.some((slot) =>
-          selectedDays.some((day) => slot.days.includes(day))
+          selectedDays.some((day) => slot.days.includes(day)),
         );
       });
     }
@@ -631,7 +649,7 @@ function DoctorListPageContent() {
 
   const toggleDay = (day: string) => {
     setSelectedDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
     );
   };
 
@@ -666,7 +684,6 @@ function DoctorListPageContent() {
       selectedSpecialty ||
       selectedHospital ||
       selectedQualification ||
-
       minFee ||
       maxFee ||
       minRating ||
@@ -739,9 +756,7 @@ function DoctorListPageContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1
-                className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl"
-              >
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl">
                 {banglaLabels.findDoctor}
               </h1>
               <motion.div
@@ -752,7 +767,7 @@ function DoctorListPageContent() {
               >
                 <div className="p-3 bg-white/20 backdrop-blur-md rounded-full">
                   <Stethoscope className="h-8 w-8 text-white" />
-                </div>  
+                </div>
               </motion.div>
             </motion.div>
           </div>
@@ -773,16 +788,13 @@ function DoctorListPageContent() {
                 <Stethoscope className="h-12 w-12 text-white" />
               </div> */}
               <div className="flex-1">
-                <h2
-                  className="text-3xl md:text-4xl font-bold text-gray-900 mb-3"
-                >
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
                   Find a doctor in Savar and Nearby areas
                 </h2>
-                <p
-                  className="text-lg text-gray-600 leading-relaxed"
-                >
-                  At Meditime, you will find top doctors from 40+ hospitals in Savar, Ashulia, Gazipur, and nearby areas.
-                </p>                
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  At Meditime, you will find top doctors from 40+ hospitals in
+                  Savar, Ashulia, Gazipur, and nearby areas.
+                </p>
               </div>
             </div>
           </Card>
@@ -795,8 +807,7 @@ function DoctorListPageContent() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mb-10"
         >
-
-            <div className="relative">
+          <div className="relative">
             <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
             <Input
               type="text"
@@ -815,7 +826,7 @@ function DoctorListPageContent() {
                 if (e.key === "ArrowDown") {
                   e.preventDefault();
                   setFocusedIndex((prev) =>
-                    prev < suggestions.length - 1 ? prev + 1 : prev
+                    prev < suggestions.length - 1 ? prev + 1 : prev,
                   );
                 } else if (e.key === "ArrowUp") {
                   e.preventDefault();
@@ -916,10 +927,10 @@ function DoctorListPageContent() {
                             {suggestion.type === "Doctor"
                               ? "ডাক্তার"
                               : suggestion.type === "Specialty"
-                              ? "বিশেষতা"
-                              : suggestion.type === "Hospital"
-                              ? "হাসপাতাল"
-                              : suggestion.type}
+                                ? "বিশেষতা"
+                                : suggestion.type === "Hospital"
+                                  ? "হাসপাতাল"
+                                  : suggestion.type}
                           </span>
                         </div>
                       </motion.div>
@@ -939,8 +950,7 @@ function DoctorListPageContent() {
                 </motion.div>
               )}
             </AnimatePresence>
-            </div>
-
+          </div>
         </motion.div>
 
         {/* Department Carousel Section */}
@@ -952,9 +962,7 @@ function DoctorListPageContent() {
         >
           <Card className="p-6 md:p-8 bg-white border-2 border-primary/10 shadow-lg">
             <div className="mb-6 pb-4 border-b-2 border-gray-100">
-              <h2
-                className="text-2xl md:text-3xl font-bold text-gray-900 text-center"
-              >
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-center">
                 Search Doctor By Department
               </h2>
             </div>
@@ -1277,7 +1285,6 @@ function DoctorListPageContent() {
         </motion.div>
 
         {/* Filter & Sort Controls Section */}
-      
 
         {/* Filters Panel */}
         <AnimatePresence>
@@ -1405,7 +1412,6 @@ function DoctorListPageContent() {
                   </div>
 
                   {/* Experience Range */}
-
 
                   {/* Fee Range */}
                   <div>
@@ -1554,7 +1560,10 @@ function DoctorListPageContent() {
                 )}
               </div>
               {searchQuery && filteredAndSortedDoctors.length > 0 && (
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <Button
                     variant="outline"
                     size="sm"
@@ -1639,10 +1648,32 @@ function DoctorListPageContent() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <svg className="w-12 h-12 text-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <circle cx="12" cy="8" r="4" fill="currentColor" fillOpacity="0.3"/>
-                              <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" strokeWidth="1.5" fill="currentColor" fillOpacity="0.1"/>
-                              <path d="M15 3v2M15 7v2M13 5h4" stroke="#4A90A4" strokeWidth="1.5" strokeLinecap="round"/>
+                            <svg
+                              className="w-12 h-12 text-gray-400"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <circle
+                                cx="12"
+                                cy="8"
+                                r="4"
+                                fill="currentColor"
+                                fillOpacity="0.3"
+                              />
+                              <path
+                                d="M4 20c0-4 4-6 8-6s8 2 8 6"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                fill="currentColor"
+                                fillOpacity="0.1"
+                              />
+                              <path
+                                d="M15 3v2M15 7v2M13 5h4"
+                                stroke="#4A90A4"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                              />
                             </svg>
                           </div>
                         )}
@@ -1652,7 +1683,8 @@ function DoctorListPageContent() {
                       <h3
                         className="text-xl font-bold text-[#2C5282]"
                         style={{
-                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                          fontFamily:
+                            "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                         }}
                       >
                         {doctor.name}
@@ -1663,7 +1695,8 @@ function DoctorListPageContent() {
                         <p
                           className="text-sm text-[#4A90A4] font-medium"
                           style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            fontFamily:
+                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           }}
                         >
                           {doctor.specialty}
@@ -1674,7 +1707,8 @@ function DoctorListPageContent() {
                       <p
                         className="text-sm text-gray-600 leading-relaxed"
                         style={{
-                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                          fontFamily:
+                            "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                         }}
                       >
                         {doctor.qualification}
@@ -1685,7 +1719,8 @@ function DoctorListPageContent() {
                         <p
                           className="text-sm text-gray-600 leading-relaxed"
                           style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            fontFamily:
+                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           }}
                         >
                           {doctor.designation}
@@ -1700,7 +1735,8 @@ function DoctorListPageContent() {
                         <p
                           className="text-base font-semibold text-gray-700 leading-relaxed"
                           style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            fontFamily:
+                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           }}
                         >
                           {doctor.hospital}
@@ -1714,7 +1750,8 @@ function DoctorListPageContent() {
                           <span
                             className="font-medium"
                             style={{
-                              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                              fontFamily:
+                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                             }}
                           >
                             {formatAvailability(doctor.availability)}
@@ -1735,11 +1772,13 @@ function DoctorListPageContent() {
 
 export default function DoctorListPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-500">লোড হচ্ছে...</div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-gray-500">লোড হচ্ছে...</div>
+        </div>
+      }
+    >
       <DoctorListPageContent />
     </Suspense>
   );

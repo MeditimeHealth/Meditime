@@ -18,7 +18,6 @@ const doctorSchema = z.object({
   qualification: z.string().min(2, "Qualification is required"),
   designation: z.string().optional(),
 
-
   hospital: z.string().optional(),
   division: z.string().optional(),
   district: z.string().optional(),
@@ -27,22 +26,26 @@ const doctorSchema = z.object({
   department: z.string().optional(),
   consultationFee: z.preprocess(
     (val) => (val === "" || val === undefined ? undefined : Number(val)),
-    z.number().min(0, "Consultation fee must be at least 0").optional()
+    z.number().min(0, "Consultation fee must be at least 0").optional(),
   ),
   oldPatientFee: z.preprocess(
     (val) => (val === "" || val === undefined ? undefined : Number(val)),
-    z.number().min(0, "Old patient fee must be at least 0").optional()
+    z.number().min(0, "Old patient fee must be at least 0").optional(),
   ),
   newPatientFee: z.preprocess(
     (val) => (val === "" || val === undefined ? undefined : Number(val)),
-    z.number().min(0, "New patient fee must be at least 0").optional()
+    z.number().min(0, "New patient fee must be at least 0").optional(),
   ),
   bio: z.string().optional(),
   image: z.string().optional(),
-  availabilitySlots: z.array(z.object({
-    days: z.array(z.string()).min(1, "Select at least one day"),
-    time: z.string().min(1, "Time is required"),
-  })).min(1, "Add at least one availability slot"),
+  availabilitySlots: z
+    .array(
+      z.object({
+        days: z.array(z.string()).min(1, "Select at least one day"),
+        time: z.string().min(1, "Time is required"),
+      }),
+    )
+    .min(1, "Add at least one availability slot"),
 });
 
 type DoctorFormValues = z.infer<typeof doctorSchema>;
@@ -57,15 +60,7 @@ const daysOfWeek = [
   "Sunday",
 ];
 
-const banglaDays = [
-  "সোম",
-  "মঙ্গল",
-  "বুধ",
-  "বৃহস্পতি",
-  "শুক্র",
-  "শনি",
-  "রবি",
-];
+const banglaDays = ["শুক্র", "শনি", "রবি", "সোম", "মঙ্গল", "বুধ", "বৃহস্পতি"];
 
 interface AvailabilitySlot {
   days: string[];
@@ -108,11 +103,13 @@ export default function CreateDoctorPage() {
   const [showHospitalDropdown, setShowHospitalDropdown] = useState(false);
   const [selectedHospitalName, setSelectedHospitalName] = useState("");
   const hospitalDropdownRef = useRef<HTMLDivElement>(null);
-  const [departments, setDepartments] = useState<Array<{_id: string; name: string; image?: string}>>([]);
+  const [departments, setDepartments] = useState<
+    Array<{ _id: string; name: string; image?: string }>
+  >([]);
 
-  const [availabilitySlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>([
-    { days: [], time: "" },
-  ]);
+  const [availabilitySlots, setAvailabilitySlots] = useState<
+    AvailabilitySlot[]
+  >([{ days: [], time: "" }]);
 
   const {
     register,
@@ -140,7 +137,9 @@ export default function CreateDoctorPage() {
         params.set("page", pageToLoad.toString());
         params.set("limit", "20");
 
-        const response = await fetch(`/api/locations/hospitals?${params.toString()}`);
+        const response = await fetch(
+          `/api/locations/hospitals?${params.toString()}`,
+        );
         const data = await response.json();
 
         if (response.ok && data.hospitals) {
@@ -152,11 +151,17 @@ export default function CreateDoctorPage() {
                     ...prev,
                     ...data.hospitals.filter(
                       (newHospital: HospitalWithLocation) =>
-                        !prev.some((existing) => existing._id === newHospital._id)
+                        !prev.some(
+                          (existing) => existing._id === newHospital._id,
+                        ),
                     ),
                   ];
 
-            setAvailableHospitals(nextHospitals.map((hospital: HospitalWithLocation) => hospital.name));
+            setAvailableHospitals(
+              nextHospitals.map(
+                (hospital: HospitalWithLocation) => hospital.name,
+              ),
+            );
             return nextHospitals;
           });
           setHasMoreHospitals(Boolean(data.hasMore));
@@ -180,7 +185,7 @@ export default function CreateDoctorPage() {
         setIsHospitalLoading(false);
       }
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -199,8 +204,6 @@ export default function CreateDoctorPage() {
 
     return () => clearTimeout(debounce);
   }, [hospitalSearchTerm, fetchHospitals]);
-
-
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -228,23 +231,21 @@ export default function CreateDoctorPage() {
       });
   }, []);
 
-
-
   // Handle hospital selection - auto-populate location
   const handleHospitalSelect = (hospitalName: string) => {
     setSelectedHospitalName(hospitalName);
     setValue("hospital", hospitalName);
     setShowHospitalDropdown(false);
     setHospitalSearchTerm(hospitalName);
-    
+
     if (hospitalName) {
-      const selectedHospital = hospitals.find(h => h.name === hospitalName);
-      
+      const selectedHospital = hospitals.find((h) => h.name === hospitalName);
+
       if (selectedHospital && selectedHospital.thana) {
         const thana = selectedHospital.thana;
         const district = thana.district;
         const division = district?.division;
-        
+
         // Auto-populate location fields
         if (division && division.name) {
           setValue("division", division.name);
@@ -301,8 +302,6 @@ export default function CreateDoctorPage() {
     setValue("availabilitySlots", updated);
   };
 
-
-
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -311,7 +310,7 @@ export default function CreateDoctorPage() {
         showToast.error("Please select an image file");
         return;
       }
-      
+
       // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         showToast.error("Image size must be less than 10MB");
@@ -319,7 +318,7 @@ export default function CreateDoctorPage() {
       }
 
       setSelectedImage(file);
-      
+
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -359,7 +358,9 @@ export default function CreateDoctorPage() {
           imageUrl = await uploadImage(selectedImage);
           setValue("image", imageUrl);
         } catch (error: any) {
-          showToast.error(error.message || "Failed to upload image. Please try again.");
+          showToast.error(
+            error.message || "Failed to upload image. Please try again.",
+          );
           setIsLoading(false);
           setIsUploading(false);
           return;
@@ -399,7 +400,9 @@ export default function CreateDoctorPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Create Doctor Profile</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          Create Doctor Profile
+        </h1>
         <p className="text-gray-600 mt-2">Add a new doctor to the system</p>
       </div>
 
@@ -417,22 +420,27 @@ export default function CreateDoctorPage() {
                 className="mt-1"
               />
               {errors.name && (
-                <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.name.message}
+                </p>
               )}
             </div>
 
             <div>
               <Label htmlFor="specialty">
-                Specialty
+                Specialty <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="specialty"
+                required
                 {...register("specialty")}
                 placeholder="e.g. Cardiologist"
                 className="mt-1"
               />
               {errors.specialty && (
-                <p className="text-sm text-red-500 mt-1">{errors.specialty.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.specialty.message}
+                </p>
               )}
             </div>
 
@@ -448,14 +456,14 @@ export default function CreateDoctorPage() {
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
               />
               {errors.qualification && (
-                <p className="text-sm text-red-500 mt-1">{errors.qualification.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.qualification.message}
+                </p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="designation">
-                Designation
-              </Label>
+              <Label htmlFor="designation">Designation</Label>
               <Input
                 id="designation"
                 {...register("designation")}
@@ -463,21 +471,19 @@ export default function CreateDoctorPage() {
                 className="mt-1"
               />
               {errors.designation && (
-                <p className="text-sm text-red-500 mt-1">{errors.designation.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.designation.message}
+                </p>
               )}
             </div>
 
-
-
-
-
-
-
-
             <div className="relative" ref={hospitalDropdownRef}>
-              <Label htmlFor="hospital">Hospital</Label>
+              <Label htmlFor="hospital">
+                Hospital<span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="hospital"
+                required
                 type="text"
                 placeholder="Search or select hospital..."
                 value={hospitalSearchTerm}
@@ -526,7 +532,9 @@ export default function CreateDoctorPage() {
                             onClick={loadMoreHospitals}
                             disabled={isHospitalLoading}
                           >
-                            {isHospitalLoading ? "Loading..." : "Load more hospitals"}
+                            {isHospitalLoading
+                              ? "Loading..."
+                              : "Load more hospitals"}
                           </Button>
                         </div>
                       )}
@@ -536,21 +544,25 @@ export default function CreateDoctorPage() {
               )}
             </div>
 
-
-
             <div>
               <Label htmlFor="department">
-                বিভাগ (Department) <span className="text-gray-500 text-xs">(Optional)</span>
+                বিভাগ (Department)
+                <span className="text-red-500">*</span>
+                {/* <span className="text-gray-500 text-xs">(Optional)</span> */}
               </Label>
               <select
                 id="department"
+                required
                 {...register("department")}
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
                 style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                  fontFamily:
+                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                 }}
               >
-                <option value="">বিভাগ নির্বাচন করুন (Select Department)</option>
+                <option value="">
+                  বিভাগ নির্বাচন করুন (Select Department)
+                </option>
                 {departments.map((dept) => (
                   <option key={dept._id} value={dept.name}>
                     {dept.name}
@@ -561,39 +573,50 @@ export default function CreateDoctorPage() {
 
             <div>
               <Label htmlFor="newPatientFee">
-                নতুন রোগীর ফি (New Patient Fee) <span className="text-red-500">*</span>
+                নতুন রোগীর ফি (New Patient Fee){" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="newPatientFee"
+                required
                 type="number"
                 {...register("newPatientFee")}
                 placeholder="500"
                 className="mt-1"
                 style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                  fontFamily:
+                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                 }}
               />
               {errors.newPatientFee && (
-                <p className="text-sm text-red-500 mt-1">{errors.newPatientFee.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.newPatientFee.message}
+                </p>
               )}
             </div>
 
             <div>
               <Label htmlFor="oldPatientFee">
-                পুরাতন রোগীর ফি (Old Patient Fee) <span className="text-gray-500 text-xs">(Optional)</span>
+                পুরাতন রোগীর ফি (Old Patient Fee){" "}
+                <span className="text-red-500">*</span>
+                {/* <span className="text-gray-500 text-xs">(Optional)</span> */}
               </Label>
               <Input
                 id="oldPatientFee"
+                required
                 type="number"
                 {...register("oldPatientFee")}
                 placeholder="400"
                 className="mt-1"
                 style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                  fontFamily:
+                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                 }}
               />
               {errors.oldPatientFee && (
-                <p className="text-sm text-red-500 mt-1">{errors.oldPatientFee.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.oldPatientFee.message}
+                </p>
               )}
             </div>
 
@@ -638,9 +661,12 @@ export default function CreateDoctorPage() {
           </div>
 
           <div>
-            <Label htmlFor="bio">Bio</Label>
+            <Label htmlFor="bio">
+              Bio <span className="text-red-500">*</span>
+            </Label>
             <textarea
               id="bio"
+              required
               {...register("bio")}
               rows={4}
               className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
@@ -687,7 +713,8 @@ export default function CreateDoctorPage() {
                 <div className="space-y-4">
                   <div>
                     <Label className="mb-2 block">
-                      দিন নির্বাচন করুন (Select Days) <span className="text-red-500">*</span>
+                      দিন নির্বাচন করুন (Select Days){" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       {daysOfWeek.map((day, dayIndex) => (
@@ -701,10 +728,11 @@ export default function CreateDoctorPage() {
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                           }`}
                           style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            fontFamily:
+                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           }}
                         >
-                          {banglaDays[dayIndex]}
+                          {banglaDays[dayIndex]}বার
                         </button>
                       ))}
                     </div>
@@ -720,19 +748,21 @@ export default function CreateDoctorPage() {
                         type="text"
                         placeholder="e.g. 10:00 AM - 04:00 PM"
                         value={slot.time}
-                        onChange={(e) => updateSlotTime(slotIndex, e.target.value)}
+                        onChange={(e) =>
+                          updateSlotTime(slotIndex, e.target.value)
+                        }
                         className="mt-1"
                       />
                     </div>
                   </div>
-
-
                 </div>
               </Card>
             ))}
 
             {errors.availabilitySlots && (
-              <p className="text-sm text-red-500">{errors.availabilitySlots.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.availabilitySlots.message}
+              </p>
             )}
           </div>
 
@@ -745,8 +775,8 @@ export default function CreateDoctorPage() {
               {isUploading
                 ? "Uploading Image..."
                 : isLoading
-                ? "Creating..."
-                : "Create Doctor Profile"}
+                  ? "Creating..."
+                  : "Create Doctor Profile"}
             </Button>
             <Button
               type="button"
@@ -761,4 +791,3 @@ export default function CreateDoctorPage() {
     </div>
   );
 }
-

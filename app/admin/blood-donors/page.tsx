@@ -80,7 +80,7 @@ export default function BloodDonorsPage() {
           <p className="text-gray-600 mt-2">Manage blood donor profiles</p>
         </div>
         <Link href="/admin/blood-donors/create">
-          <Button>
+          <Button className="cursor-pointer">
             <Plus className="h-4 w-4 mr-2" />
             Create Blood Donor
           </Button>
@@ -115,8 +115,15 @@ export default function BloodDonorsPage() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-xl font-semibold text-gray-900 truncate">{donor.name}</h3>
-                    <p className="text-sm text-gray-600">Blood Group: <span className="font-semibold text-primary">{donor.bloodGroup}</span></p>
+                    <h3 className="text-xl font-semibold text-gray-900 truncate">
+                      {donor.name}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Blood Group:{" "}
+                      <span className="font-semibold text-primary">
+                        {donor.bloodGroup}
+                      </span>
+                    </p>
                   </div>
                 </div>
 
@@ -135,17 +142,23 @@ export default function BloodDonorsPage() {
                     <div>
                       <span className="text-gray-600">Location: </span>
                       <span className="text-gray-900">
-                        {[donor.division, donor.district, donor.thana].filter(Boolean).join(", ")}
+                        {[donor.division, donor.district, donor.thana]
+                          .filter(Boolean)
+                          .join(", ")}
                       </span>
                     </div>
                   )}
                   <div>
                     <span className="text-gray-600">Status: </span>
-                    <span className={`font-medium ${
-                      donor.availabilityStatus === "Available" ? "text-green-600" :
-                      donor.availabilityStatus === "Recently Donated" ? "text-yellow-600" :
-                      "text-red-600"
-                    }`}>
+                    <span
+                      className={`font-medium ${
+                        donor.availabilityStatus === "Available"
+                          ? "text-green-600"
+                          : donor.availabilityStatus === "Recently Donated"
+                            ? "text-yellow-600"
+                            : "text-red-600"
+                      }`}
+                    >
                       {donor.availabilityStatus}
                     </span>
                   </div>
@@ -160,12 +173,12 @@ export default function BloodDonorsPage() {
                 </div>
 
                 <div className="flex gap-2 pt-4">
-                  <Button variant="outline" className="flex-1">
+                  <Button variant="outline" className="flex-1 cursor-pointer">
                     Edit
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
+                  <Button
+                    variant="outline"
+                    className="flex-1 cursor-pointer"
                     onClick={() => handleDelete(donor._id)}
                   >
                     Delete
@@ -179,4 +192,3 @@ export default function BloodDonorsPage() {
     </div>
   );
 }
-

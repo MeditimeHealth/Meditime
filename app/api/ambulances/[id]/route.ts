@@ -46,6 +46,8 @@ export async function PUT(
       vehicleType,
       isApproved,
       userId,
+      ambulanceNumber,
+      drivingLicence
     } = body;
 
     const { id } = await params;
@@ -73,6 +75,8 @@ export async function PUT(
       division: division || undefined,
       district: district || undefined,
       thana: thana || undefined,
+      ambulanceNumber: ambulanceNumber || undefined,
+      drivingLicence: drivingLicence || undefined,
       availabilityStatus,
       vehicleType,
     };

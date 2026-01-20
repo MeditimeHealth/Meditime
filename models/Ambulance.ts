@@ -9,6 +9,8 @@ export interface IAmbulance extends Document {
   availabilityStatus: string;
   vehicleType: string;
   isApproved: boolean;
+  ambulanceNumber?: string;
+  drivingLicence?: string;
   userId?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -54,6 +56,16 @@ const AmbulanceSchema: Schema = new Schema(
       type: Boolean,
       default: false,
     },
+
+    ambulanceNumber: {
+      type: String,
+      trim: true,
+    },
+    drivingLicence: {
+      type: String,
+      trim: true,
+    },
+    
     userId: {
       type: String,
       trim: true,

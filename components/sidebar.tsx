@@ -3,12 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  UserPlus, 
-  Users, 
-  Stethoscope, 
-  Settings, 
+import {
+  LayoutDashboard,
+  UserPlus,
+  Users,
+  Stethoscope,
+  Settings,
   LogOut,
   Menu,
   X,
@@ -24,7 +24,8 @@ import {
   Camera,
   FileText,
   DollarSign,
-  CreditCard
+  CreditCard,
+  Video,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -47,14 +48,19 @@ const menuItems = [
     href: "/admin",
   },
   {
+    title: "Appointments",
+    icon: Stethoscope,
+    href: "/admin/appointments",
+  },
+  {
+    title: "Video Consultations",
+    icon: Video,
+    href: "/admin/video-consultations",
+  },
+  {
     title: "Create Doctor",
     icon: UserPlus,
     href: "/admin/doctors/create",
-  },
-  {
-    title: "All Doctors",
-    icon: Users,
-    href: "/admin/doctors",
   },
   {
     title: "Hospitals",
@@ -62,10 +68,25 @@ const menuItems = [
     href: "/admin/hospitals",
   },
   {
-    title: "Doctor-Hospital",
-    icon: Stethoscope,
-    href: "/admin/doctor-hospitals",
+    title: "All Doctors",
+    icon: Users,
+    href: "/admin/doctors",
   },
+  {
+    title: "Departments",
+    icon: Building2,
+    href: "/admin/departments",
+  },
+  {
+    title: "Affiliate Withdrawals",
+    icon: DollarSign,
+    href: "/admin/affiliate-withdrawals",
+  },
+  // {
+  //   title: "Doctor-Hospital",
+  //   icon: Stethoscope,
+  //   href: "/admin/doctor-hospitals",
+  // },
   {
     title: "Blood Donors",
     icon: Droplet,
@@ -76,13 +97,13 @@ const menuItems = [
     icon: Car,
     href: "/admin/ambulances",
   },
+  // {
+  //   title: "Pending Services",
+  //   icon: Clock,
+  //   href: "/admin/pending-services",
+  // },
   {
-    title: "Pending Services",
-    icon: Clock,
-    href: "/admin/pending-services",
-  },
-  {
-    title: "Locations",
+    title: "Add Locations",
     icon: MapPin,
     href: "/admin/locations",
   },
@@ -92,7 +113,7 @@ const menuItems = [
     href: "/admin/departments",
   },
   {
-    title: "সকল রোগ",
+    title: "Add Diseases",
     icon: Stethoscope,
     href: "/admin/diseases",
   },
@@ -101,11 +122,7 @@ const menuItems = [
     icon: Microscope,
     href: "/admin/diagnostic",
   },
-  {
-    title: "Appointments",
-    icon: Stethoscope,
-    href: "/admin/appointments",
-  },
+
   {
     title: "Blog Sidebar",
     icon: Image,
@@ -136,11 +153,7 @@ const menuItems = [
   //   icon: Users,
   //   href: "/admin/affiliate-management",
   // },
-  {
-    title: "Affiliate Withdrawals",
-    icon: DollarSign,
-    href: "/admin/affiliate-withdrawals",
-  },
+
   {
     title: "Photo Requests",
     icon: Camera,
@@ -169,7 +182,11 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
         onClick={() => setIsMobileOpen(!isMobileOpen)}
         className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-md"
       >
-        {isMobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        {isMobileOpen ? (
+          <X className="h-6 w-6" />
+        ) : (
+          <Menu className="h-6 w-6" />
+        )}
       </button>
 
       {/* Overlay */}
@@ -185,7 +202,7 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
         className={cn(
           "fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 z-50 transition-transform duration-300",
           "lg:translate-x-0",
-          isMobileOpen ? "translate-x-0" : "-translate-x-full"
+          isMobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         <div className="flex flex-col h-full">
@@ -205,7 +222,7 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
-              
+
               return (
                 <Link
                   key={item.href}
@@ -215,7 +232,7 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
                     "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
                     isActive
                       ? "bg-primary text-white"
-                      : "text-gray-700 hover:bg-gray-100"
+                      : "text-gray-700 hover:bg-gray-100",
                   )}
                 >
                   {Icon && <Icon className="h-5 w-5" />}
@@ -240,7 +257,9 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
                       {user.fullName}
                     </p>
                     {user.email && (
-                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {user.email}
+                      </p>
                     )}
                   </div>
                 </div>

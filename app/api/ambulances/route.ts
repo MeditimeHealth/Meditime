@@ -61,6 +61,8 @@ export async function POST(request: NextRequest) {
       vehicleType,
       userId,
       isApproved,
+      ambulanceNumber,
+      drivingLicence
     } = body;
 
     // Validate required fields
@@ -80,6 +82,8 @@ export async function POST(request: NextRequest) {
       thana: thana || undefined,
       availabilityStatus,
       vehicleType,
+      ambulanceNumber: ambulanceNumber || undefined,
+      drivingLicence: drivingLicence || undefined,
       userId: userId || undefined,
       isApproved: isApproved !== undefined ? isApproved : true, // Admin creates are auto-approved
     });
