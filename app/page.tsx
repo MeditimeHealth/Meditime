@@ -21,7 +21,6 @@ export default function Home() {
       <SearchSection />
       <ServicesSection />
       <WhyChooseSection />
-      
       <DepartmentSection />
       <MembershipSection />
       <StatsSection />
