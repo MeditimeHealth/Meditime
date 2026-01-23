@@ -1664,7 +1664,7 @@ function DoctorListPageContent() {
                           )}
                         </div>
 
-                        {/* Name - Beside Photo */}
+                        {/* Name & Specialty - Beside Photo */}
                         <div className="flex-1">
                           <h3
                             className="text-lg font-bold text-gray-900 leading-tight group-hover:text-primary transition-colors"
@@ -1675,15 +1675,15 @@ function DoctorListPageContent() {
                           >
                             {doctor.name}
                           </h3>
+                          {/* Specialty - Under Name */}
+                          <p className="text-primary font-medium text-sm mt-1">
+                            {doctor.specialty}
+                          </p>
                         </div>
                       </div>
 
                       {/* Info Stack - Below Photo */}
                       <div className="flex-1 space-y-2">
-                        {/* 2. Specialty */}
-                        <p className="text-primary font-medium text-sm">
-                          {doctor.specialty}
-                        </p>
 
                         {/* 3. Qualification (Degree) */}
                         <p
@@ -1695,7 +1695,7 @@ function DoctorListPageContent() {
                         >
                           {doctor.qualification}
                         </p>
-
+<br/>
                         {/* 4. Designation */}
                         {doctor.designation && (
                           <p className="text-sm text-gray-500">

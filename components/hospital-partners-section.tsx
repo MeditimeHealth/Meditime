@@ -133,7 +133,7 @@ export default function HospitalPartnersSection() {
 
                   {/* Hospital Name */}
                   <h3
-                    className="text-lg font-bold text-gray-900 mb-2 line-clamp-2"
+                    className="text-lg font-bold text-gray-900 mb-2"
                     style={{
                       fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                     }}
@@ -143,7 +143,7 @@ export default function HospitalPartnersSection() {
 
                   {/* Location */}
                   <p
-                    className="text-sm text-gray-500 line-clamp-2"
+                    className="text-sm text-gray-500"
                     style={{
                       fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                     }}
@@ -159,18 +159,18 @@ export default function HospitalPartnersSection() {
           <button
             ref={prevRef}
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute left-2 lg:-left-16 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
+            className="absolute left-2 lg:-left-16 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
             aria-label="Previous hospital"
           >
-            <ChevronLeft className="h-6 w-6" />
+            <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             ref={nextRef}
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute right-2 lg:-right-16 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
+            className="absolute right-2 lg:-right-16 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
             aria-label="Next hospital"
           >
-            <ChevronRight className="h-6 w-6" />
+            <ChevronRight className="h-5 w-5" />
           </button>
         </div>
       </div>
