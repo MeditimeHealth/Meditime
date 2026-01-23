@@ -872,7 +872,7 @@ export default function EditDoctorPage() {
             )}
           </div>
 
-          <div className="flex gap-4 pt-4">
+          <div className="flex gap-4 pt-4 pb-8">
             <Button
               type="submit"
               disabled={isLoading || isUploading}
