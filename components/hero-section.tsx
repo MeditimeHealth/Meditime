@@ -97,12 +97,12 @@ export default function HeroSection() {
               <div className={`space-y-7 text-center lg:text-left px-4 lg:px-12 transition-all duration-700 ${
                 !isAnimating ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
               }`}>
-                {slide.subtitle && (
+                {/* {slide.subtitle && (
                   <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-teal-50 to-teal-100/80 text-teal-700 font-semibold text-sm tracking-wide border border-teal-200/50 shadow-sm">
                     <Sparkles className="w-4 h-4" />
                     {slide.subtitle}
                   </span>
-                )}
+                )} */}
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-slate-800 tracking-tight">
                   {slide.title}
                 </h1>
