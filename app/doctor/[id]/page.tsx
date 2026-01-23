@@ -408,8 +408,9 @@ export default function DoctorProfilePage() {
               </Card>
             )}
 
-            {/* About Section - Debugging Force Render */}
-              <Card className="p-8 bg-gradient-to-br from-white to-green-50 border-4 border-red-500 shadow-xl relative z-50">
+            {/* About Section */}
+            {doctor.bio && (
+              <Card className="p-8 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
                 <h2
                   className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
                   style={{
@@ -425,10 +426,11 @@ export default function DoctorProfilePage() {
                       fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                     }}
                   >
-                    {doctor.bio ? doctor.bio : "No bio available (Debug: doctor.bio is falsy)"}
+                    {doctor.bio}
                   </p>
                 </div>
               </Card>
+            )}
 
             {/* Related Doctors - Desktop/Tablet */}
             <div className="hidden md:block">
