@@ -13,6 +13,11 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import Footer from "@/components/footer";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
 import {
   Search,
   X,
@@ -737,9 +742,9 @@ function DoctorListPageContent() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative mt-20 h-[400px] md:h-[500px] w-full overflow-hidden"
+        className="relative mt-20 h-[450px] md:h-[550px] w-full overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-primary/50 to-primary-dark/50 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1a365d]/90 via-[#2C5282]/80 to-primary/60 z-10" />
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
@@ -749,107 +754,85 @@ function DoctorListPageContent() {
             backgroundSize: "cover",
           }}
         />
-        <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className="relative z-20 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pb-20">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
                 {banglaLabels.findDoctor}
               </h1>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className="flex items-center justify-center gap-2"
-              >
-                <div className="p-3 bg-white/20 backdrop-blur-md rounded-full">
-                  <Stethoscope className="h-8 w-8 text-white" />
-                </div>
-              </motion.div>
+              <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8 font-light">
+                Connect with the best healthcare professionals in your area for
+                expert medical advice and treatment.
+              </p>
             </motion.div>
           </div>
         </div>
       </motion.div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 -mt-20 relative z-30">
-        {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
-        >
-          <Card className="p-6 md:p-8 bg-white border-2 border-primary/10 shadow-lg">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-              {/* <div className="p-5 bg-gradient-to-br from-primary to-primary-dark rounded-2xl shadow-lg">
-                <Stethoscope className="h-12 w-12 text-white" />
-              </div> */}
-              <div className="flex-1">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-                  Find a doctor in Savar and Nearby areas
-                </h2>
-                <p className="text-lg text-gray-600 leading-relaxed">
-                  At Meditime, you will find top doctors from 40+ hospitals in
-                  Savar, Ashulia, Gazipur, and nearby areas.
-                </p>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* Search Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 -mt-32 relative z-30">
+        {/* Search Section - Floating */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-10"
+          className="mb-16"
         >
-          <div className="relative">
-            <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
-            <Input
-              type="text"
-              placeholder={banglaLabels.searchPlaceholder}
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setShowSuggestions(true);
-                setFocusedIndex(-1);
-              }}
-              onFocus={() => setShowSuggestions(true)}
-              onBlur={() => {
-                setTimeout(() => setShowSuggestions(false), 200);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "ArrowDown") {
-                  e.preventDefault();
-                  setFocusedIndex((prev) =>
-                    prev < suggestions.length - 1 ? prev + 1 : prev,
-                  );
-                } else if (e.key === "ArrowUp") {
-                  e.preventDefault();
-                  setFocusedIndex((prev) => (prev > 0 ? prev - 1 : -1));
-                } else if (e.key === "Enter" && focusedIndex >= 0) {
-                  e.preventDefault();
-                  const suggestion = suggestions[focusedIndex];
-                  if (suggestion.doctor) {
-                    setSearchQuery(suggestion.doctor.name);
-                  } else {
-                    setSearchQuery(suggestion.value);
-                  }
-                  setShowSuggestions(false);
-                } else if (e.key === "Escape") {
-                  setShowSuggestions(false);
-                }
-              }}
-              className="pl-14 pr-4 py-6 text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all"
-              style={{
-                fontFamily:
-                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-              }}
-            />
+          <div className="relative max-w-3xl mx-auto">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+              <div className="relative relative bg-white rounded-2xl shadow-xl flex items-center p-2">
+                <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-primary h-6 w-6 z-10" />
+                <Input
+                  type="text"
+                  placeholder={banglaLabels.searchPlaceholder}
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowSuggestions(true);
+                    setFocusedIndex(-1);
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
+                  onBlur={() => {
+                    setTimeout(() => setShowSuggestions(false), 200);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowDown") {
+                      e.preventDefault();
+                      setFocusedIndex((prev) =>
+                        prev < suggestions.length - 1 ? prev + 1 : prev,
+                      );
+                    } else if (e.key === "ArrowUp") {
+                      e.preventDefault();
+                      setFocusedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+                    } else if (e.key === "Enter" && focusedIndex >= 0) {
+                      e.preventDefault();
+                      const suggestion = suggestions[focusedIndex];
+                      if (suggestion.doctor) {
+                        setSearchQuery(suggestion.doctor.name);
+                      } else {
+                        setSearchQuery(suggestion.value);
+                      }
+                      setShowSuggestions(false);
+                    } else if (e.key === "Escape") {
+                      setShowSuggestions(false);
+                    }
+                  }}
+                  className="w-full pl-14 pr-4 py-7 text-lg border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent placeholder:text-gray-400"
+                  style={{
+                    fontFamily:
+                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                  }}
+                />
+                <Button className="hidden md:flex bg-primary hover:bg-primary-dark text-white items-center gap-2 rounded-xl px-8 py-6 text-lg font-medium transition-all shadow-lg hover:shadow-primary/30">
+                  <Search className="h-5 w-5" />
+                  Search
+                </Button>
+              </div>
+            </div>
 
             <AnimatePresence>
               {showSuggestions && suggestions.length > 0 && (
@@ -857,7 +840,7 @@ function DoctorListPageContent() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50 max-h-96 overflow-y-auto"
+                  className="absolute top-full left-0 right-0 mt-4 bg-white border border-gray-100 rounded-2xl shadow-2xl z-50 max-h-96 overflow-y-auto overflow-hidden divide-y divide-gray-50"
                 >
                   {suggestions.map((suggestion, index) => {
                     const content = (
@@ -865,8 +848,8 @@ function DoctorListPageContent() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        className={`px-5 py-4 cursor-pointer hover:bg-primary/5 transition-colors border-b border-gray-100 last:border-b-0 ${
-                          index === focusedIndex ? "bg-primary/10" : ""
+                        className={`px-6 py-4 cursor-pointer hover:bg-gray-50 transition-colors ${
+                          index === focusedIndex ? "bg-gray-50" : ""
                         }`}
                         onClick={() => {
                           if (suggestion.link) {
@@ -884,7 +867,7 @@ function DoctorListPageContent() {
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
                             <div
-                              className="font-semibold text-gray-900 text-base"
+                              className="font-bold text-gray-800 text-base"
                               style={{
                                 fontFamily:
                                   "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
@@ -894,20 +877,26 @@ function DoctorListPageContent() {
                             </div>
                             {suggestion.doctor && (
                               <div
-                                className="text-sm text-gray-500 mt-1"
+                                className="text-sm text-gray-500 mt-1 flex items-center gap-2"
                                 style={{
                                   fontFamily:
                                     "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                                 }}
                               >
-                                {suggestion.doctor.specialty}
-                                {suggestion.doctor.hospital &&
-                                  ` • ${suggestion.doctor.hospital}`}
+                                <span className="text-primary font-medium">
+                                  {suggestion.doctor.specialty}
+                                </span>
+                                {suggestion.doctor.hospital && (
+                                  <>
+                                    <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                                    <span>{suggestion.doctor.hospital}</span>
+                                  </>
+                                )}
                               </div>
                             )}
                             {suggestion.hospital && (
                               <div
-                                className="text-sm text-gray-500 mt-1"
+                                className="text-sm text-gray-500 mt-1 font-medium text-primary"
                                 style={{
                                   fontFamily:
                                     "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
@@ -918,19 +907,19 @@ function DoctorListPageContent() {
                             )}
                           </div>
                           <span
-                            className="text-xs text-primary bg-primary/10 px-3 py-1.5 rounded-full font-semibold"
+                            className={`text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider ${
+                              suggestion.type === "Doctor"
+                                ? "bg-blue-100 text-blue-700"
+                                : suggestion.type === "Specialty"
+                                  ? "bg-purple-100 text-purple-700"
+                                  : "bg-green-100 text-green-700"
+                            }`}
                             style={{
                               fontFamily:
                                 "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                             }}
                           >
-                            {suggestion.type === "Doctor"
-                              ? "ডাক্তার"
-                              : suggestion.type === "Specialty"
-                                ? "বিশেষতা"
-                                : suggestion.type === "Hospital"
-                                  ? "হাসপাতাল"
-                                  : suggestion.type}
+                            {suggestion.type}
                           </span>
                         </div>
                       </motion.div>
@@ -954,128 +943,123 @@ function DoctorListPageContent() {
         </motion.div>
 
         {/* Department Carousel Section */}
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="mb-10"
+          className="mb-16"
         >
-          <Card className="p-6 md:p-8 bg-white border-2 border-primary/10 shadow-lg">
-            <div className="mb-6 pb-4 border-b-2 border-gray-100">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-center">
-                Search Doctor By Department
-              </h2>
-            </div>
-            <div className="relative">
-              {/* Left Arrow */}
-              <button
-                onClick={() => {
-                  if (carouselRef.current) {
-                    carouselRef.current.scrollBy({
-                      left: -200,
-                      behavior: "smooth",
-                    });
-                  }
-                }}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-md border border-gray-200 hover:border-primary/50 transition-all"
-                aria-label="Previous"
-              >
-                <ChevronLeft className="h-5 w-5 text-primary" />
-              </button>
-
-              {/* Right Arrow */}
-              <button
-                onClick={() => {
-                  if (carouselRef.current) {
-                    carouselRef.current.scrollBy({
-                      left: 200,
-                      behavior: "smooth",
-                    });
-                  }
-                }}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-md border border-gray-200 hover:border-primary/50 transition-all"
-                aria-label="Next"
-              >
-                <ChevronRight className="h-5 w-5 text-primary" />
-              </button>
-
-              <div
-                ref={carouselRef}
-                className="overflow-x-auto scrollbar-hide pb-4 px-10"
-                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-              >
-                <div className="flex gap-3 min-w-max">
-                  {departments.length > 0 ? (
-                    departments.map((dept, index) => {
-                      return (
-                        <motion.button
-                          key={dept._id || dept.name}
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.3, delay: index * 0.05 }}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => {
-                            setSelectedDepartment(dept.name);
-                            setSelectedDept(dept.name);
-                          }}
-                          className={`flex flex-col items-center justify-center gap-2 p-5 rounded-lg min-w-[140px] transition-all duration-300 ${
-                            selectedDept === dept.name
-                              ? "bg-primary-dark text-white shadow-md"
-                              : "bg-white text-gray-700 border border-gray-200"
-                          }`}
-                        >
-                          {/* Circular Icon Container */}
-                          <div
-                            className={`w-14 h-14 rounded-full flex items-center justify-center overflow-hidden ${
-                              selectedDept === dept.name
-                                ? "bg-white/20"
-                                : "bg-gray-100"
-                            }`}
-                          >
-                            {dept.image ? (
-                              <img
-                                src={dept.image}
-                                alt={dept.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <Stethoscope className="w-7 h-7 text-gray-600" />
-                            )}
-                          </div>
-                          {/* Department Name */}
-                          <p
-                            className={`font-bold text-sm text-center mt-1 ${
-                              selectedDept === dept.name
-                                ? "text-white"
-                                : "text-gray-900"
-                            }`}
-                          >
-                            {dept.name}
-                          </p>
-                        </motion.button>
-                      );
-                    })
-                  ) : (
-                    <div className="text-gray-500 text-center py-8">
-                      No departments available
-                    </div>
-                  )}
-                </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <div className="mb-8 flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Search Doctor By Department
+                </h2>
+                <p className="text-gray-500 mt-1">Explore specialists by department</p>
               </div>
+              <Link href="/departments" className="text-primary font-medium hover:underline flex items-center gap-1">
+                View All <ChevronRight className="w-4 h-4" />
+              </Link>
             </div>
-          </Card>
+            <div className="relative px-4">
+              <Swiper
+                modules={[Autoplay, Navigation]}
+                spaceBetween={20}
+                slidesPerView={2}
+                navigation={{
+                  nextEl: ".department-next",
+                  prevEl: ".department-prev",
+                }}
+                autoplay={{
+                  delay: 3000,
+                  disableOnInteraction: false,
+                }}
+                breakpoints={{
+                  640: {
+                    slidesPerView: 3,
+                  },
+                  768: {
+                    slidesPerView: 4,
+                  },
+                  1024: {
+                    slidesPerView: 5,
+                  },
+                }}
+                loop={departments.length > 5}
+                className="pb-4"
+              >
+                {departments.map((dept, index) => (
+                  <SwiperSlide key={dept._id || dept.name}>
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setSelectedDepartment(dept.name);
+                        setSelectedDept(dept.name);
+                      }}
+                      className={`flex flex-col items-center justify-center gap-2 p-5 rounded-lg w-full h-[180px] transition-all duration-300 ${
+                        selectedDept === dept.name
+                          ? "bg-primary-dark text-white shadow-md"
+                          : "bg-white text-gray-700 border border-gray-200"
+                      }`}
+                    >
+                      {/* Circular Icon Container */}
+                      <div
+                        className={`w-14 h-14 rounded-full flex items-center justify-center overflow-hidden shrink-0 ${
+                          selectedDept === dept.name
+                            ? "bg-white/20"
+                            : "bg-gray-100"
+                        }`}
+                      >
+                        {dept.image ? (
+                          <img
+                            src={dept.image}
+                            alt={dept.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Stethoscope className="w-7 h-7 text-gray-600" />
+                        )}
+                      </div>
+                      {/* Department Name */}
+                      <p
+                        className={`font-bold text-sm text-center mt-1 line-clamp-2 ${
+                          selectedDept === dept.name
+                            ? "text-white"
+                            : "text-gray-900"
+                        }`}
+                      >
+                        {dept.name}
+                      </p>
+                    </motion.button>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+
+              {/* Navigation Buttons */}
+               <button className="department-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 text-primary hover:bg-primary hover:text-white transition-colors border border-gray-100 disabled:opacity-50">
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button className="department-next absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 text-primary hover:bg-primary hover:text-white transition-colors border border-gray-100 disabled:opacity-50">
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
         </motion.div>
 
-        {/* Location Filters - Modern Design */}
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="mb-8"
+          className="mb-12"
         >
-          <Card className="p-6 md:p-8 bg-gradient-to-br from-primary/10 via-primary/5 to-white border-2 border-primary/20 shadow-xl">
-            <div className="mb-6">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+            <div className="mb-8 border-b border-gray-100 pb-4">
               <h2
                 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-3"
                 style={{
@@ -1083,14 +1067,14 @@ function DoctorListPageContent() {
                     "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                 }}
               >
-                <div className="p-2 bg-primary/20 rounded-lg">
-                  <MapPin className="h-6 w-6 text-primary" />
+                <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+                  <MapPin className="h-6 w-6" />
                 </div>
                 {banglaLabels.findByLocation}
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
                 <Label
                   htmlFor="filter-division"
@@ -1102,11 +1086,12 @@ function DoctorListPageContent() {
                 >
                   ১. {banglaLabels.division}
                 </Label>
+                <div className="relative">
                 <select
                   id="filter-division"
                   value={selectedDivision}
                   onChange={(e) => handleDivisionSelect(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
+                  className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
                   style={{
                     fontFamily:
                       "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
@@ -1119,6 +1104,10 @@ function DoctorListPageContent() {
                     </option>
                   ))}
                 </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                  <ChevronLeft className="w-4 h-4 -rotate-90" />
+                </div>
+              </div>
               </div>
 
               <div>
@@ -1132,12 +1121,13 @@ function DoctorListPageContent() {
                 >
                   ২. {banglaLabels.district}
                 </Label>
+                <div className="relative">
                 <select
                   id="filter-district"
                   value={selectedDistrict}
                   onChange={(e) => handleDistrictSelect(e.target.value)}
                   disabled={!selectedDivision}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-base bg-white shadow-sm hover:shadow-md transition-all"
+                  className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     fontFamily:
                       "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
@@ -1154,6 +1144,10 @@ function DoctorListPageContent() {
                     </option>
                   ))}
                 </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                  <ChevronLeft className="w-4 h-4 -rotate-90" />
+                </div>
+              </div>
               </div>
 
               <div>
@@ -1167,12 +1161,13 @@ function DoctorListPageContent() {
                 >
                   ৩. {banglaLabels.thana}
                 </Label>
+                <div className="relative">
                 <select
                   id="filter-thana"
                   value={selectedThana}
                   onChange={(e) => handleThanaSelect(e.target.value)}
                   disabled={!selectedDistrict || !selectedDivision}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-base bg-white shadow-sm hover:shadow-md transition-all"
+                  className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     fontFamily:
                       "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
@@ -1189,6 +1184,10 @@ function DoctorListPageContent() {
                     </option>
                   ))}
                 </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                  <ChevronLeft className="w-4 h-4 -rotate-90" />
+                </div>
+              </div>
               </div>
 
               <div>
@@ -1202,11 +1201,12 @@ function DoctorListPageContent() {
                 >
                   ৪. {banglaLabels.hospital}
                 </Label>
+                <div className="relative">
                 <select
                   id="filter-hospital-hierarchical"
                   value={selectedHospital}
                   onChange={(e) => handleHospitalSelect(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
+                  className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
                   style={{
                     fontFamily:
                       "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
@@ -1219,6 +1219,10 @@ function DoctorListPageContent() {
                     </option>
                   ))}
                 </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                  <ChevronLeft className="w-4 h-4 -rotate-90" />
+                </div>
+              </div>
               </div>
 
               <div>
@@ -1232,11 +1236,12 @@ function DoctorListPageContent() {
                 >
                   ৫. {banglaLabels.department}
                 </Label>
+                <div className="relative">
                 <select
                   id="filter-department-hierarchical"
                   value={selectedDepartment}
                   onChange={(e) => handleDepartmentSelect(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
+                  className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
                   style={{
                     fontFamily:
                       "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
@@ -1249,6 +1254,10 @@ function DoctorListPageContent() {
                     </option>
                   ))}
                 </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                  <ChevronLeft className="w-4 h-4 -rotate-90" />
+                </div>
+              </div>
               </div>
             </div>
 
@@ -1281,7 +1290,7 @@ function DoctorListPageContent() {
                 </Button>
               </motion.div>
             )}
-          </Card>
+          </div>
         </motion.div>
 
         {/* Filter & Sort Controls Section */}
@@ -1296,8 +1305,8 @@ function DoctorListPageContent() {
               transition={{ duration: 0.3 }}
               className="mb-8"
             >
-              <Card className="p-6 md:p-8 bg-gradient-to-br from-white to-gray-50 border-2 border-primary/20 shadow-xl">
-                <div className="mb-6 pb-4 border-b-2 border-gray-200">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                <div className="mb-6 pb-4 border-b border-gray-100">
                   <h3
                     className="text-xl md:text-2xl font-bold text-gray-900"
                     style={{
@@ -1515,7 +1524,7 @@ function DoctorListPageContent() {
                     </div>
                   </div>
                 </div>
-              </Card>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -1634,129 +1643,98 @@ function DoctorListPageContent() {
                 transition={{ duration: 0.3, delay: index * 0.05 }}
                 whileHover={{ y: -3 }}
               >
-                <Link href={`/doctor/${doctor._id}`}>
-                  <Card className="p-6 bg-white border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-md transition-all duration-300 h-full cursor-pointer">
-                    <div className="space-y-4">
+                <Link href={`/doctor/${doctor._id}`} className="h-full block group">
+                  <Card className="relative bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 h-[520px] flex flex-col cursor-pointer overflow-hidden group-hover:-translate-y-1">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                    <div className="p-6 flex-1 flex flex-col">
                       {/* Doctor Image */}
-                      <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-                        {doctor.image ? (
-                          <Image
-                            src={doctor.image}
-                            alt={doctor.name}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <svg
-                              className="w-12 h-12 text-gray-400"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <circle
-                                cx="12"
-                                cy="8"
-                                r="4"
-                                fill="currentColor"
-                                fillOpacity="0.3"
-                              />
-                              <path
-                                d="M4 20c0-4 4-6 8-6s8 2 8 6"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                fill="currentColor"
-                                fillOpacity="0.1"
-                              />
-                              <path
-                                d="M15 3v2M15 7v2M13 5h4"
-                                stroke="#4A90A4"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                              />
-                            </svg>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Doctor Name */}
-                      <h3
-                        className="text-xl font-bold text-[#2C5282]"
-                        style={{
-                          fontFamily:
-                            "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
-                      >
-                        {doctor.name}
-                      </h3>
-
-                      {/* Specialty (Replacing Department style) */}
-                      {doctor.specialty && (
-                        <p
-                          className="text-sm text-[#4A90A4] font-medium"
-                          style={{
-                            fontFamily:
-                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {doctor.specialty}
-                        </p>
-                      )}
-
-                      {/* Qualification */}
-                      <p
-                        className="text-sm text-gray-600 leading-relaxed"
-                        style={{
-                          fontFamily:
-                            "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
-                      >
-                        {doctor.qualification}
-                      </p>
-
-                      {/* Designation */}
-                      {doctor.designation && (
-                        <p
-                          className="text-sm text-gray-600 leading-relaxed"
-                          style={{
-                            fontFamily:
-                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {doctor.designation}
-                        </p>
-                      )}
-
-                      {/* Red Divider Line */}
-                      <div className="w-12 h-0.5 bg-[#8B4513] my-3"></div>
-
-                      {/* Hospital Name */}
-                      {doctor.hospital && (
-                        <p
-                          className="text-base font-semibold text-gray-700 leading-relaxed"
-                          style={{
-                            fontFamily:
-                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {doctor.hospital}
-                        </p>
-                      )}
-
-                      {/* Time / Availability */}
-                      <div className="mt-3 bg-gray-50 rounded-lg p-2.5 border border-gray-100">
-                        <div className="flex items-start gap-2 text-sm text-gray-700">
-                          <Clock className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
-                          <span
-                            className="font-medium"
+                      <div className="flex items-start gap-5 mb-5">
+                        <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-gray-50 shadow-inner shrink-0 group-hover:ring-4 ring-primary/10 transition-all">
+                          {doctor.image ? (
+                            <Image
+                              src={doctor.image}
+                              alt={doctor.name}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-blue-50">
+                              <Stethoscope className="w-8 h-8 text-blue-400" />
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div>
+                          <h3
+                            className="text-xl font-bold text-gray-900 leading-tight mb-1 group-hover:text-primary transition-colors"
                             style={{
                               fontFamily:
                                 "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                             }}
                           >
-                            {formatAvailability(doctor.availability)}
-                          </span>
+                            {doctor.name}
+                          </h3>
+                          {doctor.specialty && (
+                            <div className="inline-block px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 text-sm font-semibold mt-1">
+                              {doctor.specialty}
+                            </div>
+                          )}
                         </div>
+                      </div>
+
+                      {/* Content */}
+                      <div className="space-y-4 flex-1">
+                        {/* Qualification */}
+                        <div className="flex items-start gap-3">
+                          <Award className="w-5 h-5 text-gray-400 mt-0.5 shrink-0" />
+                          <p
+                            className="text-sm text-gray-600 leading-relaxed line-clamp-2"
+                            style={{
+                              fontFamily:
+                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            }}
+                          >
+                            {doctor.qualification}
+                          </p>
+                        </div>
+
+                        {/* Hospital Name */}
+                        {doctor.hospital && (
+                          <div className="flex items-start gap-3">
+                            <Building2 className="w-5 h-5 text-gray-400 mt-0.5 shrink-0" />
+                            <p
+                              className="text-sm text-gray-700 font-medium leading-relaxed line-clamp-2"
+                              style={{
+                                fontFamily:
+                                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                              }}
+                            >
+                              {doctor.hospital}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-6 pt-5 border-t border-gray-100">
+                        {/* Fee & Rating */}
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-lg text-green-700 font-bold text-sm">
+                            <span>৳</span>
+                            <span>{doctor.consultationFee}</span>
+                          </div>
+                          
+                          {doctor.rating ? (
+                             <div className="flex items-center gap-1.5 text-amber-500 font-bold text-sm">
+                              <Star className="w-4 h-4 fill-current" />
+                              <span>{doctor.rating}</span>
+                            </div>
+                          ) : null}
+                        </div>
+
+                        {/* Actions */}
+                         <Button className="w-full bg-primary hover:bg-primary-dark text-white rounded-xl py-6 font-semibold shadow-lg shadow-primary/20 group-hover:shadow-primary/30 transition-all">
+                          {banglaLabels.bookAppointment}
+                        </Button>
                       </div>
                     </div>
                   </Card>
@@ -1766,6 +1744,7 @@ function DoctorListPageContent() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

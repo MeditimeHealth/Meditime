@@ -141,11 +141,11 @@ export default function Navbar() {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
             ? "glass shadow-sm py-2"
-            : "bg-white/50 backdrop-blur-md py-4"
+            : "bg-white/50 backdrop-blur-md py-4 sm:py-5"
         }`}
       >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 ">
-          <div className="flex h-16 sm:h-14 md:h-15 items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
             {/* Logo */}
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -165,7 +165,7 @@ export default function Navbar() {
             </motion.div>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+            <div className="hidden lg:flex items-center gap-4 xl:gap-8">
               {navLinks.map((link, index) => {
                 const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
                 return (
@@ -181,7 +181,7 @@ export default function Navbar() {
                       style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                     >
                       <span
-                        className={`text-lg xl:text-xl font-semibold transition-all duration-300 ${
+                        className={`text-base xl:text-lg font-semibold transition-all duration-300 ${
                           isActive
                             ? "text-primary font-bold"
                             : "text-slate-600 group-hover:text-primary font-medium"

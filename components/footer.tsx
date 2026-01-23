@@ -7,8 +7,8 @@ import { Facebook, Instagram, Youtube, Linkedin, MessageCircle } from "lucide-re
 export default function Footer() {
   const services = [
     { href: "/doctor", label: "Doctor Appointment" },
-    { href: "/hospital", label: "Hospital List" },
     { href: "/service", label: "Video Consultation" },
+    { href: "/hospital", label: "Hospital List" },
     { href: "/diagnostic", label: "Diagnostic Test" },
     { href: "/ambulance", label: "Ambulance Directory" },
   ];
@@ -16,14 +16,14 @@ export default function Footer() {
   const resources = [
     { href: "/membership", label: "Discount Cards" },
     { href: "/blog", label: "Health Tips" },
-    { href: "/video-consultation", label: "Video Consultation" },
+    { href: "/offer", label: "Offer" },
     { href: "/affiliate-program", label: "Affiliate Programme" },
     { href: "/blood-donors", label: "Blood Donors" },
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: "https://www.facebook.com/meditime.health", label: "Facebook" },
     { icon: MessageCircle, href: "https://wa.me/8801610385555", label: "WhatsApp" },
+    { icon: Facebook, href: "https://www.facebook.com/meditime.health", label: "Facebook" },
     { icon: Instagram, href: "#", label: "Instagram" },
     { icon: Linkedin, href: "#", label: "LinkedIn" },
     { icon: Youtube, href: "#", label: "YouTube" },

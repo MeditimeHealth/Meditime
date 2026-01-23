@@ -257,7 +257,7 @@ export default function HospitalDetailPage() {
         
         return false;
       })
-      .slice(0, 5); // Limit to 5 recommendations
+      .slice(0, 3); // Limit to 3 recommendations
   }, [hospital, allHospitals]);
 
   const sortedDoctors = useMemo(() => {
@@ -964,7 +964,7 @@ export default function HospitalDetailPage() {
                   <div className="p-2 bg-primary/10 rounded-lg">
                     <Building2 className="h-6 w-6 text-primary" />
                   </div>
-                  একই এলাকার হাসপাতাল
+                  Nearby Hospitals
                 </h3>
                 <div className="space-y-4">
                   {recommendedHospitals.map((recHospital, index) => (

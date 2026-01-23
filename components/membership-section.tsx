@@ -25,7 +25,7 @@ export default function MembershipSection() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="relative h-64 lg:h-full min-h-[400px] bg-white order-2 lg:order-1"
+              className="relative h-64 lg:h-full min-h-[250px] lg:min-h-[400px] bg-white order-2 lg:order-1"
             >
               <div className="absolute inset-0 flex items-center justify-center p-4 lg:p-8">
                 <div className="relative w-full h-full flex items-center justify-center bg-white rounded-xl overflow-hidden">

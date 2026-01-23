@@ -7,7 +7,7 @@ export default function AppDownloadSection() {
   return (
     <div className="w-full py-16 bg-gradient-to-br from-[#009A98]/5 via-white to-[#00B5B2]/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col-reverse lg:flex-row gap-12 items-center">
+        <div className="flex flex-col lg:flex-row gap-12 items-center">
           {/* Left Side - Text and Download Buttons */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}

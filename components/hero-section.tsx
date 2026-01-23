@@ -122,7 +122,7 @@ export default function HeroSection() {
               </div>
 
               {/* Image Content */}
-              <div className="relative h-[400px] lg:h-full w-full flex items-center justify-center p-4">
+              <div className="relative h-[280px] sm:h-[400px] lg:h-full w-full flex items-center justify-center p-4">
                 <div className="relative w-full max-w-[520px] aspect-[4/3] lg:aspect-square">
                    {/* Decorative background layers */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-teal-200/50 to-blue-200/40 rounded-[3rem] rotate-3 opacity-40 transform scale-95" />

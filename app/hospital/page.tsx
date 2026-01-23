@@ -51,7 +51,7 @@ interface Thana {
 }
 
 const banglaLabels = {
-  findHospitals: "See doctor list of 40+ Hospitals in Just Few Minutes",
+  findHospitals: "Top Hospitals in Savar and Surroundings",
   searchPlaceholder: "Search by name, address, location, phone or email...",
   findByLocation: "Find Hospital By Location",
   division: "বিভাগ",
@@ -412,12 +412,12 @@ export default function HospitalListPage() {
                 <h2
                   className="text-3xl md:text-4xl font-bold text-gray-900 mb-3"
                 >
-                  List of All Doctors from 40+ Hospitals Near Savar
+                  List of 40+ Hospitals Near Savar
                 </h2>
                 <p
                   className="text-lg text-gray-600 leading-relaxed"
                 >
-                  Find doctors using your location to see the best options near you. For example, if your residence is in Kaliyakoir, type the location into the search box and you will see a list of hospitals near Kaliyakoir.
+                  Select Your Location and See The Best Hospitals Near You.
                 </p>
               </div>
             </div>
@@ -693,36 +693,40 @@ export default function HospitalListPage() {
                   whileHover={{ y: -5 }}
                 >
                   <Link href={`/hospital/${encodeURIComponent(hospital.name)}`}>
-                    <Card className="p-6 h-full shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer border border-gray-200 hover:border-primary/30 bg-white group">
-                      <div className="space-y-4">
-                        {/* Top horizontal line */}
-                        <div className="w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
-                        
-                        {/* Hospital Name with Icon */}
-                        <div className="flex items-start gap-3">
-                          <div className="shrink-0">
-                            <Building2 className="h-5 w-5 text-primary" />
+                    <Card className="relative bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 h-full cursor-pointer group overflow-hidden">
+                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      <div className="p-6 flex flex-col h-full">
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                          <div className="p-3 bg-blue-50 text-primary rounded-xl shrink-0 group-hover:scale-110 transition-transform duration-300">
+                             <Building2 className="h-6 w-6" />
                           </div>
-                          <h3 
-                            className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors"
-                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                          >
-                            {hospital.name}
-                          </h3>
+                            <Link href={`/hospital/${encodeURIComponent(hospital.name)}`} className="text-gray-400 hover:text-primary transition-colors p-2 hover:bg-gray-50 rounded-full" title="View Map Location">
+                              <MapPin className="h-5 w-5" />
+                            </Link>
                         </div>
+
+                        <h3 
+                          className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors mb-3 leading-tight"
+                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                        >
+                          {hospital.name}
+                        </h3>
 
                         {/* Address */}
                         {hospital.address && (
                           <p 
-                            className="text-sm text-gray-600 leading-relaxed pl-8"
+                            className="text-sm text-gray-500 leading-relaxed mb-4 flex-grow"
                             style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                           >
-                            {hospital.address}
+                           {hospital.address}
                           </p>
                         )}
                         
-                        {/* Bottom horizontal line */}
-                        <div className="w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+                        <div className="pt-4 border-t border-gray-100 mt-auto flex items-center justify-between text-sm font-medium">
+                            <span className="text-primary flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                              {banglaLabels.viewDoctors} <Building2 className="w-4 h-4" />
+                            </span>
+                        </div>
                       </div>
                     </Card>
                   </Link>

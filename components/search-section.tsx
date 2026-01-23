@@ -25,22 +25,9 @@ export default function SearchSection() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
-  const [isSticky, setIsSticky] = useState(false);
-
   useEffect(() => {
     fetchDoctors();
     fetchHospitals();
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      // Make sticky after scrolling past the hero area (approx 400px)
-      setIsSticky(window.scrollY > 400);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Check initial state
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const fetchDoctors = async () => {
@@ -154,17 +141,10 @@ export default function SearchSection() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Spacer to prevent layout shift when sticky */}
-      {isSticky && <div className="h-24"></div>}
-
       {/* Search Section */}
       <div
         id="search-section"
-        className={`transition-all duration-300 ${
-          isSticky
-            ? "fixed top-24 left-0 right-0 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 z-40"
-            : "relative mb-16 z-10"
-        }`}
+        className="sticky top-20 left-0 right-0 z-40 transition-all duration-300 mb-8"
       >
         <div className="relative">
           <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
@@ -201,7 +181,7 @@ export default function SearchSection() {
                 setShowSuggestions(false);
               }
             }}
-            className="pl-14 pr-4 py-6 text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all"
+            className="pl-14 pr-4 py-4 md:py-6 text-base md:text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all bg-white"
             style={{
               fontFamily:
                 "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
