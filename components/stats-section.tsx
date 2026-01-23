@@ -11,7 +11,7 @@ export default function StatsSection() {
       icon: Users,
     },
     {
-      number: "30+",
+      number: "40+",
       label: "Hospitals",
       icon: Building2,
     },

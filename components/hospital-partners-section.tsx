@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import { Navigation, Autoplay } from "swiper/modules";
@@ -9,103 +9,53 @@ import { Card } from "@/components/ui/card";
 import "swiper/css";
 import "swiper/css/navigation";
 
-const hospitals = [
-  {
-    id: 1,
-    name: "Popular Diagnostic Center Ltd.",
-    location: "Savar",
-    logo: null,
-  },
-  {
-    id: 2,
-    name: "KPJ Specialized Hospital & Nursing College",
-    location: "C/12, Nabinagar - Chandra Road, Near DEPZ Tetuibari",
-    logo: null,
-  },
-  {
-    id: 3,
-    name: "Enam Medical College Hospital",
-    location: "Savar, Dhaka",
-    logo: null,
-  },
-  {
-    id: 4,
-    name: "Modern Hospital & Diagnostic Centre",
-    location: "Aricha Road, Talbag Savar Dhaka",
-    logo: null,
-  },
-  {
-    id: 5,
-    name: "LabOne Hospital",
-    location: "Tetuibari, DEPZ Road Mojarmil Bus Stand, Kashimpur, Gazipur",
-    logo: null,
-  },
-  {
-    id: 6,
-    name: "Islamia Digital Lab And Hospital",
-    location: "Savar - Paurashava, Savar Upazila, Dhaka Division",
-    logo: null,
-  },
-  {
-    id: 7,
-    name: "Savar Prime Hospital Limited",
-    location: "Thana Rd, Bus Stand, Savar 1340",
-    logo: null,
-  },
-  {
-    id: 8,
-    name: "Tanha Health Care Hospital",
-    location: "Shafipur, Kaliakair, Dhaka-Tangail Highway, Shafipur Bazar, Gazipur",
-    logo: null,
-  },
-  {
-    id: 9,
-    name: "Savar Care Hospital",
-    location: "Savar Thana Bus Stand, Talbagh, N5, Savar 1340",
-    logo: null,
-  },
-  {
-    id: 10,
-    name: "Nari O Shishu Hospital (AWCH)",
-    location: "Jamgora, Dhaka - Ashulia Hwy, Dhaka 1349",
-    logo: null,
-  },
-  {
-    id: 11,
-    name: "Konabari Clinic and Diagnostic Center",
-    location: "Konabari Bus Stand Market, Ambag Rd, Gazipur 1700",
-    logo: null,
-  },
-  {
-    id: 12,
-    name: "Happy General Hospital",
-    location: "324 Baipail, Savar, Bangladesh",
-    logo: null,
-  },
-  {
-    id: 13,
-    name: "Modern Diagnostic Center",
-    location: "Chowrasta, Tangail Rd, Gazipur",
-    logo: null,
-  },
-  {
-    id: 14,
-    name: "Ibn Sina Diagnostic Center",
-    location: "Savar Bazar Bus stand, House # B-31/6, Jaleshwar, Aricha Road, Savar, Dhaka-1340",
-    logo: null,
-  },
-  {
-    id: 15,
-    name: "Lab One Diagnostic Center",
-    location: "Ashulia Hwy, Jamgora, Dhaka",
-    logo: null,
-  },
-];
+interface Hospital {
+  _id: string;
+  name: string;
+  location?: string;
+  thana?: {
+    name: string;
+  };
+}
 
 export default function HospitalPartnersSection() {
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
   const swiperRef = useRef<SwiperType | null>(null);
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHospitals = async () => {
+      try {
+        const response = await fetch('/api/locations/hospitals');
+        const data = await response.json();
+        if (response.ok) {
+          // Limit to first 12 hospitals
+          setHospitals(data.hospitals.slice(0, 12));
+        }
+      } catch (error) {
+        console.error('Error fetching hospitals:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHospitals();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="w-full py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-[#009A98] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-xl font-semibold text-gray-700">Loading hospitals...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full py-16 bg-white">
@@ -168,30 +118,22 @@ export default function HospitalPartnersSection() {
               delay: 3000,
               disableOnInteraction: false,
             }}
-            loop={true}
+            loop={hospitals.length > 4}
             className="pb-12"
           >
             {hospitals.map((hospital) => (
-              <SwiperSlide key={hospital.id}>
-                <Card className="p-6 bg-white border-2 border-gray-200 hover:border-[#009A98] transition-all shadow-md hover:shadow-lg h-full flex flex-col items-center justify-center text-center min-h-[200px]">
+              <SwiperSlide key={hospital._id}>
+                <Card className="p-6 bg-white border-2 border-gray-200 hover:border-[#009A98] transition-all shadow-md hover:shadow-lg h-[280px] flex flex-col items-center justify-center text-center">
                   {/* Hospital Logo/Icon */}
-                  <div className="mb-4">
-                    {hospital.logo ? (
-                      <img
-                        src={hospital.logo}
-                        alt={hospital.name}
-                        className="w-20 h-20 object-contain"
-                      />
-                    ) : (
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#009A98] to-[#00B5B2] flex items-center justify-center">
-                        <Building2 className="w-10 h-10 text-white" />
-                      </div>
-                    )}
+                  <div className="mb-4 flex-shrink-0">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#009A98] to-[#00B5B2] flex items-center justify-center">
+                      <Building2 className="w-10 h-10 text-white" />
+                    </div>
                   </div>
 
                   {/* Hospital Name */}
                   <h3
-                    className="text-lg font-bold text-gray-900 mb-2"
+                    className="text-lg font-bold text-gray-900 mb-2 line-clamp-2"
                     style={{
                       fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                     }}
@@ -201,23 +143,23 @@ export default function HospitalPartnersSection() {
 
                   {/* Location */}
                   <p
-                    className="text-sm text-gray-500"
+                    className="text-sm text-gray-500 line-clamp-2"
                     style={{
                       fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                     }}
                   >
-                    {hospital.location}
+                    {hospital.location || hospital.thana?.name || 'Savar, Dhaka'}
                   </p>
                 </Card>
               </SwiperSlide>
             ))}
           </Swiper>
 
-          {/* Navigation Buttons */}
+          {/* Navigation Buttons - Outside */}
           <button
             ref={prevRef}
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute -left-6 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
+            className="absolute -left-16 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
             aria-label="Previous hospital"
           >
             <ChevronLeft className="h-6 w-6" />
@@ -225,7 +167,7 @@ export default function HospitalPartnersSection() {
           <button
             ref={nextRef}
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute -right-6 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
+            className="absolute -right-16 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
             aria-label="Next hospital"
           >
             <ChevronRight className="h-6 w-6" />

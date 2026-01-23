@@ -162,7 +162,7 @@ export default function DepartmentSection() {
               return (
                 <SwiperSlide key={department._id}>
                   <Link href={`/departments/${encodeURIComponent(slug)}`}>
-                    <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 p-6 lg:p-8 flex flex-col items-center text-center cursor-pointer h-full border border-slate-100 group hover:-translate-y-2 relative overflow-hidden">
+                    <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 p-6 lg:p-8 flex flex-col items-center text-center cursor-pointer h-[200px] border border-slate-100 group hover:-translate-y-2 relative overflow-hidden">
                       {/* Hover Gradient */}
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                       
@@ -174,7 +174,7 @@ export default function DepartmentSection() {
                       </div>
 
                       {/* Department Name */}
-                      <h3 className="text-base md:text-lg font-bold mb-2 text-slate-800 group-hover:text-primary transition-colors duration-300 leading-tight">
+                      <h3 className="text-base md:text-lg font-bold mb-2 text-slate-800 group-hover:text-primary transition-colors duration-300 leading-tight line-clamp-2">
                         {department.name}
                       </h3>
                     </div>

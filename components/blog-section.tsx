@@ -178,7 +178,7 @@ export default function BlogSection() {
             {posts.map((post) => (
               <SwiperSlide key={post.id}>
                 <Link href={`/blog/${post.slug}`}>
-                  <Card className="p-0 bg-white border border-gray-200 shadow-md hover:shadow-xl transition-all h-full flex flex-col overflow-hidden group cursor-pointer">
+                  <Card className="p-0 bg-white border border-gray-200 shadow-md hover:shadow-xl transition-all h-[480px] flex flex-col overflow-hidden group cursor-pointer">
                     {/* Featured Image */}
                     <div className="relative w-full h-48 overflow-hidden">
                       <Image
@@ -246,7 +246,7 @@ export default function BlogSection() {
           <button
             ref={prevRef}
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
+            className="absolute -left-16 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
             aria-label="Previous blog post"
           >
             <ChevronLeft className="h-6 w-6" />
@@ -254,7 +254,7 @@ export default function BlogSection() {
           <button
             ref={nextRef}
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
+            className="absolute -right-16 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
             aria-label="Next blog post"
           >
             <ChevronRight className="h-6 w-6" />

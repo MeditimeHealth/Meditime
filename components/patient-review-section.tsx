@@ -37,6 +37,42 @@ const reviews = [
       "Tested My lipid panel found the platform useful, enjoyed a 15% discount using my corporate membership card.",
     date: "3 weeks ago",
   },
+  {
+    id: 4,
+    name: "Rabeya Sultana",
+    location: "School Teacher, Dhaka",
+    rating: 5,
+    review:
+      "Very helpful service! Got appointment with a renowned cardiologist at Square Hospital within 2 days. The process was smooth and hassle-free.",
+    date: "1 week ago",
+  },
+  {
+    id: 5,
+    name: "Kamrul Hasan",
+    location: "Business Owner, Savar",
+    rating: 5,
+    review:
+      "Excellent platform for finding qualified doctors. I found a great orthopedic specialist for my sports injury. Highly recommended!",
+    date: "2 weeks ago",
+  },
+  {
+    id: 6,
+    name: "Nusrat Jahan",
+    location: "Software Engineer, Ashulia",
+    rating: 5,
+    review:
+      "The best medical service platform in Savar area. Booked gynecologist appointment for my sister and got 15% discount with the membership card.",
+    date: "3 weeks ago",
+  },
+  {
+    id: 7,
+    name: "Rafiqul Islam",
+    location: "Retired Government Officer, Gazipur",
+    rating: 5,
+    review:
+      "Amazing service! Found experienced medicine specialist for regular checkup. The mobile app is very user-friendly and convenient.",
+    date: "4 weeks ago",
+  },
 ];
 
 export default function PatientReviewSection() {
@@ -105,7 +141,7 @@ export default function PatientReviewSection() {
           >
             {reviews.map((review) => (
               <SwiperSlide key={review.id}>
-                <Card className="p-6 bg-white border border-gray-200 shadow-md hover:shadow-lg transition-all h-full flex flex-col">
+                <Card className="p-6 bg-white border border-gray-200 shadow-md hover:shadow-lg transition-all h-[320px] flex flex-col">
                   {/* Rating Stars */}
                   <div className="flex items-center gap-1 mb-4">
                     {[...Array(5)].map((_, i) => (
@@ -119,7 +155,7 @@ export default function PatientReviewSection() {
 
                   {/* Review Text */}
                   <p
-                    className="text-gray-700 leading-relaxed mb-6 grow"
+                    className="text-gray-700 leading-relaxed mb-6 grow line-clamp-4"
                     style={{
                       fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                     }}
@@ -163,7 +199,7 @@ export default function PatientReviewSection() {
           <button
             ref={prevRef}
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute -left-6 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
+            className="absolute -left-16 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
             aria-label="Previous review"
           >
             <ChevronLeft className="h-6 w-6" />
@@ -171,7 +207,7 @@ export default function PatientReviewSection() {
           <button
             ref={nextRef}
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute -right-6 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
+            className="absolute -right-16 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
             aria-label="Next review"
           >
             <ChevronRight className="h-6 w-6" />

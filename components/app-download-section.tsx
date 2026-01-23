@@ -1,24 +1,24 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { QrCode } from "lucide-react";
+import { Smartphone } from "lucide-react";
 
 export default function AppDownloadSection() {
   return (
     <div className="w-full py-16 bg-gradient-to-br from-[#009A98]/5 via-white to-[#00B5B2]/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="flex flex-col-reverse lg:flex-row gap-12 items-center">
           {/* Left Side - Text and Download Buttons */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="space-y-6"
+            className="space-y-6 w-full lg:w-1/2"
           >
             <div>
               <p className="text-lg text-primary font-semibold mb-2">
-                Meditime App - Bringing all Medical Information in Your Pocket
+                Mobile App
               </p>
               <h2
                 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
@@ -26,17 +26,12 @@ export default function AppDownloadSection() {
                   color: "#009A98",
                 }}
               >
-                Download Meditime App - Book Doctor Appointment Anytime from Anywhere
+                Download Meditime Mobile App Today
               </h2>
               <p
-                className="text-lg md:text-xl text-gray-800 mb-2 font-semibold"
+                className="text-lg md:text-xl text-gray-600"
               >
-                Consider Meditime your expert medical service assistant—your go-to guide for everything from hospitals to doctors, test prices to appointment schedules.
-              </p>
-              <p
-                className="text-base md:text-lg text-gray-600"
-              >
-                Simple, effective, and designed to give you complete control over your medical needs exactly when you need it most.
+                Meditime Mobile App is your expert medical service assistant. Book Doctor Appointment, See test price, Hosital Location within one place.
               </p>
             </div>
 
@@ -251,10 +246,12 @@ export default function AppDownloadSection() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-col items-center gap-3"
             >
-              <div className="w-32 h-32 bg-white border-4 border-gray-900 rounded-lg flex items-center justify-center shadow-lg">
-                {/* QR Code Placeholder - Replace with actual QR code image */}
-                <QrCode className="w-24 h-24 text-gray-900" strokeWidth={1.5} />
-                {/* You can replace the above with: <img src="/qr-code.png" alt="QR Code" className="w-full h-full object-contain" /> */}
+              <div className="w-32 h-32 bg-white border-4 border-gray-900 rounded-lg flex items-center justify-center shadow-lg overflow-hidden">
+                <img 
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://meditime.com" 
+                  alt="Scan to download" 
+                  className="w-full h-full object-contain" 
+                />
               </div>
               <p
                 className="text-sm font-semibold text-gray-700"
