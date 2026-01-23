@@ -39,6 +39,15 @@ const slides = [
     ctaText: "Download Now",
     ctaLink: "https://play.google.com/store",
   },
+  {
+    title: "Find all the information about 100+ Diagnostic Test in one Place",
+    subtitle: "Compare Prices & Save Up to 15%",
+    description:
+      "Compare pricing of diagnostic tests and get up to 15% discount using our health discounts cards.",
+    image: "/slide.jpg",
+    ctaText: "View Tests",
+    ctaLink: "/diagnostic",
+  },
 ];
 
 export default function HeroSection() {

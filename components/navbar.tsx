@@ -110,7 +110,7 @@ export default function Navbar() {
     { href: "/hospital", label: "Hospitals" },
     { href: "/service", label: "Services" },
     { href: "/diagnostic", label: "Diagnostic Tests" },
-    { href: "/blog", label: "Health Tips" },
+
     { href: "/membership", label: "Discount Cards" },
     { href: "/contact", label: "Contact" },
   ];
@@ -355,7 +355,7 @@ export default function Navbar() {
                       className="px-6 py-2.5 btn-primary text-white text-base shadow-lg hover:shadow-primary/30"
                       style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                     >
-                      Register
+                      Sign Up
                     </Link>
                   </motion.div>
                 </>
@@ -514,7 +514,7 @@ export default function Navbar() {
                         className="block w-full px-4 py-3 bg-gradient-to-r from-primary-light via-primary to-primary-dark hover:from-primary hover:via-primary-dark hover:to-primary text-white text-base font-semibold rounded-lg transition-all duration-300 shadow-lg text-center"
                         style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                       >
-                        Register
+                        Sign Up
                       </Link>
                     </>
                   )}

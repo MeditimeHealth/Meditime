@@ -2,10 +2,8 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
 interface Doctor {
@@ -27,21 +25,11 @@ export default function SearchSection() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [isSticky, setIsSticky] = useState(false);
 
   useEffect(() => {
     fetchDoctors();
     fetchHospitals();
-    // Load recent searches from localStorage
-    const saved = localStorage.getItem("recentSearches");
-    if (saved) {
-      try {
-        setRecentSearches(JSON.parse(saved));
-      } catch (e) {
-        console.error("Error loading recent searches:", e);
-      }
-    }
   }, []);
 
   useEffect(() => {
@@ -141,10 +129,6 @@ export default function SearchSection() {
   const handleSearch = () => {
     if (searchQuery.trim()) {
       const query = searchQuery.trim();
-      // Save to recent searches
-      const updated = [query, ...recentSearches.filter(s => s !== query)].slice(0, 5);
-      setRecentSearches(updated);
-      localStorage.setItem("recentSearches", JSON.stringify(updated));
       router.push(`/doctor?search=${encodeURIComponent(query)}`);
     }
   };
@@ -161,199 +145,151 @@ export default function SearchSection() {
       setShowSuggestions(false);
     } else {
       const query = suggestion.value;
-      // Save to recent searches
-      const updated = [query, ...recentSearches.filter(s => s !== query)].slice(0, 5);
-      setRecentSearches(updated);
-      localStorage.setItem("recentSearches", JSON.stringify(updated));
       router.push(`/doctor?search=${encodeURIComponent(query)}`);
       setShowSuggestions(false);
     }
   };
 
-  const handleRecentSearchClick = (search: string) => {
-    setSearchQuery(search);
-    router.push(`/doctor?search=${encodeURIComponent(search)}`);
-  };
+
 
   return (
-    <div className="max-w-7xl mx-auto ">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Spacer to prevent layout shift when sticky */}
-      {isSticky && <div></div>}
+      {isSticky && <div className="h-24"></div>}
 
       {/* Search Section */}
-      <motion.div
+      <div
         id="search-section"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className={`mb-10 transition-all duration-300 ${
+        className={`transition-all duration-300 ${
           isSticky
-            ? "fixed top-24 left-1/2 -translate-x-1/2 w-full max-w-7xl px-4 sm:px-6 lg:px-8 z-40"
-            : "relative -mt-20 z-10"
+            ? "fixed top-24 left-0 right-0 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 z-40"
+            : "relative mb-16 z-10"
         }`}
       >
-        <Card className="p-6 glass-card border-0 shadow-2xl rounded-2xl">
-          <div className="relative">
-            <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
-            <Input
-              type="text"
-              placeholder="নাম, বিশেষতা, হাসপাতাল, যোগ্যতা বা বায়ো দিয়ে খুঁজুন..."
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setShowSuggestions(true);
-                setFocusedIndex(-1);
-              }}
-              onFocus={() => setShowSuggestions(true)}
-              onBlur={() => {
-                setTimeout(() => setShowSuggestions(false), 200);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "ArrowDown") {
-                  e.preventDefault();
-                  setFocusedIndex((prev) =>
-                    prev < suggestions.length - 1 ? prev + 1 : prev
-                  );
-                } else if (e.key === "ArrowUp") {
-                  e.preventDefault();
-                  setFocusedIndex((prev) => (prev > 0 ? prev - 1 : -1));
-                } else if (e.key === "Enter") {
-                  e.preventDefault();
-                  if (focusedIndex >= 0 && suggestions[focusedIndex]) {
-                    handleSuggestionClick(suggestions[focusedIndex]);
-                  } else {
-                    handleSearch();
-                  }
-                } else if (e.key === "Escape") {
-                  setShowSuggestions(false);
+        <div className="relative">
+          <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
+          <Input
+            type="text"
+            placeholder="নাম, বিশেষতা, হাসপাতাল, যোগ্যতা বা বায়ো দিয়ে খুঁজুন..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setShowSuggestions(true);
+              setFocusedIndex(-1);
+            }}
+            onFocus={() => setShowSuggestions(true)}
+            onBlur={() => {
+              setTimeout(() => setShowSuggestions(false), 200);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setFocusedIndex((prev) =>
+                  prev < suggestions.length - 1 ? prev + 1 : prev
+                );
+              } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setFocusedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+              } else if (e.key === "Enter") {
+                e.preventDefault();
+                if (focusedIndex >= 0 && suggestions[focusedIndex]) {
+                  handleSuggestionClick(suggestions[focusedIndex]);
+                } else {
+                  handleSearch();
                 }
-              }}
-              className="pl-14 pr-4 py-6 text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all"
-              style={{
-                fontFamily:
-                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-              }}
-            />
+              } else if (e.key === "Escape") {
+                setShowSuggestions(false);
+              }
+            }}
+            className="pl-14 pr-4 py-6 text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all"
+            style={{
+              fontFamily:
+                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+            }}
+          />
 
-            <AnimatePresence>
-              {showSuggestions && suggestions.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50 max-h-96 overflow-y-auto"
-                >
-                  {suggestions.map((suggestion, index) => {
-                    const content = (
-                      <motion.div
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className={`px-5 py-4 cursor-pointer hover:bg-primary/5 transition-colors border-b border-gray-100 last:border-b-0 ${
-                          index === focusedIndex ? "bg-primary/10" : ""
-                        }`}
-                        onClick={() => handleSuggestionClick(suggestion)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div
-                              className="font-semibold text-gray-900 text-base"
-                              style={{
-                                fontFamily:
-                                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                              }}
-                            >
-                              {suggestion.value}
-                            </div>
-                            {suggestion.doctor && (
-                              <div
-                                className="text-sm text-gray-500 mt-1"
-                                style={{
-                                  fontFamily:
-                                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                                }}
-                              >
-                                {suggestion.doctor.specialty}
-                                {suggestion.doctor.hospital &&
-                                  ` • ${suggestion.doctor.hospital}`}
-                              </div>
-                            )}
-                            {suggestion.hospital && (
-                              <div
-                                className="text-sm text-gray-500 mt-1"
-                                style={{
-                                  fontFamily:
-                                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                                }}
-                              >
-                                এই হাসপাতালের ডাক্তার দেখতে ক্লিক করুন
-                              </div>
-                            )}
-                          </div>
-                          <span
-                            className="text-xs text-primary bg-primary/10 px-3 py-1.5 rounded-full font-semibold"
+          {showSuggestions && suggestions.length > 0 && (
+            <div
+              className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50 max-h-96 overflow-y-auto transition-all duration-200"
+            >
+                {suggestions.map((suggestion, index) => {
+                  const content = (
+                    <div
+                      className={`px-5 py-4 cursor-pointer hover:bg-primary/5 transition-colors border-b border-gray-100 last:border-b-0 ${
+                        index === focusedIndex ? "bg-primary/10" : ""
+                      }`}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div
+                            className="font-semibold text-gray-900 text-base"
                             style={{
                               fontFamily:
                                 "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                             }}
                           >
-                            {suggestion.type === "Doctor"
-                              ? "ডাক্তার"
-                              : suggestion.type === "Specialty"
-                              ? "বিশেষতা"
-                              : suggestion.type === "Hospital"
-                              ? "হাসপাতাল"
-                              : suggestion.type}
-                          </span>
+                            {suggestion.value}
+                          </div>
+                          {suggestion.doctor && (
+                            <div
+                              className="text-sm text-gray-500 mt-1"
+                              style={{
+                                fontFamily:
+                                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                              }}
+                            >
+                              {suggestion.doctor.specialty}
+                              {suggestion.doctor.hospital &&
+                                ` • ${suggestion.doctor.hospital}`}
+                            </div>
+                          )}
+                          {suggestion.hospital && (
+                            <div
+                              className="text-sm text-gray-500 mt-1"
+                              style={{
+                                fontFamily:
+                                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                              }}
+                            >
+                              এই হাসপাতালের ডাক্তার দেখতে ক্লিক করুন
+                            </div>
+                          )}
                         </div>
-                      </motion.div>
-                    );
+                        <span
+                          className="text-xs text-primary bg-primary/10 px-3 py-1.5 rounded-full font-semibold"
+                          style={{
+                            fontFamily:
+                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                          }}
+                        >
+                          {suggestion.type === "Doctor"
+                            ? "ডাক্তার"
+                            : suggestion.type === "Specialty"
+                            ? "বিশেষতা"
+                            : suggestion.type === "Hospital"
+                            ? "হাসপাতাল"
+                            : suggestion.type}
+                        </span>
+                      </div>
+                    </div>
+                  );
 
-                    return suggestion.link ? (
-                      <Link
-                        key={`${suggestion.type}-${index}`}
-                        href={suggestion.link}
-                      >
-                        {content}
-                      </Link>
-                    ) : (
-                      <div key={`${suggestion.type}-${index}`}>{content}</div>
-                    );
-                  })}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-          
-          {/* Recent Searches Section */}
-          {recentSearches.length > 0 && (
-            <div className="mt-4 flex items-center gap-3 flex-wrap">
-              <span
-                className="text-gray-700 font-semibold text-base"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
-              >
-                সম্প্রতি:
-              </span>
-              {recentSearches.map((search, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleRecentSearchClick(search)}
-                  className="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
-                >
-                  {search}
-                </button>
-              ))}
+                  return suggestion.link ? (
+                    <Link
+                      key={`${suggestion.type}-${index}`}
+                      href={suggestion.link}
+                    >
+                      {content}
+                    </Link>
+                  ) : (
+                    <div key={`${suggestion.type}-${index}`}>{content}</div>
+                  );
+                })}
             </div>
           )}
-        </Card>
-      </motion.div>
+        </div>
+      </div>
     </div>
   );
 }

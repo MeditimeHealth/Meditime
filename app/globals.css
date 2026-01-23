@@ -184,13 +184,14 @@ body {
 }
 
 .swiper-pagination-bullet-custom {
-  width: 10px !important;
-  height: 10px !important;
+  display: inline-block !important;
+  width: 12px !important;
+  height: 12px !important;
   background: #cbd5e1 !important;
   /* Slate 300 for inactive */
   opacity: 1 !important;
   margin: 0 8px !important;
-  border-radius: 9999px !important;
+  border-radius: 50% !important;
   transition: all 0.3s ease;
   cursor: pointer !important;
   border: 2px solid transparent !important;
@@ -199,16 +200,16 @@ body {
 .swiper-pagination-bullet-custom:hover {
   background: #94a3b8 !important;
   /* Slate 400 on hover */
-  transform: scale(1.2);
+  transform: scale(1.15);
   border-color: var(--primary-light) !important;
 }
 
 .swiper-pagination-bullet-active-custom {
   background: var(--primary) !important;
   /* Primary for active */
-  width: 12px !important;
-  height: 12px !important;
-  /* Slightly larger circle for active state */
+  width: 16px !important;
+  height: 16px !important;
+  /* Larger circle for active state */
   border-color: var(--primary-dark) !important;
   box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.3);
 }

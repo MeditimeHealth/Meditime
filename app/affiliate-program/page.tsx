@@ -237,7 +237,7 @@ function AffiliateAuthForms({ showSignupByDefault }: { showSignupByDefault: bool
               : "bg-gray-50 text-gray-600 hover:bg-gray-100"
           }`}
         >
-          Register
+          Sign Up
         </button>
         <button
           onClick={() => setIsSignup(false)}

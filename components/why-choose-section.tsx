@@ -47,14 +47,14 @@ export default function WhyChooseSection() {
         className="mb-16 text-center"
       >
         <span className="inline-block px-4 py-1.5 mb-4 text-sm font-medium text-primary bg-primary/8 rounded-full border border-primary/20">
-          Why Choose Us
+          Why Choose Meditime
         </span>
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-slate-800 tracking-tight max-w-4xl mx-auto leading-tight">
-          Choose Meditime — Because You Deserve{" "}
-          <span className="text-gradient">Quality Medical Services</span>
+          Choose Meditime for Simplified {" "}
+          <span className="text-gradient">Medical Services in Time</span>
         </h2>
         <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-          We believe everyone deserves access to updated healthcare information. Choosing Meditime helps speed up your doctor appointment process.
+        Choosing Meditime helps you bring speed in your doctor appointment booking process which significantly reduces the risk of being late to receive quality medical services
         </p>
       </motion.div>
 
@@ -70,24 +70,24 @@ export default function WhyChooseSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="p-6 lg:p-8 bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 h-full flex flex-col rounded-2xl group hover:-translate-y-2 relative overflow-hidden">
+              <Card className="p-6 lg:p-8 bg-white border border-slate-200 shadow-md hover:shadow-2xl hover:border-primary/30 transition-all duration-500 h-full flex flex-col rounded-2xl group hover:-translate-y-3 relative overflow-hidden">
                 {/* Hover Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                 
                 {/* Icon */}
                 <div className="mb-6 flex justify-center lg:justify-start">
-                  <div className="w-16 h-16 lg:w-18 lg:h-18 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center border border-primary/10 group-hover:from-primary/20 group-hover:to-primary/10 group-hover:scale-110 transition-all duration-500 group-hover:shadow-lg group-hover:shadow-primary/10">
-                    <IconComponent className="w-8 h-8 text-primary" strokeWidth={1.5} />
+                  <div className="w-16 h-16 lg:w-18 lg:h-18 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center border border-primary/10 group-hover:from-primary group-hover:to-primary-dark group-hover:scale-125 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-primary/30">
+                    <IconComponent className="w-8 h-8 text-primary group-hover:text-white transition-colors duration-500" strokeWidth={1.5} />
                   </div>
                 </div>
 
                 {/* Title */}
-                <h3 className="text-lg lg:text-xl font-bold text-slate-800 mb-3 text-center lg:text-left group-hover:text-primary transition-colors duration-300">
+                <h3 className="text-lg lg:text-xl font-bold text-slate-800 mb-3 text-center lg:text-left group-hover:text-primary-dark transition-colors duration-300">
                   {feature.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-sm text-slate-500 leading-relaxed text-center lg:text-left flex-grow">
+                <p className="text-sm text-slate-500 group-hover:text-slate-700 leading-relaxed text-center lg:text-left flex-grow transition-colors duration-300">
                   {feature.description}
                 </p>
               </Card>
