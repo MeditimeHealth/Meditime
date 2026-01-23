@@ -87,8 +87,8 @@ export default function HeroSection() {
                   priority={index === 0}
                 />
                 
-                {/* Gradient Overlay - with more opacity */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+                {/* Gradient Overlay - Doctor Page Style */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1a365d]/90 via-[#2C5282]/80 to-primary/60" />
                 
                 {/* Content Overlay - Centered */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
