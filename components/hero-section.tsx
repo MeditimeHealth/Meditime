@@ -92,10 +92,10 @@ export default function HeroSection() {
                 
                 {/* Content Overlay - Centered */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
-                  <h1 className="text-3xl sm:text-4xl font-bold leading-tight mb-3">
+                  <h1 className="text-4xl sm:text-5xl font-bold leading-tight mb-4 drop-shadow-lg">
                     {slide.title}
                   </h1>
-                  <p className="text-sm sm:text-base text-white/90 mb-6 max-w-md leading-relaxed">
+                  <p className="text-xl text-white/90 mb-6 max-w-xl leading-relaxed drop-shadow-md font-light">
                     {slide.description}
                   </p>
                   <Link href={slide.ctaLink} target={slide.ctaLink.startsWith('http') ? '_blank' : '_self'} className="mt-10">
