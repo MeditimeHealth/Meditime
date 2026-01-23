@@ -409,7 +409,7 @@ export default function DoctorProfilePage() {
             )}
 
             {/* About Section - Debugging Force Render */}
-              <Card className="p-8 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
+              <Card className="p-8 bg-gradient-to-br from-white to-green-50 border-4 border-red-500 shadow-xl relative z-50">
                 <h2
                   className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
                   style={{

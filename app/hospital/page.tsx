@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Search, X, MapPin, Building2, Phone, Mail, Users } from "lucide-react";
+import { Search, X, MapPin, Building2, Phone, Mail, Users, ArrowRight } from "lucide-react";
 import Navbar from "@/components/navbar";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -696,35 +696,39 @@ export default function HospitalListPage() {
                     <Card className="relative bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 h-full cursor-pointer group overflow-hidden">
                       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       <div className="p-6 flex flex-col h-full">
-                        <div className="flex items-start justify-between gap-4 mb-4">
+                        {/* 1. Center the hospital icon */}
+                        <div className="mb-4 flex justify-center"> {/* Changed to justify-center */}
                           <div className="p-3 bg-blue-50 text-primary rounded-xl shrink-0 group-hover:scale-110 transition-transform duration-300">
                              <Building2 className="h-6 w-6" />
                           </div>
-                            <Link href={`/hospital/${encodeURIComponent(hospital.name)}`} className="text-gray-400 hover:text-primary transition-colors p-2 hover:bg-gray-50 rounded-full" title="View Map Location">
-                              <MapPin className="h-5 w-5" />
-                            </Link>
                         </div>
 
                         <h3 
-                          className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors mb-3 leading-tight"
+                          className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors mb-3 leading-tight text-center"
                           style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                         >
                           {hospital.name}
                         </h3>
 
-                        {/* Address */}
-                        {hospital.address && (
-                          <p 
-                            className="text-sm text-gray-500 leading-relaxed mb-4 flex-grow"
-                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                          >
-                           {hospital.address}
-                          </p>
-                        )}
+                        {/* 2. MapPin moved to address */}
+                        <div className="flex items-start gap-2 mb-4 flex-grow justify-center">
+                            <MapPin className="h-4 w-4 text-gray-400 mt-1 shrink-0" />
+                            {hospital.address ? (
+                              <p 
+                                className="text-sm text-gray-500 leading-relaxed text-center"
+                                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                              >
+                               {hospital.address}
+                              </p>
+                            ) : (
+                               <p className="text-sm text-gray-400 italic">ঠিকানা উপলব্ধ নয়</p>
+                            )}
+                        </div>
                         
-                        <div className="pt-4 border-t border-gray-100 mt-auto flex items-center justify-between text-sm font-medium">
+                        <div className="pt-4 border-t border-gray-100 mt-auto flex items-center justify-center text-sm font-medium">
                             <span className="text-primary flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-                              {banglaLabels.viewDoctors} <Building2 className="w-4 h-4" />
+                              {/* 3. Button icon changed to ArrowRight */}
+                              {banglaLabels.viewDoctors} <ArrowRight className="w-4 h-4" />
                             </span>
                         </div>
                       </div>
