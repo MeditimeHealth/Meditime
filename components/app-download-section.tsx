@@ -248,7 +248,7 @@ export default function AppDownloadSection() {
             >
               <div className="w-32 h-32 bg-white border-4 border-gray-900 rounded-lg flex items-center justify-center shadow-lg overflow-hidden">
                 <img 
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://meditime.com" 
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://meditime.com.bd" 
                   alt="Scan to download" 
                   className="w-full h-full object-contain" 
                 />
