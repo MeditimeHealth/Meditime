@@ -87,8 +87,8 @@ export default function HeroSection() {
                   priority={index === 0}
                 />
                 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                {/* Gradient Overlay - with more opacity */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
                 
                 {/* Content Overlay - Centered */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
@@ -157,7 +157,7 @@ export default function HeroSection() {
                     <h1 className="text-5xl lg:text-6xl font-extrabold leading-tight text-slate-800 tracking-tight">
                       {slide.title}
                     </h1>
-                    <p className="text-lg text-slate-600 leading-relaxed max-w-2xl">
+                    <p className="text-lg text-slate-800 leading-relaxed max-w-2xl">
                       {slide.description}
                     </p>
                     <div className="flex gap-4 pt-2">
