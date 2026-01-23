@@ -1644,12 +1644,12 @@ function DoctorListPageContent() {
                 whileHover={{ y: -3 }}
               >
                 <Link href={`/doctor/${doctor._id}`} className="h-full block group">
-                  <Card className="relative bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 h-[520px] flex flex-col cursor-pointer overflow-hidden group-hover:-translate-y-1">
+                  <Card className="relative bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col cursor-pointer overflow-hidden group-hover:-translate-y-1">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                     <div className="p-6 flex-1 flex flex-col">
-                      {/* Doctor Image */}
-                      <div className="flex items-start gap-5 mb-5">
-                        <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-gray-50 shadow-inner shrink-0 group-hover:ring-4 ring-primary/10 transition-all">
+                      <div className="flex items-center gap-4 mb-4">
+                        {/* Doctor Image */}
+                        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-50 shadow-inner shrink-0 group-hover:ring-2 ring-primary/20 transition-all">
                           {doctor.image ? (
                             <Image
                               src={doctor.image}
@@ -1659,14 +1659,15 @@ function DoctorListPageContent() {
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-blue-50">
-                              <Stethoscope className="w-8 h-8 text-blue-400" />
+                              <Stethoscope className="w-6 h-6 text-blue-400" />
                             </div>
                           )}
                         </div>
-                        
-                        <div>
+
+                        {/* Name - Beside Photo */}
+                        <div className="flex-1">
                           <h3
-                            className="text-xl font-bold text-gray-900 leading-tight mb-1 group-hover:text-primary transition-colors"
+                            className="text-lg font-bold text-gray-900 leading-tight group-hover:text-primary transition-colors"
                             style={{
                               fontFamily:
                                 "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
@@ -1674,65 +1675,67 @@ function DoctorListPageContent() {
                           >
                             {doctor.name}
                           </h3>
-                          {doctor.specialty && (
-                            <div className="inline-block px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 text-sm font-semibold mt-1">
-                              {doctor.specialty}
-                            </div>
-                          )}
                         </div>
                       </div>
 
-                      {/* Content */}
-                      <div className="space-y-4 flex-1">
-                        {/* Qualification */}
-                        <div className="flex items-start gap-3">
-                          <Award className="w-5 h-5 text-gray-400 mt-0.5 shrink-0" />
-                          <p
-                            className="text-sm text-gray-600 leading-relaxed line-clamp-2"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
-                          >
-                            {doctor.qualification}
-                          </p>
-                        </div>
+                      {/* Info Stack - Below Photo */}
+                      <div className="flex-1 space-y-2">
+                        {/* 2. Specialty */}
+                        <p className="text-primary font-medium text-sm">
+                          {doctor.specialty}
+                        </p>
 
-                        {/* Hospital Name */}
+                        {/* 3. Qualification (Degree) */}
+                        <p
+                          className="text-sm text-gray-600 leading-snug"
+                          style={{
+                            fontFamily:
+                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                          }}
+                        >
+                          {doctor.qualification}
+                        </p>
+
+                        {/* 4. Designation */}
+                        {doctor.designation && (
+                          <p className="text-sm text-gray-500">
+                            {doctor.designation}
+                          </p>
+                        )}
+
+                        {/* 5. Hospital */}
                         {doctor.hospital && (
-                          <div className="flex items-start gap-3">
-                            <Building2 className="w-5 h-5 text-gray-400 mt-0.5 shrink-0" />
-                            <p
-                              className="text-sm text-gray-700 font-medium leading-relaxed line-clamp-2"
-                              style={{
-                                fontFamily:
-                                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                              }}
-                            >
-                              {doctor.hospital}
-                            </p>
+                          <p className="text-sm text-gray-700 font-medium">
+                            {doctor.hospital}
+                          </p>
+                        )}
+
+                        {/* 6. Chamber Time */}
+                        {doctor.availability && (
+                          <div className="flex items-start gap-1.5 text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded-lg">
+                            <Clock className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                            <span style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                              {formatAvailability(doctor.availability)}
+                            </span>
                           </div>
                         )}
                       </div>
 
-                      <div className="mt-6 pt-5 border-t border-gray-100">
-                        {/* Fee & Rating */}
+                      <div className="mt-5 pt-4 border-t border-gray-100">
                         <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-lg text-green-700 font-bold text-sm">
+                           <div className="flex items-center gap-1.5 bg-green-50 px-3 py-1 text-green-700 font-bold text-sm rounded-lg">
                             <span>৳</span>
                             <span>{doctor.consultationFee}</span>
                           </div>
-                          
                           {doctor.rating ? (
-                             <div className="flex items-center gap-1.5 text-amber-500 font-bold text-sm">
-                              <Star className="w-4 h-4 fill-current" />
+                             <div className="flex items-center gap-1 text-amber-500 font-bold text-sm">
+                              <Star className="w-3.5 h-3.5 fill-current" />
                               <span>{doctor.rating}</span>
                             </div>
                           ) : null}
                         </div>
 
-                        {/* Actions */}
-                         <Button className="w-full bg-primary hover:bg-primary-dark text-white rounded-xl py-6 font-semibold shadow-lg shadow-primary/20 group-hover:shadow-primary/30 transition-all">
+                        <Button className="w-full bg-primary hover:bg-primary-dark text-white rounded-xl py-2.5 h-auto font-semibold shadow-lg shadow-primary/20 group-hover:shadow-primary/30 transition-all text-sm">
                           {banglaLabels.bookAppointment}
                         </Button>
                       </div>

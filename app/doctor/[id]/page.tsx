@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 import {
   Star,
   Clock,
@@ -18,6 +19,7 @@ import {
   Phone,
   Check,
   Calendar,
+  Stethoscope,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -25,7 +27,8 @@ interface Doctor {
   _id: string;
   name: string;
   qualification: string;
-
+  specialty?: string; // Added field
+  designation?: string; // Added field
 
   hospital?: string;
   division?: string;
@@ -83,7 +86,6 @@ export default function DoctorProfilePage() {
   const [relatedDoctors, setRelatedDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [affiliateCode, setAffiliateCode] = useState<string>("");
   const [departmentDiseases, setDepartmentDiseases] = useState<string[]>([]);
 
   useEffect(() => {
@@ -100,6 +102,7 @@ export default function DoctorProfilePage() {
       const data = await response.json();
       if (response.ok && data.doctor) {
         setDoctor(data.doctor);
+        console.log("Fetched doctor data:", data.doctor);
         
         // Fetch diseases for the doctor's department
         if (data.doctor.department) {
@@ -142,38 +145,65 @@ export default function DoctorProfilePage() {
     }
   };
 
+  // Helper to calculate similarity score
+  const calculateRelevanceScore = (currentDoc: Doctor, otherDoc: Doctor): number => {
+    let score = 0;
+    if (otherDoc.department === currentDoc.department) score += 10;
+    if (otherDoc.hospital === currentDoc.hospital) score += 5;
+    // Assuming same division/district implies "same area" if hospital is different
+    if (otherDoc.district === currentDoc.district) score += 2;
+    if (otherDoc.division === currentDoc.division) score += 1;
+    return score;
+  };
+
   const fetchRelatedDoctors = async () => {
+    if (!doctor) return;
+    
     try {
       const response = await fetch("/api/doctors");
       const data = await response.json();
       if (response.ok && data.doctors) {
-        // Get doctors from same department or hospital, exclude current doctor
-        const related = data.doctors
-          .filter((d: Doctor) => d._id !== doctorId)
-          .slice(0, 6);
-        setRelatedDoctors(related);
+        // Filter out current doctor
+        const others = data.doctors.filter((d: Doctor) => d._id !== doctorId);
+        
+        // Sort by relevance score
+        const sorted = others.sort((a: Doctor, b: Doctor) => {
+          return calculateRelevanceScore(doctor, b) - calculateRelevanceScore(doctor, a);
+        });
+
+        setRelatedDoctors(sorted.slice(0, 3)); // Take top 3
       }
     } catch (error) {
       console.error("Error fetching related doctors:", error);
     }
   };
 
+
+  // Trigger fetchRelatedDoctors when doctor is loaded
+  useEffect(() => {
+    if (doctor) {
+      fetchRelatedDoctors();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doctor]);
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 flex flex-col">
         <Navbar />
-        <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="flex-1 flex items-center justify-center">
           <div className="text-gray-500">Loading...</div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   if (!doctor) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 flex flex-col">
         <Navbar />
-        <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <p className="text-gray-500 mb-4">Doctor not found</p>
             <Link href="/doctor">
@@ -181,6 +211,7 @@ export default function DoctorProfilePage() {
             </Link>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -191,14 +222,35 @@ export default function DoctorProfilePage() {
 
   const newPatientFee = doctor.newPatientFee || doctor.consultationFee;
   const oldPatientFee = doctor.oldPatientFee;
+  
+   // Helper to format availability strictly for display
+  const formatAvailability = (
+    availability:
+      | Array<{ days: string[]; time: string }>
+      | { days: string[]; time: string },
+  ): string => {
+    const slots = Array.isArray(availability) ? availability : [availability];
+    return slots
+      .map((slot) => {
+         // Simplify for card display: just show day range + time
+         const sortedDays = slot.days.sort((a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b));
+         const dayStr = sortedDays.length > 1 
+            ? `${getBengaliDay(sortedDays[0])}-${getBengaliDay(sortedDays[sortedDays.length - 1])}`
+            : getBengaliDay(sortedDays[0]);
+         return `${dayStr} ${slot.time}`;
+      })
+      .join(" | ");
+  };
+
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
 
       {/* Breadcrumbs */}
       <div className="bg-gradient-to-r from-gray-50 to-white border-b-2 border-gray-200 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* ... (breadcrumb content same as before) ... */}
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 text-base md:text-lg font-semibold text-gray-700">
             <Link href="/" className="hover:text-primary transition-colors" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>হোম</Link>
             <span className="text-gray-400">/</span>
@@ -228,7 +280,8 @@ export default function DoctorProfilePage() {
       {/* Profile Section - Facebook Style */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative">
+          {/* ... (Profile info same as updated previously) ... */}
+           <div className="relative">
             {/* Profile Picture - Positioned over cover */}
             <div className="absolute -top-24 md:-top-32 left-0">
               <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-6 border-white shadow-2xl bg-white ring-4 ring-white">
@@ -260,7 +313,8 @@ export default function DoctorProfilePage() {
                     >
                       {doctor.name}
                     </h1>
-                    {doctor.rating && doctor.rating > 0 && (
+                     {/* Safe rating check to avoid 0 rendering */}
+                    {!!doctor.rating && doctor.rating > 0 && (
                       <div className="flex items-center gap-2 bg-yellow-50 px-4 py-2 rounded-full border-2 border-yellow-200">
                         <Star className="h-6 w-6 fill-yellow-400 text-yellow-400" />
                         <span className="text-xl md:text-2xl font-bold text-gray-900">{doctor.rating.toFixed(1)}</span>
@@ -268,32 +322,32 @@ export default function DoctorProfilePage() {
                     )}
                   </div>
                   <div className="space-y-2">
+                     {/* Specialty */}
+                     <p className="text-primary font-bold text-lg md:text-xl">
+                      {doctor.specialty}
+                    </p>
+
+                    {/* Degree/Qualification */}
                     <p
-                      className="text-lg md:text-xl lg:text-2xl text-gray-700 font-semibold"
+                      className="text-lg md:text-xl text-gray-700 font-semibold"
                       style={{
                         fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                       }}
                     >
-                      {[
-
-                        doctor.qualification,
-                        doctor.department
-                      ].filter(Boolean).join(", ")}
+                      {doctor.qualification}
                     </p>
-                    {doctor.hospital && (
-                      <div className="flex items-center gap-2">
-                        <Building2 className="h-5 w-5 text-primary" />
-                        <p
-                          className="text-base md:text-lg lg:text-xl text-gray-600"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {doctor.hospital}
-                        </p>
-                      </div>
-                    )}
 
+                    {/* Designation */}
+                    {doctor.designation && (
+                      <p
+                        className="text-base md:text-lg text-gray-600 font-medium"
+                        style={{
+                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                        }}
+                      >
+                        {doctor.designation}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -302,7 +356,7 @@ export default function DoctorProfilePage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Desktop and Tablet */}
           <div className="lg:col-span-2 space-y-6">
@@ -354,8 +408,7 @@ export default function DoctorProfilePage() {
               </Card>
             )}
 
-            {/* About Section */}
-            {doctor.bio && (
+            {/* About Section - Debugging Force Render */}
               <Card className="p-8 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
                 <h2
                   className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
@@ -372,11 +425,10 @@ export default function DoctorProfilePage() {
                       fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                     }}
                   >
-                    {doctor.bio}
+                    {doctor.bio ? doctor.bio : "No bio available (Debug: doctor.bio is falsy)"}
                   </p>
                 </div>
               </Card>
-            )}
 
             {/* Related Doctors - Desktop/Tablet */}
             <div className="hidden md:block">
@@ -390,55 +442,91 @@ export default function DoctorProfilePage() {
                   >
                     সংশ্লিষ্ট ডাক্তার
                   </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  <div className="grid grid-cols-1 gap-5">
                     {relatedDoctors.map((relatedDoctor) => (
                       <Link
                         key={relatedDoctor._id}
                         href={`/doctor/${relatedDoctor._id}`}
-                        className="group"
+                        className="group block"
                       >
-                        <motion.div
-                          whileHover={{ y: -5 }}
-                          className="p-5 bg-white rounded-xl border-2 border-gray-200 hover:border-primary/50 transition-all shadow-md hover:shadow-xl"
-                        >
-                          <div className="flex items-center gap-4 mb-3">
-                            <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-200 ring-2 ring-primary/20">
-                              {relatedDoctor.image ? (
-                                <Image
-                                  src={relatedDoctor.image}
-                                  alt={relatedDoctor.name}
-                                  fill
-                                  className="object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-primary-dark text-white text-2xl font-bold">
-                                  {relatedDoctor.name.charAt(0)}
+                         <div className="relative bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer overflow-hidden transform hover:-translate-y-1">
+                          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                          <div className="p-5">
+                             <div className="flex items-center gap-4 mb-4">
+                              {/* Doctor Image */}
+                              <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-50 shadow-inner shrink-0 group-hover:ring-2 ring-primary/20 transition-all">
+                                {relatedDoctor.image ? (
+                                  <Image
+                                    src={relatedDoctor.image}
+                                    alt={relatedDoctor.name}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center bg-blue-50">
+                                    <Stethoscope className="w-6 h-6 text-blue-400" />
+                                  </div>
+                                )}
+                              </div>
+
+                               {/* Name - Beside Photo */}
+                              <div className="flex-1">
+                                <h3
+                                  className="text-lg font-bold text-gray-900 leading-tight group-hover:text-primary transition-colors"
+                                  style={{
+                                    fontFamily:
+                                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                                  }}
+                                >
+                                  {relatedDoctor.name}
+                                </h3>
+                              </div>
+                            </div>
+                            
+                            {/* Info Stack - Line by Line */}
+                            <div className="space-y-1.5 ml-1">
+                               {/* Specialty */}
+                               <p className="text-primary font-medium text-sm">
+                                {relatedDoctor.specialty}
+                              </p>
+
+                              {/* Qualification */}
+                              <p
+                                className="text-sm text-gray-600 leading-snug"
+                                style={{
+                                  fontFamily:
+                                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                                }}
+                              >
+                                {relatedDoctor.qualification}
+                              </p>
+
+                              {/* Designation */}
+                              {relatedDoctor.designation && (
+                                <p className="text-sm text-gray-500">
+                                  {relatedDoctor.designation}
+                                </p>
+                              )}
+
+                              {/* Hospital */}
+                              {relatedDoctor.hospital && (
+                                <p className="text-sm text-gray-700 font-medium">
+                                  {relatedDoctor.hospital}
+                                </p>
+                              )}
+                              
+                               {/* Chamber Time */}
+                              {relatedDoctor.availability && (
+                                <div className="flex items-start gap-1.5 text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded-lg inline-flex w-full">
+                                  <Clock className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                                  <span style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                                    {formatAvailability(relatedDoctor.availability)}
+                                  </span>
                                 </div>
                               )}
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <h3
-                                className="text-base md:text-lg font-bold text-gray-900 truncate group-hover:text-primary"
-                                style={{
-                                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                                }}
-                              >
-                                {relatedDoctor.name}
-                              </h3>
-                              <p
-                                className="text-sm md:text-base text-gray-600 truncate"
-                                style={{
-                                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                                }}
-                              >
-                                {[
-                                  relatedDoctor.qualification,
-                                  relatedDoctor.department
-                                ].filter(Boolean).join(", ")}
-                              </p>
-                            </div>
                           </div>
-                        </motion.div>
+                         </div>
                       </Link>
                     ))}
                   </div>
