@@ -46,9 +46,9 @@ export default function WhyChooseSection() {
         transition={{ duration: 0.5 }}
         className="mb-16 text-center"
       >
-        <span className="inline-block px-4 py-1.5 mb-4 text-sm font-medium text-primary bg-primary/8 rounded-full border border-primary/20">
+        {/* <span className="inline-block px-4 py-1.5 mb-4 text-sm font-medium text-primary bg-primary/8 rounded-full border border-primary/20">
           Why Choose Meditime
-        </span>
+        </span> */}
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-slate-800 tracking-tight max-w-4xl mx-auto leading-tight">
           Choose Meditime for Simplified {" "}
           <span className="text-gradient">Medical Services in Time</span>

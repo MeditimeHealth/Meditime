@@ -144,7 +144,7 @@ export default function SearchSection() {
       {/* Search Section */}
       <div
         id="search-section"
-        className="sticky top-20 left-0 right-0 z-40 transition-all duration-300 mb-8"
+        className="sticky top-20 left-0 right-0 z-40 transition-all duration-300 mt-8 mb-12"
       >
         <div className="relative">
           <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
@@ -181,7 +181,7 @@ export default function SearchSection() {
                 setShowSuggestions(false);
               }
             }}
-            className="pl-14 pr-4 py-4 md:py-6 text-base md:text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all bg-white"
+            className="pl-14 pr-4 py-5 md:py-7 text-base md:text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all bg-white"
             style={{
               fontFamily:
                 "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
