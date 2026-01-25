@@ -112,18 +112,18 @@ export default function DepartmentSection() {
           {/* Navigation Buttons */}
           <button
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute left-2 md:left-0 top-1/2 -translate-y-1/2 translate-x-0 md:-translate-x-4 z-10 w-12 h-12 rounded-full bg-white shadow-lg hover:shadow-xl flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all duration-300 group"
+            className="absolute left-0 lg:-left-12 top-1/2 -translate-y-1/2 z-10 text-primary hover:text-primary-dark transition-colors p-2"
             aria-label="Previous slide"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-8 h-8" />
           </button>
           
           <button
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute right-2 md:right-0 top-1/2 -translate-y-1/2 translate-x-0 md:translate-x-4 z-10 w-12 h-12 rounded-full bg-white shadow-lg hover:shadow-xl flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all duration-300 group"
+            className="absolute right-0 lg:-right-12 top-1/2 -translate-y-1/2 z-10 text-primary hover:text-primary-dark transition-colors p-2"
             aria-label="Next slide"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-8 h-8" />
           </button>
 
           <Swiper

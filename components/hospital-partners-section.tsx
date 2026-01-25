@@ -159,18 +159,18 @@ export default function HospitalPartnersSection() {
           <button
             ref={prevRef}
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute left-2 lg:-left-16 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
+            className="absolute left-0 lg:-left-12 top-1/2 -translate-y-1/2 z-10 text-[#009A98] hover:text-[#007c7a] transition-colors p-2"
             aria-label="Previous hospital"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-8 w-8" />
           </button>
           <button
             ref={nextRef}
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute right-2 lg:-right-16 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white border-2 border-[#009A98] text-[#009A98] transition-all hover:bg-[#009A98] hover:text-white shadow-lg hover:shadow-xl"
+            className="absolute right-0 lg:-right-12 top-1/2 -translate-y-1/2 z-10 text-[#009A98] hover:text-[#007c7a] transition-colors p-2"
             aria-label="Next hospital"
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-8 w-8" />
           </button>
         </div>
       </div>
