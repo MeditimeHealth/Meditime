@@ -785,7 +785,7 @@ function DoctorListPageContent() {
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-primary to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
               <div className="relative relative bg-white rounded-2xl shadow-xl flex items-center p-2">
-                <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-primary h-6 w-6 z-10" />
+                <Search className="absolute left-4 md:left-6 top-1/2 transform -translate-y-1/2 text-primary h-5 w-5 md:h-6 md:w-6 z-10" />
                 <Input
                   type="text"
                   placeholder={banglaLabels.searchPlaceholder}
@@ -821,7 +821,7 @@ function DoctorListPageContent() {
                       setShowSuggestions(false);
                     }
                   }}
-                  className="w-full pl-14 pr-4 py-7 text-lg border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent placeholder:text-gray-400"
+                  className="w-full pl-12 md:pl-14 pr-4 py-2.5 md:py-7 text-sm md:text-lg border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent placeholder:text-gray-400"
                   style={{
                     fontFamily:
                       "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
@@ -950,15 +950,15 @@ function DoctorListPageContent() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mb-16"
         >
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-            <div className="mb-8 flex items-center justify-between">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-8">
+            <div className="mb-6 md:mb-8 flex items-end justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
                   Search Doctor By Department
                 </h2>
-                <p className="text-gray-500 mt-1">Explore specialists by department</p>
+                <p className="text-gray-500 mt-1 text-sm md:text-base">Explore specialists by department</p>
               </div>
-              <Link href="/departments" className="text-primary font-medium hover:underline flex items-center gap-1">
+              <Link href="/departments" className="text-primary font-medium hover:underline flex items-center gap-1 whitespace-nowrap shrink-0 mb-1">
                 View All <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
@@ -1027,7 +1027,7 @@ function DoctorListPageContent() {
                       </div>
                       {/* Department Name */}
                       <p
-                        className={`font-bold text-sm text-center mt-1 line-clamp-2 ${
+                        className={`font-bold text-sm text-center mt-1 ${
                           selectedDept === dept.name
                             ? "text-white"
                             : "text-gray-900"
