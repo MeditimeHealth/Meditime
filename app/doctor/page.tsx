@@ -958,7 +958,7 @@ function DoctorListPageContent() {
                 </h2>
                 <p className="text-gray-500 mt-1 text-sm md:text-base">Explore specialists by department</p>
               </div>
-              <Link href="/departments" className="text-primary font-medium hover:underline flex items-center gap-1 whitespace-nowrap shrink-0 mb-1">
+              <Link href="/departments" className="hidden md:flex text-primary font-medium hover:underline items-center gap-1 whitespace-nowrap shrink-0 mb-1">
                 View All <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
@@ -1047,6 +1047,13 @@ function DoctorListPageContent() {
               <button className="department-next absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 text-primary hover:bg-primary hover:text-white transition-colors border border-gray-100 disabled:opacity-50">
                 <ChevronRight className="w-6 h-6" />
               </button>
+            </div>
+            
+            {/* View All Button - Mobile Only */}
+            <div className="mt-6 flex justify-center md:hidden">
+              <Link href="/departments" className="text-primary font-medium hover:underline flex items-center gap-1">
+                View All <ChevronRight className="w-4 h-4" />
+              </Link>
             </div>
           </div>
         </motion.div>

@@ -112,7 +112,7 @@ export default function HeroSection() {
       </div>
 
       {/* Desktop Hero - Original Side-by-Side Layout */}
-      <div className="hidden lg:block relative pt-28 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white">
+      <div className="hidden lg:block relative pt-28 pb-8 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white">
         {/* Refined Abstract Background Shapes */}
         <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[800px] h-[800px] bg-gradient-to-br from-teal-100/40 via-teal-50/30 to-transparent rounded-full blur-3xl -z-10" />
         <div className="absolute bottom-0 left-0 -ml-40 -mb-40 w-[600px] h-[600px] bg-gradient-to-tr from-blue-100/30 via-sky-50/20 to-transparent rounded-full blur-3xl -z-10" />
