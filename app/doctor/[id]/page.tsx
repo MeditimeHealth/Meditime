@@ -451,9 +451,9 @@ export default function DoctorProfilePage() {
                         href={`/doctor/${relatedDoctor._id}`}
                         className="group block"
                       >
-                         <div className="relative bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer overflow-hidden transform hover:-translate-y-1">
+                         <div className="relative bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer overflow-hidden transform hover:-translate-y-1 h-full">
                           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                          <div className="p-5">
+                          <div className="p-6 flex-1 flex flex-col">
                              <div className="flex items-center gap-4 mb-4">
                               {/* Doctor Image */}
                               <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-50 shadow-inner shrink-0 group-hover:ring-2 ring-primary/20 transition-all">
@@ -471,7 +471,7 @@ export default function DoctorProfilePage() {
                                 )}
                               </div>
 
-                               {/* Name - Beside Photo */}
+                               {/* Name & Specialty - Beside Photo */}
                               <div className="flex-1">
                                 <h3
                                   className="text-lg font-bold text-gray-900 leading-tight group-hover:text-primary transition-colors"
@@ -482,17 +482,17 @@ export default function DoctorProfilePage() {
                                 >
                                   {relatedDoctor.name}
                                 </h3>
+                                {/* Specialty - Under Name */}
+                                <p className="text-primary font-medium text-sm mt-1">
+                                  {relatedDoctor.specialty}
+                                </p>
                               </div>
                             </div>
                             
-                            {/* Info Stack - Line by Line */}
-                            <div className="space-y-1.5 ml-1">
-                               {/* Specialty */}
-                               <p className="text-primary font-medium text-sm">
-                                {relatedDoctor.specialty}
-                              </p>
+                            {/* Info Stack - Below Photo */}
+                            <div className="flex-1 space-y-2">
 
-                              {/* Qualification */}
+                              {/* Qualification (Degree) */}
                               <p
                                 className="text-sm text-gray-600 leading-snug"
                                 style={{
@@ -519,7 +519,7 @@ export default function DoctorProfilePage() {
                               
                                {/* Chamber Time */}
                               {relatedDoctor.availability && (
-                                <div className="flex items-start gap-1.5 text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded-lg inline-flex w-full">
+                                <div className="flex items-start gap-1.5 text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded-lg">
                                   <Clock className="w-3.5 h-3.5 mt-0.5 shrink-0" />
                                   <span style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
                                     {formatAvailability(relatedDoctor.availability)}
@@ -860,50 +860,86 @@ export default function DoctorProfilePage() {
                     <Link
                       key={relatedDoctor._id}
                       href={`/doctor/${relatedDoctor._id}`}
-                      className="group"
+                      className="group block"
                     >
-                      <motion.div
-                        whileHover={{ y: -5 }}
-                        className="p-5 bg-white rounded-xl border-2 border-gray-200 hover:border-primary/50 transition-all shadow-md hover:shadow-xl"
-                      >
-                        <div className="flex items-center gap-4 mb-3">
-                          <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-200 ring-2 ring-primary/20">
-                            {relatedDoctor.image ? (
-                              <Image
-                                src={relatedDoctor.image}
-                                alt={relatedDoctor.name}
-                                fill
-                                className="object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-primary-dark text-white text-2xl font-bold">
-                                {relatedDoctor.name.charAt(0)}
+                         <div className="relative bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer overflow-hidden transform hover:-translate-y-1 h-full">
+                          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                          <div className="p-6 flex-1 flex flex-col">
+                             <div className="flex items-center gap-4 mb-4">
+                              {/* Doctor Image */}
+                              <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-50 shadow-inner shrink-0 group-hover:ring-2 ring-primary/20 transition-all">
+                                {relatedDoctor.image ? (
+                                  <Image
+                                    src={relatedDoctor.image}
+                                    alt={relatedDoctor.name}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center bg-blue-50">
+                                    <Stethoscope className="w-6 h-6 text-blue-400" />
+                                  </div>
+                                )}
                               </div>
-                            )}
+
+                               {/* Name & Specialty - Beside Photo */}
+                              <div className="flex-1">
+                                <h3
+                                  className="text-lg font-bold text-gray-900 leading-tight group-hover:text-primary transition-colors"
+                                  style={{
+                                    fontFamily:
+                                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                                  }}
+                                >
+                                  {relatedDoctor.name}
+                                </h3>
+                                {/* Specialty - Under Name */}
+                                <p className="text-primary font-medium text-sm mt-1">
+                                  {relatedDoctor.specialty}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            {/* Info Stack - Below Photo */}
+                            <div className="flex-1 space-y-2">
+
+                              {/* Qualification (Degree) */}
+                              <p
+                                className="text-sm text-gray-600 leading-snug"
+                                style={{
+                                  fontFamily:
+                                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                                }}
+                              >
+                                {relatedDoctor.qualification}
+                              </p>
+
+                              {/* Designation */}
+                              {relatedDoctor.designation && (
+                                <p className="text-sm text-gray-500">
+                                  {relatedDoctor.designation}
+                                </p>
+                              )}
+
+                              {/* Hospital */}
+                              {relatedDoctor.hospital && (
+                                <p className="text-sm text-gray-700 font-medium">
+                                  {relatedDoctor.hospital}
+                                </p>
+                              )}
+                              
+                               {/* Chamber Time */}
+                              {relatedDoctor.availability && (
+                                <div className="flex items-start gap-1.5 text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded-lg">
+                                  <Clock className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                                  <span style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                                    {formatAvailability(relatedDoctor.availability)}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <h3
-                              className="text-base md:text-lg font-bold text-gray-900 truncate group-hover:text-primary"
-                              style={{
-                                fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                              }}
-                            >
-                              {relatedDoctor.name}
-                            </h3>
-                            <p
-                              className="text-sm md:text-base text-gray-600 truncate"
-                              style={{
-                                fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                              }}
-                            >
-                              {[
-                                relatedDoctor.qualification,
-                                relatedDoctor.department
-                              ].filter(Boolean).join(", ")}
-                            </p>
-                          </div>
-                        </div>
-                      </motion.div>
+                         </div>
                     </Link>
                   ))}
                 </div>
