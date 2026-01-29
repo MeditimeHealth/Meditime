@@ -22,7 +22,6 @@ import {
   Search,
   X,
   Star,
-  Clock,
   Building2,
   MapPin,
   Award,
@@ -34,6 +33,7 @@ import Navbar from "@/components/navbar";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import DoctorCard from "@/components/doctor-card";
 
 interface Department {
   _id: string;
@@ -217,60 +217,7 @@ function DoctorListPageContent() {
     "রবিবার",
   ];
 
-  // Convert English number to Bengali
-  const toBengaliNumber = (num: number): string => {
-    const bengaliDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
-    return num
-      .toString()
-      .split("")
-      .map((digit) => bengaliDigits[parseInt(digit)])
-      .join("");
-  };
 
-  // Convert time to Bengali format (e.g., "10:00" -> "১০টা")
-  const formatTimeToBengali = (time: string): string => {
-    const [hours, minutes] = time.split(":").map(Number);
-    const hourStr = toBengaliNumber(hours);
-    const minuteStr = minutes > 0 ? ` ${toBengaliNumber(minutes)} মিনিট` : "";
-    return `${hourStr}টা${minuteStr}`;
-  };
-
-  // Get Bengali day name
-  const getBengaliDay = (day: string): string => {
-    const dayIndex = daysOfWeek.indexOf(day);
-    return dayIndex >= 0 ? banglaDays[dayIndex] : day;
-  };
-
-  // Format availability in Bengali (e.g., "শনিবার থেকে শুক্রবার ১০টা থেকে ১২টা")
-  const formatAvailability = (
-    availability:
-      | Array<{ days: string[]; time: string }>
-      | { days: string[]; time: string },
-  ): string => {
-    // Handle backward compatibility - convert old format to array
-    const slots = Array.isArray(availability) ? availability : [availability];
-
-    return slots
-      .map((slot) => {
-        const sortedDays = slot.days.sort((a, b) => {
-          return daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b);
-        });
-
-        let timeRange = "";
-        if (sortedDays.length === 1) {
-          const day = getBengaliDay(sortedDays[0]);
-          const time = slot.time || "";
-          timeRange = `${day} ${time}`;
-        } else {
-          const firstDay = getBengaliDay(sortedDays[0]);
-          const lastDay = getBengaliDay(sortedDays[sortedDays.length - 1]);
-          const time = slot.time || "";
-          timeRange = `${firstDay} থেকে ${lastDay} ${time}`;
-        }
-        return timeRange;
-      })
-      .join("। ");
-  };
 
   const fetchDoctors = async () => {
     try {
@@ -1643,113 +1590,7 @@ function DoctorListPageContent() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {filteredAndSortedDoctors.map((doctor, index) => (
-              <motion.div
-                key={doctor._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                whileHover={{ y: -3 }}
-              >
-                <Link href={`/doctor/${doctor._id}`} className="h-full block group">
-                  <Card className="relative bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col cursor-pointer overflow-hidden group-hover:-translate-y-1">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                    <div className="p-6 flex-1 flex flex-col">
-                      <div className="flex items-center gap-4 mb-4">
-                        {/* Doctor Image */}
-                        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-50 shadow-inner shrink-0 group-hover:ring-2 ring-primary/20 transition-all">
-                          {doctor.image ? (
-                            <Image
-                              src={doctor.image}
-                              alt={doctor.name}
-                              fill
-                              className="object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-blue-50">
-                              <Stethoscope className="w-6 h-6 text-blue-400" />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Name & Specialty - Beside Photo */}
-                        <div className="flex-1">
-                          <h3
-                            className="text-lg font-bold text-gray-900 leading-tight group-hover:text-primary transition-colors"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
-                          >
-                            {doctor.name}
-                          </h3>
-                          {/* Specialty - Under Name */}
-                          <p className="text-primary font-medium text-sm mt-1">
-                            {doctor.specialty}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Info Stack - Below Photo */}
-                      <div className="flex-1 space-y-2">
-
-                        {/* 3. Qualification (Degree) */}
-                        <p
-                          className="text-sm text-gray-600 leading-snug"
-                          style={{
-                            fontFamily:
-                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {doctor.qualification}
-                        </p>
-<br/>
-                        {/* 4. Designation */}
-                        {doctor.designation && (
-                          <p className="text-sm text-gray-500">
-                            {doctor.designation}
-                          </p>
-                        )}
-
-                        {/* 5. Hospital */}
-                        {doctor.hospital && (
-                          <p className="text-sm text-gray-700 font-medium">
-                            {doctor.hospital}
-                          </p>
-                        )}
-
-                        {/* 6. Chamber Time */}
-                        {doctor.availability && (
-                          <div className="flex items-start gap-1.5 text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded-lg">
-                            <Clock className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                            <span style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
-                              {formatAvailability(doctor.availability)}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* <div className="mt-5 pt-4 border-t border-gray-100">
-                        <div className="flex items-center justify-between mb-4">
-                           <div className="flex items-center gap-1.5 bg-green-50 px-3 py-1 text-green-700 font-bold text-sm rounded-lg">
-                            <span>৳</span>
-                            <span>{doctor.consultationFee}</span>
-                          </div>
-                          {doctor.rating ? (
-                             <div className="flex items-center gap-1 text-amber-500 font-bold text-sm">
-                              <Star className="w-3.5 h-3.5 fill-current" />
-                              <span>{doctor.rating}</span>
-                            </div>
-                          ) : null}
-                        </div>
-
-                        <Button className="w-full bg-primary hover:bg-primary-dark text-white rounded-xl py-2.5 h-auto font-semibold shadow-lg shadow-primary/20 group-hover:shadow-primary/30 transition-all text-sm">
-                          {banglaLabels.bookAppointment}
-                        </Button>
-                      </div> */}
-                    </div>
-                  </Card>
-                </Link>
-              </motion.div>
+              <DoctorCard key={doctor._id} doctor={doctor} index={index} />
             ))}
           </div>
         )}
