@@ -53,7 +53,7 @@ export default function ServicesSection() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-white">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-20 bg-white">
       {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -124,7 +124,7 @@ export default function ServicesSection() {
 
                   {/* CTA Button */}
                   <div className="mt-auto">
-                    <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-primary-light text-white rounded-full text-sm font-semibold group-hover:from-primary-dark group-hover:to-primary transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-primary/20">
+                    <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-primary-light text-white rounded-full text-sm font-semibold hover:from-primary-dark hover:to-primary group-hover:from-primary-dark group-hover:to-primary transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 group-hover:shadow-lg group-hover:shadow-primary/20">
                       {service.cta}
                       <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </span>

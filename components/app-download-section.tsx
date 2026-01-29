@@ -175,7 +175,7 @@ export default function AppDownloadSection() {
                     </div>
 
                     {/* Order Medicine */}
-                    <div className="bg-orange-50 rounded-lg p-3 border border-orange-100">
+                    {/* <div className="bg-orange-50 rounded-lg p-3 border border-orange-100">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
                           <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
@@ -187,7 +187,7 @@ export default function AppDownloadSection() {
                           <p className="text-[10px] text-gray-600 truncate">Order Medicine</p>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
                     {/* Diagnostic & Tests */}
                     <div className="bg-red-50 rounded-lg p-3 border border-red-100">

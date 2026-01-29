@@ -186,7 +186,7 @@ export default function DepartmentSection() {
         </div>
 
         {/* Mobile Grid View */}
-        <div className="md:hidden grid grid-cols-2 gap-4">
+        <div className="md:hidden grid grid-cols-1 gap-4">
           {departments.map((department) => {
             const IconComponent = getIconForDepartment(department.name);
             const colorGradient = getColorForDepartment(department.name);

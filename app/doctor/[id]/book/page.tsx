@@ -24,16 +24,16 @@ interface Doctor {
 }
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const banglaDays = ["সোম", "মঙ্গল", "বুধ", "বৃহস্পতি", "শুক্র", "শনি", "রবি"];
+const banglaDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const banglaMonths = [
-  "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
-  "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
 ];
 
 // Convert English number to Bengali
+// Convert English number to Bengali (Now returns English)
 const toBengaliNumber = (num: number): string => {
-  const bengaliDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
-  return num.toString().split("").map(digit => bengaliDigits[parseInt(digit)]).join("");
+  return num.toString();
 };
 
 // Get Bengali day name
@@ -278,7 +278,7 @@ export default function BookAppointmentPage() {
       setSelectedDate(date);
     } else {
       // Show toast notification if trying to select a date that's not in the latest 2
-      showToast.error("আপনি শুধুমাত্র সর্বশেষ ২টি উপলব্ধ তারিখ বুক করতে পারবেন");
+      showToast.error("You can only book the latest 2 available dates");
     }
   };
 
@@ -413,14 +413,14 @@ export default function BookAppointmentPage() {
                   </p>
                 )}
               </div>
-              {doctor.hospital && (
+              {/* {doctor.hospital && (
                 <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-xl">
                   <p className="text-green-700 font-medium flex items-center gap-2" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
                     <MapPin className="h-4 w-4" />
                     অ্যাপয়েন্টমেন্ট হবে: {doctor.hospital}
                   </p>
                 </div>
-              )}
+              )} */}
             </Card>
 
             {/* Calendar */}
@@ -430,7 +430,7 @@ export default function BookAppointmentPage() {
                   className="text-2xl font-bold text-gray-900 mb-5"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
-                  তারিখ নির্বাচন করুন
+                  Select Date
                 </h2>
 
                 {/* Calendar Header */}
@@ -487,7 +487,7 @@ export default function BookAppointmentPage() {
                           if (isAvailable) {
                             handleDateSelect(date);
                           } else if (isInScheduleButNotAvailable) {
-                            showToast.error("প্রথম ২টি উপলব্ধ তারিখ নির্বাচন করুন");
+                            showToast.error("Please select from the first 2 available dates");
                           }
                         }}
                         disabled={!isAvailable}
@@ -517,7 +517,7 @@ export default function BookAppointmentPage() {
                       className="text-lg font-semibold text-gray-900"
                       style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                     >
-                      নির্বাচিত তারিখ: {getBengaliDay(getDayName(selectedDate))}, {toBengaliNumber(selectedDate.getDate())} {banglaMonths[selectedDate.getMonth()]}, {toBengaliNumber(selectedDate.getFullYear())}
+                      Selected Date: {getDayName(selectedDate)}, {selectedDate.getDate()} {banglaMonths[selectedDate.getMonth()]}, {selectedDate.getFullYear()}
                     </p>
                   </div>
                 )}

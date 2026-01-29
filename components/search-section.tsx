@@ -144,7 +144,7 @@ export default function SearchSection() {
       {/* Search Section */}
       <div
         id="search-section"
-        className="sticky top-20 left-0 right-0 z-40 transition-all duration-300 mt-8 mb-12"
+        className="sticky top-20 left-0 right-0 z-40 transition-all duration-300 mt-8 mb-4 md:mb-12"
       >
         <div className="relative">
           <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />

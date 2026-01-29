@@ -966,7 +966,7 @@ function DoctorListPageContent() {
               <Swiper
                 modules={[Autoplay, Navigation]}
                 spaceBetween={20}
-                slidesPerView={2}
+                slidesPerView={1}
                 navigation={{
                   nextEl: ".department-next",
                   prevEl: ".department-prev",
@@ -1721,7 +1721,7 @@ function DoctorListPageContent() {
                         )}
                       </div>
 
-                      <div className="mt-5 pt-4 border-t border-gray-100">
+                      {/* <div className="mt-5 pt-4 border-t border-gray-100">
                         <div className="flex items-center justify-between mb-4">
                            <div className="flex items-center gap-1.5 bg-green-50 px-3 py-1 text-green-700 font-bold text-sm rounded-lg">
                             <span>৳</span>
@@ -1738,7 +1738,7 @@ function DoctorListPageContent() {
                         <Button className="w-full bg-primary hover:bg-primary-dark text-white rounded-xl py-2.5 h-auto font-semibold shadow-lg shadow-primary/20 group-hover:shadow-primary/30 transition-all text-sm">
                           {banglaLabels.bookAppointment}
                         </Button>
-                      </div>
+                      </div> */}
                     </div>
                   </Card>
                 </Link>
