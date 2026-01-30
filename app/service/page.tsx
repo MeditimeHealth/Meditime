@@ -7,6 +7,7 @@ import { Droplet, Car, ArrowRight, Building2, Stethoscope, Video, FlaskConical }
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import Footer from "@/components/footer";
 
 export default function ServicePage() {
   const services = [
@@ -75,22 +76,46 @@ export default function ServicePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-12 mt-24 md:mt-28">
-        <div className="max-w-6xl mx-auto">
-          {/* Header Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-12"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold text-[#009A98] mb-4">
-              Our Services
-            </h1>
-            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Meditime has a broad range of medical information services from doctors&apos; appointment booking to ambulance contact numbers.
-            </p>
-          </motion.div>
+      {/* Cover Photo / Hero Section */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative mt-20 h-[300px] md:h-[400px] w-full overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/80 via-primary/70 to-primary-dark/80 z-10" />
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1920&q=80')",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+          }}
+        />
+        <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <h1
+                className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-2xl"
+              >
+                Our Services
+              </h1>
+              <p
+                className="text-lg md:text-xl text-white/95 max-w-3xl mx-auto leading-relaxed drop-shadow-lg"
+              >
+                Meditime has a broad range of medical information services from doctors&apos; appointment booking to ambulance contact numbers.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </motion.div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-30">
           
           {/* Service Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -138,7 +163,8 @@ export default function ServicePage() {
             })}
           </div>
         </div>
+              <Footer/>
+
       </div>
-    </div>
   );
 }

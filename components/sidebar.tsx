@@ -169,6 +169,11 @@ const menuItems = [
     icon: FileText,
     href: "/admin/affiliate-reports/completed",
   },
+  {
+    title: "Popup Manager",
+    icon: Image,
+    href: "/admin/popup",
+  },
 ];
 
 export default function Sidebar({ user, onLogout }: SidebarProps) {

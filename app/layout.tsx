@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import { Toaster } from "react-hot-toast";
+import PopupModal from "@/components/popup-modal";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -33,6 +34,7 @@ export default function RootLayout({
         className={`${poppins.variable} font-sans antialiased`}
       >
         <ScrollToTopButton />
+        <PopupModal />
         {children}
         <Toaster
           position="top-right"
