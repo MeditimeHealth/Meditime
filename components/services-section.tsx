@@ -88,16 +88,32 @@ export default function ServicesSection() {
               className="h-full"
             >
               <Link href={service.href} className="block h-full group">
-                <Card className="p-6 lg:p-8 bg-white border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 h-full flex flex-col cursor-pointer rounded-2xl group-hover:-translate-y-2 relative overflow-hidden">
-                  {/* Subtle Gradient Background on Hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-transparent to-blue-50/50 opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none" />
+                <Card className={`p-6 lg:p-8 border border-slate-200 shadow-md transition-all duration-500 h-full flex flex-col cursor-pointer rounded-2xl group-hover:-translate-y-2 relative overflow-hidden ${
+                  index % 3 === 0 ? "bg-gradient-to-br from-blue-50 to-cyan-50 group-hover:from-blue-100 group-hover:to-cyan-100 group-hover:shadow-xl group-hover:shadow-blue-200" : 
+                  index % 3 === 1 ? "bg-gradient-to-br from-teal-50 to-green-50 group-hover:from-teal-100 group-hover:to-green-100 group-hover:shadow-xl group-hover:shadow-teal-200" :
+                  "bg-gradient-to-br from-purple-50 to-pink-50 group-hover:from-purple-100 group-hover:to-pink-100 group-hover:shadow-xl group-hover:shadow-purple-200"
+                }`}>
+                  {/* Gradient Background on Hover */}
+                  <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-all duration-500 pointer-events-none ${
+                    index % 3 === 0 ? "bg-gradient-to-br from-blue-400 via-cyan-400 to-blue-300" :
+                    index % 3 === 1 ? "bg-gradient-to-br from-teal-400 via-green-400 to-teal-300" :
+                    "bg-gradient-to-br from-purple-400 via-pink-400 to-purple-300"
+                  }`} />
                   
                   {/* Top Accent Line */}
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary-light to-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                  <div className={`absolute top-0 left-0 right-0 h-1.5 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left ${
+                    index % 3 === 0 ? "bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500" :
+                    index % 3 === 1 ? "bg-gradient-to-r from-teal-400 via-green-400 to-teal-500" :
+                    "bg-gradient-to-r from-purple-400 via-pink-400 to-purple-500"
+                  }`} />
                   
                   {/* Icon */}
                   <div className="mb-6 flex justify-start relative">
-                    <div className="relative w-16 h-16 flex items-center justify-center bg-gradient-to-br from-primary-50 to-teal-50 rounded-2xl group-hover:from-white group-hover:to-primary-50 group-hover:shadow-lg transition-all duration-500 p-3 border border-primary/10">
+                    <div className={`relative w-16 h-16 flex items-center justify-center rounded-2xl group-hover:shadow-lg transition-all duration-500 p-3 border-2 ${
+                      index % 3 === 0 ? "bg-gradient-to-br from-blue-100 to-cyan-100 border-blue-300 group-hover:from-blue-200 group-hover:to-cyan-200 group-hover:border-blue-400" :
+                      index % 3 === 1 ? "bg-gradient-to-br from-teal-100 to-green-100 border-teal-300 group-hover:from-teal-200 group-hover:to-green-200 group-hover:border-teal-400" :
+                      "bg-gradient-to-br from-purple-100 to-pink-100 border-purple-300 group-hover:from-purple-200 group-hover:to-pink-200 group-hover:border-purple-400"
+                    }`}>
                       <Image
                         src={service.image}
                         alt={service.title}
