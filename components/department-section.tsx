@@ -51,8 +51,8 @@ export default function DepartmentSection() {
         const response = await fetch('/api/departments');
         const data = await response.json();
         if (response.ok) {
-          // Limit to first 8 departments for the slider
-          setDepartments(data.departments.slice(0, 8));
+          // Limit to first 6 departments for the slider
+          setDepartments(data.departments.slice(0, 6));
         }
       } catch (error) {
         console.error('Error fetching departments:', error);
@@ -186,14 +186,14 @@ export default function DepartmentSection() {
         </div>
 
         {/* Mobile Grid View */}
-        <div className="md:hidden grid grid-cols-1 gap-4">
+        <div className="md:hidden flex flex-wrap gap-4">
           {departments.map((department) => {
             const IconComponent = getIconForDepartment(department.name);
             const colorGradient = getColorForDepartment(department.name);
             const slug = department.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
             return (
-              <Link href={`/departments/${encodeURIComponent(slug)}`} key={department._id}>
+              <Link href={`/departments/${encodeURIComponent(slug)}`} key={department._id} className="w-[calc(33.333%-11px)]">
                 <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all p-4 flex flex-col items-center text-center cursor-pointer border border-slate-100 h-full">
                   <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${colorGradient} flex items-center justify-center shadow-md mb-3`}>
                     <IconComponent className="w-7 h-7 text-white" strokeWidth={1.5} />

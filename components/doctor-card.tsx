@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
-import { Clock } from "lucide-react";
+import { Clock, MapPin } from "lucide-react";
 
 export interface Doctor {
   _id: string;
@@ -205,15 +205,18 @@ export default function DoctorCard({ doctor, index = 0 }: DoctorCardProps) {
 
             {/* Hospital Name */}
             {doctor.hospital && (
-              <p
-                className="text-base font-semibold text-gray-700 leading-relaxed"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
-              >
-                {doctor.hospital}
-              </p>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
+                <p
+                  className="text-base font-semibold text-gray-700 leading-relaxed"
+                  style={{
+                    fontFamily:
+                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                  }}
+                >
+                  {doctor.hospital}
+                </p>
+              </div>
             )}
 
             {/* Time / Availability */}
