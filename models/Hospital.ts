@@ -6,6 +6,11 @@ export interface IHospital extends Document {
   address?: string;
   phone?: string;
   email?: string;
+  
+  // Bangla Fields
+  nameBn?: string;
+  addressBn?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -34,6 +39,9 @@ const HospitalSchema: Schema = new Schema(
       trim: true,
       lowercase: true,
     },
+    // Bangla Fields
+    nameBn: { type: String, trim: true },
+    addressBn: { type: String, trim: true },
   },
   {
     timestamps: true,

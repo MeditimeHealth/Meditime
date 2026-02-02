@@ -79,12 +79,6 @@ export async function POST(request: NextRequest) {
 
     // Use newPatientFee as consultationFee if consultationFee is not provided
     const finalConsultationFee = consultationFee || newPatientFee;
-    if (!finalConsultationFee) {
-      return NextResponse.json(
-        { error: "Consultation fee or new patient fee is required" },
-        { status: 400 }
-      );
-    }
 
     // Ensure availability is an array and validate structure
     const availabilityArray = Array.isArray(availability) ? availability : [availability];
@@ -131,6 +125,13 @@ export async function POST(request: NextRequest) {
     if (diseases && Array.isArray(diseases) && diseases.length > 0) doctorData.diseases = diseases;
     if (bio) doctorData.bio = bio;
     if (image) doctorData.image = image;
+
+    // Bangla Fields
+    if (body.nameBn) doctorData.nameBn = body.nameBn;
+    if (body.specialtyBn) doctorData.specialtyBn = body.specialtyBn;
+    if (body.qualificationBn) doctorData.qualificationBn = body.qualificationBn;
+    if (body.designationBn) doctorData.designationBn = body.designationBn;
+    if (body.bioBn) doctorData.bioBn = body.bioBn;
 
     // Log the data being sent for debugging
     console.log('Creating doctor with data:', JSON.stringify(doctorData, null, 2));

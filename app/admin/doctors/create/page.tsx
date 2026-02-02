@@ -37,6 +37,14 @@ const doctorSchema = z.object({
     z.number().min(0, "New patient fee must be at least 0").optional(),
   ),
   bio: z.string().optional(),
+  
+  // Bangla Fields
+  nameBn: z.string().optional(),
+  specialtyBn: z.string().optional(),
+  qualificationBn: z.string().optional(),
+  designationBn: z.string().optional(),
+  bioBn: z.string().optional(),
+
   image: z.string().optional(),
   availabilitySlots: z
     .array(
@@ -51,16 +59,16 @@ const doctorSchema = z.object({
 type DoctorFormValues = z.infer<typeof doctorSchema>;
 
 const daysOfWeek = [
+  "Saturday",
+  "Sunday",
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
   "Friday",
-  "Saturday",
-  "Sunday",
 ];
 
-const banglaDays = ["শুক্র", "শনি", "রবি", "সোম", "মঙ্গল", "বুধ", "বৃহস্পতি"];
+const banglaDays = ["শনি", "রবি", "সোম", "মঙ্গল", "বুধ", "বৃহস্পতি", "শুক্র"];
 
 interface AvailabilitySlot {
   days: string[];
@@ -85,6 +93,7 @@ type HospitalWithLocation = {
 };
 
 export default function CreateDoctorPage() {
+  const [language, setLanguage] = useState<'en' | 'bn'>('en');
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -407,73 +416,167 @@ export default function CreateDoctorPage() {
       </div>
 
       <Card className="p-6">
+        <div className="flex justify-end mb-6">
+          <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                language === 'en'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              English
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage('bn')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                language === 'bn'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              Bangla
+            </button>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label htmlFor="name">
-                Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                {...register("name")}
-                placeholder="Dr. John Doe"
-                className="mt-1"
-              />
-              {errors.name && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.name.message}
-                </p>
+              {language === 'en' ? (
+                <>
+                  <Label htmlFor="name">
+                    Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    {...register("name")}
+                    placeholder="Dr. John Doe"
+                    className="mt-1"
+                  />
+                  {errors.name && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.name.message}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Label htmlFor="nameBn">
+                    নাম (Name Bangla)
+                  </Label>
+                  <Input
+                    id="nameBn"
+                    {...register("nameBn")}
+                    placeholder="ডাঃ জন ডো"
+                    className="mt-1"
+                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                  />
+                </>
               )}
             </div>
 
             <div>
-              <Label htmlFor="specialty">
-                Specialty <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="specialty"
-                required
-                {...register("specialty")}
-                placeholder="e.g. Cardiologist"
-                className="mt-1"
-              />
-              {errors.specialty && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.specialty.message}
-                </p>
+              {language === 'en' ? (
+                <>
+                  <Label htmlFor="specialty">
+                    Specialty <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="specialty"
+                    required
+                    {...register("specialty")}
+                    placeholder="e.g. Cardiologist"
+                    className="mt-1"
+                  />
+                  {errors.specialty && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.specialty.message}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Label htmlFor="specialtyBn">
+                    বিশেষজ্ঞ (Specialty Bangla)
+                  </Label>
+                  <Input
+                    id="specialtyBn"
+                    {...register("specialtyBn")}
+                    placeholder="হৃদরোগ বিশেষজ্ঞ"
+                    className="mt-1"
+                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                  />
+                </>
               )}
             </div>
 
             <div>
-              <Label htmlFor="qualification">
-                Qualification <span className="text-red-500">*</span>
-              </Label>
-              <textarea
-                id="qualification"
-                {...register("qualification")}
-                placeholder="MBBS, MD"
-                rows={2}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-              />
-              {errors.qualification && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.qualification.message}
-                </p>
+              {language === 'en' ? (
+                <>
+                  <Label htmlFor="qualification">
+                    Qualification <span className="text-red-500">*</span>
+                  </Label>
+                  <textarea
+                    id="qualification"
+                    {...register("qualification")}
+                    placeholder="MBBS, MD"
+                    rows={2}
+                    className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                  />
+                  {errors.qualification && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.qualification.message}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Label htmlFor="qualificationBn">
+                    যোগ্যতা (Qualification Bangla)
+                  </Label>
+                  <textarea
+                    id="qualificationBn"
+                    {...register("qualificationBn")}
+                    placeholder="এমবিবিএস, এমডি"
+                    rows={2}
+                    className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                  />
+                </>
               )}
             </div>
 
             <div>
-              <Label htmlFor="designation">Designation</Label>
-              <Input
-                id="designation"
-                {...register("designation")}
-                placeholder="e.g. Senior Consultant"
-                className="mt-1"
-              />
-              {errors.designation && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.designation.message}
-                </p>
+              {language === 'en' ? (
+                <>
+                  <Label htmlFor="designation">Designation</Label>
+                  <Input
+                    id="designation"
+                    {...register("designation")}
+                    placeholder="e.g. Senior Consultant"
+                    className="mt-1"
+                  />
+                  {errors.designation && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.designation.message}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Label htmlFor="designationBn">পদবী (Designation Bangla)</Label>
+                  <Input
+                    id="designationBn"
+                    {...register("designationBn")}
+                    placeholder="সিনিয়র কনসালটেন্ট"
+                    className="mt-1"
+                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                  />
+                </>
               )}
             </div>
 
@@ -573,12 +676,10 @@ export default function CreateDoctorPage() {
 
             <div>
               <Label htmlFor="newPatientFee">
-                নতুন রোগীর ফি (New Patient Fee){" "}
-                <span className="text-red-500">*</span>
+                নতুন রোগীর ফি (New Patient Fee)
               </Label>
               <Input
                 id="newPatientFee"
-                required
                 type="number"
                 {...register("newPatientFee")}
                 placeholder="500"
@@ -597,13 +698,11 @@ export default function CreateDoctorPage() {
 
             <div>
               <Label htmlFor="oldPatientFee">
-                পুরাতন রোগীর ফি (Old Patient Fee){" "}
-                <span className="text-red-500">*</span>
+                পুরাতন রোগীর ফি (Old Patient Fee)
                 {/* <span className="text-gray-500 text-xs">(Optional)</span> */}
               </Label>
               <Input
                 id="oldPatientFee"
-                required
                 type="number"
                 {...register("oldPatientFee")}
                 placeholder="400"
@@ -661,17 +760,35 @@ export default function CreateDoctorPage() {
           </div>
 
           <div>
-            <Label htmlFor="bio">
-              Bio <span className="text-red-500">*</span>
-            </Label>
-            <textarea
-              id="bio"
-              required
-              {...register("bio")}
-              rows={4}
-              className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-              placeholder="Doctor's biography..."
-            />
+            {language === 'en' ? (
+              <>
+                <Label htmlFor="bio">
+                  Bio <span className="text-red-500">*</span>
+                </Label>
+                <textarea
+                  id="bio"
+                  required
+                  {...register("bio")}
+                  rows={4}
+                  className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                  placeholder="Doctor's biography..."
+                />
+              </>
+            ) : (
+              <>
+                <Label htmlFor="bioBn">
+                  জীবনী (Bio Bangla)
+                </Label>
+                <textarea
+                  id="bioBn"
+                  {...register("bioBn")}
+                  rows={4}
+                  className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                  placeholder="ডাক্তারের জীবনী..."
+                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                />
+              </>
+            )}
           </div>
 
           <div className="space-y-6">
@@ -713,8 +830,11 @@ export default function CreateDoctorPage() {
                 <div className="space-y-4">
                   <div>
                     <Label className="mb-2 block">
-                      দিন নির্বাচন করুন (Select Days){" "}
-                      <span className="text-red-500">*</span>
+                      {language === 'en' ? (
+                        <>Select Days <span className="text-red-500">*</span></>
+                      ) : (
+                        <>দিন নির্বাচন করুন (Select Days) <span className="text-red-500">*</span></>
+                      )}
                     </Label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       {daysOfWeek.map((day, dayIndex) => (
@@ -728,11 +848,13 @@ export default function CreateDoctorPage() {
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                           }`}
                           style={{
-                            fontFamily:
-                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', sans-serif" : undefined
                           }}
                         >
-                          {banglaDays[dayIndex]}বার
+                          {language === 'en' 
+                            ? day 
+                            : `${banglaDays[dayIndex]}বার`
+                          }
                         </button>
                       ))}
                     </div>

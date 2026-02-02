@@ -20,11 +20,16 @@ const hospitalSchema = z.object({
   thana: z.string().min(1, "Thana is required"),
   address: z.string().optional(),
   phone: z.string().optional(),
+  
+  // Bangla Fields
+  nameBn: z.string().optional(),
+  addressBn: z.string().optional(),
 });
 
 type HospitalFormValues = z.infer<typeof hospitalSchema>;
 
 export default function CreateHospitalPage() {
+  const [language, setLanguage] = useState<'en' | 'bn'>('en');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -107,22 +112,29 @@ export default function CreateHospitalPage() {
     setIsLoading(true);
     try {
       // Find the thana ID based on the selected name
+      // Find the thana ID based on the selected name
       const selectedThana = thanas.find(t => t.name === data.thana);
       
-      if (!selectedThana) {
+      if (!selectedThana && data.thana) {
+        // If thana is selected (it is required by schema), we must find it. 
+        // Note: The schema for thana above is strict, so maybe this check is redundant if schema validation passes, 
+        // effectively protecting against logic errors.
         showToast.error("Invalid location selection");
         setIsLoading(false);
         return;
       }
-
+ 
       const response = await fetch("/api/locations/hospitals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: data.name,
-          thana: selectedThana._id,
+          thana: selectedThana?._id,
           address: data.address,
           phone: data.phone,
+          
+          nameBn: data.nameBn,
+          addressBn: data.addressBn,
         }),
       });
 
@@ -158,19 +170,62 @@ export default function CreateHospitalPage() {
       </div>
 
       <Card className="p-6 bg-white">
+        <div className="flex justify-end mb-6">
+          <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                language === 'en'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              English
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage('bn')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                language === 'bn'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              Bangla
+            </button>
+          </div>
+        </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         <div className="space-y-2">
-          <Label htmlFor="name" className="text-base font-semibold text-gray-700">
-            Hospital Name <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="name"
-            {...register("name")}
-            placeholder="Name"
-            className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
-          />
-          {errors.name && (
-            <p className="text-sm text-red-500">{errors.name.message}</p>
+          {language === 'en' ? (
+            <>
+              <Label htmlFor="name" className="text-base font-semibold text-gray-700">
+                Hospital Name <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="name"
+                {...register("name")}
+                placeholder="Name"
+                className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
+              />
+              {errors.name && (
+                <p className="text-sm text-red-500">{errors.name.message}</p>
+              )}
+            </>
+          ) : (
+             <>
+              <Label htmlFor="nameBn" className="text-base font-semibold text-gray-700">
+                হাসপাতালের নাম (Name Bangla)
+              </Label>
+              <Input
+                id="nameBn"
+                {...register("nameBn")}
+                placeholder="নাম"
+                className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
+                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+              />
+            </>
           )}
         </div>
 
@@ -238,15 +293,32 @@ export default function CreateHospitalPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="address" className="text-base font-semibold text-gray-700">
-            Hospital Address
-          </Label>
-          <Input
-            id="address"
-            {...register("address")}
-            placeholder="Hospital Address"
-            className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
-          />
+          {language === 'en' ? (
+            <>
+              <Label htmlFor="address" className="text-base font-semibold text-gray-700">
+                Hospital Address
+              </Label>
+              <Input
+                id="address"
+                {...register("address")}
+                placeholder="Hospital Address"
+                className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
+              />
+            </>
+          ) : (
+             <>
+              <Label htmlFor="addressBn" className="text-base font-semibold text-gray-700">
+                হাসপাতালের ঠিকানা (Address Bangla)
+              </Label>
+              <Input
+                id="addressBn"
+                {...register("addressBn")}
+                placeholder="হাসপাতালের ঠিকানা"
+                className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
+                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+              />
+            </>
+          )}
         </div>
 
         <div className="space-y-2">

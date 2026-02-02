@@ -98,6 +98,10 @@ export async function POST(request: NextRequest) {
       address: address || undefined,
       phone: phone || undefined,
       email: email || undefined,
+      
+      // Bangla Fields
+      nameBn: body.nameBn || undefined,
+      addressBn: body.addressBn || undefined,
     });
 
     return NextResponse.json(

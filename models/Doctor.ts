@@ -27,6 +27,14 @@ export interface IDoctor extends Document {
   bio?: string;
   image?: string;
   rating?: number;
+  
+  // Bangla Fields
+  nameBn?: string;
+  specialtyBn?: string;
+  qualificationBn?: string;
+  designationBn?: string;
+  bioBn?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -85,7 +93,6 @@ const DoctorSchema: Schema = new Schema(
     },
     consultationFee: {
       type: Number,
-      required: [true, 'Consultation fee is required'],
       min: [0, 'Consultation fee must be at least 0'],
     },
     oldPatientFee: {
@@ -149,6 +156,12 @@ const DoctorSchema: Schema = new Schema(
       type: String,
       trim: true,
     },
+    // Bangla Fields
+    nameBn: { type: String, trim: true },
+    specialtyBn: { type: String, trim: true },
+    qualificationBn: { type: String, trim: true },
+    designationBn: { type: String, trim: true },
+    bioBn: { type: String, trim: true },
     rating: {
       type: Number,
       min: 0,
