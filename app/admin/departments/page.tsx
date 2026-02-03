@@ -10,6 +10,7 @@ import { Plus, X, Edit, Trash2 } from "lucide-react";
 interface Department {
   _id: string;
   name: string;
+  nameBn?: string;
   image?: string;
 }
 
@@ -20,8 +21,10 @@ export default function DepartmentsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [language, setLanguage] = useState<'en' | 'bn'>('en');
   const [formData, setFormData] = useState({
     name: "",
+    nameBn: "",
     image: "",
   });
 
@@ -117,7 +120,7 @@ export default function DepartmentsPage() {
         await fetchDepartments();
         setShowForm(false);
         setEditingId(null);
-        setFormData({ name: "", image: "" });
+        setFormData({ name: "", nameBn: "", image: "" });
         setImagePreview("");
         alert(editingId ? "Department updated successfully" : "Department created successfully");
       } else {
@@ -135,6 +138,7 @@ export default function DepartmentsPage() {
     setEditingId(department._id);
     setFormData({
       name: department.name,
+      nameBn: department.nameBn || "",
       image: department.image || "",
     });
     setImagePreview(department.image || "");
@@ -189,7 +193,7 @@ export default function DepartmentsPage() {
           onClick={() => {
             setShowForm(!showForm);
             setEditingId(null);
-            setFormData({ name: "", image: "" });
+            setFormData({ name: "", nameBn: "", image: "" });
             setImagePreview("");
           }}
         >
@@ -211,7 +215,7 @@ export default function DepartmentsPage() {
               onClick={() => {
                 setShowForm(false);
                 setEditingId(null);
-                setFormData({ name: "", image: "" });
+                setFormData({ name: "", nameBn: "", image: "" });
                 setImagePreview("");
               }}
             >
@@ -220,22 +224,68 @@ export default function DepartmentsPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">
-                  Department Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  placeholder="Cardiology"
-                  required
-                  className="mt-1"
-                />
+            {/* Language Toggle */}
+            <div className="flex justify-end mb-4">
+              <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+                <button
+                  type="button"
+                  onClick={() => setLanguage('en')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    language === 'en'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLanguage('bn')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    language === 'bn'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  বাংলা
+                </button>
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {language === 'en' ? (
+                <div>
+                  <Label htmlFor="name">
+                    Department Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    placeholder="Cardiology"
+                    required
+                    className="mt-1"
+                  />
+                </div>
+              ) : (
+                <div>
+                  <Label htmlFor="nameBn">
+                    বিভাগের নাম (Department Name Bangla)
+                  </Label>
+                  <Input
+                    id="nameBn"
+                    value={formData.nameBn}
+                    onChange={(e) =>
+                      setFormData({ ...formData, nameBn: e.target.value })
+                    }
+                    placeholder="হৃদরোগ বিভাগ"
+                    className="mt-1"
+                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                  />
+                </div>
+              )}
 
               <div>
                 <Label htmlFor="image">
@@ -278,7 +328,7 @@ export default function DepartmentsPage() {
                 onClick={() => {
                   setShowForm(false);
                   setEditingId(null);
-                  setFormData({ name: "", image: "" });
+                  setFormData({ name: "", nameBn: "", image: "" });
                   setImagePreview("");
                 }}
               >

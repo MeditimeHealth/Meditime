@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     }
 
     const appointments = await Appointment.find(query)
-      .populate('doctorId', 'name qualification department hospital image')
+      .populate('doctorId', 'name qualification department hospital image availability')
       .populate('userId', 'fullName email phoneNumber')
       .populate('affiliateId', 'name affiliateCode email')
       .sort({ appointmentDate: -1, createdAt: -1 });

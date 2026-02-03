@@ -20,6 +20,8 @@ export default function AdminDashboard() {
     totalHospitals: 0,
     totalAppointments: 0,
     totalPatients: 0,
+    pendingAppointments: 0,
+    videoConsultations: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -34,18 +36,29 @@ export default function AdminDashboard() {
       const doctorsData = await doctorsRes.json();
 
       // Fetch hospitals count
-      const hospitalsRes = await fetch("/api/locations/hospitals?limit=1");
+      const hospitalsRes = await fetch("/api/locations/hospitals");
       const hospitalsData = await hospitalsRes.json();
 
-      // Fetch appointments count
+      // Fetch all appointments
       const appointmentsRes = await fetch("/api/appointments");
       const appointmentsData = await appointmentsRes.json();
+      
+      // Fetch pending appointments
+      const pendingRes = await fetch("/api/appointments?status=pending");
+      const pendingData = await pendingRes.json();
+
+      // Calculate patients count (unique patient names from appointments)
+      const uniquePatients = new Set(
+        appointmentsData.appointments?.map((a: any) => a.mobileNumber) || []
+      );
 
       setStats({
         totalDoctors: doctorsData.doctors?.length || 0,
-        totalHospitals: hospitalsData.total || 0,
+        totalHospitals: hospitalsData.hospitals?.length || 0,
         totalAppointments: appointmentsData.appointments?.length || 0,
-        totalPatients: 0, // You can add patient API later
+        totalPatients: uniquePatients.size,
+        pendingAppointments: pendingData.appointments?.length || 0,
+        videoConsultations: 0, // Will be updated when video consultation API is ready
       });
     } catch (error) {
       console.error("Error fetching stats:", error);
@@ -53,6 +66,7 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="space-y-6">
@@ -64,6 +78,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        {/* 1. Appointments */}
         <Card className="p-6 hover:shadow-lg transition-shadow">
           <Link
             href="/admin/appointments"
@@ -74,6 +89,11 @@ export default function AdminDashboard() {
               <p className="text-2xl font-bold text-gray-900 mt-1">
                 {loading ? "..." : stats.totalAppointments}
               </p>
+              {stats.pendingAppointments > 0 && (
+                <p className="text-xs text-orange-600 mt-1">
+                  {stats.pendingAppointments} pending
+                </p>
+              )}
             </div>
             <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
               <Calendar className="h-6 w-6 text-blue-600" />
@@ -81,23 +101,7 @@ export default function AdminDashboard() {
           </Link>
         </Card>
 
-        <Card className="p-6 hover:shadow-lg transition-shadow">
-          <Link
-            href="/admin/video-consultation"
-            className="flex items-center justify-between"
-          >
-            <div>
-              <p className="text-sm text-gray-600">Video Consultation</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">
-                {loading ? "..." : 0}
-              </p>
-            </div>
-            <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-              <Video className="h-6 w-6 text-blue-600" />
-            </div>
-          </Link>
-        </Card>
-
+        {/* 2. Patients (Complete) */}
         <Card className="p-6 hover:shadow-lg transition-shadow">
           <Link
             href="/admin/patients"
@@ -108,6 +112,7 @@ export default function AdminDashboard() {
               <p className="text-2xl font-bold text-gray-900 mt-1">
                 {loading ? "..." : stats.totalPatients}
               </p>
+              <p className="text-xs text-green-600 mt-1">Complete</p>
             </div>
             <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
               <Users className="h-6 w-6 text-green-600" />
@@ -115,6 +120,25 @@ export default function AdminDashboard() {
           </Link>
         </Card>
 
+        {/* 3. Video Consultation */}
+        <Card className="p-6 hover:shadow-lg transition-shadow">
+          <Link
+            href="/admin/video-consultation"
+            className="flex items-center justify-between"
+          >
+            <div>
+              <p className="text-sm text-gray-600">Video Consultation</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">
+                {loading ? "..." : stats.videoConsultations}
+              </p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+              <Video className="h-6 w-6 text-blue-600" />
+            </div>
+          </Link>
+        </Card>
+
+        {/* 4. Doctors */}
         <Card className="p-6 hover:shadow-lg transition-shadow">
           <Link
             href="/admin/doctors"
@@ -132,6 +156,7 @@ export default function AdminDashboard() {
           </Link>
         </Card>
 
+        {/* 5. Hospitals */}
         <Card className="p-6 hover:shadow-lg transition-shadow">
           <Link
             href="/admin/hospitals"

@@ -38,6 +38,7 @@ type TabType = "division" | "district" | "thana" | "hospital";
 export default function LocationsPage() {
   const [activeTab, setActiveTab] = useState<TabType>("division");
   const [loading, setLoading] = useState(false);
+  const [language, setLanguage] = useState<'en' | 'bn'>('en');
 
   // Data states
   const [divisions, setDivisions] = useState<Division[]>([]);
@@ -50,6 +51,7 @@ export default function LocationsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
+    nameBn: "",
     division: "",
     district: "",
     thana: "",
@@ -175,6 +177,7 @@ export default function LocationsPage() {
         setShowForm(false);
         setFormData({
           name: "",
+          nameBn: "",
           division: "",
           district: "",
           thana: "",
@@ -311,19 +314,63 @@ export default function LocationsPage() {
       {showForm && (
         <Card className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="name">
-                Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-                placeholder="Enter name"
-                className="mt-1"
-              />
+            {/* Language Toggle */}
+            <div className="flex justify-end mb-4">
+              <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+                <button
+                  type="button"
+                  onClick={() => setLanguage('en')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    language === 'en'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLanguage('bn')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    language === 'bn'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  বাংলা
+                </button>
+              </div>
             </div>
+
+            {language === 'en' ? (
+              <div>
+                <Label htmlFor="name">
+                  Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                  placeholder="Enter name"
+                  className="mt-1"
+                />
+              </div>
+            ) : (
+              <div>
+                <Label htmlFor="nameBn">
+                  নাম (Bangla) <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="nameBn"
+                  value={formData.nameBn}
+                  onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
+                  placeholder="নাম লিখুন"
+                  className="mt-1"
+                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                />
+              </div>
+            )}
 
             {activeTab === "district" && (
               <div>

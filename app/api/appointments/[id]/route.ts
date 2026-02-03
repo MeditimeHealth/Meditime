@@ -63,21 +63,8 @@ export async function PATCH(
       );
     }
 
-    // Check if serial number already exists (if provided)
-    if (serialNumber) {
-      const existingSerial = await Appointment.findOne({ 
-        serialNumber: serialNumber.toUpperCase(),
-        _id: { $ne: id }
-      });
-      if (existingSerial) {
-        return NextResponse.json(
-          { error: 'This serial number is already in use' },
-          { status: 400 }
-        );
-      }
-    }
-
-    // Build update object
+    // Build update object - allow duplicate serial numbers
+    // Serial numbers can be reused (e.g., 23 can be assigned to multiple appointments)
     const updateData: any = { status };
     if (serialNumber) {
       updateData.serialNumber = serialNumber.toUpperCase();

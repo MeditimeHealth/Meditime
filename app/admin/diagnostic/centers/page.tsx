@@ -28,8 +28,10 @@ export default function DiagnosticCentersPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [language, setLanguage] = useState<'en' | 'bn'>('en');
   const [formData, setFormData] = useState({
     name: "",
+    nameBn: "",
     division: "",
     district: "",
     thana: "",
@@ -149,6 +151,7 @@ export default function DiagnosticCentersPage() {
     setEditingId(center._id);
     setFormData({
       name: center.name,
+      nameBn: (center as any).nameBn || "",
       division: center.division || "",
       district: center.district || "",
       thana: center.thana || "",
@@ -185,6 +188,7 @@ export default function DiagnosticCentersPage() {
   const resetForm = () => {
     setFormData({
       name: "",
+      nameBn: "",
       division: "",
       district: "",
       thana: "",
@@ -222,19 +226,63 @@ export default function DiagnosticCentersPage() {
             </Button>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="name">
-                Center Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-                placeholder="e.g., Square Diagnostic Center"
-                className="mt-1"
-              />
+            {/* Language Toggle */}
+            <div className="flex justify-end mb-4">
+              <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+                <button
+                  type="button"
+                  onClick={() => setLanguage('en')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    language === 'en'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLanguage('bn')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    language === 'bn'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  বাংলা
+                </button>
+              </div>
             </div>
+
+            {language === 'en' ? (
+              <div>
+                <Label htmlFor="name">
+                  Center Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                  placeholder="e.g., Square Diagnostic Center"
+                  className="mt-1"
+                />
+              </div>
+            ) : (
+              <div>
+                <Label htmlFor="nameBn">
+                  কেন্দ্রের নাম (Center Name Bangla)
+                </Label>
+                <Input
+                  id="nameBn"
+                  value={formData.nameBn}
+                  onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
+                  placeholder="স্কয়ার ডায়াগনস্টিক সেন্টার"
+                  className="mt-1"
+                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                />
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>

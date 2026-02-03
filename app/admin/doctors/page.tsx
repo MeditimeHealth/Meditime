@@ -12,7 +12,7 @@ interface Doctor {
   name: string;
   specialty?: string;
   qualification: string;
-
+  designation?: string;
 
   phoneNumber?: string;
   consultationFee: number;
@@ -24,6 +24,12 @@ interface Doctor {
     days: string[];
     time: string;
   };
+  
+  // Bangla fields
+  nameBn?: string;
+  specialtyBn?: string;
+  qualificationBn?: string;
+  designationBn?: string;
 }
 
 export default function DoctorsPage() {
@@ -107,21 +113,35 @@ export default function DoctorsPage() {
               <div className="space-y-4">
                 <div>
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-semibold text-gray-900">{doctor.name}</h3>
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900">{doctor.name}</h3>
+                      {doctor.nameBn && (
+                        <p className="text-lg text-gray-700">{doctor.nameBn}</p>
+                      )}
+                    </div>
                   </div>
-                  {doctor.specialty && (
-                    <p className="text-sm text-gray-600">{doctor.specialty}</p>
+                  {(doctor.specialty || doctor.specialtyBn) && (
+                    <div className="mt-1">
+                      {doctor.specialty && <p className="text-sm text-gray-600">{doctor.specialty}</p>}
+                      {doctor.specialtyBn && <p className="text-sm text-gray-500">{doctor.specialtyBn}</p>}
+                    </div>
+                  )}
+                  {(doctor.designation || doctor.designationBn) && (
+                    <div className="mt-1">
+                      {doctor.designation && <p className="text-xs text-blue-600">{doctor.designation}</p>}
+                      {doctor.designationBn && <p className="text-xs text-blue-500">{doctor.designationBn}</p>}
+                    </div>
                   )}
                 </div>
 
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-gray-600">Qualification: </span>
-                      <span className="text-gray-900">
-                        {doctor.qualification}
-                      </span>
+                    <span className="text-gray-600">Qualification / যোগ্যতা: </span>
+                    <div className="text-gray-900">
+                      <p>{doctor.qualification}</p>
+                      {doctor.qualificationBn && <p className="text-gray-700">{doctor.qualificationBn}</p>}
+                    </div>
                   </div>
-
                   {doctor.phoneNumber && (
                     <div>
                       <span className="text-gray-600">Phone: </span>

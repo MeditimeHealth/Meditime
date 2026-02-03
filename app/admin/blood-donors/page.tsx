@@ -173,9 +173,11 @@ export default function BloodDonorsPage() {
                 </div>
 
                 <div className="flex gap-2 pt-4">
-                  <Button variant="outline" className="flex-1 cursor-pointer">
-                    Edit
-                  </Button>
+                  <Link href={`/admin/blood-donors/edit/${donor._id}`} className="flex-1">
+                    <Button variant="outline" className="w-full cursor-pointer">
+                      Edit
+                    </Button>
+                  </Link>
                   <Button
                     variant="outline"
                     className="flex-1 cursor-pointer"

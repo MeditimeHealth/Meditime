@@ -21,9 +21,12 @@ export default function DiagnosticTestsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [language, setLanguage] = useState<'en' | 'bn'>('en');
   const [formData, setFormData] = useState({
     name: "",
+    nameBn: "",
     description: "",
+    descriptionBn: "",
     price: "",
     image: "",
   });
@@ -97,7 +100,9 @@ export default function DiagnosticTestsPage() {
     setEditingId(test._id);
     setFormData({
       name: test.name,
+      nameBn: (test as any).nameBn || "",
       description: test.description || "",
+      descriptionBn: (test as any).descriptionBn || "",
       price: test.price.toString(),
       image: test.image || "",
     });
@@ -130,7 +135,9 @@ export default function DiagnosticTestsPage() {
   const resetForm = () => {
     setFormData({
       name: "",
+      nameBn: "",
       description: "",
+      descriptionBn: "",
       price: "",
       image: "",
     });
@@ -168,6 +175,34 @@ export default function DiagnosticTestsPage() {
             </Button>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Language Toggle */}
+            <div className="flex justify-end mb-4">
+              <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+                <button
+                  type="button"
+                  onClick={() => setLanguage('en')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    language === 'en'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLanguage('bn')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    language === 'bn'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  বাংলা
+                </button>
+              </div>
+            </div>
+
             {/* Image Upload */}
             <div>
               <Label htmlFor="image">
@@ -227,51 +262,96 @@ export default function DiagnosticTestsPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">
-                  Test Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                  placeholder="e.g., Complete Blood Count (CBC)"
-                  className="mt-1"
-                />
-              </div>
-
-
-
-              <div>
-                <Label htmlFor="price">
-                  Price (৳) <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  required
-                  placeholder="500"
-                  className="mt-1"
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={3}
-                placeholder="Test description..."
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm mt-1"
-              />
-            </div>
+            {language === 'en' ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="name">
+                      Test Name <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                      placeholder="e.g., Complete Blood Count (CBC)"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="price">
+                      Price (৳) <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      step="0.01"
+                      value={formData.price}
+                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                      required
+                      placeholder="500"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={3}
+                    placeholder="Test description..."
+                    className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm mt-1"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="nameBn">
+                      টেস্টের নাম (Test Name Bangla)
+                    </Label>
+                    <Input
+                      id="nameBn"
+                      value={formData.nameBn}
+                      onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
+                      placeholder="সম্পূর্ণ রক্ত গণনা (CBC)"
+                      className="mt-1"
+                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="price">
+                      মূল্য (৳) <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      step="0.01"
+                      value={formData.price}
+                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                      required
+                      placeholder="500"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="descriptionBn">বিবরণ (Description Bangla)</Label>
+                  <textarea
+                    id="descriptionBn"
+                    value={formData.descriptionBn}
+                    onChange={(e) => setFormData({ ...formData, descriptionBn: e.target.value })}
+                    rows={3}
+                    placeholder="টেস্টের বিবরণ..."
+                    className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm mt-1"
+                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                  />
+                </div>
+              </>
+            )}
 
             <div className="flex gap-2">
               <Button type="submit" disabled={loading}>

@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Link from "next/link";
 import {
   Calendar,
   Clock,
@@ -18,6 +19,7 @@ import {
   Ticket,
   X,
   Stethoscope,
+  ExternalLink,
 } from "lucide-react";
 
 interface Appointment {
@@ -28,6 +30,10 @@ interface Appointment {
     qualification?: string;
     department?: string;
     hospital?: string;
+    availability?: Array<{
+      days: string[];
+      time: string;
+    }>;
   };
   serialNumber?: string;
   patientName: string;
@@ -303,11 +309,10 @@ export default function AppointmentsPage() {
       {/* Filter Buttons */}
       <div className="flex gap-2 flex-wrap">
         {[
-          { value: "all", label: "সব" },
           { value: "pending", label: "অপেক্ষমান" },
           { value: "confirmed", label: "নিশ্চিত" },
-          { value: "cancelled", label: "বাতিল" },
           { value: "completed", label: "সম্পন্ন" },
+          { value: "all", label: "সব" },
         ].map((filterOption) => (
           <Button
             key={filterOption.value}
@@ -380,17 +385,25 @@ export default function AppointmentsPage() {
                         <p className="text-sm text-gray-500 mb-1">রোগীর নাম</p>
 
                         {appointment.affiliateCode ? (
-                          <div className="flex items-center gap-2 text-purple-600 bg-purple-50 px-2 py-1 rounded border border-purple-100">
+                          <Link 
+                            href={`/admin/affiliate-management?code=${appointment.affiliateCode}`}
+                            className="flex items-center gap-2 text-purple-600 bg-purple-50 px-2 py-1 rounded border border-purple-100 hover:bg-purple-100 transition-colors"
+                          >
                             <Ticket className="h-4 w-4" />
                             <span className="text-xs">
                               Affiliate:{" "}
                               <strong>{appointment.affiliateCode}</strong>
                             </span>
-                          </div>
+                            <ExternalLink className="h-3 w-3" />
+                          </Link>
                         ) : (
-                          <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100">
+                          <Link 
+                            href={`/admin/patients?phone=${appointment.mobileNumber}`}
+                            className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100 hover:bg-green-100 transition-colors flex items-center gap-1"
+                          >
                             Self
-                          </div>
+                            <ExternalLink className="h-3 w-3" />
+                          </Link>
                         )}
                       </div>
 
@@ -489,43 +502,57 @@ export default function AppointmentsPage() {
                   </div>
 
                   <div className="space-y-4">
+                    {/* Serial Number Display - At Top */}
+                    {appointment.serialNumber && (
+                      <div className="flex items-center gap-2 bg-green-50 p-3 rounded-lg border border-green-200">
+                        <Ticket className="h-5 w-5 text-green-600" />
+                        <span className="text-sm text-green-800 font-medium">
+                          সিরিয়াল:
+                        </span>
+                        <span className="font-bold text-green-700 font-mono text-xl">
+                          {appointment.serialNumber}
+                        </span>
+                      </div>
+                    )}
+
                     {/* Doctor Info */}
                     <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
-                      {/* <p className="text-xs text-gray-500 mb-1">ডাক্তার</p> */}
-                      <p
-                        className="font-bold text-gray-900"
-                        style={{
-                          fontFamily:
-                            "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
-                      >
-                        {appointment.doctorId?.name || "Unknown Doctor"}
-                      </p>
-                      <p
-                        className="text-xs text-gray-600 mt-1"
-                        style={{
-                          fontFamily:
-                            "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
-                      >
-                        {appointment.doctorId?.qualification &&
-                          `${appointment.doctorId.qualification}`}
-                        {/* {appointment.doctorId?.hospital &&
-                          ` • ${appointment.doctorId.hospital}`} */}
-                      </p>
-                      {/* <p
-                        className="text-xs text-gray-600 mt-1"
-                        style={{
-                          fontFamily:
-                            "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
-                      >
-                        {appointment.doctorId?.specialty &&
-                          `${appointment.doctorId.specialty}`}
-                      </p> */}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p
+                            className="font-bold text-gray-900"
+                            style={{
+                              fontFamily:
+                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            }}
+                          >
+                            {appointment.doctorId?.name || "Unknown Doctor"}
+                          </p>
+                          <p
+                            className="text-xs text-gray-600 mt-1"
+                            style={{
+                              fontFamily:
+                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            }}
+                          >
+                            {appointment.doctorId?.qualification &&
+                              `${appointment.doctorId.qualification}`}
+                          </p>
+                        </div>
+                        {appointment.doctorId?._id && (
+                          <Link
+                            href={`/doctor/${appointment.doctorId._id}`}
+                            target="_blank"
+                            className="flex items-center gap-1 text-xs text-primary bg-primary/10 px-3 py-1.5 rounded-full hover:bg-primary/20 transition-colors"
+                          >
+                            View Profile
+                            <ExternalLink className="h-3 w-3" />
+                          </Link>
+                        )}
+                      </div>
                     </div>
 
-                    {/* <div className="grid grid-cols-2 gap-4"> */}
+                    {/* Hospital */}
                     <div className="flex items-start gap-2">
                       <MapPin className="h-4 w-4 text-gray-400 mt-1" />
                       <div>
@@ -541,35 +568,48 @@ export default function AppointmentsPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-start gap-2">
-                      <Calendar className="h-4 w-4 text-gray-400 mt-1" />
-                      <div>
-                        <p className="text-xs text-gray-500">তারিখ</p>
-                        <p
-                          className="font-medium text-gray-900"
-                          style={{
-                            fontFamily:
-                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {formatDate(appointment.appointmentDate)}
-                        </p>
-                      </div>
-                    </div>
-                    {/* </div> */}
 
-                    {/* Serial Number Display */}
-                    {appointment.serialNumber && (
-                      <div className="flex items-center gap-2 bg-green-50 p-2 rounded border border-green-100">
-                        <Ticket className="h-4 w-4 text-green-600" />
-                        <span className="text-sm text-green-800 font-medium">
-                          সিরিয়াল:
-                        </span>
-                        <span className="font-bold text-green-700 font-mono text-lg">
-                          {appointment.serialNumber}
-                        </span>
+                    {/* Date & Time */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex items-start gap-2">
+                        <Calendar className="h-4 w-4 text-gray-400 mt-1" />
+                        <div>
+                          <p className="text-xs text-gray-500">তারিখ</p>
+                          <p
+                            className="font-medium text-gray-900"
+                            style={{
+                              fontFamily:
+                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            }}
+                          >
+                            {formatDate(appointment.appointmentDate)}
+                          </p>
+                        </div>
                       </div>
-                    )}
+                      {/* Doctor Chamber Time from Availability */}
+                      {appointment.doctorId?.availability && appointment.doctorId.availability.length > 0 && (
+                        <div className="flex items-start gap-2">
+                          <Clock className="h-4 w-4 text-gray-400 mt-1" />
+                          <div>
+                            <p className="text-xs text-gray-500">চেম্বার সময়</p>
+                            <p
+                              className="font-medium text-gray-900"
+                              style={{
+                                fontFamily:
+                                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                              }}
+                            >
+                              {appointment.doctorId.availability.map((slot, idx) => (
+                                <span key={idx}>
+                                  {slot.time}
+                                  {idx < (appointment.doctorId?.availability?.length || 0) - 1 ? ", " : ""}
+                                </span>
+                              ))}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Affiliate Code */}
                     {/* {appointment.affiliateCode && (

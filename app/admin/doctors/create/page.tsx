@@ -763,11 +763,10 @@ export default function CreateDoctorPage() {
             {language === 'en' ? (
               <>
                 <Label htmlFor="bio">
-                  Bio <span className="text-red-500">*</span>
+                  Bio <span className="text-gray-500 text-xs">(Optional)</span>
                 </Label>
                 <textarea
                   id="bio"
-                  required
                   {...register("bio")}
                   rows={4}
                   className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
@@ -777,7 +776,7 @@ export default function CreateDoctorPage() {
             ) : (
               <>
                 <Label htmlFor="bioBn">
-                  জীবনী (Bio Bangla)
+                  জীবনী (Bio Bangla) <span className="text-gray-500 text-xs">(Optional)</span>
                 </Label>
                 <textarea
                   id="bioBn"

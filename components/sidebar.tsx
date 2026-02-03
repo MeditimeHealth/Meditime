@@ -108,11 +108,6 @@ const menuItems = [
     href: "/admin/locations",
   },
   {
-    title: "Departments",
-    icon: Building2,
-    href: "/admin/departments",
-  },
-  {
     title: "Add Diseases",
     icon: Stethoscope,
     href: "/admin/diseases",
