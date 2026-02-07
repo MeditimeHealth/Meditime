@@ -231,16 +231,30 @@ export default function HospitalListPage() {
   const filteredAndSortedHospitals = useMemo(() => {
     let filtered = [...hospitals];
 
+    // Language-based filter: Only show hospitals with content in the selected language
+    filtered = filtered.filter((hospital) => {
+      if (language === 'en') {
+        // For English, show only hospitals that have English name
+        return hospital.name && hospital.name.trim() !== '';
+      } else {
+        // For Bangla, show only hospitals that have Bangla name
+        return hospital.nameBn && hospital.nameBn.trim() !== '';
+      }
+    });
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        hospital =>
-          hospital.name.toLowerCase().includes(query) ||
-          hospital.address?.toLowerCase().includes(query) ||
+      filtered = filtered.filter((hospital) => {
+        const name = language === 'en' ? hospital.name : (hospital.nameBn || hospital.name);
+        const address = language === 'en' ? hospital.address : (hospital.addressBn || hospital.address);
+        return (
+          name?.toLowerCase().includes(query) ||
+          address?.toLowerCase().includes(query) ||
           hospital.phone?.toLowerCase().includes(query) ||
           hospital.email?.toLowerCase().includes(query) ||
           getHospitalLocationString(hospital).toLowerCase().includes(query)
-      );
+        );
+      });
     }
 
     if (selectedDivision) {
@@ -290,6 +304,7 @@ export default function HospitalListPage() {
     selectedThana,
     sortBy,
     sortDirection,
+    language,
   ]);
 
   const clearFilters = () => {

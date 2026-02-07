@@ -437,17 +437,36 @@ function DoctorListPageContent() {
   const filteredAndSortedDoctors = useMemo(() => {
     let filtered = [...doctors];
 
+    // Language-based filter: Only show doctors with content in the selected language
+    filtered = filtered.filter((doctor) => {
+      if (language === 'en') {
+        // For English, show only doctors that have English name
+        return doctor.name && doctor.name.trim() !== '';
+      } else {
+        // For Bangla, show only doctors that have Bangla name
+        return doctor.nameBn && doctor.nameBn.trim() !== '';
+      }
+    });
+
     // Search filter (searches across name, specialty, hospital, qualification, bio)
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (doctor) =>
-          doctor.name.toLowerCase().includes(query) ||
-          doctor.specialty.toLowerCase().includes(query) ||
-          doctor.hospital?.toLowerCase().includes(query) ||
-          doctor.qualification.toLowerCase().includes(query) ||
-          doctor.bio?.toLowerCase().includes(query),
-      );
+      filtered = filtered.filter((doctor) => {
+        // Search in both English and Bangla fields for better UX
+        const name = language === 'en' ? doctor.name : (doctor.nameBn || doctor.name);
+        const specialty = language === 'en' ? doctor.specialty : (doctor.specialtyBn || doctor.specialty);
+        const hospital = language === 'en' ? doctor.hospital : (doctor.hospitalBn || doctor.hospital);
+        const qualification = language === 'en' ? doctor.qualification : (doctor.qualificationBn || doctor.qualification);
+        const bio = language === 'en' ? doctor.bio : (doctor.bioBn || doctor.bio);
+        
+        return (
+          name?.toLowerCase().includes(query) ||
+          specialty?.toLowerCase().includes(query) ||
+          hospital?.toLowerCase().includes(query) ||
+          qualification?.toLowerCase().includes(query) ||
+          bio?.toLowerCase().includes(query)
+        );
+      });
     }
 
     // Specialty filter
@@ -561,6 +580,7 @@ function DoctorListPageContent() {
     selectedDepartment,
     sortBy,
     sortDirection,
+    language,
   ]);
 
   const clearFilters = () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/navbar";
@@ -141,6 +141,19 @@ export default function AmbulancePage() {
   useEffect(() => {
     fetchAmbulances();
   }, [selectedDivision, selectedDistrict, selectedThana, availabilityStatusFilter, vehicleTypeFilter]);
+
+  // Language-based filter: Only show ambulances with content in the selected language
+  const filteredAmbulances = useMemo(() => {
+    return ambulances.filter((ambulance) => {
+      if (language === 'en') {
+        // For English, show only ambulances that have English name
+        return ambulance.name && ambulance.name.trim() !== '';
+      } else {
+        // For Bangla, show only ambulances that have Bangla name
+        return ambulance.nameBn && ambulance.nameBn.trim() !== '';
+      }
+    });
+  }, [ambulances, language]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -291,14 +304,14 @@ export default function AmbulancePage() {
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
-          ) : ambulances.length === 0 ? (
+          ) : filteredAmbulances.length === 0 ? (
             <Card className="p-12 text-center">
               <Car className="h-16 w-16 mx-auto text-gray-300 mb-4" />
               <p className="text-gray-500 text-lg">No ambulances found</p>
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {ambulances.map((ambulance, index) => (
+              {filteredAmbulances.map((ambulance, index) => (
                 <motion.div
                   key={ambulance._id}
                   initial={{ opacity: 0, y: 20 }}

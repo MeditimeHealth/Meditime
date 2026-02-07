@@ -166,17 +166,32 @@ export default function DiagnosticPage() {
   // Filter tests
   const filteredTests = useMemo(() => {
     let filtered = [...tests];
+
+    // Language-based filter: Only show tests with content in the selected language
+    filtered = filtered.filter((test) => {
+      if (language === 'en') {
+        // For English, show only tests that have English name
+        return test.name && test.name.trim() !== '';
+      } else {
+        // For Bangla, show only tests that have Bangla name
+        return test.nameBn && test.nameBn.trim() !== '';
+      }
+    });
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        test =>
-          test.name.toLowerCase().includes(query) ||
+      filtered = filtered.filter((test) => {
+        const name = language === 'en' ? test.name : (test.nameBn || test.name);
+        const description = language === 'en' ? test.description : (test.descriptionBn || test.description);
+        return (
+          name?.toLowerCase().includes(query) ||
           test.category.toLowerCase().includes(query) ||
-          test.description?.toLowerCase().includes(query)
-      );
+          description?.toLowerCase().includes(query)
+        );
+      });
     }
     return filtered;
-  }, [tests, searchQuery]);
+  }, [tests, searchQuery, language]);
 
   // Cart calculations
   const cartTotal = useMemo(() => {
