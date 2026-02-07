@@ -11,7 +11,10 @@ const ThanaSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Thana name is required'],
+      trim: true,
+    },
+    nameBn: {
+      type: String,
       trim: true,
     },
     district: {

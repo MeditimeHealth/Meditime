@@ -28,18 +28,21 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { name, description, price, image } = body;
+    const { name, nameBn, description, descriptionBn, price, image } = body;
 
-    if (!name || !price) {
+    // Must have at least one name (English or Bangla) and price
+    if ((!name && !nameBn) || !price) {
       return NextResponse.json(
-        { error: "Name and price are required" },
+        { error: "Name (English or Bangla) and price are required" },
         { status: 400 }
       );
     }
 
     const test = await DiagnosticTest.create({
-      name,
+      name: name || "",
+      nameBn: nameBn || "",
       description: description || undefined,
+      descriptionBn: descriptionBn || undefined,
       price,
       image: image || undefined,
     });

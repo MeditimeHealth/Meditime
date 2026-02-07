@@ -28,10 +28,12 @@ export default function DiseasesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState<string>("all");
+  const [language, setLanguage] = useState<'en' | 'bn'>('en');
   
   // Form state
   const [departmentId, setDepartmentId] = useState<string>("");
   const [diseaseNames, setDiseaseNames] = useState<string[]>([""]);
+  const [diseaseNamesBn, setDiseaseNamesBn] = useState<string[]>([""]);
 
   useEffect(() => {
     fetchDiseases();
@@ -67,18 +69,28 @@ export default function DiseasesPage() {
 
   const handleAddNameField = () => {
     setDiseaseNames([...diseaseNames, ""]);
+    setDiseaseNamesBn([...diseaseNamesBn, ""]);
   };
 
   const handleRemoveNameField = (index: number) => {
     const newNames = [...diseaseNames];
+    const newNamesBn = [...diseaseNamesBn];
     newNames.splice(index, 1);
+    newNamesBn.splice(index, 1);
     setDiseaseNames(newNames);
+    setDiseaseNamesBn(newNamesBn);
   };
 
   const handleNameChange = (index: number, value: string) => {
     const newNames = [...diseaseNames];
     newNames[index] = value;
     setDiseaseNames(newNames);
+  };
+
+  const handleNameBnChange = (index: number, value: string) => {
+    const newNamesBn = [...diseaseNamesBn];
+    newNamesBn[index] = value;
+    setDiseaseNamesBn(newNamesBn);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -118,6 +130,7 @@ export default function DiseasesPage() {
         setEditingId(null);
         setDepartmentId("");
         setDiseaseNames([""]);
+        setDiseaseNamesBn([""]);
         
         if (result.errors && result.errors.length > 0) {
           alert(`Some diseases were created, but errors occurred:\n${result.errors.join("\n")}`);
@@ -139,6 +152,7 @@ export default function DiseasesPage() {
     setEditingId(disease._id);
     setDepartmentId(disease.department?._id || "");
     setDiseaseNames([disease.name]);
+    setDiseaseNamesBn([disease.bangla || ""]);
     setShowForm(true);
   };
 
@@ -217,6 +231,7 @@ export default function DiseasesPage() {
             setEditingId(null);
             setDepartmentId("");
             setDiseaseNames([""]);
+        setDiseaseNamesBn([""]);
           }}
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -239,6 +254,7 @@ export default function DiseasesPage() {
                 setEditingId(null);
                 setDepartmentId("");
                 setDiseaseNames([""]);
+        setDiseaseNamesBn([""]);
               }}
             >
               <X className="h-4 w-4" />
@@ -246,6 +262,34 @@ export default function DiseasesPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Language Toggle */}
+            <div className="flex justify-end mb-4">
+              <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+                <button
+                  type="button"
+                  onClick={() => setLanguage('en')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    language === 'en'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLanguage('bn')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    language === 'bn'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  বাংলা
+                </button>
+              </div>
+            </div>
+
             <div>
               <Label htmlFor="department">Department (Optional)</Label>
               <Select
@@ -264,15 +308,21 @@ export default function DiseasesPage() {
             </div>
 
             <div className="space-y-3">
-              <Label>Disease Names</Label>
-              {diseaseNames.map((name, index) => (
+              <Label>
+                {language === 'en' ? 'Disease Names' : 'রোগের নাম (Optional)'}
+              </Label>
+              {(language === 'en' ? diseaseNames : diseaseNamesBn).map((name, index) => (
                 <div key={index} className="flex gap-2">
                   <Input
                     value={name}
-                    onChange={(e) => handleNameChange(index, e.target.value)}
-                    placeholder="Enter disease name"
-                    required={index === 0} // Only first one required
+                    onChange={(e) => language === 'en' 
+                      ? handleNameChange(index, e.target.value)
+                      : handleNameBnChange(index, e.target.value)
+                    }
+                    placeholder={language === 'en' ? "Enter disease name" : "রোগের নাম লিখুন"}
+                    required={language === 'en' && index === 0} // Only first English name required
                     className="flex-1"
+                    style={language === 'bn' ? { fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" } : undefined}
                   />
                   {!editingId && diseaseNames.length > 1 && (
                     <Button
@@ -318,6 +368,7 @@ export default function DiseasesPage() {
                   setEditingId(null);
                   setDepartmentId("");
                   setDiseaseNames([""]);
+        setDiseaseNamesBn([""]);
                 }}
               >
                 Cancel

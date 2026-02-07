@@ -23,15 +23,20 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import DoctorCard from "@/components/doctor-card";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
 interface Doctor {
   _id: string;
   name: string;
+  nameBn?: string;
   qualification: string;
-  specialty?: string; // Added field
-  designation?: string; // Added field
-
+  qualificationBn?: string;
+  specialty?: string;
+  specialtyBn?: string;
+  designation?: string;
+  designationBn?: string;
   hospital?: string;
+  hospitalBn?: string;
   division?: string;
   district?: string;
   thana?: string;
@@ -48,6 +53,7 @@ interface Doctor {
     time: string;
   };
   bio?: string;
+  bioBn?: string;
   image?: string;
   rating?: number;
 }
@@ -88,6 +94,7 @@ export default function DoctorProfilePage() {
   const [loading, setLoading] = useState(true);
 
   const [departmentDiseases, setDepartmentDiseases] = useState<string[]>([]);
+  const { language } = useLanguage();
 
   useEffect(() => {
     if (doctorId) {
@@ -240,7 +247,7 @@ export default function DoctorProfilePage() {
             <span className="text-gray-400">/</span>
             <Link href="/doctor" className="hover:text-primary transition-colors" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>বিশেষজ্ঞ ডাক্তার</Link>
             <span className="text-gray-400">/</span>
-            <span className="text-gray-900" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{doctor.name}</span>
+            <span className="text-gray-900" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{getLocalizedValue(doctor.name, doctor.nameBn, language)}</span>
           </div>
         </div>
       </div>
@@ -295,7 +302,7 @@ export default function DoctorProfilePage() {
                         fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                       }}
                     >
-                      {doctor.name}
+                      {getLocalizedValue(doctor.name, doctor.nameBn, language)}
                     </h1>
                      {/* Safe rating check to avoid 0 rendering */}
                     {!!doctor.rating && doctor.rating > 0 && (
@@ -308,7 +315,7 @@ export default function DoctorProfilePage() {
                   <div className="space-y-2">
                      {/* Specialty */}
                      <p className="text-primary font-bold text-lg md:text-xl">
-                      {doctor.specialty}
+                      {getLocalizedValue(doctor.specialty, doctor.specialtyBn, language)}
                     </p>
 
                     {/* Degree/Qualification */}
@@ -318,7 +325,7 @@ export default function DoctorProfilePage() {
                         fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                       }}
                     >
-                      {doctor.qualification}
+                      {getLocalizedValue(doctor.qualification, doctor.qualificationBn, language)}
                     </p>
 
                     {/* Designation */}
@@ -329,7 +336,7 @@ export default function DoctorProfilePage() {
                           fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                         }}
                       >
-                        {doctor.designation}
+                        {getLocalizedValue(doctor.designation, doctor.designationBn, language)}
                       </p>
                     )}
                   </div>
@@ -401,7 +408,7 @@ export default function DoctorProfilePage() {
                     fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                   }}
                 >
-                  {doctor.name} সম্পর্কে
+                  {getLocalizedValue(doctor.name, doctor.nameBn, language)} সম্পর্কে
                 </h2>
                 <div className="bg-white p-6 rounded-xl border-2 border-primary/10 shadow-md">
                   <p
@@ -410,7 +417,7 @@ export default function DoctorProfilePage() {
                       fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                     }}
                   >
-                    {doctor.bio}
+                    {getLocalizedValue(doctor.bio, doctor.bioBn, language)}
                   </p>
                 </div>
               </Card>
@@ -538,7 +545,7 @@ export default function DoctorProfilePage() {
                             fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           }}
                         >
-                          {doctor.hospital}
+                          {getLocalizedValue(doctor.hospital, doctor.hospitalBn, language)}
                         </p>
                       </div>
                     )}
@@ -694,7 +701,7 @@ export default function DoctorProfilePage() {
                             fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           }}
                         >
-                          {doctor.hospital}
+                          {getLocalizedValue(doctor.hospital, doctor.hospitalBn, language)}
                         </p>
                       </div>
                     )}

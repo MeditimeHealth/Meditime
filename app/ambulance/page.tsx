@@ -7,10 +7,12 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { MapPin, Phone, Car, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
 interface Ambulance {
   _id: string;
   name: string;
+  nameBn?: string;
   phoneNumber: string;
   division?: string;
   district?: string;
@@ -51,6 +53,7 @@ export default function AmbulancePage() {
   const [selectedThana, setSelectedThana] = useState("");
   const [availabilityStatusFilter, setAvailabilityStatusFilter] = useState("");
   const [vehicleTypeFilter, setVehicleTypeFilter] = useState("");
+  const { language } = useLanguage();
 
   const fetchDivisions = async () => {
     try {
@@ -310,7 +313,7 @@ export default function AmbulancePage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="text-xl font-semibold text-[#009A98] truncate">
-                            {ambulance.name}
+                            {getLocalizedValue(ambulance.name, ambulance.nameBn, language)}
                           </h3>
                           <p className="text-sm text-gray-600 mt-1">{ambulance.vehicleType}</p>
                         </div>

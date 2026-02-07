@@ -146,13 +146,16 @@ export default function LocationsPage() {
 
       if (activeTab === "division") {
         url = "/api/locations/divisions";
-        body = { name: formData.name };
+        url = "/api/locations/divisions";
+        body = { name: formData.name, nameBn: formData.nameBn };
       } else if (activeTab === "district") {
         url = "/api/locations/districts";
-        body = { name: formData.name, division: formData.division };
+        url = "/api/locations/districts";
+        body = { name: formData.name, nameBn: formData.nameBn, division: formData.division };
       } else if (activeTab === "thana") {
         url = "/api/locations/thanas";
-        body = { name: formData.name, district: formData.district };
+        url = "/api/locations/thanas";
+        body = { name: formData.name, nameBn: formData.nameBn, district: formData.district };
       } else if (activeTab === "hospital") {
         url = "/api/locations/hospitals";
         body = {
@@ -161,6 +164,7 @@ export default function LocationsPage() {
           address: formData.address || undefined,
           phone: formData.phone || undefined,
           email: formData.email || undefined,
+          nameBn: formData.nameBn,
         };
       }
 
@@ -345,13 +349,12 @@ export default function LocationsPage() {
             {language === 'en' ? (
               <div>
                 <Label htmlFor="name">
-                  Name <span className="text-red-500">*</span>
+                  Name <span className="text-gray-400 text-sm">(Optional)</span>
                 </Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
                   placeholder="Enter name"
                   className="mt-1"
                 />

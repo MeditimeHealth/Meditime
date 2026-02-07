@@ -12,7 +12,8 @@ import { Card } from "@/components/ui/card";
 import Image from "next/image";
 
 const bloodDonorSchema = z.object({
-  name: z.string().min(2, "Name is required"),
+  name: z.string().optional(),
+  nameBn: z.string().optional(),
   phoneNumber: z.string().min(10, "Phone number is required"),
   email: z.string().email("Invalid email address").optional().or(z.literal("")),
   bloodGroup: z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], {
@@ -35,6 +36,7 @@ export default function CreateBloodDonorPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [language, setLanguage] = useState<'en' | 'bn'>('en');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -194,21 +196,61 @@ export default function CreateBloodDonorPage() {
 
       <Card className="p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="name">
-                Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                {...register("name")}
-                placeholder="John Doe"
-                className="mt-1"
-              />
-              {errors.name && (
-                <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
-              )}
+          {/* Language Toggle */}
+          <div className="flex justify-end mb-4">
+            <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+              <button
+                type="button"
+                onClick={() => setLanguage('en')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  language === 'en'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-900'
+                }`}
+              >
+                English
+              </button>
+              <button
+                type="button"
+                onClick={() => setLanguage('bn')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  language === 'bn'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-900'
+                }`}
+              >
+                বাংলা
+              </button>
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {language === 'en' ? (
+              <div>
+                <Label htmlFor="name">
+                  Name <span className="text-gray-400 text-sm">(Optional)</span>
+                </Label>
+                <Input
+                  id="name"
+                  {...register("name")}
+                  placeholder="John Doe"
+                  className="mt-1"
+                />
+              </div>
+            ) : (
+              <div>
+                <Label htmlFor="nameBn">
+                  নাম (Name Bangla) <span className="text-gray-400 text-sm">(Optional)</span>
+                </Label>
+                <Input
+                  id="nameBn"
+                  {...register("nameBn")}
+                  placeholder="নাম লিখুন"
+                  className="mt-1"
+                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                />
+              </div>
+            )}
 
             <div>
               <Label htmlFor="phoneNumber">

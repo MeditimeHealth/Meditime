@@ -13,9 +13,9 @@ import Image from "next/image";
 import { Plus, X } from "lucide-react";
 import { showToast } from "@/lib/toast";
 const doctorSchema = z.object({
-  name: z.string().min(2, "Name is required"),
+  name: z.string().optional(),
   specialty: z.string().optional(),
-  qualification: z.string().min(2, "Qualification is required"),
+  qualification: z.string().optional(),
   designation: z.string().optional(),
 
   hospital: z.string().optional(),
@@ -54,6 +54,22 @@ const doctorSchema = z.object({
       }),
     )
     .min(1, "Add at least one availability slot"),
+})
+.superRefine((data, ctx) => {
+  if (!data.name && !data.nameBn) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Name (English or Bangla) is required",
+      path: ["name"],
+    });
+  }
+  if (!data.qualification && !data.qualificationBn) {
+     ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Qualification (English or Bangla) is required",
+      path: ["qualification"],
+    });
+  }
 });
 
 type DoctorFormValues = z.infer<typeof doctorSchema>;
@@ -449,7 +465,7 @@ export default function CreateDoctorPage() {
               {language === 'en' ? (
                 <>
                   <Label htmlFor="name">
-                    Name <span className="text-red-500">*</span>
+                    Name <span className="text-gray-400 text-sm">(Optional)</span>
                   </Label>
                   <Input
                     id="name"
@@ -457,11 +473,6 @@ export default function CreateDoctorPage() {
                     placeholder="Dr. John Doe"
                     className="mt-1"
                   />
-                  {errors.name && (
-                    <p className="text-sm text-red-500 mt-1">
-                      {errors.name.message}
-                    </p>
-                  )}
                 </>
               ) : (
                 <>

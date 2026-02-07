@@ -4,6 +4,7 @@ import "./globals.css";
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import { Toaster } from "react-hot-toast";
 import PopupModal from "@/components/popup-modal";
+import Providers from "@/components/Providers";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -33,9 +34,10 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} font-sans antialiased`}
       >
-        <ScrollToTopButton />
-        <PopupModal />
-        {children}
+        <Providers>
+          <ScrollToTopButton />
+          <PopupModal />
+          {children}
         <Toaster
           position="top-right"
           toastOptions={{
@@ -62,6 +64,7 @@ export default function RootLayout({
             },
           }}
         />
+        </Providers>
       </body>
     </html>
   );

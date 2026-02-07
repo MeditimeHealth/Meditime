@@ -13,11 +13,10 @@ import Image from "next/image";
 import { Plus, X } from "lucide-react";
 
 const doctorSchema = z.object({
-  name: z.string().min(2, "Name is required"),
+  name: z.string().optional(),
   specialty: z.string().optional(),
   qualification: z.string().min(2, "Qualification is required"),
   designation: z.string().optional(),
-
 
   hospital: z.string().optional(),
   division: z.string().optional(),
@@ -30,6 +29,14 @@ const doctorSchema = z.object({
   newPatientFee: z.coerce.number().min(0, "New patient fee must be at least 0").optional(),
   diseases: z.array(z.string()).optional(),
   bio: z.string().optional(),
+  
+  // Bangla Fields
+  nameBn: z.string().optional(),
+  specialtyBn: z.string().optional(),
+  qualificationBn: z.string().optional(),
+  designationBn: z.string().optional(),
+  bioBn: z.string().optional(),
+
   image: z.string().optional(),
   availabilitySlots: z.array(z.object({
     days: z.array(z.string()).min(1, "Select at least one day"),
@@ -65,6 +72,7 @@ interface AvailabilitySlot {
 }
 
 export default function EditDoctorPage() {
+  const [language, setLanguage] = useState<'en' | 'bn'>('en');
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -292,10 +300,13 @@ export default function EditDoctorPage() {
         // Set form values
         reset({
           name: doctor.name || "",
+          nameBn: doctor.nameBn || "",
           specialty: doctor.specialty || "",
+          specialtyBn: doctor.specialtyBn || "",
           qualification: doctor.qualification || "",
+          qualificationBn: doctor.qualificationBn || "",
           designation: doctor.designation || "",
-
+          designationBn: doctor.designationBn || "",
 
           hospital: doctor.hospital || "",
           division: doctor.division || "",
@@ -308,6 +319,7 @@ export default function EditDoctorPage() {
           newPatientFee: doctor.newPatientFee || (doctor.consultationFee || 0),
           diseases: doctor.diseases || [],
           bio: doctor.bio || "",
+          bioBn: doctor.bioBn || "",
           image: doctor.image || "",
           availabilitySlots: availabilityArray,
         });
@@ -449,6 +461,12 @@ export default function EditDoctorPage() {
           ...doctorData,
           image: imageUrl || undefined,
           availability: availabilitySlots,
+          
+          nameBn: data.nameBn,
+          specialtyBn: data.specialtyBn,
+          qualificationBn: data.qualificationBn,
+          designationBn: data.designationBn,
+          bioBn: data.bioBn,
         }),
       });
 
@@ -483,20 +501,61 @@ export default function EditDoctorPage() {
       </div>
 
       <Card className="p-6">
+        <div className="flex justify-end mb-6">
+          <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                language === 'en'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              English
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage('bn')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                language === 'bn'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              Bangla
+            </button>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label htmlFor="name">
-                Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                {...register("name")}
-                placeholder="Dr. John Doe"
-                className="mt-1"
-              />
-              {errors.name && (
-                <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
+              {language === 'en' ? (
+                <>
+                  <Label htmlFor="name">
+                    Name <span className="text-gray-400 text-sm">(Optional)</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    {...register("name")}
+                    placeholder="Dr. John Doe"
+                    className="mt-1"
+                  />
+                </>
+              ) : (
+                <>
+                  <Label htmlFor="nameBn">
+                    নাম (Name Bangla) <span className="text-gray-400 text-sm">(Optional)</span>
+                  </Label>
+                  <Input
+                    id="nameBn"
+                    {...register("nameBn")}
+                    placeholder="ডাঃ জন ডো"
+                    className="mt-1"
+                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                  />
+                </>
               )}
             </div>
 

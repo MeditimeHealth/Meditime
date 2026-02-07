@@ -14,7 +14,7 @@ import { showToast } from "@/lib/toast";
 import Link from "next/link";
 
 const hospitalSchema = z.object({
-  name: z.string().min(2, "Hospital name is required"),
+  name: z.string().optional(),
   division: z.string().min(1, "Division is required"),
   district: z.string().min(1, "District is required"),
   thana: z.string().min(1, "Thana is required"),
@@ -201,7 +201,7 @@ export default function CreateHospitalPage() {
           {language === 'en' ? (
             <>
               <Label htmlFor="name" className="text-base font-semibold text-gray-700">
-                Hospital Name <span className="text-red-500">*</span>
+                Hospital Name <span className="text-gray-400 text-sm">(Optional)</span>
               </Label>
               <Input
                 id="name"
@@ -209,9 +209,6 @@ export default function CreateHospitalPage() {
                 placeholder="Name"
                 className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
               />
-              {errors.name && (
-                <p className="text-sm text-red-500">{errors.name.message}</p>
-              )}
             </>
           ) : (
              <>

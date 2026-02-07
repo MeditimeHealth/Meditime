@@ -9,10 +9,12 @@ import { Label } from "@/components/ui/label";
 import { Search, X, MapPin, Building2, Phone, Mail, Users, ArrowRight } from "lucide-react";
 import Navbar from "@/components/navbar";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
 interface Hospital {
   _id: string;
   name: string;
+  nameBn?: string;
   thana?: {
     _id: string;
     name: string;
@@ -26,6 +28,7 @@ interface Hospital {
     };
   };
   address?: string;
+  addressBn?: string;
   phone?: string;
   email?: string;
 }
@@ -101,6 +104,7 @@ export default function HospitalListPage() {
   
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const { language } = useLanguage();
 
   const fetchHospitals = useCallback(async () => {
     try {
@@ -707,7 +711,7 @@ export default function HospitalListPage() {
                           className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors mb-3 leading-tight text-center"
                           style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                         >
-                          {hospital.name}
+                          {getLocalizedValue(hospital.name, hospital.nameBn, language)}
                         </h3>
 
                         {/* 2. MapPin moved to address */}
@@ -718,7 +722,7 @@ export default function HospitalListPage() {
                                 className="text-sm text-gray-500 leading-relaxed text-center"
                                 style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                               >
-                               {hospital.address}
+                               {getLocalizedValue(hospital.address, hospital.addressBn, language)}
                               </p>
                             ) : (
                                <p className="text-sm text-gray-400 italic">ঠিকানা উপলব্ধ নয়</p>

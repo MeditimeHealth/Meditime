@@ -32,11 +32,11 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { name, district } = body;
+    const { name, nameBn, district } = body;
 
-    if (!name || !district) {
+    if ((!name && !nameBn) || !district) {
       return NextResponse.json(
-        { error: "Thana name and district are required" },
+        { error: "Thana name (English or Bangla) and district are required" },
         { status: 400 }
       );
     }
@@ -50,7 +50,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const thana = await Thana.create({ name, district });
+    const thana = await Thana.create({ 
+      name: name || "", 
+      nameBn: nameBn || "",
+      district 
+    });
     return NextResponse.json(
       { message: "Thana created successfully", thana },
       { status: 201 }

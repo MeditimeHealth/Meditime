@@ -18,7 +18,10 @@ const DiagnosticCenterSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Center name is required'],
+      trim: true,
+    },
+    nameBn: {
+      type: String,
       trim: true,
     },
     division: {

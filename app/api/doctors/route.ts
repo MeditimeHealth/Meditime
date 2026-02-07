@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Doctor from "@/models/Doctor";
+import mongoose from "mongoose";
+
+// Force model output refreshing
+// if (mongoose.models.Doctor) {
+//   delete mongoose.models.Doctor; 
+// }
 
 export async function GET(request: NextRequest) {
   try {
@@ -67,12 +73,18 @@ export async function POST(request: NextRequest) {
       availability,
       bio,
       image,
+      nameBn,
+      specialtyBn,
+      qualificationBn,
+      designationBn,
+      bioBn,
     } = body;
 
-    // Validate required fields - consultationFee or newPatientFee is required
-    if (!name || !qualification || !availability) {
+    // Validate required fields
+    if ((!name && !nameBn) || (!qualification && !qualificationBn) || !availability) {
+      console.error("Create Doctor Validation Failed:", { name, nameBn, qualification, qualificationBn, hasAvailability: !!availability });
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "Missing required fields: Name (English/Bangla), Qualification (English/Bangla), or Availability" },
         { status: 400 }
       );
     }
@@ -101,7 +113,7 @@ export async function POST(request: NextRequest) {
 
     // Prepare doctor data, only including defined fields
     const doctorData: any = {
-      name,
+      name: name || "",
       specialty,
       qualification,
       designation,
@@ -127,11 +139,11 @@ export async function POST(request: NextRequest) {
     if (image) doctorData.image = image;
 
     // Bangla Fields
-    if (body.nameBn) doctorData.nameBn = body.nameBn;
-    if (body.specialtyBn) doctorData.specialtyBn = body.specialtyBn;
-    if (body.qualificationBn) doctorData.qualificationBn = body.qualificationBn;
-    if (body.designationBn) doctorData.designationBn = body.designationBn;
-    if (body.bioBn) doctorData.bioBn = body.bioBn;
+    if (nameBn) doctorData.nameBn = nameBn;
+    if (specialtyBn) doctorData.specialtyBn = specialtyBn;
+    if (qualificationBn) doctorData.qualificationBn = qualificationBn;
+    if (designationBn) doctorData.designationBn = designationBn;
+    if (bioBn) doctorData.bioBn = bioBn;
 
     // Log the data being sent for debugging
     console.log('Creating doctor with data:', JSON.stringify(doctorData, null, 2));

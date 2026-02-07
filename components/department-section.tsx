@@ -10,10 +10,12 @@ import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
 interface Department {
   _id: string;
   name: string;
+  nameBn?: string;
   image?: string;
 }
 
@@ -44,6 +46,7 @@ export default function DepartmentSection() {
   const swiperRef = useRef<SwiperType | null>(null);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -175,7 +178,7 @@ export default function DepartmentSection() {
 
                       {/* Department Name */}
                       <h3 className="text-base md:text-lg font-bold mb-2 text-slate-800 group-hover:text-primary transition-colors duration-300 leading-tight line-clamp-2">
-                        {department.name}
+                        {getLocalizedValue(department.name, department.nameBn, language)}
                       </h3>
                     </div>
                   </Link>
@@ -199,7 +202,7 @@ export default function DepartmentSection() {
                     <IconComponent className="w-7 h-7 text-white" strokeWidth={1.5} />
                   </div>
                   <h3 className="text-sm font-bold text-slate-800 leading-tight line-clamp-2">
-                    {department.name}
+                    {getLocalizedValue(department.name, department.nameBn, language)}
                   </h3>
                 </div>
               </Link>

@@ -256,7 +256,7 @@ export default function DepartmentsPage() {
               {language === 'en' ? (
                 <div>
                   <Label htmlFor="name">
-                    Department Name <span className="text-red-500">*</span>
+                    Department Name <span className="text-gray-400 text-sm">(Optional)</span>
                   </Label>
                   <Input
                     id="name"
@@ -265,7 +265,6 @@ export default function DepartmentsPage() {
                       setFormData({ ...formData, name: e.target.value })
                     }
                     placeholder="Cardiology"
-                    required
                     className="mt-1"
                   />
                 </div>

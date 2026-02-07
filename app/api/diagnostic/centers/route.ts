@@ -30,17 +30,18 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { name, division, district, thana, address, phone, email, packageDiscount, minTestsForPackage } = body;
+    const { name, nameBn, division, district, thana, address, phone, email, packageDiscount, minTestsForPackage } = body;
 
-    if (!name) {
+    if (!name && !nameBn) {
       return NextResponse.json(
-        { error: "Center name is required" },
+        { error: "Center name (English or Bangla) is required" },
         { status: 400 }
       );
     }
 
     const center = await DiagnosticCenter.create({
-      name,
+      name: name || "",
+      nameBn: nameBn || "",
       division: division || undefined,
       district: district || undefined,
       thana: thana || undefined,

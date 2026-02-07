@@ -43,7 +43,6 @@ const DoctorSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Doctor name is required'],
       trim: true,
     },
     specialty: {
@@ -52,7 +51,6 @@ const DoctorSchema: Schema = new Schema(
     },
     qualification: {
       type: String,
-      required: [true, 'Qualification is required'],
       trim: true,
     },
     designation: {

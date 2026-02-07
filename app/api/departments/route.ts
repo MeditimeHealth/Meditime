@@ -31,17 +31,18 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { name, image } = body;
+    const { name, nameBn, image } = body;
 
-    if (!name) {
+    if (!name && !nameBn) {
       return NextResponse.json(
-        { error: "Department name is required" },
+        { error: "Department name (English or Bangla) is required" },
         { status: 400 }
       );
     }
 
     const department = await Department.create({ 
-      name, 
+      name: name || "", 
+      nameBn: nameBn || "",
       image 
     });
     return NextResponse.json(

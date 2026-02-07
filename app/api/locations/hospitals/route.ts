@@ -72,11 +72,11 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { name, thana, address, phone, email } = body;
+    const { name, nameBn, thana, address, phone, email } = body;
 
-    if (!name) {
+    if (!name && !nameBn) {
       return NextResponse.json(
-        { error: "Hospital name is required" },
+        { error: "Hospital name (English or Bangla) is required" },
         { status: 400 }
       );
     }
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     }
 
     const hospital = await Hospital.create({
-      name,
+      name: name || "",
       thana: thana || undefined,
       address: address || undefined,
       phone: phone || undefined,

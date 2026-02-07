@@ -114,6 +114,7 @@ export default function DiagnosticCentersPage() {
       const body = {
         ...(editingId && { id: editingId }),
         name: formData.name,
+        nameBn: formData.nameBn,
         division: formData.division || undefined,
         district: formData.district || undefined,
         thana: formData.thana || undefined,
@@ -257,13 +258,12 @@ export default function DiagnosticCentersPage() {
             {language === 'en' ? (
               <div>
                 <Label htmlFor="name">
-                  Center Name <span className="text-red-500">*</span>
+                  Center Name <span className="text-gray-400 text-sm">(Optional)</span>
                 </Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
                   placeholder="e.g., Square Diagnostic Center"
                   className="mt-1"
                 />

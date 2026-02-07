@@ -20,16 +20,19 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { name } = body;
+    const { name, nameBn } = body;
 
-    if (!name) {
+    if (!name && !nameBn) {
       return NextResponse.json(
-        { error: "Division name is required" },
+        { error: "Division name (English or Bangla) is required" },
         { status: 400 }
       );
     }
 
-    const division = await Division.create({ name });
+    const division = await Division.create({ 
+      name: name || "", 
+      nameBn: nameBn || "" 
+    });
     return NextResponse.json(
       { message: "Division created successfully", division },
       { status: 201 }

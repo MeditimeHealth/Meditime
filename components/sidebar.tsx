@@ -28,6 +28,7 @@ import {
   Video,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
 interface User {
   id: string;
@@ -44,41 +45,49 @@ interface SidebarProps {
 const menuItems = [
   {
     title: "Dashboard",
+    titleBn: "ড্যাশবোর্ড",
     icon: LayoutDashboard,
     href: "/admin",
   },
   {
     title: "Appointments",
+    titleBn: "অ্যাপয়েন্টমেন্ট",
     icon: Stethoscope,
     href: "/admin/appointments",
   },
   {
     title: "Video Consultations",
+    titleBn: "ভিডিও পরামর্শ",
     icon: Video,
     href: "/admin/video-consultations",
   },
   {
     title: "Create Doctor",
+    titleBn: "ডাক্তার যোগ করুন",
     icon: UserPlus,
     href: "/admin/doctors/create",
   },
   {
     title: "Hospitals",
+    titleBn: "হাসপাতাল",
     icon: Building2,
     href: "/admin/hospitals",
   },
   {
     title: "All Doctors",
+    titleBn: "সকল ডাক্তার",
     icon: Users,
     href: "/admin/doctors",
   },
   {
     title: "Departments",
+    titleBn: "ডিপার্টমেন্ট",
     icon: Building2,
     href: "/admin/departments",
   },
   {
     title: "Affiliate Withdrawals",
+    titleBn: "অ্যাফিলিয়েট উত্তোলন",
     icon: DollarSign,
     href: "/admin/affiliate-withdrawals",
   },
@@ -89,11 +98,13 @@ const menuItems = [
   // },
   {
     title: "Blood Donors",
+    titleBn: "রক্তদাতা",
     icon: Droplet,
     href: "/admin/blood-donors",
   },
   {
     title: "Ambulances",
+    titleBn: "অ্যাম্বুলেন্স",
     icon: Car,
     href: "/admin/ambulances",
   },
@@ -104,42 +115,50 @@ const menuItems = [
   // },
   {
     title: "Add Locations",
+    titleBn: "লোকেশন যোগ করুন",
     icon: MapPin,
     href: "/admin/locations",
   },
   {
     title: "Add Diseases",
+    titleBn: "রোগ যোগ করুন",
     icon: Stethoscope,
     href: "/admin/diseases",
   },
   {
     title: "Diagnostic",
+    titleBn: "ডায়াগনস্টিক",
     icon: Microscope,
     href: "/admin/diagnostic",
   },
 
   {
     title: "Blog Sidebar",
+    titleBn: "ব্লগ সাইডবার",
     icon: Image,
     href: "/admin/blog-sidebar",
   },
   {
     title: "Service Sections",
+    titleBn: "সার্ভিস সেকশন",
     icon: Briefcase,
     href: "/admin/service-sections",
   },
   {
     title: "Memberships",
+    titleBn: "মেম্বারশিপ",
     icon: CreditCard,
     href: "/admin/memberships",
   },
   {
     title: "Membership Cards",
+    titleBn: "মেম্বারশিপ কার্ড",
     icon: CreditCard,
     href: "/admin/membership-cards",
   },
   {
     title: "Settings",
+    titleBn: "সেটিংস",
     icon: Settings,
     href: "/admin/settings",
   },
@@ -151,21 +170,25 @@ const menuItems = [
 
   {
     title: "Photo Requests",
+    titleBn: "ছবির অনুরোধ",
     icon: Camera,
     href: "/admin/affiliate-photo-requests",
   },
   {
     title: "Affiliate Overview",
+    titleBn: "অ্যাফিলিয়েট ওভারভিউ",
     icon: Wallet,
     href: "/admin/affiliate-overview",
   },
   {
     title: "Completed Reports",
+    titleBn: "সম্পন্ন রিপোর্ট",
     icon: FileText,
     href: "/admin/affiliate-reports/completed",
   },
   {
     title: "Popup Manager",
+    titleBn: "পপআপ ম্যানেজার",
     icon: Image,
     href: "/admin/popup",
   },
@@ -174,6 +197,7 @@ const menuItems = [
 export default function Sidebar({ user, onLogout }: SidebarProps) {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { language } = useLanguage();
 
   return (
     <>
@@ -236,7 +260,9 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
                   )}
                 >
                   {Icon && <Icon className="h-5 w-5" />}
-                  <span>{item.title}</span>
+                  <span style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                    {getLocalizedValue(item.title, item.titleBn, language)}
+                  </span>
                 </Link>
               );
             })}
@@ -268,7 +294,7 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
                   className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                 >
                   <LogOut className="h-4 w-4" />
-                  Logout
+                  {language === 'bn' ? 'লগআউট' : 'Logout'}
                 </button>
               </div>
             ) : (

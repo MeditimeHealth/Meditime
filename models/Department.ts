@@ -11,7 +11,10 @@ const DepartmentSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Department name is required'],
+      trim: true,
+    },
+    nameBn: {
+      type: String,
       trim: true,
     },
     image: {

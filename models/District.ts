@@ -11,7 +11,10 @@ const DistrictSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'District name is required'],
+      trim: true,
+    },
+    nameBn: {
+      type: String,
       trim: true,
     },
     division: {

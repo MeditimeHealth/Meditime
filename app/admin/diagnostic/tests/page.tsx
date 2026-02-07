@@ -68,7 +68,9 @@ export default function DiagnosticTestsPage() {
       const body = {
         ...(editingId && { id: editingId }),
         name: formData.name,
+        nameBn: formData.nameBn,
         description: formData.description || undefined,
+        descriptionBn: formData.descriptionBn || undefined,
         price: parseFloat(formData.price),
         image: formData.image || undefined,
       };
@@ -267,13 +269,12 @@ export default function DiagnosticTestsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="name">
-                      Test Name <span className="text-red-500">*</span>
+                      Test Name <span className="text-gray-400 text-sm">(Optional)</span>
                     </Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      required
                       placeholder="e.g., Complete Blood Count (CBC)"
                       className="mt-1"
                     />

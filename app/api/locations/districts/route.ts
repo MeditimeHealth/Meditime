@@ -31,11 +31,11 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { name, division } = body;
+    const { name, nameBn, division } = body;
 
-    if (!name || !division) {
+    if ((!name && !nameBn) || !division) {
       return NextResponse.json(
-        { error: "District name and division are required" },
+        { error: "District name (English or Bangla) and division are required" },
         { status: 400 }
       );
     }
@@ -49,7 +49,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const district = await District.create({ name, division });
+    const district = await District.create({ 
+      name: name || "", 
+      nameBn: nameBn || "",
+      division 
+    });
     return NextResponse.json(
       { message: "District created successfully", district },
       { status: 201 }

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, UserCircle, Settings, LogOut as LogOutIcon, Wallet, DollarSign } from "lucide-react";
+import { Menu, X, UserCircle, Settings, LogOut as LogOutIcon, Wallet, DollarSign, Globe } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -13,6 +13,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface User {
   id: string;
@@ -29,6 +30,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const { language, toggleLanguage } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -209,6 +211,19 @@ export default function Navbar() {
 
             {/* Desktop Right Side Actions */}
             <div className="hidden lg:flex items-center gap-3 md:gap-4">
+              {/* Language Toggle */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleLanguage}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all border border-gray-200"
+                title={language === 'en' ? 'Switch to Bangla' : 'Switch to English'}
+              >
+                <Globe className="h-4 w-4" />
+                <span className="text-sm font-semibold">
+                  {language === 'en' ? 'EN' : 'বাং'}
+                </span>
+              </motion.button>
               {user || affiliate ? (
                 <>
                   {/* Profile Menu Button - Drawer Icon */}
@@ -411,6 +426,22 @@ export default function Navbar() {
                     aria-label="Close menu"
                   >
                     <X className="h-6 w-6 text-gray-700" />
+                  </button>
+                </div>
+
+                {/* Language Toggle - Mobile */}
+                <div className="px-4 pt-4">
+                  <button
+                    onClick={toggleLanguage}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all border border-gray-200"
+                  >
+                    <Globe className="h-5 w-5" />
+                    <span className="text-base font-semibold">
+                      {language === 'en' ? 'English' : 'বাংলা'}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {language === 'en' ? '→ বাংলা' : '→ English'}
+                    </span>
                   </button>
                 </div>
 

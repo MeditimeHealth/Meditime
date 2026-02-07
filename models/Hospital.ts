@@ -19,7 +19,6 @@ const HospitalSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Hospital name is required'],
       trim: true,
     },
     thana: {

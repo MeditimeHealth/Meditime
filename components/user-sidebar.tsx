@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
 interface UserSidebarProps {
   user: any | null;
@@ -21,11 +22,13 @@ interface UserSidebarProps {
 const menuItems = [
   {
     title: "Dashboard",
+    titleBn: "ড্যাশবোর্ড",
     icon: LayoutDashboard,
     href: "/user/dashboard",
   },
   {
     title: "Profile",
+    titleBn: "প্রোফাইল",
     icon: User,
     href: "/user/profile",
   },
@@ -34,6 +37,7 @@ const menuItems = [
 export default function UserSidebar({ user, onLogout }: UserSidebarProps) {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { language } = useLanguage();
 
   return (
     <>
@@ -92,7 +96,9 @@ export default function UserSidebar({ user, onLogout }: UserSidebarProps) {
                   )}
                 >
                   <Icon className="h-5 w-5" />
-                  <span>{item.title}</span>
+                  <span style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                    {getLocalizedValue(item.title, item.titleBn, language)}
+                  </span>
                 </Link>
               );
             })}
@@ -122,7 +128,7 @@ export default function UserSidebar({ user, onLogout }: UserSidebarProps) {
                   className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
                 >
                   <LogOut className="h-5 w-5" />
-                  <span>Logout</span>
+                  <span>{language === 'bn' ? 'লগআউট' : 'Logout'}</span>
                 </button>
               </div>
             ) : (

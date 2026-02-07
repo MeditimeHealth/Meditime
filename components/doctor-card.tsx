@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Clock, MapPin } from "lucide-react";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
 export interface Doctor {
   _id: string;
@@ -36,6 +37,12 @@ export interface Doctor {
   bio?: string;
   image?: string;
   rating?: number;
+  // Bangla fields
+  nameBn?: string;
+  specialtyBn?: string;
+  qualificationBn?: string;
+  designationBn?: string;
+  hospitalBn?: string;
 }
 
 interface DoctorCardProps {
@@ -100,6 +107,15 @@ const formatAvailability = (
 };
 
 export default function DoctorCard({ doctor, index = 0 }: DoctorCardProps) {
+  const { language } = useLanguage();
+  
+  // Get localized values
+  const displayName = getLocalizedValue(doctor.name, doctor.nameBn, language);
+  const displaySpecialty = getLocalizedValue(doctor.specialty, doctor.specialtyBn, language);
+  const displayQualification = getLocalizedValue(doctor.qualification, doctor.qualificationBn, language);
+  const displayDesignation = getLocalizedValue(doctor.designation, doctor.designationBn, language);
+  const displayHospital = getLocalizedValue(doctor.hospital, doctor.hospitalBn, language);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -160,11 +176,11 @@ export default function DoctorCard({ doctor, index = 0 }: DoctorCardProps) {
                   "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
               }}
             >
-              {doctor.name}
+              {displayName}
             </h3>
 
             {/* Specialty */}
-            {doctor.specialty && (
+            {displaySpecialty && (
               <p
                 className="text-sm text-[#4A90A4] font-medium"
                 style={{
@@ -172,23 +188,12 @@ export default function DoctorCard({ doctor, index = 0 }: DoctorCardProps) {
                     "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                 }}
               >
-                {doctor.specialty}
+                {displaySpecialty}
               </p>
             )}
 
             {/* Qualification */}
-            <p
-              className="text-sm text-gray-600 leading-relaxed"
-              style={{
-                fontFamily:
-                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-              }}
-            >
-              {doctor.qualification}
-            </p>
-
-            {/* Designation */}
-            {doctor.designation && (
+            {displayQualification && (
               <p
                 className="text-sm text-gray-600 leading-relaxed"
                 style={{
@@ -196,7 +201,20 @@ export default function DoctorCard({ doctor, index = 0 }: DoctorCardProps) {
                     "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                 }}
               >
-                {doctor.designation}
+                {displayQualification}
+              </p>
+            )}
+
+            {/* Designation */}
+            {displayDesignation && (
+              <p
+                className="text-sm text-gray-600 leading-relaxed"
+                style={{
+                  fontFamily:
+                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                }}
+              >
+                {displayDesignation}
               </p>
             )}
 
@@ -204,7 +222,7 @@ export default function DoctorCard({ doctor, index = 0 }: DoctorCardProps) {
             <div className="w-12 h-0.5 bg-[#8B4513] my-3"></div>
 
             {/* Hospital Name */}
-            {doctor.hospital && (
+            {displayHospital && (
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
                 <p
@@ -214,7 +232,7 @@ export default function DoctorCard({ doctor, index = 0 }: DoctorCardProps) {
                       "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                   }}
                 >
-                  {doctor.hospital}
+                  {displayHospital}
                 </p>
               </div>
             )}

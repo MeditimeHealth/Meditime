@@ -10,9 +10,12 @@ const DivisionSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Division name is required'],
       trim: true,
-      unique: true,
+      unique: false,
+    },
+    nameBn: {
+      type: String,
+      trim: true,
     },
   },
   {

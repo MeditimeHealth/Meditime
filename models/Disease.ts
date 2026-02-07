@@ -12,9 +12,8 @@ const DiseaseSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Disease name is required'],
       trim: true,
-      unique: true,
+      unique: false,
     },
     bangla: {
       type: String,

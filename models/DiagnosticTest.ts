@@ -2,7 +2,9 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IDiagnosticTest extends Document {
   name: string;
+  nameBn?: string;
   description?: string;
+  descriptionBn?: string;
   price: number;
   image?: string; // URL to image
   createdAt: Date;
@@ -13,10 +15,17 @@ const DiagnosticTestSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Test name is required'],
+      trim: true,
+    },
+    nameBn: {
+      type: String,
       trim: true,
     },
     description: {
+      type: String,
+      trim: true,
+    },
+    descriptionBn: {
       type: String,
       trim: true,
     },

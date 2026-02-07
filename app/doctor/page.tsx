@@ -34,6 +34,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import DoctorCard from "@/components/doctor-card";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
 interface Department {
   _id: string;
@@ -97,13 +98,17 @@ const banglaLabels = {
 interface Doctor {
   _id: string;
   name: string;
+  nameBn?: string;
   specialty: string;
+  specialtyBn?: string;
   qualification: string;
+  qualificationBn?: string;
   designation?: string;
-
+  designationBn?: string;
   phoneNumber: string;
   email?: string;
   hospital?: string;
+  hospitalBn?: string;
   division?: string;
   district?: string;
   thana?: string;
@@ -124,6 +129,7 @@ interface Doctor {
       };
 
   bio?: string;
+  bioBn?: string;
   image?: string;
   rating?: number;
 }
@@ -194,6 +200,7 @@ function DoctorListPageContent() {
   // Sort states
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const { language } = useLanguage();
 
   // Carousel ref
   const carouselRef = useRef<HTMLDivElement>(null);

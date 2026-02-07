@@ -8,12 +8,15 @@ import { Label } from "@/components/ui/label";
 import { Search, X, ShoppingCart, MapPin, Percent, FileText, Download } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
 interface DiagnosticTest {
   _id: string;
   name: string;
+  nameBn?: string;
   category: string;
   description?: string;
+  descriptionBn?: string;
   price: number;
   originalPrice?: number;
   duration?: string;
@@ -25,10 +28,12 @@ interface DiagnosticTest {
 interface DiagnosticCenter {
   _id: string;
   name: string;
+  nameBn?: string;
   division?: string;
   district?: string;
   thana?: string;
   address?: string;
+  addressBn?: string;
   phone?: string;
   email?: string;
   packageDiscount?: number;
@@ -63,6 +68,7 @@ export default function DiagnosticPage() {
   const [selectedDivision, setSelectedDivision] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedThana, setSelectedThana] = useState("");
+  const { language } = useLanguage();
 
   const fetchTests = useCallback(async () => {
     try {
@@ -404,7 +410,7 @@ Thank you for choosing Medi Time!
                                 {test.category}
                               </span>
                               <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
-                                {test.name}
+                                {getLocalizedValue(test.name, test.nameBn, language)}
                               </h3>
                             </div>
                             <div className="text-right">
@@ -421,7 +427,7 @@ Thank you for choosing Medi Time!
 
                           {test.description && (
                             <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                              {test.description}
+                              {getLocalizedValue(test.description, test.descriptionBn, language)}
                             </p>
                           )}
 
@@ -561,7 +567,7 @@ Thank you for choosing Medi Time!
                         <option value="">Choose a center</option>
                         {centers.map((center) => (
                           <option key={center._id} value={center._id}>
-                            {center.name}
+                            {getLocalizedValue(center.name, center.nameBn, language)}
                             {center.packageDiscount && center.minTestsForPackage && (
                               <span>
                                 {" "}
