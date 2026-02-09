@@ -50,6 +50,8 @@ export const translations = {
     hospitalName: "Hospital Name",
     hospitalAddress: "Hospital Address",
     contactNo: "Hospital contact no",
+    noHospitals: "No hospitals found",
+    createFirstHospital: "Create First Hospital",
     
     // Ambulance Specific
     createAmbulance: "Create Ambulance Service",
@@ -67,6 +69,8 @@ export const translations = {
     airAmbulance: "Air Ambulance",
     ambulanceServiceName: "Ambulance Service Name",
     updating: "Updating...",
+    noAmbulances: "No ambulances found",
+    createFirstAmbulance: "Create First Ambulance",
 
     // Department Specific
     manageDepartments: "Manage Departments",
@@ -135,6 +139,8 @@ export const translations = {
     profileImage: "Profile Image",
     changeImage: "Change Image",
     selectImage: "Select Image",
+    noDoctors: "No doctors found",
+    createFirstDoctor: "Create First Doctor Profile",
 
     // Location Specific
     manageLocations: "Manage Locations",
@@ -217,6 +223,8 @@ export const translations = {
     hospitalName: "হাসপাতালের নাম",
     hospitalAddress: "হাসপাতালের ঠিকানা",
     contactNo: "হাসপাতালের যোগাযোগ নম্বর",
+    noHospitals: "কোনো হাসপাতাল পাওয়া যায়নি",
+    createFirstHospital: "প্রথম হাসপাতাল তৈরি করুন",
     
     // Ambulance Specific
     createAmbulance: "অ্যাম্বুলেন্স সার্ভিস তৈরি করুন",
@@ -234,6 +242,8 @@ export const translations = {
     airAmbulance: "এয়ার অ্যাম্বুলেন্স",
     ambulanceServiceName: "অ্যাম্বুলেন্স সার্ভিসের নাম",
     updating: "আপডেট হচ্ছে...",
+    noAmbulances: "কোনো অ্যাম্বুলেন্স পাওয়া যায়নি",
+    createFirstAmbulance: "প্রথম অ্যাম্বুলেন্স সার্ভিস তৈরি করুন",
 
     // Department Specific
     manageDepartments: "বিভাগ পরিচালনা করুন",
@@ -302,6 +312,8 @@ export const translations = {
     profileImage: "প্রোফাইল ছবি",
     changeImage: "ছবি পরিবর্তন করুন",
     selectImage: "ছবি নির্বাচন করুন",
+    noDoctors: "কোনো ডাক্তার পাওয়া যায়নি",
+    createFirstDoctor: "প্রথম ডাক্তারের প্রোফাইল তৈরি করুন",
 
     // Location Specific
     manageLocations: "অবস্থান পরিচালনা করুন",
