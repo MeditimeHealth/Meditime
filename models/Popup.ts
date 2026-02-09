@@ -2,9 +2,12 @@ import mongoose, { Document, Model, Schema } from 'mongoose';
 
 export interface IPopup extends Document {
   title: string;
+  titleBn?: string;
   description: string;
+  descriptionBn?: string;
   imageUrl: string;
   buttonText: string;
+  buttonTextBn?: string;
   buttonLink: string;
   isActive: boolean;
   createdAt: Date;
@@ -18,9 +21,17 @@ const popupSchema: Schema<IPopup> = new Schema(
       required: [true, 'Title is required'],
       trim: true,
     },
+    titleBn: {
+      type: String,
+      trim: true,
+    },
     description: {
       type: String,
       required: [true, 'Description is required'],
+      trim: true,
+    },
+    descriptionBn: {
+      type: String,
       trim: true,
     },
     imageUrl: {
@@ -30,6 +41,10 @@ const popupSchema: Schema<IPopup> = new Schema(
     buttonText: {
       type: String,
       default: 'Learn More',
+    },
+    buttonTextBn: {
+      type: String,
+      trim: true,
     },
     buttonLink: {
       type: String,

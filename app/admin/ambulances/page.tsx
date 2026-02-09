@@ -179,12 +179,16 @@ import clsx from "clsx";
 interface Ambulance {
   _id: string;
   name: string;
+  nameBn?: string; // added
   phoneNumber: string;
   ambulanceNumber: string; // ← added
   drivingLicence: string; // ← added
   division?: string;
+  divisionBn?: string; // added
   district?: string;
+  districtBn?: string; // added
   thana?: string;
+  thanaBn?: string; // added
   availabilityStatus: string;
   vehicleType: string;
 }
@@ -270,6 +274,11 @@ export default function AmbulancesPage() {
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900">
                     {ambulance.name}
+                    {ambulance.nameBn && (
+                      <span className="block text-sm text-gray-500 font-normal">
+                        {ambulance.nameBn}
+                      </span>
+                    )}
                   </h3>
                   <p className="text-sm text-gray-600 mt-1">
                     Vehicle Type:{" "}
@@ -309,9 +318,9 @@ export default function AmbulancesPage() {
                       <span className="text-gray-600">Location: </span>
                       <span className="text-gray-900">
                         {[
-                          ambulance.division,
-                          ambulance.district,
-                          ambulance.thana,
+                          ambulance.divisionBn || ambulance.division,
+                          ambulance.districtBn || ambulance.district,
+                          ambulance.thanaBn || ambulance.thana,
                         ]
                           .filter(Boolean)
                           .join(", ")}

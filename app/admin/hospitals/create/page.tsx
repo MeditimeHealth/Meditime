@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { t } from "@/lib/translations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,8 +31,8 @@ const hospitalSchema = z.object({
 type HospitalFormValues = z.infer<typeof hospitalSchema>;
 
 export default function CreateHospitalPage() {
-  const [language, setLanguage] = useState<'en' | 'bn'>('en');
   const [isLoading, setIsLoading] = useState(false);
+  const [language, setLanguage] = useState<'en' | 'bn'>('en');
   const router = useRouter();
 
   // Location state
@@ -43,18 +45,9 @@ export default function CreateHospitalPage() {
     handleSubmit,
     watch,
     setValue,
-    reset,
     formState: { errors },
   } = useForm<HospitalFormValues>({
     resolver: zodResolver(hospitalSchema),
-    defaultValues: {
-      name: "",
-      division: "",
-      district: "",
-      thana: "",
-      address: "",
-      phone: "",
-    },
   });
 
   const watchedDivision = watch("division");
@@ -62,16 +55,11 @@ export default function CreateHospitalPage() {
 
   // Fetch divisions on mount
   useEffect(() => {
-    const fetchDivisions = async () => {
-      try {
-        const res = await fetch("/api/locations/divisions");
-        const data = await res.json();
+    fetch("/api/locations/divisions")
+      .then((res) => res.json())
+      .then((data) => {
         if (data.divisions) setDivisions(data.divisions);
-      } catch (error) {
-        console.error("Error fetching divisions:", error);
-      }
-    };
-    fetchDivisions();
+      });
   }, []);
 
   // Fetch districts when division changes
@@ -83,8 +71,7 @@ export default function CreateHospitalPage() {
           .then((res) => res.json())
           .then((data) => {
             if (data.districts) setDistricts(data.districts);
-          })
-          .catch(err => console.error("Error fetching districts:", err));
+          });
       }
       setValue("district", "");
       setValue("thana", "");
@@ -101,8 +88,7 @@ export default function CreateHospitalPage() {
           .then((res) => res.json())
           .then((data) => {
             if (data.thanas) setThanas(data.thanas);
-          })
-          .catch(err => console.error("Error fetching thanas:", err));
+          });
       }
       setValue("thana", "");
     }
@@ -111,40 +97,20 @@ export default function CreateHospitalPage() {
   const onSubmit = async (data: HospitalFormValues) => {
     setIsLoading(true);
     try {
-      // Find the thana ID based on the selected name
-      // Find the thana ID based on the selected name
-      const selectedThana = thanas.find(t => t.name === data.thana);
-      
-      if (!selectedThana && data.thana) {
-        // If thana is selected (it is required by schema), we must find it. 
-        // Note: The schema for thana above is strict, so maybe this check is redundant if schema validation passes, 
-        // effectively protecting against logic errors.
-        showToast.error("Invalid location selection");
-        setIsLoading(false);
-        return;
-      }
- 
-      const response = await fetch("/api/locations/hospitals", {
+      const response = await fetch("/api/hospitals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: data.name,
-          thana: selectedThana?._id,
-          address: data.address,
-          phone: data.phone,
-          
-          nameBn: data.nameBn,
-          addressBn: data.addressBn,
-        }),
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        showToast.success("Hospital added successfully!");
+        showToast.success("Hospital created successfully!");
         router.push("/admin/hospitals");
+        router.refresh();
       } else {
-        showToast.error(result.error || "Failed to add hospital");
+        showToast.error(result.error || "Failed to create hospital");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -157,15 +123,13 @@ export default function CreateHospitalPage() {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/admin/hospitals">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-        </Link>
+        <Button variant="outline" size="sm" onClick={() => router.back()}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          {t("back", language)}
+        </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Add Hospital Info</h1>
-          <p className="text-gray-600 mt-1">Register a new hospital in the system</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("addHospital", language)}</h1>
+          <p className="text-gray-600 mt-1">{language === 'bn' ? 'সিস্টেমে একটি নতুন হাসপাতাল যোগ করুন' : 'Register a new hospital in the system'}</p>
         </div>
       </div>
 
@@ -192,7 +156,7 @@ export default function CreateHospitalPage() {
                   : 'text-gray-500 hover:text-gray-900'
               }`}
             >
-              Bangla
+              বাংলা
             </button>
           </div>
         </div>
@@ -201,24 +165,24 @@ export default function CreateHospitalPage() {
           {language === 'en' ? (
             <>
               <Label htmlFor="name" className="text-base font-semibold text-gray-700">
-                Hospital Name <span className="text-gray-400 text-sm">(Optional)</span>
+                {t("hospitalName", language)} <span className="text-gray-400 text-sm">(Optional)</span>
               </Label>
               <Input
                 id="name"
                 {...register("name")}
-                placeholder="Name"
+                placeholder="GreenLife Hospital"
                 className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
               />
             </>
           ) : (
              <>
               <Label htmlFor="nameBn" className="text-base font-semibold text-gray-700">
-                হাসপাতালের নাম (Name Bangla)
+                {t("nameBn", language)} <span className="text-gray-400 text-sm">(Optional)</span>
               </Label>
               <Input
                 id="nameBn"
                 {...register("nameBn")}
-                placeholder="নাম"
+                placeholder="হাসপাতালের নাম লিখুন"
                 className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
                 style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
               />
@@ -228,15 +192,20 @@ export default function CreateHospitalPage() {
 
         <div className="space-y-2">
           <Label className="text-base font-semibold text-gray-700">
-            Location <span className="text-red-500">*</span>
+            {t("location", language)} <span className="text-red-500">*</span>
           </Label>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
               <select
                 {...register("division")}
                 className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500"
+                onChange={(e) => {
+                  setValue("division", e.target.value);
+                  setValue("district", "");
+                  setValue("thana", "");
+                }}
               >
-                <option value="">By Division</option>
+                <option value="">{t("selectDivision", language)}</option>
                 {divisions.map((div) => (
                   <option key={div._id} value={div.name}>
                     {div.name}
@@ -253,8 +222,12 @@ export default function CreateHospitalPage() {
                 {...register("district")}
                 disabled={!watchedDivision}
                 className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500 disabled:bg-gray-50 disabled:text-gray-400"
+                onChange={(e) => {
+                  setValue("district", e.target.value);
+                  setValue("thana", "");
+                }}
               >
-                <option value="">By District</option>
+                <option value="">{t("selectDistrict", language)}</option>
                 {districts.map((dist) => (
                   <option key={dist._id} value={dist.name}>
                     {dist.name}
@@ -272,7 +245,7 @@ export default function CreateHospitalPage() {
                 disabled={!watchedDistrict}
                 className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500 disabled:bg-gray-50 disabled:text-gray-400"
               >
-                <option value="">By Thana</option>
+                <option value="">{t("selectThana", language)}</option>
                 {thanas.map((thana) => (
                   <option key={thana._id} value={thana.name}>
                     {thana.name}
@@ -293,19 +266,19 @@ export default function CreateHospitalPage() {
           {language === 'en' ? (
             <>
               <Label htmlFor="address" className="text-base font-semibold text-gray-700">
-                Hospital Address
+                {t("address", language)}
               </Label>
               <Input
                 id="address"
                 {...register("address")}
-                placeholder="Hospital Address"
+                placeholder="123 Health Ave, Dhaka"
                 className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
               />
             </>
           ) : (
              <>
               <Label htmlFor="addressBn" className="text-base font-semibold text-gray-700">
-                হাসপাতালের ঠিকানা (Address Bangla)
+                {t("addressBn", language)}
               </Label>
               <Input
                 id="addressBn"
@@ -320,7 +293,7 @@ export default function CreateHospitalPage() {
 
         <div className="space-y-2">
           <Label htmlFor="phone" className="text-base font-semibold text-gray-700">
-            Hospital contact no
+            {t("contactNo", language)}
           </Label>
           <Input
             id="phone"
@@ -331,15 +304,14 @@ export default function CreateHospitalPage() {
         </div>
 
         <div className="pt-4 flex gap-3">
-          <Link href="/admin/hospitals" className="flex-1 md:flex-initial">
-            <Button 
-              type="button"
-              variant="outline"
-              className="w-full md:w-auto px-8 py-3"
-            >
-              Cancel
-            </Button>
-          </Link>
+          <Button 
+            type="button"
+            variant="outline"
+            className="flex-1 md:flex-initial px-8 py-3"
+            onClick={() => router.back()}
+          >
+            {t("cancel", language)}
+          </Button>
           <Button 
             type="submit" 
             className="flex-1 md:flex-initial px-8 py-3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-colors"
@@ -348,14 +320,14 @@ export default function CreateHospitalPage() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                {t("saving", language)}
               </>
             ) : (
-              "Save Hospital Info"
+              t("save", language)
             )}
           </Button>
         </div>
-      </form>
+        </form>
       </Card>
     </div>
   );

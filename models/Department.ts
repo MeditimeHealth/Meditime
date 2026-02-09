@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IDepartment extends Document {
   name: string;
+  nameBn?: string;
   image?: string;
   createdAt: Date;
   updatedAt: Date;

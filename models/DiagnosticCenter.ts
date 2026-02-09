@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IDiagnosticCenter extends Document {
   name: string;
+  nameBn?: string;
   division?: string;
   district?: string;
   thana?: string;

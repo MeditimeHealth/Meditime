@@ -2,10 +2,14 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IAmbulance extends Document {
   name: string;
+  nameBn?: string;
   phoneNumber: string;
   division?: string;
+  divisionBn?: string;
   district?: string;
+  districtBn?: string;
   thana?: string;
+  thanaBn?: string;
   availabilityStatus: string;
   vehicleType: string;
   isApproved: boolean;
@@ -23,6 +27,10 @@ const AmbulanceSchema: Schema = new Schema(
       required: [true, 'Name/Company is required'],
       trim: true,
     },
+    nameBn: {
+      type: String,
+      trim: true,
+    },
     phoneNumber: {
       type: String,
       required: [true, 'Phone number is required'],
@@ -32,11 +40,23 @@ const AmbulanceSchema: Schema = new Schema(
       type: String,
       trim: true,
     },
+    divisionBn: {
+      type: String,
+      trim: true,
+    },
     district: {
       type: String,
       trim: true,
     },
+    districtBn: {
+      type: String,
+      trim: true,
+    },
     thana: {
+      type: String,
+      trim: true,
+    },
+    thanaBn: {
       type: String,
       trim: true,
     },

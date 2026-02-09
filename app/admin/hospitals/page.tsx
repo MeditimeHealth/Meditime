@@ -10,17 +10,22 @@ import { showToast } from "@/lib/toast";
 interface Hospital {
   _id: string;
   name: string;
+  nameBn?: string; // added
   address?: string;
+  addressBn?: string; // added
   phone?: string;
   thana?: {
     _id: string;
     name: string;
+    nameBn?: string; // added
     district?: {
       _id: string;
       name: string;
+      nameBn?: string; // added
       division?: {
         _id: string;
         name: string;
+        nameBn?: string; // added
       };
     };
   };
@@ -86,9 +91,15 @@ export default function HospitalsListPage() {
 
   const getFullLocation = (hospital: Hospital) => {
     const parts = [];
-    if (hospital.thana?.name) parts.push(hospital.thana.name);
-    if (hospital.thana?.district?.name) parts.push(hospital.thana.district.name);
-    if (hospital.thana?.district?.division?.name) parts.push(hospital.thana.district.division.name);
+    if (hospital.thana) {
+      parts.push(hospital.thana.nameBn || hospital.thana.name);
+      if (hospital.thana.district) {
+        parts.push(hospital.thana.district.nameBn || hospital.thana.district.name);
+        if (hospital.thana.district.division) {
+          parts.push(hospital.thana.district.division.nameBn || hospital.thana.district.division.name);
+        }
+      }
+    }
     return parts.join(", ");
   };
 
@@ -135,6 +146,11 @@ export default function HospitalsListPage() {
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">
                           {hospital.name}
+                          {hospital.nameBn && (
+                            <span className="block text-sm text-gray-500 font-normal">
+                              {hospital.nameBn}
+                            </span>
+                          )}
                         </h3>
                         {getFullLocation(hospital) && (
                           <div className="flex items-start gap-1 mt-1">
@@ -148,10 +164,10 @@ export default function HospitalsListPage() {
                     </div>
                   </div>
 
-                  {hospital.address && (
+                  {(hospital.address || hospital.addressBn) && (
                     <div className="flex items-start gap-2">
                       <div className="text-sm text-gray-600">
-                        <span className="font-medium">Address:</span> {hospital.address}
+                        <span className="font-medium">Address:</span> {hospital.addressBn || hospital.address}
                       </div>
                     </div>
                   )}

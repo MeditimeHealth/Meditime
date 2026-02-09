@@ -18,12 +18,9 @@ const connectDB = async () => {
 export async function GET() {
     try {
         await connectDB();
-        // Since we only want one active popup for now, or the latest one config
-        // We will fetch the most recently updated one, or create a default if none exists
         let popup = await Popup.findOne().sort({ updatedAt: -1 });
 
         if (!popup) {
-            // Return null or a default structure
              return NextResponse.json({ success: true, popup: null });
         }
 
@@ -42,19 +39,16 @@ export async function POST(request: Request) {
         await connectDB();
         const data = await request.json();
 
-        // For this feature, we might want to just maintain a SINGLE popup document
-        // So we can check if one exists and update it, or create if not.
-        // Or we just create new ones and "isActive" toggle logic handles which one shows.
-        // Let's go with: Update the existing one if it exists, or create new. 
-        // Actually simplest for a "settings" style popup is to just have one document that gets updated.
-
         let popup = await Popup.findOne();
 
         if (popup) {
             popup.title = data.title;
+            popup.titleBn = data.titleBn;
             popup.description = data.description;
+            popup.descriptionBn = data.descriptionBn;
             popup.imageUrl = data.imageUrl;
             popup.buttonText = data.buttonText;
+            popup.buttonTextBn = data.buttonTextBn;
             popup.buttonLink = data.buttonLink;
             popup.isActive = data.isActive;
             await popup.save();

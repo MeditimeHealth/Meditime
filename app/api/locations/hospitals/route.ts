@@ -38,14 +38,14 @@ export async function GET(request: NextRequest) {
     const hospitals = await Hospital.find(query)
       .populate({
         path: "thana",
-        select: "name",
+        select: "name nameBn",
         populate: {
           path: "district",
-          select: "name",
+          select: "name nameBn",
           model: District,
           populate: { 
             path: "division", 
-            select: "name",
+            select: "name nameBn",
             model: Division,
           },
         },

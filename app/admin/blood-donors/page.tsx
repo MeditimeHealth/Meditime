@@ -10,12 +10,16 @@ import Image from "next/image";
 interface BloodDonor {
   _id: string;
   name: string;
+  nameBn?: string; // added
   phoneNumber: string;
   email?: string;
   bloodGroup: string;
   division?: string;
+  divisionBn?: string; // added
   district?: string;
+  districtBn?: string; // added
   thana?: string;
+  thanaBn?: string; // added
   photo?: string;
   availabilityStatus: string;
   lastDonationDate?: string;
@@ -117,6 +121,11 @@ export default function BloodDonorsPage() {
                   <div className="flex-1 min-w-0">
                     <h3 className="text-xl font-semibold text-gray-900 truncate">
                       {donor.name}
+                      {donor.nameBn && (
+                        <span className="block text-sm text-gray-500 font-normal">
+                          {donor.nameBn}
+                        </span>
+                      )}
                     </h3>
                     <p className="text-sm text-gray-600">
                       Blood Group:{" "}
@@ -142,7 +151,7 @@ export default function BloodDonorsPage() {
                     <div>
                       <span className="text-gray-600">Location: </span>
                       <span className="text-gray-900">
-                        {[donor.division, donor.district, donor.thana]
+                        {[donor.divisionBn || donor.division, donor.districtBn || donor.district, donor.thanaBn || donor.thana]
                           .filter(Boolean)
                           .join(", ")}
                       </span>

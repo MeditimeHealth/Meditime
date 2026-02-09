@@ -4,7 +4,9 @@ import { useState, useEffect, use } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { t } from "@/lib/translations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -142,58 +144,16 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
     if (!isFetching && watchedDivision) {
       const division = divisions.find(d => d.name === watchedDivision);
       if (division) {
-        // Only fetch if we are not already in a valid state or if user changed it
-        // To distinguish between initial load and user change, we use isFetching
-        // But isFetching covers the whole setup.
-        // If user changes division, we MUST clear district and thana.
-        // We need to check if the current district belongs to the new division, if not clear it.
-        // Actually, easiest is: if user changes division, fetch new districts.
-        // But how to detect "user change" vs "initial load"?
-        // The initial load sets `division` which triggers this.
-        // But in initial load, we might have already fetched districts manually.
-        // Let's rely on checking if districts list is empty or matches current division?
-        // Simpler: Just rely on the user manually changing it after initial load.
-        // But this effect runs whenever watchedDivision changes.
-        // During initial load, setValue('division') runs this.
-        // We can skip this effect if isFetching is true.
-        
         fetch(`/api/locations/districts?division=${division._id}`)
           .then((res) => res.json())
           .then((data) => {
             if (data.districts) setDistricts(data.districts);
-             // Verify if current district is valid for new list
-             // If not, clear it.
-             // Since we just fetched new districts, we can't check easily synchronously.
-             // But if it's a user change, we usually want to reset.
-             // If it's initial load, we set the correct district right after.
-             // Wait, if I fetch districts here, I might overwrite the `setDistricts` from initial load?
-             // Initial load:
-             // 1. setDivisions
-             // 2. setValue('division') -> Triggers Effect? YES.
-             // 3. Effect checks isFetching. If isFetching is True, we return?
-             // YES. We should return if isFetching is true.
           })
           .catch(err => console.error("Error fetching districts:", err));
       }
     }
-  }, [watchedDivision, divisions]); // removed isFetching dependency to not re-run when it settles? 
-  // No, if isFetching changes to false, and watchedDivision is set... it might run?
-  // Let's check:
-  // Initial load sets values. isFetching = true.
-  // Effect runs. isFetching is true. Returns.
-  // Async operations finish. isFetching = false.
-  // Effect dependencies haven't changed (unless references changed).
-  // watchedDivision value is stable.
-  // So it shouldn't run again until user changes it.
-  
-  // Wait, if I setValue('division'), it runs.
-  // If isFetching=true, it skips.
-  // Then isFetching sets to false.
-  // Does effect run again? No, dependencies didn't change.
-  // So this logic holds IF `isFetching` is correctly covering the setValue calls.
+  }, [watchedDivision, divisions, isFetching]);
 
-  // BUT, we need to handle the case where user changes division.
-  // We need to clear district and thana in that case.
   const [previousDivision, setPreviousDivision] = useState("");
   const [previousDistrict, setPreviousDistrict] = useState("");
 
@@ -212,16 +172,16 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
           const division = divisions.find(d => d.name === watchedDivision);
           if (division) {
              fetch(`/api/locations/districts?division=${division._id}`)
-              .then((res) => res.json())
-              .then((data) => {
-                if (data.districts) setDistricts(data.districts);
-              });
+               .then((res) => res.json())
+               .then((data) => {
+                 if (data.districts) setDistricts(data.districts);
+               });
           } else {
               setDistricts([]);
           }
       }
       setPreviousDivision(watchedDivision);
-  }, [watchedDivision, isFetching, divisions, setValue]);
+  }, [watchedDivision, isFetching, divisions, setValue, previousDivision]);
 
 
   useEffect(() => {
@@ -237,16 +197,16 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
           const district = districts.find(d => d.name === watchedDistrict);
           if (district) {
              fetch(`/api/locations/thanas?district=${district._id}`)
-              .then((res) => res.json())
-              .then((data) => {
-                if (data.thanas) setThanas(data.thanas);
-              });
+               .then((res) => res.json())
+               .then((data) => {
+                 if (data.thanas) setThanas(data.thanas);
+               });
           } else {
               setThanas([]);
           }
       }
       setPreviousDistrict(watchedDistrict);
-  }, [watchedDistrict, isFetching, districts, setValue]);
+  }, [watchedDistrict, isFetching, districts, setValue, previousDistrict]);
 
 
   const onSubmit = async (data: HospitalFormValues) => {
@@ -292,9 +252,9 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
 
   if (isFetching) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2">Loading hospital data...</span>
+        <span className="ml-2 font-medium">{t("loading", language)}</span>
       </div>
     );
   }
@@ -302,15 +262,13 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/admin/hospitals">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-        </Link>
+        <Button variant="outline" size="sm" onClick={() => router.back()}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          {t("back", language)}
+        </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Edit Hospital Info</h1>
-          <p className="text-gray-600 mt-1">Update hospital information</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("editHospital", language)}</h1>
+          <p className="text-gray-600 mt-1">{language === 'bn' ? 'হাসপাতালের তথ্য আপডেট করুন' : 'Update hospital information'}</p>
         </div>
       </div>
 
@@ -338,7 +296,7 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
                   : 'text-gray-500 hover:text-gray-900'
               }`}
             >
-              Bangla
+              বাংলা
             </button>
           </div>
         </div>
@@ -347,24 +305,24 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
           {language === 'en' ? (
             <>
               <Label htmlFor="name" className="text-base font-semibold text-gray-700">
-                Hospital Name <span className="text-gray-400 text-sm">(Optional)</span>
+                {t("hospitalName", language)} <span className="text-gray-400 text-sm">(Optional)</span>
               </Label>
               <Input
                 id="name"
                 {...register("name")}
-                placeholder="Name"
+                placeholder="GreenLife Hospital"
                 className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
               />
             </>
           ) : (
             <>
               <Label htmlFor="nameBn" className="text-base font-semibold text-gray-700">
-                হাসপাতালের নাম (Name Bangla) <span className="text-gray-400 text-sm">(Optional)</span>
+                {t("nameBn", language)} <span className="text-gray-400 text-sm">(Optional)</span>
               </Label>
               <Input
                 id="nameBn"
                 {...register("nameBn")}
-                placeholder="হাসপাতালের নাম"
+                placeholder="হাসপাতালের নাম লিখুন"
                 className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
                 style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
               />
@@ -374,7 +332,7 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
 
         <div className="space-y-2">
           <Label className="text-base font-semibold text-gray-700">
-            Location <span className="text-red-500">*</span>
+            {t("location", language)} <span className="text-red-500">*</span>
           </Label>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
@@ -382,7 +340,7 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
                 {...register("division")}
                 className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500"
               >
-                <option value="">By Division</option>
+                <option value="">{t("selectDivision", language)}</option>
                 {divisions.map((div) => (
                   <option key={div._id} value={div.name}>
                     {div.name}
@@ -400,7 +358,7 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
                 disabled={!watchedDivision}
                 className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500 disabled:bg-gray-50 disabled:text-gray-400"
               >
-                <option value="">By District</option>
+                <option value="">{t("selectDistrict", language)}</option>
                 {districts.map((dist) => (
                   <option key={dist._id} value={dist.name}>
                     {dist.name}
@@ -418,7 +376,7 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
                 disabled={!watchedDistrict}
                 className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500 disabled:bg-gray-50 disabled:text-gray-400"
               >
-                <option value="">By Thana</option>
+                <option value="">{t("selectThana", language)}</option>
                 {thanas.map((thana) => (
                   <option key={thana._id} value={thana.name}>
                     {thana.name}
@@ -439,19 +397,19 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
           {language === 'en' ? (
             <>
               <Label htmlFor="address" className="text-base font-semibold text-gray-700">
-                Hospital Address <span className="text-gray-400 text-sm">(Optional)</span>
+                {t("address", language)} <span className="text-gray-400 text-sm">(Optional)</span>
               </Label>
               <Input
                 id="address"
                 {...register("address")}
-                placeholder="Hospital Address"
+                placeholder="123 Health Ave, Dhaka"
                 className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
               />
             </>
           ) : (
             <>
               <Label htmlFor="addressBn" className="text-base font-semibold text-gray-700">
-                হাসপাতালের ঠিকানা (Address Bangla) <span className="text-gray-400 text-sm">(Optional)</span>
+                {t("addressBn", language)} <span className="text-gray-400 text-sm">(Optional)</span>
               </Label>
               <Input
                 id="addressBn"
@@ -466,7 +424,7 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
 
         <div className="space-y-2">
           <Label htmlFor="phone" className="text-base font-semibold text-gray-700">
-            Hospital contact no
+            {t("contactNo", language)}
           </Label>
           <Input
             id="phone"
@@ -477,15 +435,14 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
         </div>
 
         <div className="pt-4 flex gap-3">
-          <Link href="/admin/hospitals" className="flex-1 md:flex-initial">
-            <Button 
-              type="button"
-              variant="outline"
-              className="w-full md:w-auto px-8 py-3"
-            >
-              Cancel
-            </Button>
-          </Link>
+          <Button 
+            type="button"
+            variant="outline"
+            className="flex-1 md:flex-initial px-8 py-3"
+            onClick={() => router.back()}
+          >
+            {t("cancel", language)}
+          </Button>
           <Button 
             type="submit" 
             className="flex-1 md:flex-initial px-8 py-3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-colors"
@@ -494,14 +451,14 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Updating...
+                {t("updating", language)}
               </>
             ) : (
-              "Update Hospital Info"
+              t("update", language)
             )}
           </Button>
         </div>
-      </form>
+        </form>
       </Card>
     </div>
   );

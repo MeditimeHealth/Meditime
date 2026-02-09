@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { t } from "@/lib/translations";
 
 const bloodDonorSchema = z.object({
   name: z.string().optional(),
@@ -224,19 +226,31 @@ export default function EditBloodDonorPage() {
     }
   };
 
+  const { language: globalLanguage } = useLanguage();
+
   if (isFetching) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Loading...</div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <span className="ml-2">{t("loading", language)}</span>
       </div>
     );
   }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Edit Blood Donor Profile</h1>
-        <p className="text-gray-600 mt-2">Update blood donor information</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {t("editBloodDonor", language)}
+          </h1>
+          <p className="text-gray-600 mt-2">
+            {language === 'bn' ? 'রক্তদাতার তথ্য আপডেট করুন' : 'Update blood donor profile information'}
+          </p>
+        </div>
+        <Button variant="outline" onClick={() => router.back()}>
+          {t("back", language)}
+        </Button>
       </div>
 
       <Card className="p-6">
@@ -273,7 +287,7 @@ export default function EditBloodDonorPage() {
             {language === 'en' ? (
               <div>
                 <Label htmlFor="name">
-                  Name <span className="text-gray-400 text-sm">(Optional)</span>
+                  {t("name", language)} <span className="text-gray-400 text-sm">(Optional)</span>
                 </Label>
                 <Input
                   id="name"
@@ -285,7 +299,7 @@ export default function EditBloodDonorPage() {
             ) : (
               <div>
                 <Label htmlFor="nameBn">
-                  নাম (Name Bangla) <span className="text-gray-400 text-sm">(Optional)</span>
+                  {t("nameBn", language)} <span className="text-gray-400 text-sm">(Optional)</span>
                 </Label>
                 <Input
                   id="nameBn"
@@ -299,7 +313,7 @@ export default function EditBloodDonorPage() {
 
             <div>
               <Label htmlFor="phoneNumber">
-                Phone Number <span className="text-red-500">*</span>
+                {t("phone", language)} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="phoneNumber"
@@ -313,7 +327,7 @@ export default function EditBloodDonorPage() {
             </div>
 
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("email", language)}</Label>
               <Input
                 id="email"
                 type="email"
@@ -328,14 +342,14 @@ export default function EditBloodDonorPage() {
 
             <div>
               <Label htmlFor="bloodGroup">
-                Blood Group <span className="text-red-500">*</span>
+                {t("bloodGroup", language)} <span className="text-red-500">*</span>
               </Label>
               <select
                 id="bloodGroup"
                 {...register("bloodGroup")}
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
               >
-                <option value="">Select Blood Group</option>
+                <option value="">{t("selectBloodGroup", language)}</option>
                 <option value="A+">A+</option>
                 <option value="A-">A-</option>
                 <option value="B+">B+</option>
@@ -352,18 +366,18 @@ export default function EditBloodDonorPage() {
 
             <div className="md:col-span-2">
               <Label className="mb-2 block font-semibold text-gray-900">
-                Location
+                {t("location", language)}
               </Label>
             </div>
 
             <div>
-              <Label htmlFor="division">Division</Label>
+              <Label htmlFor="division">{t("division", language)}</Label>
               <select
                 id="division"
                 {...register("division")}
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
               >
-                <option value="">Select Division</option>
+                <option value="">{t("selectDivision", language)}</option>
                 {divisions.map((div) => (
                   <option key={div._id} value={div.name}>
                     {div.name}
@@ -373,14 +387,14 @@ export default function EditBloodDonorPage() {
             </div>
 
             <div>
-              <Label htmlFor="district">District</Label>
+              <Label htmlFor="district">{t("district", language)}</Label>
               <select
                 id="district"
                 {...register("district")}
                 disabled={!watchedDivision}
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
               >
-                <option value="">Select District</option>
+                <option value="">{t("selectDistrict", language)}</option>
                 {districts.map((dist) => (
                   <option key={dist._id} value={dist.name}>
                     {dist.name}
@@ -390,14 +404,14 @@ export default function EditBloodDonorPage() {
             </div>
 
             <div>
-              <Label htmlFor="thana">Thana/Upazila</Label>
+              <Label htmlFor="thana">{t("thana", language)}</Label>
               <select
                 id="thana"
                 {...register("thana")}
                 disabled={!watchedDistrict || !watchedDivision}
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
               >
-                <option value="">Select Thana</option>
+                <option value="">{t("selectThana", language)}</option>
                 {thanas.map((thana) => (
                   <option key={thana._id} value={thana.name}>
                     {thana.name}
@@ -408,16 +422,16 @@ export default function EditBloodDonorPage() {
 
             <div>
               <Label htmlFor="availabilityStatus">
-                Availability Status <span className="text-red-500">*</span>
+                {t("availabilityStatus", language)} <span className="text-red-500">*</span>
               </Label>
               <select
                 id="availabilityStatus"
                 {...register("availabilityStatus")}
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
               >
-                <option value="Available">Available</option>
-                <option value="Unavailable">Unavailable</option>
-                <option value="Recently Donated">Recently Donated</option>
+                <option value="Available">{language === 'bn' ? 'উপলব্ধ' : 'Available'}</option>
+                <option value="Unavailable">{language === 'bn' ? 'অনুপলব্ধ' : 'Unavailable'}</option>
+                <option value="Recently Donated">{language === 'bn' ? 'সম্প্রতি রক্ত দিয়েছেন' : 'Recently Donated'}</option>
               </select>
               {errors.availabilityStatus && (
                 <p className="text-sm text-red-500 mt-1">{errors.availabilityStatus.message}</p>
@@ -425,7 +439,7 @@ export default function EditBloodDonorPage() {
             </div>
 
             <div>
-              <Label htmlFor="lastDonationDate">Last Donation Date</Label>
+              <Label htmlFor="lastDonationDate">{t("lastDonationDate", language)}</Label>
               <Input
                 id="lastDonationDate"
                 type="date"
@@ -435,7 +449,7 @@ export default function EditBloodDonorPage() {
             </div>
 
             <div className="md:col-span-2">
-              <Label htmlFor="photo">Photo</Label>
+              <Label htmlFor="photo">{t("photo", language)}</Label>
               <div className="mt-1 space-y-3">
                 <div className="flex items-center gap-4">
                   <input
@@ -452,7 +466,7 @@ export default function EditBloodDonorPage() {
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isLoading || isUploading}
                   >
-                    {selectedImage ? "Change Image" : "Select Image"}
+                    {imagePreview ? (language === 'bn' ? "ছবি পরিবর্তন করুন" : "Change Image") : (language === 'bn' ? "ছবি নির্বাচন করুন" : "Select Image")}
                   </Button>
                   {selectedImage && (
                     <span className="text-sm text-gray-600">
@@ -481,17 +495,17 @@ export default function EditBloodDonorPage() {
               className="flex-1"
             >
               {isUploading
-                ? "Uploading Image..."
+                ? t("uploading", language)
                 : isLoading
-                ? "Updating..."
-                : "Update Blood Donor Profile"}
+                ? t("saving", language)
+                : t("update", language)}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
             >
-              Cancel
+              {t("cancel", language)}
             </Button>
           </div>
         </form>

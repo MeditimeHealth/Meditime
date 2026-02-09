@@ -5,15 +5,20 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, X, Trash2, Edit } from "lucide-react";
+import { Plus, X, Trash2, Edit, Loader2, MapPin, Phone, Mail, Percent, Layers } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { t } from "@/lib/translations";
+import { showToast } from "@/lib/toast";
 
 interface DiagnosticCenter {
   _id: string;
   name: string;
+  nameBn?: string;
   division?: string;
   district?: string;
   thana?: string;
   address?: string;
+  addressBn?: string;
   phone?: string;
   email?: string;
   packageDiscount?: number;
@@ -28,7 +33,8 @@ export default function DiagnosticCentersPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [language, setLanguage] = useState<'en' | 'bn'>('en');
+  const { language } = useLanguage();
+  const [formLanguage, setFormLanguage] = useState<'en' | 'bn'>(language);
   const [formData, setFormData] = useState({
     name: "",
     nameBn: "",
@@ -46,6 +52,12 @@ export default function DiagnosticCentersPage() {
     fetchCenters();
     fetchDivisions();
   }, []);
+
+  useEffect(() => {
+    if (!showForm) {
+      setFormLanguage(language);
+    }
+  }, [language, showForm]);
 
   useEffect(() => {
     if (formData.division) {
@@ -91,6 +103,7 @@ export default function DiagnosticCentersPage() {
   };
 
   const fetchCenters = async () => {
+    setLoading(true);
     try {
       const response = await fetch("/api/diagnostic/centers");
       const data = await response.json();
@@ -99,6 +112,7 @@ export default function DiagnosticCentersPage() {
       }
     } catch (error) {
       console.error("Error fetching centers:", error);
+      showToast.error("Failed to fetch diagnostic centers");
     } finally {
       setLoading(false);
     }
@@ -134,15 +148,16 @@ export default function DiagnosticCentersPage() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(data.message || (editingId ? "Updated successfully!" : "Created successfully!"));
+        showToast.success(editingId ? "Center updated successfully" : "Center created successfully");
         setShowForm(false);
         resetForm();
         fetchCenters();
       } else {
-        alert(data.error || "Failed to save");
+        showToast.error(data.error || "Failed to save diagnostic center");
       }
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      console.error("Error saving center:", error);
+      showToast.error("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -152,7 +167,7 @@ export default function DiagnosticCentersPage() {
     setEditingId(center._id);
     setFormData({
       name: center.name,
-      nameBn: (center as any).nameBn || "",
+      nameBn: center.nameBn || "",
       division: center.division || "",
       district: center.district || "",
       thana: center.thana || "",
@@ -162,12 +177,15 @@ export default function DiagnosticCentersPage() {
       packageDiscount: center.packageDiscount?.toString() || "",
       minTestsForPackage: center.minTestsForPackage?.toString() || "3",
     });
+    setFormLanguage(language);
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this center?")) return;
+    if (!confirm(language === 'bn' ? "আপনি কি নিশ্চিত যে আপনি এই সেন্টারটি মুছে ফেলতে চান?" : "Are you sure you want to delete this center?")) return;
     
+    setLoading(true);
     try {
       const response = await fetch(`/api/diagnostic/centers/${id}`, {
         method: "DELETE",
@@ -175,14 +193,16 @@ export default function DiagnosticCentersPage() {
 
       if (response.ok) {
         setCenters(centers.filter((center) => center._id !== id));
-        alert("Center deleted successfully");
+        showToast.success("Center deleted successfully");
       } else {
         const data = await response.json();
-        alert(data.error || "Failed to delete center");
+        showToast.error(data.error || "Failed to delete center");
       }
     } catch (error) {
       console.error("Error deleting center:", error);
-      alert("Failed to delete center");
+      showToast.error("Failed to delete center");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -202,52 +222,72 @@ export default function DiagnosticCentersPage() {
     setEditingId(null);
   };
 
+  if (loading && centers.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        <p className="text-gray-500 font-medium">{t("loading", language)}</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="max-w-6xl mx-auto p-6 space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Diagnostic Centers</h1>
-          <p className="text-gray-600 mt-2">Create and manage diagnostic centers</p>
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+            {t("manageDiagnosticCenters", language)}
+          </h1>
+          <p className="text-gray-500 mt-2 text-lg">
+            {language === 'bn' ? 'ডায়াগনস্টিক সেন্টার যোগ এবং পরিচালনা করুন' : 'Create and manage diagnostic centers for your network'}
+          </p>
         </div>
-        <Button onClick={() => { resetForm(); setShowForm(true); }}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Center
+        <Button 
+          onClick={() => { resetForm(); setShowForm(true); }}
+          className="bg-primary hover:bg-primary/90 text-white px-6 py-6 text-lg font-semibold rounded-xl shadow-md transition-all hover:scale-105"
+        >
+          <Plus className="h-5 w-5 mr-2" />
+          {t("createDiagnosticCenter", language)}
         </Button>
       </div>
 
-      {/* Create/Edit Form */}
       {showForm && (
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">
-              {editingId ? "Edit Center" : "Create New Center"}
+        <Card className="p-8 bg-white border-2 border-primary/10 shadow-xl rounded-2xl overflow-hidden transition-all animate-in fade-in slide-in-from-top-4">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-gray-800">
+              {editingId ? t("editDiagnosticCenter", language) : t("createDiagnosticCenter", language)}
             </h2>
-            <Button variant="outline" onClick={() => { setShowForm(false); resetForm(); }}>
-              <X className="h-4 w-4" />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => { setShowForm(false); resetForm(); }}
+              className="rounded-full h-10 w-10 p-0 hover:bg-gray-100"
+            >
+              <X className="h-6 w-6" />
             </Button>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Language Toggle */}
+
+          <form onSubmit={handleSubmit} className="space-y-8">
             <div className="flex justify-end mb-4">
-              <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+              <div className="bg-gray-100/80 p-1.5 rounded-xl inline-flex shadow-inner">
                 <button
                   type="button"
-                  onClick={() => setLanguage('en')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    language === 'en'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-900'
+                  onClick={() => setFormLanguage('en')}
+                  className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
+                    formLanguage === 'en'
+                      ? 'bg-white text-primary shadow-sm scale-105'
+                      : 'text-gray-500 hover:text-gray-800'
                   }`}
                 >
                   English
                 </button>
                 <button
                   type="button"
-                  onClick={() => setLanguage('bn')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    language === 'bn'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-900'
+                  onClick={() => setFormLanguage('bn')}
+                  className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
+                    formLanguage === 'bn'
+                      ? 'bg-white text-primary shadow-sm scale-105'
+                      : 'text-gray-500 hover:text-gray-800'
                   }`}
                 >
                   বাংলা
@@ -255,62 +295,63 @@ export default function DiagnosticCentersPage() {
               </div>
             </div>
 
-            {language === 'en' ? (
-              <div>
-                <Label htmlFor="name">
-                  Center Name <span className="text-gray-400 text-sm">(Optional)</span>
-                </Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g., Square Diagnostic Center"
-                  className="mt-1"
-                />
-              </div>
-            ) : (
-              <div>
-                <Label htmlFor="nameBn">
-                  কেন্দ্রের নাম (Center Name Bangla)
-                </Label>
-                <Input
-                  id="nameBn"
-                  value={formData.nameBn}
-                  onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
-                  placeholder="স্কয়ার ডায়াগনস্টিক সেন্টার"
-                  className="mt-1"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
-                />
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="division">Division</Label>
-                <select
-                  id="division"
-                  value={formData.division}
-                  onChange={(e) => {
-                    setFormData({
-                      ...formData,
-                      division: e.target.value,
-                      district: "",
-                      thana: "",
-                    });
-                  }}
-                  className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm mt-1"
-                >
-                  <option value="">Select Division</option>
-                  {divisions.map((div) => (
-                    <option key={div._id} value={div.name}>
-                      {div.name}
-                    </option>
-                  ))}
-                </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                {formLanguage === 'en' ? (
+                  <>
+                    <Label htmlFor="name" className="text-base font-bold text-gray-700">
+                      {t("diagnosticCenterName", language)} <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="e.g., Square Diagnostic Center"
+                      className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl"
+                      required
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Label htmlFor="nameBn" className="text-base font-bold text-gray-700">
+                      {t("nameBn", language)}
+                    </Label>
+                    <Input
+                      id="nameBn"
+                      value={formData.nameBn}
+                      onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
+                      placeholder="স্কয়ার ডায়াগনস্টিক সেন্টার"
+                      className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl"
+                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                    />
+                  </>
+                )}
               </div>
 
-              <div>
-                <Label htmlFor="district">District</Label>
+              <div className="space-y-3">
+                 <Label htmlFor="division" className="text-base font-bold text-gray-700">{t("division", language)}</Label>
+                 <select
+                    id="division"
+                    value={formData.division}
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        division: e.target.value,
+                        district: "",
+                        thana: "",
+                      });
+                    }}
+                    className="flex w-full h-12 rounded-xl border border-gray-200 bg-white px-3 py-2 text-lg focus:ring-primary focus:border-primary outline-none transition-all"
+                  >
+                    <option value="">{t("selectDivision", language)}</option>
+                    {divisions.map((div) => (
+                      <option key={div._id} value={div.name}>{div.name}</option>
+                    ))}
+                  </select>
+              </div>
+
+              <div className="space-y-3">
+                <Label htmlFor="district" className="text-base font-bold text-gray-700">{t("district", language)}</Label>
                 <select
                   id="district"
                   value={formData.district}
@@ -318,75 +359,74 @@ export default function DiagnosticCentersPage() {
                     setFormData({ ...formData, district: e.target.value, thana: "" });
                   }}
                   disabled={!formData.division}
-                  className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm mt-1 disabled:opacity-50"
+                  className="flex w-full h-12 rounded-xl border border-gray-200 bg-white px-3 py-2 text-lg focus:ring-primary focus:border-primary outline-none transition-all disabled:bg-gray-50 disabled:text-gray-400"
                 >
-                  <option value="">Select District</option>
+                  <option value="">{t("selectDistrict", language)}</option>
                   {districts.map((dist) => (
-                    <option key={dist._id} value={dist.name}>
-                      {dist.name}
-                    </option>
+                    <option key={dist._id} value={dist.name}>{dist.name}</option>
                   ))}
                 </select>
               </div>
 
-              <div>
-                <Label htmlFor="thana">Thana/Upazila</Label>
+              <div className="space-y-3">
+                <Label htmlFor="thana" className="text-base font-bold text-gray-700">{t("thana", language)}</Label>
                 <select
                   id="thana"
                   value={formData.thana}
                   onChange={(e) => setFormData({ ...formData, thana: e.target.value })}
                   disabled={!formData.district}
-                  className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm mt-1 disabled:opacity-50"
+                  className="flex w-full h-12 rounded-xl border border-gray-200 bg-white px-3 py-2 text-lg focus:ring-primary focus:border-primary outline-none transition-all disabled:bg-gray-50 disabled:text-gray-400"
                 >
-                  <option value="">Select Thana</option>
+                  <option value="">{t("selectThana", language)}</option>
                   {thanas.map((thana) => (
-                    <option key={thana._id} value={thana.name}>
-                      {thana.name}
-                    </option>
+                    <option key={thana._id} value={thana.name}>{thana.name}</option>
                   ))}
                 </select>
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="address">Address</Label>
+            <div className="space-y-3">
+              <Label htmlFor="address" className="text-base font-bold text-gray-700">{t("address", language)}</Label>
               <Input
                 id="address"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                placeholder="Full address"
-                className="mt-1"
+                placeholder="123 Road, Area, City"
+                className="h-12 text-lg border-gray-200 rounded-xl"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="phone">Phone</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <Label htmlFor="phone" className="text-base font-bold text-gray-700">{t("phone", language)}</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+8801234567890"
-                  className="mt-1"
+                  className="h-12 text-lg border-gray-200 rounded-xl"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="email">Email</Label>
+              <div className="space-y-3">
+                <Label htmlFor="email" className="text-base font-bold text-gray-700">{t("email", language)}</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="center@example.com"
-                  className="mt-1"
+                  className="h-12 text-lg border-gray-200 rounded-xl"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="packageDiscount">Package Discount (%)</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50 p-6 rounded-2xl border border-dashed border-gray-200">
+              <div className="space-y-3">
+                <Label htmlFor="packageDiscount" className="text-base font-bold text-primary flex items-center">
+                  <Percent className="h-4 w-4 mr-1" />
+                  {t("packageDiscount", language)}
+                </Label>
                 <Input
                   id="packageDiscount"
                   type="number"
@@ -395,12 +435,15 @@ export default function DiagnosticCentersPage() {
                   value={formData.packageDiscount}
                   onChange={(e) => setFormData({ ...formData, packageDiscount: e.target.value })}
                   placeholder="10"
-                  className="mt-1"
+                  className="h-12 text-lg bg-white border-gray-200 rounded-xl"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="minTestsForPackage">Min Tests for Package</Label>
+              <div className="space-y-3">
+                <Label htmlFor="minTestsForPackage" className="text-base font-bold text-primary flex items-center">
+                  <Layers className="h-4 w-4 mr-1" />
+                  {t("minTestsForPackage", language)}
+                </Label>
                 <Input
                   id="minTestsForPackage"
                   type="number"
@@ -408,88 +451,139 @@ export default function DiagnosticCentersPage() {
                   value={formData.minTestsForPackage}
                   onChange={(e) => setFormData({ ...formData, minTestsForPackage: e.target.value })}
                   placeholder="3"
-                  className="mt-1"
+                  className="h-12 text-lg bg-white border-gray-200 rounded-xl"
                 />
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <Button type="submit" disabled={loading}>
-                {loading ? "Saving..." : editingId ? "Update Center" : "Create Center"}
+            <div className="flex gap-4 pt-6">
+              <Button 
+                type="submit" 
+                disabled={loading}
+                className="flex-1 h-14 text-xl font-bold bg-primary hover:bg-primary/90 shadow-lg rounded-xl"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                    {t("saving", language)}
+                  </>
+                ) : (
+                  editingId ? t("update", language) : t("create", language)
+                )}
               </Button>
-              <Button type="button" variant="outline" onClick={() => { setShowForm(false); resetForm(); }}>
-                Cancel
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => { setShowForm(false); resetForm(); }}
+                className="flex-1 h-14 text-xl font-bold border-2 rounded-xl"
+              >
+                {t("cancel", language)}
               </Button>
             </div>
           </form>
         </Card>
       )}
 
-      {/* Centers List */}
-      <Card className="p-6">
-        {loading && !showForm ? (
-          <div className="text-center py-8 text-gray-500">Loading...</div>
-        ) : centers.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500 mb-4">No centers found</p>
-            <Button onClick={() => { resetForm(); setShowForm(true); }}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create First Center
+      {centers.length === 0 ? (
+        <Card className="p-20 text-center border-dashed border-4 bg-gray-50/50 rounded-3xl">
+          <div className="max-w-md mx-auto space-y-6">
+            <div className="bg-white p-6 rounded-full w-24 h-24 flex items-center justify-center mx-auto shadow-sm">
+              <MapPin className="h-12 w-12 text-gray-300" />
+            </div>
+            <p className="text-gray-500 text-2xl font-medium">{t("noCenters", language)}</p>
+            <Button 
+              onClick={() => { resetForm(); setShowForm(true); }}
+              className="bg-primary text-white h-14 px-8 text-lg font-bold rounded-xl shadow-lg"
+            >
+              <Plus className="h-6 w-6 mr-2" />
+              {t("createFirstCenter", language)}
             </Button>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {centers.map((center) => (
-              <div
-                key={center._id}
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      {center.name}
-                    </h3>
-                    {(center.division || center.district || center.thana) && (
-                      <p className="text-sm text-gray-600 mb-2">
-                        {[center.division, center.district, center.thana].filter(Boolean).join(", ")}
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          {centers.map((center) => (
+            <Card key={center._id} className="p-0 border-2 border-gray-100 hover:border-primary/20 hover:shadow-2xl transition-all duration-300 rounded-3xl group overflow-hidden bg-white">
+              <div className="p-8">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-4 flex-1">
+                    <div>
+                      <h3 className="text-2xl font-extrabold text-gray-900 leading-tight group-hover:text-primary transition-colors">
+                        {center.name}
+                      </h3>
+                      {center.nameBn && (
+                        <p className="text-gray-500 text-lg font-medium mt-1">
+                          {center.nameBn}
+                        </p>
+                      )}
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-4 text-gray-600">
+                      {(center.division || center.district || center.thana) && (
+                        <div className="flex items-center text-sm font-medium bg-gray-100 px-3 py-1.5 rounded-lg text-gray-700">
+                          <MapPin className="h-4 w-4 mr-2 text-primary/60" />
+                          {[center.division, center.district, center.thana].filter(Boolean).join(", ")}
+                        </div>
+                      )}
+                      {center.phone && (
+                        <div className="flex items-center text-sm font-bold text-gray-700">
+                          <Phone className="h-4 w-4 mr-2 text-green-500" />
+                          {center.phone}
+                        </div>
+                      )}
+                      {center.email && (
+                        <div className="flex items-center text-sm font-medium text-gray-700">
+                          <Mail className="h-4 w-4 mr-2 text-blue-500" />
+                          {center.email}
+                        </div>
+                      )}
+                    </div>
+
+                    {center.address && (
+                      <p className="text-gray-600 text-sm italic border-l-4 border-gray-100 pl-4 py-1">
+                        {center.address}
                       </p>
                     )}
-                    {center.address && (
-                      <p className="text-sm text-gray-600 mb-1">{center.address}</p>
-                    )}
-                    <div className="flex gap-4 text-sm text-gray-500">
-                      {center.phone && <span>📞 {center.phone}</span>}
-                      {center.email && <span>✉️ {center.email}</span>}
-                    </div>
-                    {center.packageDiscount && center.minTestsForPackage && (
-                      <div className="mt-2 text-sm bg-green-50 text-green-700 px-3 py-1 rounded inline-block">
-                        {center.packageDiscount}% off on {center.minTestsForPackage}+ tests
+
+                    {(center.packageDiscount || 0) > 0 && (
+                      <div className="bg-green-50 rounded-2xl p-4 border border-green-100 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-green-500 text-white p-2 rounded-xl">
+                            <Percent className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <p className="text-green-800 font-extrabold text-lg leading-none">{center.packageDiscount}% {language === 'bn' ? 'অফার' : 'Discount'}</p>
+                            <p className="text-green-600 text-xs font-bold mt-1 uppercase tracking-wider">{center.minTestsForPackage}+ {language === 'bn' ? 'টেস্টের জন্য প্রযোজ্য' : 'Tests Required'}</p>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
-                  <div className="flex gap-2 ml-4">
+                  
+                  <div className="flex flex-col gap-2">
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       onClick={() => handleEdit(center)}
+                      className="h-10 w-10 p-0 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-full"
                     >
-                      <Edit className="h-4 w-4" />
+                      <Edit className="h-5 w-5" />
                     </Button>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       onClick={() => handleDelete(center._id)}
+                      className="h-10 w-10 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full"
                     >
-                      <Trash2 className="h-4 w-4 text-red-500" />
+                      <Trash2 className="h-5 w-5" />
                     </Button>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </Card>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
-
