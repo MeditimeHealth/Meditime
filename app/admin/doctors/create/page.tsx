@@ -3,44 +3,44 @@
 import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { z } from "zod";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, X, Loader2, Image as ImageIcon, Check, Stethoscope, GraduationCap, Briefcase, DollarSign, Calendar, Clock, MapPin } from "lucide-react";
+import { Plus, X, Loader2, Image as ImageIcon, Check, Stethoscope, GraduationCap, Briefcase, DollarSign, Calendar, Clock, MapPin, Trash2 } from "lucide-react";
 import { showToast } from "@/lib/toast";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 
-const doctorSchema = z.zod.object({
-  name: z.zod.string().min(2, "Name is required"),
-  nameBn: z.zod.string().optional(),
-  hospital: z.zod.string().optional(),
-  department: z.zod.string().optional(),
-  specialty: z.zod.string().optional(),
-  specialtyBn: z.zod.string().optional(),
-  qualification: z.zod.string().optional(),
-  qualificationBn: z.zod.string().optional(),
-  designation: z.zod.string().optional(),
-  designationBn: z.zod.string().optional(),
-  consultationFee: z.zod.number().min(0).optional(),
-  newPatientFee: z.zod.number().min(0).optional(),
-  oldPatientFee: z.zod.number().min(0).optional(),
-  bio: z.zod.string().optional(),
-  bioBn: z.zod.string().optional(),
-  phone: z.zod.string().optional(),
-  experience: z.zod.number().min(0).optional(),
-  availability: z.zod.array(z.zod.object({
-    days: z.zod.array(z.zod.string()),
-    time: z.zod.string(),
+const doctorSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  nameBn: z.string().optional(),
+  hospital: z.string().optional(),
+  department: z.string().optional(),
+  specialty: z.string().optional(),
+  specialtyBn: z.string().optional(),
+  qualification: z.string().optional(),
+  qualificationBn: z.string().optional(),
+  designation: z.string().optional(),
+  designationBn: z.string().optional(),
+  consultationFee: z.number().min(0).optional(),
+  newPatientFee: z.number().min(0).optional(),
+  oldPatientFee: z.number().min(0).optional(),
+  bio: z.string().optional(),
+  bioBn: z.string().optional(),
+  phone: z.string().optional(),
+  experience: z.number().min(0).optional(),
+  availability: z.array(z.object({
+    days: z.array(z.string()),
+    time: z.string(),
   })).optional(),
-  image: z.zod.string().optional(),
+  image: z.string().optional(),
 });
 
-type DoctorFormValues = z.zod.infer<typeof doctorSchema>;
+type DoctorFormValues = z.infer<typeof doctorSchema>;
 
 export default function CreateDoctorPage() {
   const router = useRouter();
