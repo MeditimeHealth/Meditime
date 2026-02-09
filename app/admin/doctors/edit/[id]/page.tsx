@@ -10,7 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Loader2 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { t } from "@/lib/translations";
 
 const doctorSchema = z.object({
   name: z.string().optional(),
@@ -87,7 +89,7 @@ export default function EditDoctorPage() {
 
   // Hospital Search State
   const [hospitals, setHospitals] = useState<any[]>([]);
-  const [availableHospitals, setAvailableHospitals] = useState<string[]>([]);
+  const [availableHospitals, setAvailableHospitals] = useState<any[]>([]);
   const [hospitalSearchTerm, setHospitalSearchTerm] = useState("");
   const [hospitalPage, setHospitalPage] = useState(1);
   const [hasMoreHospitals, setHasMoreHospitals] = useState(false);
@@ -96,7 +98,7 @@ export default function EditDoctorPage() {
   const [selectedHospitalName, setSelectedHospitalName] = useState("");
   const hospitalDropdownRef = useRef<HTMLDivElement>(null);
   const hospitalSearchInitialized = useRef(false);
-  const [departments, setDepartments] = useState<Array<{_id: string; name: string; image?: string}>>([]);
+  const [departments, setDepartments] = useState<Array<{_id: string; name: string; nameBn?: string; image?: string}>>([]);
   const [diseases, setDiseases] = useState<Array<{_id: string; name: string; bangla: string}>>([]);
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
 
@@ -143,7 +145,7 @@ export default function EditDoctorPage() {
                   ),
                 ];
 
-          setAvailableHospitals(nextHospitals.map((hospital: any) => hospital.name));
+          setAvailableHospitals(nextHospitals);
           return nextHospitals;
         });
         setHasMoreHospitals(Boolean(data.hasMore));
@@ -496,8 +498,8 @@ export default function EditDoctorPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Edit Doctor Profile</h1>
-        <p className="text-gray-600 mt-2">Update doctor information</p>
+        <h1 className="text-3xl font-bold text-gray-900">{language === 'bn' ? 'ডাক্তারের প্রোফাইল সম্পাদনা করুন' : 'Edit Doctor Profile'}</h1>
+        <p className="text-gray-600 mt-2">{language === 'bn' ? 'ডাক্তারের তথ্য আপডেট করুন' : 'Update doctor information'}</p>
       </div>
 
       <Card className="p-6">
@@ -613,16 +615,16 @@ export default function EditDoctorPage() {
             {/* Location Selection Section */}
             <div className="md:col-span-2">
               <Label className="mb-2 block font-semibold text-gray-900">
-                Location & Hospital
+                {language === 'bn' ? 'অবস্থান এবং হাসপাতাল' : 'Location & Hospital'}
               </Label>
             </div>
 
             <div className="relative" ref={hospitalDropdownRef}>
-              <Label htmlFor="hospital">Hospital</Label>
+              <Label htmlFor="hospital">{t("hospitalName", language)}</Label>
               <Input
                 id="hospital"
                 type="text"
-                placeholder="Search or select hospital..."
+                placeholder={t("selectHospital", language)}
                 value={hospitalSearchTerm}
                 onChange={(e) => {
                   setHospitalSearchTerm(e.target.value);
@@ -650,13 +652,13 @@ export default function EditDoctorPage() {
                     <>
                       {availableHospitals.map((hosp) => (
                         <div
-                          key={hosp}
-                          onClick={() => handleHospitalSelect(hosp)}
+                          key={hosp._id}
+                          onClick={() => handleHospitalSelect(hosp.name)}
                           className={`px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm ${
-                            selectedHospitalName === hosp ? "bg-primary/10" : ""
+                            selectedHospitalName === hosp.name ? "bg-primary/10" : ""
                           }`}
                         >
-                          {hosp}
+                          {language === 'bn' && hosp.nameBn ? hosp.nameBn : hosp.name}
                         </div>
                       ))}
                       {hasMoreHospitals && (
@@ -683,7 +685,7 @@ export default function EditDoctorPage() {
 
             <div>
               <Label htmlFor="department">
-                বিভাগ (Department) <span className="text-gray-500 text-xs">(Optional)</span>
+                {t("selectDepartment", language)}
               </Label>
               <select
                 id="department"
@@ -693,10 +695,10 @@ export default function EditDoctorPage() {
                   fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                 }}
               >
-                <option value="">বিভাগ নির্বাচন করুন (Select Department)</option>
+                <option value="">{t("selectDepartment", language)}</option>
                 {departments.map((dept) => (
                   <option key={dept._id} value={dept.name}>
-                    {dept.name}
+                    {language === 'bn' && dept.nameBn ? dept.nameBn : dept.name}
                   </option>
                 ))}
               </select>

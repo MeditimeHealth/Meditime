@@ -69,8 +69,10 @@ export async function PUT(
 
     const updateData: any = {};
     if (body.name) updateData.name = body.name;
+    if (body.nameBn) updateData.nameBn = body.nameBn;
     if (body.thana) updateData.thana = body.thana;
     if (body.address) updateData.address = body.address;
+    if (body.addressBn) updateData.addressBn = body.addressBn;
     if (body.phone) updateData.phone = body.phone;
     if (body.email) updateData.email = body.email;
 

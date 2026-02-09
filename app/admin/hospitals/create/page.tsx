@@ -97,10 +97,22 @@ export default function CreateHospitalPage() {
   const onSubmit = async (data: HospitalFormValues) => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/hospitals", {
+      // Find the thana ID based on the selected name
+      const selectedThana = thanas.find(t => t.name === data.thana);
+      
+      if (!selectedThana) {
+        showToast.error("Invalid location selection");
+        setIsLoading(false);
+        return;
+      }
+
+      const response = await fetch("/api/locations/hospitals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          thana: selectedThana._id
+        }),
       });
 
       const result = await response.json();

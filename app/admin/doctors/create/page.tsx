@@ -312,7 +312,7 @@ export default function CreateDoctorPage() {
               <div className="bg-primary/10 p-2 rounded-lg mr-3">
                 <Briefcase className="h-5 w-5 text-primary" />
               </div>
-              {language === 'bn' ? 'বিশেষজ্ঞ এবং অভিজ্ঞতা' : 'Specialization & Experience'}
+              {formLanguage === 'bn' ? 'বিশেষজ্ঞ এবং অভিজ্ঞতা' : 'Specialization & Experience'}
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -331,21 +331,21 @@ export default function CreateDoctorPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="department" className="text-sm font-bold text-gray-600 uppercase tracking-wider">{t("selectDepartment", language)}</Label>
+                <Label htmlFor="department" className="text-sm font-bold text-gray-600 uppercase tracking-wider">{t("selectDepartment", formLanguage)}</Label>
                 <select 
                   id="department" 
                   {...register("department")} 
                   className="w-full h-12 rounded-xl border border-gray-200 bg-white px-4 py-2 text-lg focus:ring-primary outline-none transition-all"
                 >
-                  <option value="">{t("selectDepartment", language)}</option>
+                  <option value="">{t("selectDepartment", formLanguage)}</option>
                   {departments.map(d => (
-                    <option key={d._id} value={d.name}>{d.name}</option>
+                    <option key={d._id} value={d.name}>{formLanguage === 'bn' && d.nameBn ? d.nameBn : d.name}</option>
                   ))}
                 </select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="experience" className="text-sm font-bold text-gray-600 uppercase tracking-wider">{language === 'bn' ? 'অভিজ্ঞতা (বছর)' : 'Experience (Years)'}</Label>
+                <Label htmlFor="experience" className="text-sm font-bold text-gray-600 uppercase tracking-wider">{formLanguage === 'bn' ? 'অভিজ্ঞতা (বছর)' : 'Experience (Years)'}</Label>
                 <Input id="experience" type="number" {...register("experience", { valueAsNumber: true })} className="h-12 text-lg border-gray-200 rounded-xl focus:ring-primary" />
               </div>
             </div>
@@ -381,18 +381,18 @@ export default function CreateDoctorPage() {
               <div className="bg-primary/10 p-2 rounded-lg mr-3">
                 <MapPin className="h-5 w-5 text-primary" />
               </div>
-              {language === 'bn' ? 'হাসপাতাল নিবার্চন করুন' : 'Hospital Placement'}
+              {formLanguage === 'bn' ? 'হাসপাতাল নিবার্চন করুন' : 'Hospital Placement'}
             </h2>
             <div className="space-y-4">
-              <Label htmlFor="hospital" className="text-sm font-bold text-gray-600 uppercase tracking-wider">{language === 'bn' ? 'হাসপাতালের নাম' : 'Hospital Name'}</Label>
+              <Label htmlFor="hospital" className="text-sm font-bold text-gray-600 uppercase tracking-wider">{t("hospitalName", formLanguage)}</Label>
               <select 
                 id="hospital" 
                 {...register("hospital")} 
                 className="w-full h-12 rounded-xl border border-gray-200 bg-white px-4 py-2 text-lg focus:ring-primary outline-none transition-all"
               >
-                <option value="">{language === 'bn' ? 'হাসপাতাল নির্বাচন করুন' : 'Select Hospital'}</option>
+                <option value="">{t("selectHospital", formLanguage)}</option>
                 {hospitals.map(h => (
-                  <option key={h._id} value={h.name}>{h.name}</option>
+                  <option key={h._id} value={h.name}>{formLanguage === 'bn' && h.nameBn ? h.nameBn : h.name}</option>
                 ))}
               </select>
             </div>
