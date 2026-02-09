@@ -15,8 +15,11 @@ interface DiagnosticCenter {
   name: string;
   nameBn?: string;
   division?: string;
+  divisionBn?: string;
   district?: string;
+  districtBn?: string;
   thana?: string;
+  thanaBn?: string;
   address?: string;
   addressBn?: string;
   phone?: string;
@@ -239,7 +242,7 @@ export default function DiagnosticCentersPage() {
             {t("manageDiagnosticCenters", language)}
           </h1>
           <p className="text-gray-500 mt-2 text-lg">
-            {language === 'bn' ? 'ডায়াগনস্টিক সেন্টার যোগ এবং পরিচালনা করুন' : 'Create and manage diagnostic centers for your network'}
+            {t("diagnosticCenterSubTitle", language)}
           </p>
         </div>
         <Button 
@@ -522,7 +525,11 @@ export default function DiagnosticCentersPage() {
                       {(center.division || center.district || center.thana) && (
                         <div className="flex items-center text-sm font-medium bg-gray-100 px-3 py-1.5 rounded-lg text-gray-700">
                           <MapPin className="h-4 w-4 mr-2 text-primary/60" />
-                          {[center.division, center.district, center.thana].filter(Boolean).join(", ")}
+                          {[
+                            language === 'bn' ? center.divisionBn || center.division : center.division,
+                            language === 'bn' ? center.districtBn || center.district : center.district,
+                            language === 'bn' ? center.thanaBn || center.thana : center.thana
+                          ].filter(Boolean).join(", ")}
                         </div>
                       )}
                       {center.phone && (
@@ -541,7 +548,7 @@ export default function DiagnosticCentersPage() {
 
                     {center.address && (
                       <p className="text-gray-600 text-sm italic border-l-4 border-gray-100 pl-4 py-1">
-                        {center.address}
+                        {language === 'bn' ? center.addressBn || center.address : center.address}
                       </p>
                     )}
 
@@ -553,7 +560,7 @@ export default function DiagnosticCentersPage() {
                           </div>
                           <div>
                             <p className="text-green-800 font-extrabold text-lg leading-none">{center.packageDiscount}% {language === 'bn' ? 'অফার' : 'Discount'}</p>
-                            <p className="text-green-600 text-xs font-bold mt-1 uppercase tracking-wider">{center.minTestsForPackage}+ {language === 'bn' ? 'টেস্টের জন্য প্রযোজ্য' : 'Tests Required'}</p>
+                            <p className="text-green-600 text-xs font-bold mt-1 uppercase tracking-wider">{center.minTestsForPackage}+ {language === 'bn' ? 'টি টেস্টের জন্য প্রযোজ্য' : 'Tests Required'}</p>
                           </div>
                         </div>
                       </div>

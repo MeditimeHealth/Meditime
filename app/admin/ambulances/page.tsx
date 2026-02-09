@@ -76,7 +76,7 @@ export default function AmbulancesPage() {
 
   const filteredAmbulances = ambulances.filter(a => 
     a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    a.nameBn?.includes(searchQuery) ||
+    (a.nameBn && a.nameBn.includes(searchQuery)) ||
     a.phoneNumber.includes(searchQuery) ||
     a.ambulanceNumber.includes(searchQuery)
   );
@@ -95,10 +95,10 @@ export default function AmbulancesPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b pb-8">
         <div>
           <h1 className="text-4xl font-black text-gray-900 tracking-tight">
-             {language === 'bn' ? 'সকল অ্যাম্বুলেন্স' : 'All Ambulances'}
+             {t("allAmbulances", language)}
           </h1>
           <p className="text-gray-500 mt-2 text-lg font-medium">
-            {language === 'bn' ? 'জরুরি অ্যাম্বুলেন্স সেবা পরিচালনা এবং তদারকি করুন' : 'Manage emergency ambulance services and fleet information'}
+            {t("ambulanceSubTitle", language)}
           </p>
         </div>
         <Link href="/admin/ambulances/create">
@@ -115,7 +115,7 @@ export default function AmbulancesPage() {
         </div>
         <Input
           type="text"
-          placeholder={language === 'bn' ? 'নাম বা ফোন নম্বর দিয়ে খুঁজুন...' : 'Search by name or phone number...'}
+          placeholder={t("searchByNameOrPhone", language)}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-12 h-14 text-lg border-2 border-gray-100 rounded-2xl bg-white shadow-sm focus:ring-primary focus:border-primary transition-all pr-4 font-bold"
@@ -164,10 +164,8 @@ export default function AmbulancesPage() {
                                 ambulance.availabilityStatus === "On Call" ? "bg-yellow-500" : "bg-red-500"
                               )} />
                               <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">
-                                 {language === 'bn' ? (
-                                   ambulance.availabilityStatus === "Available" ? "উপলব্ধ" : 
-                                   ambulance.availabilityStatus === "On Call" ? "অন কল" : "অনুপলব্ধ"
-                                 ) : ambulance.availabilityStatus}
+                                 {ambulance.availabilityStatus === "Available" ? t("available", language) : 
+                                  ambulance.availabilityStatus === "On Call" ? t("onCall", language) : t("unavailable", language)}
                               </span>
                            </div>
                         </div>

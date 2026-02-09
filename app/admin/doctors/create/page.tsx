@@ -81,18 +81,29 @@ export default function CreateDoctorPage() {
       try {
         const [deptsRes, hospsRes] = await Promise.all([
           fetch("/api/departments"),
-          fetch("/api/hospitals")
+          fetch("/api/locations/hospitals")
         ]);
-        const deptsData = await deptsRes.json();
-        const hospsData = await hospsRes.json();
-        setDepartments(deptsData.departments || []);
-        setHospitals(hospsData.hospitals || []);
+        
+        if (deptsRes.ok) {
+          const deptsData = await deptsRes.json();
+          setDepartments(deptsData.departments || []);
+        }
+        
+        if (hospsRes.ok) {
+          const hospsData = await hospsRes.json();
+          setHospitals(hospsData.hospitals || []);
+        }
       } catch (error) {
         console.error("Error fetching dependencies:", error);
       }
     };
     fetchData();
   }, []);
+
+  // Sync formLanguage with global language on initial load
+  useEffect(() => {
+    setFormLanguage(language);
+  }, [language]);
 
   const onSubmit = async (data: DoctorFormValues) => {
     setLoading(true);

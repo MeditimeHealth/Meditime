@@ -43,6 +43,11 @@ export const translations = {
     lastDonationDate: "Last Donation Date",
     createBloodDonor: "Create Blood Donor Profile",
     editBloodDonor: "Edit Blood Donor Profile",
+    allBloodDonors: "All Blood Donors",
+    bloodDonorsSubTitle: "Manage blood donor profiles and donor information",
+    noBloodDonors: "No blood donors found",
+    createFirstBloodDonor: "Create First Blood Donor",
+    recentlyDonated: "Recently Donated",
     
     // Hospital Specific
     addHospital: "Add Hospital Info",
@@ -72,6 +77,9 @@ export const translations = {
     updating: "Updating...",
     noAmbulances: "No ambulances found",
     createFirstAmbulance: "Create First Ambulance",
+    allAmbulances: "All Ambulances",
+    ambulanceSubTitle: "Manage emergency ambulance services and fleet information",
+    searchByNameOrPhone: "Search by name or phone number...",
 
     // Department Specific
     manageDepartments: "Manage Departments",
@@ -89,6 +97,7 @@ export const translations = {
     createDiagnosticCenter: "Create Center",
     editDiagnosticCenter: "Edit Center",
     diagnosticCenterName: "Diagnostic Center Name",
+    diagnosticCenterSubTitle: "Create and manage diagnostic centers for your network",
     packageDiscount: "Package Discount (%)",
     minTestsForPackage: "Min Tests for Package",
     manageDiagnosticTests: "Diagnostic Tests",
@@ -217,6 +226,11 @@ export const translations = {
     lastDonationDate: "সর্বশেষ রক্তদানের তারিখ",
     createBloodDonor: "রক্তদাতার প্রোফাইল তৈরি করুন",
     editBloodDonor: "রক্তদাতার প্রোফাইল সম্পাদনা করুন",
+    allBloodDonors: "সকল রক্তদাতা",
+    bloodDonorsSubTitle: "রক্তদাতার প্রোফাইল এবং দাতার তথ্য পরিচালনা করুন",
+    noBloodDonors: "কোনো রক্তদাতা পাওয়া যায়নি",
+    createFirstBloodDonor: "প্রথম রক্তদাতার প্রোফাইল তৈরি করুন",
+    recentlyDonated: "সম্প্রতি রক্ত দান করেছেন",
     
     // Hospital Specific
     addHospital: "হাসপাতালের তথ্য যোগ করুন",
@@ -246,6 +260,9 @@ export const translations = {
     updating: "আপডেট হচ্ছে...",
     noAmbulances: "কোনো অ্যাম্বুলেন্স পাওয়া যায়নি",
     createFirstAmbulance: "প্রথম অ্যাম্বুলেন্স সার্ভিস তৈরি করুন",
+    allAmbulances: "সকল অ্যাম্বুলেন্স",
+    ambulanceSubTitle: "জরুরি অ্যাম্বুলেন্স সেবা পরিচালনা এবং তদারকি করুন",
+    searchByNameOrPhone: "নাম বা ফোন নম্বর দিয়ে খুঁজুন...",
 
     // Department Specific
     manageDepartments: "বিভাগ পরিচালনা করুন",
@@ -263,6 +280,7 @@ export const translations = {
     createDiagnosticCenter: "সেন্টার তৈরি করুন",
     editDiagnosticCenter: "সেন্টার সম্পাদনা করুন",
     diagnosticCenterName: "ডায়াগনস্টিক সেন্টারের নাম",
+    diagnosticCenterSubTitle: "ডায়াগনস্টিক সেন্টার যোগ এবং পরিচালনা করুন",
     packageDiscount: "প্যাকেজ ডিসকাউন্ট (%)",
     minTestsForPackage: "প্যাকেজ ডিসকাউন্টের জন্য সর্বনিম্ন টেস্ট",
     manageDiagnosticTests: "ডায়াগনস্টিক টেস্ট",

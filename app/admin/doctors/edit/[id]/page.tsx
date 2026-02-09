@@ -74,7 +74,8 @@ interface AvailabilitySlot {
 }
 
 export default function EditDoctorPage() {
-  const [language, setLanguage] = useState<'en' | 'bn'>('en');
+  const { language: globalLanguage } = useLanguage();
+  const [language, setLanguage] = useState<'en' | 'bn'>(globalLanguage);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -173,6 +174,11 @@ export default function EditDoctorPage() {
     fetchHospitals("", 1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Sync internal language with global language
+  useEffect(() => {
+    setLanguage(globalLanguage);
+  }, [globalLanguage]);
 
   useEffect(() => {
     if (!hospitalSearchInitialized.current) {

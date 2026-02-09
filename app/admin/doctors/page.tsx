@@ -39,6 +39,16 @@ export default function DoctorsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const { language } = useLanguage();
 
+  const daysMapBn: Record<string, string> = {
+    "Saturday": "শনি",
+    "Sunday": "রবি",
+    "Monday": "সোম",
+    "Tuesday": "মঙ্গল",
+    "Wednesday": "বুধ",
+    "Thursday": "বৃহস্পতি",
+    "Friday": "শুক্র"
+  };
+
   useEffect(() => {
     fetchDoctors();
   }, []);
@@ -218,12 +228,12 @@ export default function DoctorsPage() {
                       {Array.isArray(doctor.availability) ? (
                         doctor.availability.map((slot, idx) => (
                           <div key={idx} className="px-2.5 py-1 bg-white border border-gray-100 rounded-lg text-[10px] font-black text-gray-500 shadow-sm group-hover:border-primary/10 transition-all">
-                            {slot.days.map(d => language === 'bn' ? (d === 'Saturday' ? 'শনি' : d === 'Sunday' ? 'রবি' : d.slice(0,1)) : d.slice(0,3)).join(", ")} | {slot.time}
+                            {slot.days.map(d => language === 'bn' ? (daysMapBn[d] || d) : d.slice(0,3)).join(", ")} | {slot.time}
                           </div>
                         ))
                       ) : (
                         <div className="px-2.5 py-1 bg-white border border-gray-100 rounded-lg text-[10px] font-black text-gray-500 shadow-sm">
-                           {doctor.availability.days.join(", ")} | {doctor.availability.time}
+                           {doctor.availability.days.map(d => language === 'bn' ? (daysMapBn[d] || d) : d.slice(0,3)).join(", ")} | {doctor.availability.time}
                         </div>
                       )}
                    </div>
