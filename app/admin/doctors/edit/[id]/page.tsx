@@ -17,7 +17,7 @@ import { t } from "@/lib/translations";
 const doctorSchema = z.object({
   name: z.string().optional(),
   specialty: z.string().optional(),
-  qualification: z.string().min(2, "Qualification is required"),
+  qualification: z.string().optional(),
   designation: z.string().optional(),
 
   hospital: z.string().optional(),
@@ -44,6 +44,12 @@ const doctorSchema = z.object({
     days: z.array(z.string()).min(1, "Select at least one day"),
     time: z.string().min(1, "Time is required"),
   })).min(1, "Add at least one availability slot"),
+}).refine((data) => data.name || data.nameBn, {
+  message: "Name (English or Bangla) is required",
+  path: ["name"],
+}).refine((data) => data.qualification || data.qualificationBn, {
+  message: "Qualification (English or Bangla) is required",
+  path: ["qualification"],
 });
 
 type DoctorFormValues = z.infer<typeof doctorSchema>;
@@ -117,6 +123,26 @@ export default function EditDoctorPage() {
   } = useForm<DoctorFormValues>({
     resolver: zodResolver(doctorSchema) as any,
     defaultValues: {
+      name: "",
+      nameBn: "",
+      specialty: "",
+      specialtyBn: "",
+      qualification: "",
+      qualificationBn: "",
+      designation: "",
+      designationBn: "",
+      hospital: "",
+      division: "",
+      district: "",
+      thana: "",
+      department: "",
+      consultationFee: 0,
+      oldPatientFee: 0,
+      newPatientFee: 0,
+      diseases: [],
+      bio: "",
+      bioBn: "",
+      image: "",
       availabilitySlots: [{ days: [], time: "" }],
     },
   });
@@ -550,6 +576,9 @@ export default function EditDoctorPage() {
                     placeholder="Dr. John Doe"
                     className="mt-1"
                   />
+                    {errors.name && (
+                      <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
+                    )}
                 </>
               ) : (
                 <>
@@ -563,6 +592,9 @@ export default function EditDoctorPage() {
                     className="mt-1"
                     style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                   />
+                  {errors.name && (
+                    <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
+                  )}
                 </>
               )}
             </div>
@@ -583,18 +615,39 @@ export default function EditDoctorPage() {
             </div>
 
             <div>
-              <Label htmlFor="qualification">
-                Qualification <span className="text-red-500">*</span>
-              </Label>
-              <textarea
-                id="qualification"
-                {...register("qualification")}
-                placeholder="MBBS, MD"
-                rows={2}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-              />
-              {errors.qualification && (
-                <p className="text-sm text-red-500 mt-1">{errors.qualification.message}</p>
+              {language === 'en' ? (
+                <>
+                  <Label htmlFor="qualification">
+                    Qualification <span className="text-red-500">*</span>
+                  </Label>
+                  <textarea
+                    id="qualification"
+                    {...register("qualification")}
+                    placeholder="MBBS, MD"
+                    rows={2}
+                    className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                  />
+                  {errors.qualification && (
+                    <p className="text-sm text-red-500 mt-1">{errors.qualification.message}</p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Label htmlFor="qualificationBn">
+                    যোগ্যতা (Qualification Bangla) <span className="text-red-500">*</span>
+                  </Label>
+                  <textarea
+                    id="qualificationBn"
+                    {...register("qualificationBn")}
+                    placeholder="এমবিবিএস, এমডি"
+                    rows={2}
+                    className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                  />
+                  {errors.qualification && (
+                    <p className="text-sm text-red-500 mt-1">{errors.qualification.message}</p>
+                  )}
+                </>
               )}
             </div>
 

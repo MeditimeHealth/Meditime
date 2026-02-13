@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2, Search, Loader2, Stethoscope, Phone, Award, Briefcase, Calendar, Clock } from "lucide-react";
 import { showToast } from "@/lib/toast";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 import { Input } from "@/components/ui/input";
 
@@ -177,11 +177,11 @@ export default function DoctorsPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-primary transition-colors">
-                      {language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name}
+                      {getLocalizedValue(doctor.name, doctor.nameBn, language)}
                     </h3>
                     <p className="text-primary font-bold text-sm mt-1 flex items-center">
                        <Award className="h-3.5 w-3.5 mr-1.5" />
-                       {language === 'bn' && doctor.specialtyBn ? doctor.specialtyBn : doctor.specialty}
+                       {getLocalizedValue(doctor.specialty, doctor.specialtyBn, language)}
                     </p>
                     <div className="flex items-center gap-2 mt-2">
                        <span className="text-xs font-black uppercase text-gray-400 tracking-widest bg-gray-50 px-2 py-0.5 rounded">
@@ -195,14 +195,14 @@ export default function DoctorsPage() {
                   <div className="flex items-start gap-3">
                     <Briefcase className="h-4 w-4 text-gray-400 mt-1 shrink-0" />
                     <div className="text-sm font-bold text-gray-600">
-                      {language === 'bn' && doctor.designationBn ? doctor.designationBn : doctor.designation}
+                      {getLocalizedValue(doctor.designation, doctor.designationBn, language)}
                     </div>
                   </div>
                   
                   <div className="flex items-start gap-3">
                     <Award className="h-4 w-4 text-gray-400 mt-1 shrink-0" />
                     <div className="text-xs font-medium text-gray-500 leading-relaxed uppercase tracking-tight">
-                       {language === 'bn' && doctor.qualificationBn ? doctor.qualificationBn : doctor.qualification}
+                       {getLocalizedValue(doctor.qualification, doctor.qualificationBn, language)}
                     </div>
                   </div>
 

@@ -16,7 +16,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 
 const doctorSchema = z.object({
-  name: z.string().min(2, "Name is required"),
+  name: z.string().optional(),
   nameBn: z.string().optional(),
   hospital: z.string().optional(),
   department: z.string().optional(),
@@ -38,6 +38,12 @@ const doctorSchema = z.object({
     time: z.string(),
   })).optional(),
   image: z.string().optional(),
+}).refine((data) => data.name || data.nameBn, {
+  message: "At least one name (English or Bangla) is required",
+  path: ["name"],
+}).refine((data) => data.qualification || data.qualificationBn, {
+  message: "At least one qualification (English or Bangla) is required",
+  path: ["qualification"],
 });
 
 type DoctorFormValues = z.infer<typeof doctorSchema>;
@@ -61,6 +67,20 @@ export default function CreateDoctorPage() {
   } = useForm<DoctorFormValues>({
     resolver: zodResolver(doctorSchema),
     defaultValues: {
+      name: "",
+      nameBn: "",
+      hospital: "",
+      department: "",
+      specialty: "",
+      specialtyBn: "",
+      qualification: "",
+      qualificationBn: "",
+      designation: "",
+      designationBn: "",
+      bio: "",
+      bioBn: "",
+      phone: "",
+      image: "",
       availability: [{ days: [], time: "" }],
       consultationFee: 0,
       newPatientFee: 0,
@@ -266,6 +286,7 @@ export default function CreateDoctorPage() {
                   <>
                     <Label htmlFor="nameBn" className="text-sm font-bold text-gray-600 uppercase tracking-wider">{t("nameBn", language)}</Label>
                     <Input id="nameBn" {...register("nameBn")} placeholder="ডাঃ জন ডো" className="h-12 text-lg border-gray-200 rounded-xl focus:ring-primary" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }} />
+                    {errors.name && <p className="text-sm text-red-500 font-bold">{errors.name.message}</p>}
                   </>
                 )}
               </div>
@@ -296,6 +317,7 @@ export default function CreateDoctorPage() {
                   <>
                     <Label htmlFor="qualificationBn" className="text-sm font-bold text-gray-600 uppercase tracking-wider">{t("qualificationBn", language)}</Label>
                     <Input id="qualificationBn" {...register("qualificationBn")} placeholder="এমবিবিএস, এফসিপিএস" className="h-12 text-lg border-gray-200 rounded-xl focus:ring-primary" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }} />
+                    {errors.qualification && <p className="text-sm text-red-500 font-bold">{errors.qualification.message}</p>}
                   </>
                 )}
               </div>
