@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Building2, MapPin, Phone, Trash2, Edit, Loader2, Search, Globe, Info } from "lucide-react";
 import { showToast } from "@/lib/toast";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 import { Input } from "@/components/ui/input";
 
@@ -73,7 +73,8 @@ export default function HospitalsListPage() {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(language === 'bn' ? `আপনি কি নিশ্চিত যে আপনি "${name}" মুছে ফেলতে চান?` : `Are you sure you want to delete "${name}"?`)) return;
+    const displayName = getLocalizedValue(name, hospitals.find(h => h._id === id)?.nameBn, language);
+    if (!confirm(language === 'bn' ? `আপনি কি নিশ্চিত যে আপনি "${displayName}" মুছে ফেলতে চান?` : `Are you sure you want to delete "${displayName}"?`)) return;
 
     try {
       const response = await fetch(`/api/locations/hospitals/${id}`, {
@@ -109,9 +110,9 @@ export default function HospitalsListPage() {
   };
 
   const filteredHospitals = hospitals.filter(h => 
-    h.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (h.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
     h.nameBn?.includes(searchQuery) ||
-    h.address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (h.address || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
     h.addressBn?.includes(searchQuery)
   );
 
@@ -188,7 +189,7 @@ export default function HospitalsListPage() {
                      </div>
                      <div className="flex-1 min-w-0">
                         <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-purple-600 transition-colors">
-                           {language === 'bn' && hospital.nameBn ? hospital.nameBn : hospital.name}
+                           {getLocalizedValue(hospital.name, hospital.nameBn, language)}
                         </h3>
                         {getFullLocation(hospital) && (
                           <div className="flex items-center gap-2 mt-2">
@@ -205,7 +206,7 @@ export default function HospitalsListPage() {
                      <div className="flex items-start gap-3">
                         <Info className="h-4 w-4 text-gray-400 mt-1 shrink-0" />
                         <div className="text-sm font-bold text-gray-600">
-                           {language === 'bn' && hospital.addressBn ? hospital.addressBn : (hospital.address || (language === 'bn' ? 'ঠিকানা নেই' : 'No address provided'))}
+                           {getLocalizedValue(hospital.address, hospital.addressBn, language) || (language === 'bn' ? 'ঠিকানা নেই' : 'No address provided')}
                         </div>
                      </div>
 
