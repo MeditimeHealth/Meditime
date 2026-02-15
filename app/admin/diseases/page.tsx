@@ -423,11 +423,6 @@ export default function DiseasesPage() {
                       <h3 className="font-extrabold text-gray-900 text-lg leading-tight group-hover:text-primary transition-colors">
                         {disease.name}
                       </h3>
-                      {disease.bangla && (
-                        <p className="text-gray-500 font-bold text-sm">
-                          {disease.bangla}
-                        </p>
-                      )}
                     </div>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
                       <Button
@@ -457,9 +452,9 @@ export default function DiseasesPage() {
                   )}
                 </div>
                 
-                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 group-hover:text-primary/30 transition-colors">
+                {/* <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 group-hover:text-primary/30 transition-colors">
                   ID: {disease._id.slice(-6)}
-                </div>
+                </div> */}
               </div>
             </Card>
           ))}
