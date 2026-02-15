@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     
     const diseases = await Disease.find(query)
       .populate('department', 'name bangla emoji')
-      .sort({ bangla: 1 });
+      .sort({ createdAt: -1 });
     return NextResponse.json({ diseases }, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching diseases:", error);

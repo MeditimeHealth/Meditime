@@ -16,11 +16,16 @@ interface PopupData {
   isActive: boolean;
 }
 
+import { usePathname } from "next/navigation";
+
 export default function PopupModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [popupData, setPopupData] = useState<PopupData | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
+    if (pathname?.startsWith("/admin")) return;
+
     const fetchPopup = async () => {
       try {
         const response = await fetch("/api/popup");
@@ -42,7 +47,7 @@ export default function PopupModal() {
     };
 
     fetchPopup();
-  }, []);
+  }, [pathname]);
 
   const handleClose = () => {
     setIsOpen(false);

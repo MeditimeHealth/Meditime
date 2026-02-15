@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
           },
         },
       })
-      .sort({ name: 1 })
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean();
