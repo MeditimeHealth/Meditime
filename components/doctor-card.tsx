@@ -29,10 +29,12 @@ export interface Doctor {
     | Array<{
         days: string[];
         time: string;
+        timeBn?: string;
       }>
     | {
         days: string[];
         time: string;
+        timeBn?: string;
       };
   bio?: string;
   image?: string;
@@ -78,32 +80,24 @@ const getBengaliDay = (day: string): string => {
 
 const formatAvailability = (
   availability:
-    | Array<{ days: string[]; time: string }>
-    | { days: string[]; time: string },
+    | Array<{ days: string[]; time: string; timeBn?: string }>
+    | { days: string[]; time: string; timeBn?: string },
+  language: string = "en"
 ): string => {
   // Handle backward compatibility - convert old format to array
   const slots = Array.isArray(availability) ? availability : [availability];
 
-  return slots
-    .map((slot) => {
-      const sortedDays = slot.days.sort((a, b) => {
-        return daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b);
-      });
+  // Create a Set to store unique time strings
+  const uniqueTimes = new Set<string>();
 
-      let timeRange = "";
-      if (sortedDays.length === 1) {
-        const day = getBengaliDay(sortedDays[0]);
-        const time = slot.time || "";
-        timeRange = `${day} ${time}`;
-      } else {
-        const firstDay = getBengaliDay(sortedDays[0]);
-        const lastDay = getBengaliDay(sortedDays[sortedDays.length - 1]);
-        const time = slot.time || "";
-        timeRange = `${firstDay} থেকে ${lastDay} ${time}`;
-      }
-      return timeRange;
-    })
-    .join("। ");
+  slots.forEach((slot) => {
+    const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
+    if (time) {
+      uniqueTimes.add(time);
+    }
+  });
+
+  return Array.from(uniqueTimes).join(language === 'bn' ? "। " : ", ");
 };
 
 export default function DoctorCard({ doctor, index = 0 }: DoctorCardProps) {
@@ -248,7 +242,7 @@ export default function DoctorCard({ doctor, index = 0 }: DoctorCardProps) {
                       "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                   }}
                 >
-                  {formatAvailability(doctor.availability)}
+                   {formatAvailability(doctor.availability, language)}
                 </span>
               </div>
             </div>

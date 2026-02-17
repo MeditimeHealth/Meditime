@@ -22,7 +22,8 @@ export interface IDoctor extends Document {
   slotDuration?: number;
   availability: Array<{
     days: string[];
-    time: string;
+    time?: string;
+    timeBn?: string;
   }>;
   bio?: string;
   image?: string;
@@ -125,8 +126,8 @@ const DoctorSchema: Schema = new Schema(
                 slot.days &&
                 Array.isArray(slot.days) &&
                 slot.days.length > 0 &&
-                slot.time &&
-                typeof slot.time === 'string'
+                (!slot.time || typeof slot.time === 'string') &&
+                (!slot.timeBn || typeof slot.timeBn === 'string')
               );
             });
           } else if (v && typeof v === 'object' && !Array.isArray(v)) {

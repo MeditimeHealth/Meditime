@@ -34,7 +34,8 @@ const doctorSchema = z.object({
   experience: z.number().min(0).optional(),
   availability: z.array(z.object({
     days: z.array(z.string()),
-    time: z.string(),
+    time: z.string().optional(),
+    timeBn: z.string().optional(),
   })).optional(),
   image: z.string().optional(),
 }).refine((data) => data.name || data.nameBn, {
@@ -92,7 +93,7 @@ export default function CreateDoctorPage() {
       bioBn: "",
       phone: "",
       image: "",
-      availability: [{ days: [], time: "" }],
+      availability: [{ days: [], time: "", timeBn: "" }],
       newPatientFee: 0,
       oldPatientFee: 0,
       experience: 0,
@@ -517,7 +518,7 @@ export default function CreateDoctorPage() {
               </Label>
               <Button
                 type="button"
-                onClick={() => append({ days: [], time: "" })}
+                onClick={() => append({ days: [], time: "", timeBn: "" })}
                 variant="outline"
                 size="sm"
                 className="flex items-center gap-2"
@@ -581,10 +582,10 @@ export default function CreateDoctorPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <Label htmlFor={`time-${slotIndex}`}>
-                        {t("timeSlot", language)} <span className="text-red-500">*</span>
+                        {t("timeSlot", language)} (English)
                       </Label>
                       <Input
                         id={`time-${slotIndex}`}
@@ -593,6 +594,18 @@ export default function CreateDoctorPage() {
                         className="mt-1"
                       />
                     </div>
+                    <div>
+                      <Label htmlFor={`timeBn-${slotIndex}`}>
+                        সময় স্লট (Bangla Slot)
+                      </Label>
+                      <Input
+                        id={`timeBn-${slotIndex}`}
+                        {...register(`availability.${slotIndex}.timeBn`)}
+                        placeholder="উদাঃ সকাল ১০:০০ - বিকাল ০৪:০০"
+                        className="mt-1"
+                        style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                      />
+                  </div>
                   </div>
                 </div>
               </Card>

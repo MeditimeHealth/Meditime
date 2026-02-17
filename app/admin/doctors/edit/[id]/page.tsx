@@ -41,7 +41,8 @@ const doctorSchema = z.object({
   image: z.string().optional(),
   availabilitySlots: z.array(z.object({
     days: z.array(z.string()).min(1, "Select at least one day"),
-    time: z.string().min(1, "Time is required"),
+    time: z.string().optional(),
+    timeBn: z.string().optional(),
   })).min(1, "Add at least one availability slot"),
 }).refine((data) => data.name || data.nameBn, {
   message: "Name (English or Bangla) is required",
@@ -76,6 +77,7 @@ const banglaDays = [
 interface AvailabilitySlot {
   days: string[];
   time: string;
+  timeBn?: string;
 }
 
 export default function EditDoctorPage() {
@@ -141,7 +143,7 @@ export default function EditDoctorPage() {
       bio: "",
       bioBn: "",
       image: "",
-      availabilitySlots: [{ days: [], time: "" }],
+      availabilitySlots: [{ days: [], time: "", timeBn: "" }],
     },
   });
   const fetchHospitals = async (searchValue: string = "", pageToLoad = 1) => {
@@ -310,16 +312,18 @@ export default function EditDoctorPage() {
           availabilityArray = doctor.availability.map((slot: any) => ({
             days: Array.isArray(slot.days) ? slot.days : [],
             time: slot.time || (slot.startTime && slot.endTime ? `${slot.startTime} - ${slot.endTime}` : "") || "",
+            timeBn: slot.timeBn || "",
           }));
         } else if (doctor.availability) {
           availabilityArray = [{
             days: Array.isArray(doctor.availability.days) ? doctor.availability.days : [],
             time: doctor.availability.time || (doctor.availability.startTime && doctor.availability.endTime ? `${doctor.availability.startTime} - ${doctor.availability.endTime}` : "") || "",
+            timeBn: doctor.availability.timeBn || "",
           }];
         }
 
         if (availabilityArray.length === 0) {
-          availabilityArray = [{ days: [], time: "" }];
+          availabilityArray = [{ days: [], time: "", timeBn: "" }];
         }
 
         setAvailabilitySlots(availabilityArray);
@@ -381,7 +385,7 @@ export default function EditDoctorPage() {
 
   // Add new availability slot
   const addAvailabilitySlot = () => {
-    const newSlot = { days: [], time: "" };
+    const newSlot = { days: [], time: "", timeBn: "" };
     setAvailabilitySlots([...availabilitySlots, newSlot]);
     setValue("availabilitySlots", [...availabilitySlots, newSlot]);
   };
@@ -412,6 +416,13 @@ export default function EditDoctorPage() {
   const updateSlotTime = (slotIndex: number, value: string) => {
     const updated = [...availabilitySlots];
     updated[slotIndex].time = value;
+    setAvailabilitySlots(updated);
+    setValue("availabilitySlots", updated);
+  };
+
+  const updateSlotTimeBn = (slotIndex: number, value: string) => {
+    const updated = [...availabilitySlots];
+    updated[slotIndex].timeBn = value;
     setAvailabilitySlots(updated);
     setValue("availabilitySlots", updated);
   };
@@ -940,7 +951,7 @@ export default function EditDoctorPage() {
                 <div className="space-y-4">
                   <div>
                     <Label className="mb-2 block">
-                      দিন নির্বাচন করুন (Select Days) <span className="text-red-500">*</span>
+                      {language === 'bn' ? 'দিন নির্বাচন করুন (Select Days)' : 'Select Days'} <span className="text-red-500">*</span>
                     </Label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       {daysOfWeek.map((day, dayIndex) => (
@@ -957,16 +968,16 @@ export default function EditDoctorPage() {
                             fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           }}
                         >
-                          {banglaDays[dayIndex]}
+                          {day} ({banglaDays[dayIndex]})
                         </button>
                       ))}
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <Label htmlFor={`time-${slotIndex}`}>
-                        সময় (Time) <span className="text-red-500">*</span>
+                        Time (English)
                       </Label>
                       <Input
                         id={`time-${slotIndex}`}
@@ -975,6 +986,20 @@ export default function EditDoctorPage() {
                         value={slot.time}
                         onChange={(e) => updateSlotTime(slotIndex, e.target.value)}
                         className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`timeBn-${slotIndex}`}>
+                        সময় (Bangla Slot)
+                      </Label>
+                      <Input
+                        id={`timeBn-${slotIndex}`}
+                        type="text"
+                        placeholder="উদাঃ সকাল ১০:০০ - বিকাল ০৪:০০"
+                        value={slot.timeBn || ""}
+                        onChange={(e) => updateSlotTimeBn(slotIndex, e.target.value)}
+                        className="mt-1"
+                        style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                       />
                     </div>
                   </div>

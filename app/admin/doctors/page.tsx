@@ -21,9 +21,11 @@ interface Doctor {
   availability: Array<{
     days: string[];
     time: string;
+    timeBn?: string;
   }> | {
     days: string[];
     time: string;
+    timeBn?: string;
   };
   nameBn?: string;
   specialtyBn?: string;
@@ -53,7 +55,9 @@ export default function DoctorsPage() {
     return slots.map((slot) => {
       const sortedDays = (slot.days || []).sort((a: string, b: string) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b));
       if (!sortedDays.length) return "";
-      const time = slot.time || "";
+      
+      const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
+
       if (sortedDays.length === 1) return `${getBengaliDay(sortedDays[0])} ${time}`;
       return `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])} ${time}`;
     }).join("। ");

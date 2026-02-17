@@ -74,8 +74,10 @@ export async function PUT(
     }
 
     // Use newPatientFee as consultationFee if consultationFee is not provided
-    const finalConsultationFee = consultationFee || newPatientFee;
-    if (!finalConsultationFee) {
+    const finalConsultationFee = consultationFee !== undefined ? consultationFee : newPatientFee;
+    
+    // Allow 0 as valid fee
+    if (finalConsultationFee === undefined) {
       return NextResponse.json(
         { error: "Consultation fee or new patient fee is required" },
         { status: 400 }
@@ -90,12 +92,6 @@ export async function PUT(
       if (!slot.days || !Array.isArray(slot.days) || slot.days.length === 0) {
         return NextResponse.json(
           { error: "Each availability slot must have at least one day selected" },
-          { status: 400 }
-        );
-      }
-      if (!slot.time) {
-        return NextResponse.json(
-          { error: "Each availability slot must have a time" },
           { status: 400 }
         );
       }

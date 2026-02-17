@@ -48,9 +48,11 @@ interface Doctor {
   availability: Array<{
     days: string[];
     time: string;
+    timeBn?: string;
   }> | {
     days: string[];
     time: string;
+    timeBn?: string;
   };
   bio?: string;
   bioBn?: string;
@@ -534,41 +536,41 @@ export default function DoctorProfilePage() {
                 সময়সূচী
               </h2>
               <div className="space-y-5">
-                {availabilityArray.map((slot, index) => (
-                  <div key={index} className="bg-white p-5 rounded-xl border-2 border-primary/10 shadow-md last:mb-0">
-                    {doctor.hospital && (
-                      <div className="flex items-center gap-2 mb-4">
-                        <MapPin className="h-5 w-5 text-primary shrink-0" />
-                        <p
-                          className="text-base md:text-lg font-bold text-gray-800"
+                <div className="bg-white p-5 rounded-xl border-2 border-primary/10 shadow-md">
+                  {doctor.hospital && (
+                    <div className="flex items-center gap-2 mb-4">
+                      <MapPin className="h-5 w-5 text-primary shrink-0" />
+                      <p
+                        className="text-base md:text-lg font-bold text-gray-800"
+                        style={{
+                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                        }}
+                      >
+                        {getLocalizedValue(doctor.hospital, doctor.hospitalBn, language)}
+                      </p>
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    {Array.from(new Set(availabilityArray.map(slot => 
+                      (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "")
+                    ).filter(Boolean))).map((time, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-3 p-3 bg-gray-50 rounded-full"
+                      >
+                        <Clock className="h-4 w-4 text-primary shrink-0" />
+                        <span
+                          className="text-sm md:text-base font-semibold text-gray-700"
                           style={{
                             fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           }}
                         >
-                          {getLocalizedValue(doctor.hospital, doctor.hospitalBn, language)}
-                        </p>
+                          {time}
+                        </span>
                       </div>
-                    )}
-                    <div className="space-y-2">
-                      {slot.days.map((day, dayIndex) => (
-                        <div
-                          key={dayIndex}
-                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-full"
-                        >
-                          <Clock className="h-4 w-4 text-primary shrink-0" />
-                          <span
-                            className="text-sm md:text-base font-semibold text-gray-700"
-                            style={{
-                              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
-                          >
-                            {getBengaliDay(day)}: {slot.time}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                    ))}
                   </div>
-                ))}
+                </div>
               </div>
             </Card>
 
@@ -690,41 +692,41 @@ export default function DoctorProfilePage() {
                 সময়সূচী
               </h2>
               <div className="space-y-5">
-                {availabilityArray.map((slot, index) => (
-                  <div key={index} className="bg-white p-5 rounded-xl border-2 border-primary/10 shadow-md last:mb-0">
-                    {doctor.hospital && (
-                      <div className="flex items-center gap-2 mb-4">
-                        <MapPin className="h-5 w-5 text-primary shrink-0" />
-                        <p
-                          className="text-base md:text-lg font-bold text-gray-800"
+                <div className="bg-white p-5 rounded-xl border-2 border-primary/10 shadow-md">
+                  {doctor.hospital && (
+                    <div className="flex items-center gap-2 mb-4">
+                      <MapPin className="h-5 w-5 text-primary shrink-0" />
+                      <p
+                        className="text-base md:text-lg font-bold text-gray-800"
+                        style={{
+                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                        }}
+                      >
+                        {getLocalizedValue(doctor.hospital, doctor.hospitalBn, language)}
+                      </p>
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    {Array.from(new Set(availabilityArray.map(slot => 
+                      (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "")
+                    ).filter(Boolean))).map((time, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-3 p-3 bg-gray-50 rounded-full"
+                      >
+                        <Clock className="h-4 w-4 text-primary shrink-0" />
+                        <span
+                          className="text-sm md:text-base font-semibold text-gray-700"
                           style={{
                             fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           }}
                         >
-                          {getLocalizedValue(doctor.hospital, doctor.hospitalBn, language)}
-                        </p>
+                          {time}
+                        </span>
                       </div>
-                    )}
-                    <div className="space-y-2">
-                      {slot.days.map((day, dayIndex) => (
-                        <div
-                          key={dayIndex}
-                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-full"
-                        >
-                          <Clock className="h-4 w-4 text-primary shrink-0" />
-                          <span
-                            className="text-sm md:text-base font-semibold text-gray-700"
-                            style={{
-                              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
-                          >
-                            {getBengaliDay(day)}: {slot.time}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                    ))}
                   </div>
-                ))}
+                </div>
               </div>
             </Card>
 

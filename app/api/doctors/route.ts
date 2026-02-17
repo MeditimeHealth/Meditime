@@ -103,12 +103,6 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-      if (!slot.time) {
-        return NextResponse.json(
-          { error: "Each availability slot must have a time" },
-          { status: 400 }
-        );
-      }
     }
 
     // Prepare doctor data, only including defined fields
