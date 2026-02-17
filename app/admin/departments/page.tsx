@@ -374,9 +374,9 @@ export default function DepartmentsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {departments.map((department) => (
-            <Card key={department._id} className="p-5 hover:shadow-lg transition-all duration-200 border-gray-100 group">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-4 flex-1">
+            <Card key={department._id} className="flex flex-col hover:shadow-lg transition-all duration-200 border-gray-100 group overflow-hidden">
+              <div className="p-5 flex-1">
+                <div className="flex items-center gap-4">
                   <div className="shrink-0">
                     {department.image ? (
                       <img 
@@ -391,35 +391,37 @@ export default function DepartmentsPage() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-gray-900 text-lg group-hover:text-primary transition-colors pr-10">
-                    {department.name}
-                  </h3>
-                  {department.nameBn && (
-                    <p className="text-gray-500 font-medium">
-                      {department.nameBn}
-                    </p>
-                  )}
+                    <h3 className="font-bold text-gray-900 text-lg group-hover:text-primary transition-colors">
+                      {department.name}
+                    </h3>
+                    {department.nameBn && (
+                      <p className="text-gray-500 font-medium truncate">
+                        {department.nameBn}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <div className="flex gap-1 p-4 bg-gray-50 border-t border-gray-100 mt-auto">
+              <div className="flex gap-2 p-3 bg-gray-50 border-t border-gray-100 mt-auto">
                 <Button
-                  variant="ghost"
-                  className="flex-1 h-10 font-black text-gray-600 hover:text-primary hover:bg-primary/5 rounded-xl"
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 h-10 font-bold border-gray-200 hover:bg-white hover:text-primary hover:border-primary/50 transition-all rounded-lg"
                   onClick={() => handleEdit(department)}
                 >
                   <Edit className="h-4 w-4 mr-2" />
                   {t("edit", language)}
                 </Button>
                 <Button 
-                  variant="ghost" 
-                  className="flex-1 h-10 font-black text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl"
+                  variant="outline"
+                   size="sm"
+                  className="flex-1 h-10 font-bold border-gray-200 hover:bg-white hover:text-red-500 hover:border-red-200 transition-all rounded-lg"
                   onClick={() => handleDelete(department._id)}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   {t("delete", language)}
                 </Button>
-              </div>
               </div>
             </Card>
           ))}
