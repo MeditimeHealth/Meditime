@@ -141,14 +141,15 @@ export default function BloodDonorsPage() {
            </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredDonors.map((donor) => (
-            <Card key={donor._id} className="group relative p-0 bg-white border-2 border-gray-100 hover:border-red-200 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all duration-500 rounded-[2rem] overflow-hidden flex flex-col">
+            <Card key={donor._id} className="group relative p-0 bg-white border-2 border-gray-100 hover:border-primary/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all duration-500 rounded-[2rem] overflow-hidden flex flex-col h-full">
+               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary/50 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                <div className="p-8 space-y-6 flex-1">
                   <div className="flex items-start justify-between gap-5">
                      <div className="flex items-start gap-4 flex-1 min-w-0">
                         <div className="shrink-0">
-                           <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-white shadow-md ring-1 ring-gray-100 group-hover:ring-red-200 transition-all bg-gray-50">
+                           <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-white shadow-md ring-1 ring-gray-100 group-hover:ring-primary/20 transition-all bg-gray-50">
                               {donor.photo ? (
                                 <Image src={donor.photo} alt={donor.name} fill className="object-cover" />
                               ) : (
@@ -159,7 +160,7 @@ export default function BloodDonorsPage() {
                            </div>
                         </div>
                         <div className="flex-1 min-w-0">
-                           <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-red-600 transition-colors">
+                           <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-primary transition-colors">
                               {language === 'bn' && donor.nameBn ? donor.nameBn : donor.name}
                            </h3>
                            <div className="flex items-center gap-2 mt-1.5">
@@ -221,7 +222,7 @@ export default function BloodDonorsPage() {
 
                <div className="flex gap-1 p-4 bg-gray-50 border-t border-gray-100">
                   <Link href={`/admin/blood-donors/edit/${donor._id}`} className="flex-1">
-                     <Button variant="ghost" className="w-full h-12 font-black text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-xl">
+                     <Button variant="ghost" className="w-full h-12 font-black text-gray-600 hover:text-primary hover:bg-primary/5 rounded-xl">
                         <Edit className="h-4 w-4 mr-2" />
                         {t("edit", language)}
                      </Button>

@@ -535,15 +535,15 @@ export default function EditDoctorPage() {
       </div>
 
       <Card className="p-6">
-        <div className="flex justify-end mb-6">
-          <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+        <div className="flex justify-end mb-8">
+          <div className="bg-gray-100/80 p-1.5 rounded-xl inline-flex shadow-inner">
             <button
               type="button"
               onClick={() => setLanguage('en')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
                 language === 'en'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-900'
+                  ? 'bg-white text-primary shadow-sm scale-105'
+                  : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               English
@@ -551,13 +551,13 @@ export default function EditDoctorPage() {
             <button
               type="button"
               onClick={() => setLanguage('bn')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
                 language === 'bn'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-900'
+                  ? 'bg-white text-primary shadow-sm scale-105'
+                  : 'text-gray-500 hover:text-gray-800'
               }`}
             >
-              Bangla
+              বাংলা
             </button>
           </div>
         </div>
@@ -992,24 +992,25 @@ export default function EditDoctorPage() {
             )}
           </div>
 
-          <div className="flex gap-4 pt-4 pb-8">
+          <div className="flex gap-4 pt-8 pb-8">
             <Button
               type="submit"
               disabled={isLoading || isUploading}
-              className="flex-1"
+              className="flex-1 h-12 text-lg font-bold bg-primary hover:bg-primary/90 shadow-md rounded-xl transition-all active:scale-95"
             >
               {isUploading
-                ? "Uploading Image..."
+                ? t("uploading", language)
                 : isLoading
-                ? "Updating..."
-                : "Update Doctor Profile"}
+                ? t("updating", language)
+                : t("update", language)}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
+              className="flex-1 h-12 text-lg font-bold border-2 rounded-xl transition-all"
             >
-              Cancel
+              {t("cancel", language)}
             </Button>
           </div>
         </form>

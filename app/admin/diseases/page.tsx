@@ -411,50 +411,50 @@ export default function DiseasesPage() {
           </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredDiseases.map((disease) => (
-            <Card key={disease._id} className="group relative p-6 bg-white border-2 border-gray-100 hover:border-primary/20 hover:shadow-2xl transition-all duration-300 rounded-3xl overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-12 -mt-12 transition-all group-hover:bg-primary/10" />
+            <Card key={disease._id} className="group relative p-0 bg-white border-2 border-gray-100 hover:border-primary/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all duration-500 rounded-[2rem] overflow-hidden flex flex-col h-full">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary/50 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
               
-              <div className="relative flex flex-col h-full justify-between gap-4">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-1">
-                      <h3 className="font-extrabold text-gray-900 text-lg leading-tight group-hover:text-primary transition-colors">
-                        {disease.name}
-                      </h3>
-                    </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(disease)}
-                        className="h-8 w-8 p-0 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-full"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(disease._id)}
-                        className="h-8 w-8 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+              <div className="p-8 space-y-6 flex-1">
+                <div className="flex items-start justify-between gap-5">
+                  <div className="space-y-4 flex-1">
+                    <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-primary transition-colors">
+                      {disease.name}
+                    </h3>
+                    {disease.bangla && (
+                      <p className="text-gray-500 font-medium text-lg leading-tight">
+                        {disease.bangla}
+                      </p>
+                    )}
+                    
+                    {disease.department && (
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/5 text-primary rounded-xl w-fit text-xs font-bold tracking-tight">
+                         <Hospital className="h-3.5 w-3.5" />
+                         <span>{disease.department.name}</span>
+                      </div>
+                    )}
                   </div>
-                  
-                  {disease.department && (
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-xl w-fit text-xs font-bold tracking-tight">
-                       <Hospital className="h-3 w-3" />
-                       <span>{disease.department.name}</span>
-                    </div>
-                  )}
                 </div>
-                
-                {/* <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 group-hover:text-primary/30 transition-colors">
-                  ID: {disease._id.slice(-6)}
-                </div> */}
+              </div>
+
+              <div className="flex gap-1 p-4 bg-gray-50 border-t border-gray-100">
+                <Button
+                  variant="ghost"
+                  className="flex-1 h-12 font-black text-gray-600 hover:text-primary hover:bg-primary/5 rounded-xl"
+                  onClick={() => handleEdit(disease)}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  {t("edit", language)}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="flex-1 h-12 font-black text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl"
+                  onClick={() => handleDelete(disease._id)}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t("delete", language)}
+                </Button>
               </div>
             </Card>
           ))}

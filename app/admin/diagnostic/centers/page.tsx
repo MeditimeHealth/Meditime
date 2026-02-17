@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Plus, X, Trash2, Edit, Loader2, MapPin, Phone, Mail, Percent, Layers } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Plus, Trash2, Edit, Loader2, MapPin, Phone, Mail, Percent, Info } from "lucide-react";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 import { showToast } from "@/lib/toast";
 
@@ -30,80 +29,12 @@ interface DiagnosticCenter {
 
 export default function DiagnosticCentersPage() {
   const [centers, setCenters] = useState<DiagnosticCenter[]>([]);
-  const [divisions, setDivisions] = useState<Array<{_id: string; name: string}>>([]);
-  const [districts, setDistricts] = useState<Array<{_id: string; name: string}>>([]);
-  const [thanas, setThanas] = useState<Array<{_id: string; name: string}>>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
   const { language } = useLanguage();
-  const [formLanguage, setFormLanguage] = useState<'en' | 'bn'>(language);
-  const [formData, setFormData] = useState({
-    name: "",
-    nameBn: "",
-    division: "",
-    district: "",
-    thana: "",
-    address: "",
-    phone: "",
-    email: "",
-    packageDiscount: "",
-    minTestsForPackage: "3",
-  });
 
   useEffect(() => {
     fetchCenters();
-    fetchDivisions();
   }, []);
-
-  useEffect(() => {
-    if (!showForm) {
-      setFormLanguage(language);
-    }
-  }, [language, showForm]);
-
-  useEffect(() => {
-    if (formData.division) {
-      const division = divisions.find(d => d.name === formData.division);
-      if (division) {
-        fetch(`/api/locations/districts?division=${division._id}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.districts) setDistricts(data.districts);
-          });
-      }
-    } else {
-      setDistricts([]);
-      setThanas([]);
-    }
-  }, [formData.division, divisions]);
-
-  useEffect(() => {
-    if (formData.district) {
-      const district = districts.find(d => d.name === formData.district);
-      if (district) {
-        fetch(`/api/locations/thanas?district=${district._id}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.thanas) setThanas(data.thanas);
-          });
-      }
-    } else {
-      setThanas([]);
-    }
-  }, [formData.district, districts]);
-
-  const fetchDivisions = async () => {
-    try {
-      const response = await fetch("/api/locations/divisions");
-      const data = await response.json();
-      if (response.ok) {
-        setDivisions(data.divisions);
-      }
-    } catch (error) {
-      console.error("Error fetching divisions:", error);
-    }
-  };
 
   const fetchCenters = async () => {
     setLoading(true);
@@ -119,70 +50,6 @@ export default function DiagnosticCentersPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const url = "/api/diagnostic/centers";
-      const method = editingId ? "PUT" : "POST";
-      const body = {
-        ...(editingId && { id: editingId }),
-        name: formData.name,
-        nameBn: formData.nameBn,
-        division: formData.division || undefined,
-        district: formData.district || undefined,
-        thana: formData.thana || undefined,
-        address: formData.address || undefined,
-        phone: formData.phone || undefined,
-        email: formData.email || undefined,
-        packageDiscount: formData.packageDiscount ? parseFloat(formData.packageDiscount) : 0,
-        minTestsForPackage: formData.minTestsForPackage ? parseInt(formData.minTestsForPackage) : 3,
-      };
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        showToast.success(editingId ? "Center updated successfully" : "Center created successfully");
-        setShowForm(false);
-        resetForm();
-        fetchCenters();
-      } else {
-        showToast.error(data.error || "Failed to save diagnostic center");
-      }
-    } catch (error) {
-      console.error("Error saving center:", error);
-      showToast.error("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = (center: DiagnosticCenter) => {
-    setEditingId(center._id);
-    setFormData({
-      name: center.name,
-      nameBn: center.nameBn || "",
-      division: center.division || "",
-      district: center.district || "",
-      thana: center.thana || "",
-      address: center.address || "",
-      phone: center.phone || "",
-      email: center.email || "",
-      packageDiscount: center.packageDiscount?.toString() || "",
-      minTestsForPackage: center.minTestsForPackage?.toString() || "3",
-    });
-    setFormLanguage(language);
-    setShowForm(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id: string) => {
@@ -209,22 +76,6 @@ export default function DiagnosticCentersPage() {
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      nameBn: "",
-      division: "",
-      district: "",
-      thana: "",
-      address: "",
-      phone: "",
-      email: "",
-      packageDiscount: "",
-      minTestsForPackage: "3",
-    });
-    setEditingId(null);
-  };
-
   if (loading && centers.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
@@ -245,247 +96,15 @@ export default function DiagnosticCentersPage() {
             {t("diagnosticCenterSubTitle", language)}
           </p>
         </div>
-        <Button 
-          onClick={() => { resetForm(); setShowForm(true); }}
-          className="bg-primary hover:bg-primary/90 text-white px-6 py-6 text-lg font-semibold rounded-xl shadow-md transition-all hover:scale-105"
-        >
-          <Plus className="h-5 w-5 mr-2" />
-          {t("createDiagnosticCenter", language)}
-        </Button>
+        <Link href="/admin/diagnostic/centers/create">
+          <Button 
+            className="bg-primary hover:bg-primary/90 text-white h-12 px-6 text-lg font-bold rounded-xl shadow-md transition-all active:scale-95"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            {t("create", language)}
+          </Button>
+        </Link>
       </div>
-
-      {showForm && (
-        <Card className="p-8 bg-white border-2 border-primary/10 shadow-xl rounded-2xl overflow-hidden transition-all animate-in fade-in slide-in-from-top-4">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-gray-800">
-              {editingId ? t("editDiagnosticCenter", language) : t("createDiagnosticCenter", language)}
-            </h2>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => { setShowForm(false); resetForm(); }}
-              className="rounded-full h-10 w-10 p-0 hover:bg-gray-100"
-            >
-              <X className="h-6 w-6" />
-            </Button>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="flex justify-end mb-4">
-              <div className="bg-gray-100/80 p-1.5 rounded-xl inline-flex shadow-inner">
-                <button
-                  type="button"
-                  onClick={() => setFormLanguage('en')}
-                  className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                    formLanguage === 'en'
-                      ? 'bg-white text-primary shadow-sm scale-105'
-                      : 'text-gray-500 hover:text-gray-800'
-                  }`}
-                >
-                  English
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormLanguage('bn')}
-                  className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                    formLanguage === 'bn'
-                      ? 'bg-white text-primary shadow-sm scale-105'
-                      : 'text-gray-500 hover:text-gray-800'
-                  }`}
-                >
-                  বাংলা
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-3">
-                {formLanguage === 'en' ? (
-                  <>
-                    <Label htmlFor="name" className="text-base font-bold text-gray-700">
-                      {t("diagnosticCenterName", language)} <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="e.g., Square Diagnostic Center"
-                      className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl"
-                      required
-                    />
-                  </>
-                ) : (
-                  <>
-                    <Label htmlFor="nameBn" className="text-base font-bold text-gray-700">
-                      {t("nameBn", language)}
-                    </Label>
-                    <Input
-                      id="nameBn"
-                      value={formData.nameBn}
-                      onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
-                      placeholder="স্কয়ার ডায়াগনস্টিক সেন্টার"
-                      className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl"
-                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
-                    />
-                  </>
-                )}
-              </div>
-
-              <div className="space-y-3">
-                 <Label htmlFor="division" className="text-base font-bold text-gray-700">{t("division", language)}</Label>
-                 <select
-                    id="division"
-                    value={formData.division}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        division: e.target.value,
-                        district: "",
-                        thana: "",
-                      });
-                    }}
-                    className="flex w-full h-12 rounded-xl border border-gray-200 bg-white px-3 py-2 text-lg focus:ring-primary focus:border-primary outline-none transition-all"
-                  >
-                    <option value="">{t("selectDivision", language)}</option>
-                    {divisions.map((div) => (
-                      <option key={div._id} value={div.name}>{div.name}</option>
-                    ))}
-                  </select>
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="district" className="text-base font-bold text-gray-700">{t("district", language)}</Label>
-                <select
-                  id="district"
-                  value={formData.district}
-                  onChange={(e) => {
-                    setFormData({ ...formData, district: e.target.value, thana: "" });
-                  }}
-                  disabled={!formData.division}
-                  className="flex w-full h-12 rounded-xl border border-gray-200 bg-white px-3 py-2 text-lg focus:ring-primary focus:border-primary outline-none transition-all disabled:bg-gray-50 disabled:text-gray-400"
-                >
-                  <option value="">{t("selectDistrict", language)}</option>
-                  {districts.map((dist) => (
-                    <option key={dist._id} value={dist.name}>{dist.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="thana" className="text-base font-bold text-gray-700">{t("thana", language)}</Label>
-                <select
-                  id="thana"
-                  value={formData.thana}
-                  onChange={(e) => setFormData({ ...formData, thana: e.target.value })}
-                  disabled={!formData.district}
-                  className="flex w-full h-12 rounded-xl border border-gray-200 bg-white px-3 py-2 text-lg focus:ring-primary focus:border-primary outline-none transition-all disabled:bg-gray-50 disabled:text-gray-400"
-                >
-                  <option value="">{t("selectThana", language)}</option>
-                  {thanas.map((thana) => (
-                    <option key={thana._id} value={thana.name}>{thana.name}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <Label htmlFor="address" className="text-base font-bold text-gray-700">{t("address", language)}</Label>
-              <Input
-                id="address"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                placeholder="123 Road, Area, City"
-                className="h-12 text-lg border-gray-200 rounded-xl"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-3">
-                <Label htmlFor="phone" className="text-base font-bold text-gray-700">{t("phone", language)}</Label>
-                <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="+8801234567890"
-                  className="h-12 text-lg border-gray-200 rounded-xl"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="email" className="text-base font-bold text-gray-700">{t("email", language)}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="center@example.com"
-                  className="h-12 text-lg border-gray-200 rounded-xl"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50 p-6 rounded-2xl border border-dashed border-gray-200">
-              <div className="space-y-3">
-                <Label htmlFor="packageDiscount" className="text-base font-bold text-primary flex items-center">
-                  <Percent className="h-4 w-4 mr-1" />
-                  {t("packageDiscount", language)}
-                </Label>
-                <Input
-                  id="packageDiscount"
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={formData.packageDiscount}
-                  onChange={(e) => setFormData({ ...formData, packageDiscount: e.target.value })}
-                  placeholder="10"
-                  className="h-12 text-lg bg-white border-gray-200 rounded-xl"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="minTestsForPackage" className="text-base font-bold text-primary flex items-center">
-                  <Layers className="h-4 w-4 mr-1" />
-                  {t("minTestsForPackage", language)}
-                </Label>
-                <Input
-                  id="minTestsForPackage"
-                  type="number"
-                  min="1"
-                  value={formData.minTestsForPackage}
-                  onChange={(e) => setFormData({ ...formData, minTestsForPackage: e.target.value })}
-                  placeholder="3"
-                  className="h-12 text-lg bg-white border-gray-200 rounded-xl"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-4 pt-6">
-              <Button 
-                type="submit" 
-                disabled={loading}
-                className="flex-1 h-14 text-xl font-bold bg-primary hover:bg-primary/90 shadow-lg rounded-xl"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                    {t("saving", language)}
-                  </>
-                ) : (
-                  editingId ? t("update", language) : t("create", language)
-                )}
-              </Button>
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => { setShowForm(false); resetForm(); }}
-                className="flex-1 h-14 text-xl font-bold border-2 rounded-xl"
-              >
-                {t("cancel", language)}
-              </Button>
-            </div>
-          </form>
-        </Card>
-      )}
 
       {centers.length === 0 ? (
         <Card className="p-20 text-center border-dashed border-4 bg-gray-50/50 rounded-3xl">
@@ -494,98 +113,95 @@ export default function DiagnosticCentersPage() {
               <MapPin className="h-12 w-12 text-gray-300" />
             </div>
             <p className="text-gray-500 text-2xl font-medium">{t("noCenters", language)}</p>
-            <Button 
-              onClick={() => { resetForm(); setShowForm(true); }}
-              className="bg-primary text-white h-14 px-8 text-lg font-bold rounded-xl shadow-lg"
-            >
-              <Plus className="h-6 w-6 mr-2" />
-              {t("createFirstCenter", language)}
-            </Button>
+            <Link href="/admin/diagnostic/centers/create">
+              <Button 
+                className="bg-primary text-white h-14 px-8 text-lg font-bold rounded-xl shadow-lg"
+              >
+                <Plus className="h-6 w-6 mr-2" />
+                {t("createFirstCenter", language)}
+              </Button>
+            </Link>
           </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          {centers.map((center) => (
-            <Card key={center._id} className="p-0 border-2 border-gray-100 hover:border-primary/20 hover:shadow-2xl transition-all duration-300 rounded-3xl group overflow-hidden bg-white">
-              <div className="p-8">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-4 flex-1">
-                    <div>
-                      <h3 className="text-2xl font-extrabold text-gray-900 leading-tight group-hover:text-primary transition-colors">
-                        {center.name}
-                      </h3>
-                      {center.nameBn && (
-                        <p className="text-gray-500 text-lg font-medium mt-1">
-                          {center.nameBn}
-                        </p>
-                      )}
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-4 text-gray-600">
-                      {(center.division || center.district || center.thana) && (
-                        <div className="flex items-center text-sm font-medium bg-gray-100 px-3 py-1.5 rounded-lg text-gray-700">
-                          <MapPin className="h-4 w-4 mr-2 text-primary/60" />
-                          {[
-                            language === 'bn' ? center.divisionBn || center.division : center.division,
-                            language === 'bn' ? center.districtBn || center.district : center.district,
-                            language === 'bn' ? center.thanaBn || center.thana : center.thana
-                          ].filter(Boolean).join(", ")}
-                        </div>
-                      )}
-                      {center.phone && (
-                        <div className="flex items-center text-sm font-bold text-gray-700">
-                          <Phone className="h-4 w-4 mr-2 text-green-500" />
-                          {center.phone}
-                        </div>
-                      )}
-                      {center.email && (
-                        <div className="flex items-center text-sm font-medium text-gray-700">
-                          <Mail className="h-4 w-4 mr-2 text-blue-500" />
-                          {center.email}
-                        </div>
-                      )}
-                    </div>
-
-                    {center.address && (
-                      <p className="text-gray-600 text-sm italic border-l-4 border-gray-100 pl-4 py-1">
-                        {language === 'bn' ? center.addressBn || center.address : center.address}
-                      </p>
-                    )}
-
-                    {(center.packageDiscount || 0) > 0 && (
-                      <div className="bg-green-50 rounded-2xl p-4 border border-green-100 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="bg-green-500 text-white p-2 rounded-xl">
-                            <Percent className="h-5 w-5" />
-                          </div>
-                          <div>
-                            <p className="text-green-800 font-extrabold text-lg leading-none">{center.packageDiscount}% {language === 'bn' ? 'অফার' : 'Discount'}</p>
-                            <p className="text-green-600 text-xs font-bold mt-1 uppercase tracking-wider">{center.minTestsForPackage}+ {language === 'bn' ? 'টি টেস্টের জন্য প্রযোজ্য' : 'Tests Required'}</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEdit(center)}
-                      className="h-10 w-10 p-0 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-full"
-                    >
-                      <Edit className="h-5 w-5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(center._id)}
-                      className="h-10 w-10 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full"
-                    >
-                      <Trash2 className="h-5 w-5" />
-                    </Button>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10">
+          {centers.map((center: DiagnosticCenter) => (
+            <Card key={center._id} className="group relative p-0 bg-white border-2 border-gray-100 hover:border-primary/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all duration-500 rounded-[2rem] overflow-hidden flex flex-col h-full">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary/50 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+              
+              <div className="p-8 space-y-6 flex-1">
+                <div className="flex items-start justify-between gap-5">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-primary transition-colors">
+                      {getLocalizedValue(center.name, center.nameBn, language)}
+                    </h3>
                   </div>
                 </div>
+
+                <div className="space-y-4 bg-gray-50/50 p-6 rounded-2xl border border-gray-100 group-hover:bg-white transition-all">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="h-4 w-4 text-gray-400 mt-1 shrink-0" />
+                    <div className="text-sm font-bold text-gray-600">
+                      {[
+                        language === 'bn' ? center.divisionBn || center.division : center.division,
+                        language === 'bn' ? center.districtBn || center.district : center.district,
+                        language === 'bn' ? center.thanaBn || center.thana : center.thana
+                      ].filter(Boolean).join(", ")}
+                    </div>
+                  </div>
+                  {center.address && (
+                    <div className="flex items-start gap-3">
+                      <Info className="h-4 w-4 text-gray-400 mt-1 shrink-0" />
+                      <div className="text-sm font-bold text-gray-600">
+                        {getLocalizedValue(center.address, center.addressBn, language)}
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-4 w-4 text-gray-400" />
+                    <div className="text-sm font-bold text-gray-600">{center.phone}</div>
+                  </div>
+                  {center.email && (
+                    <div className="flex items-center gap-3">
+                      <Mail className="h-4 w-4 text-gray-400" />
+                      <div className="text-sm font-bold text-gray-600 truncate">{center.email}</div>
+                    </div>
+                  )}
+                </div>
+
+                {(center.packageDiscount || 0) > 0 && (
+                  <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary text-white p-2 rounded-xl">
+                        <Percent className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-primary font-extrabold text-lg leading-none">{center.packageDiscount}% {language === 'bn' ? 'অফার' : 'Discount'}</p>
+                        <p className="text-primary/60 text-[10px] font-bold mt-1 uppercase tracking-wider">{center.minTestsForPackage}+ {language === 'bn' ? 'টি টেস্টের জন্য প্রযোজ্য' : 'Tests Required'}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-1 p-4 bg-gray-50 border-t border-gray-100">
+                <Link href={`/admin/diagnostic/centers/edit/${center._id}`} className="flex-1">
+                  <Button 
+                    variant="ghost" 
+                    className="w-full h-12 font-black text-gray-600 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    {t("edit", language)}
+                  </Button>
+                </Link>
+                <Button 
+                  variant="ghost" 
+                  className="flex-1 h-12 font-black text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                  onClick={() => handleDelete(center._id)}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t("delete", language)}
+                </Button>
               </div>
             </Card>
           ))}

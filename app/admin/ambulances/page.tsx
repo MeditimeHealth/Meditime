@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Car, Phone, Trash2, Edit, Loader2, Search, MapPin, Info, ArrowRight } from "lucide-react";
 import { showToast } from "@/lib/toast";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 import { Input } from "@/components/ui/input";
 
@@ -74,12 +74,21 @@ export default function AmbulancesPage() {
     }
   };
 
-  const filteredAmbulances = ambulances.filter(a => 
-    a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (a.nameBn && a.nameBn.includes(searchQuery)) ||
-    a.phoneNumber.includes(searchQuery) ||
-    a.ambulanceNumber.includes(searchQuery)
-  );
+  const filteredAmbulances = ambulances.filter(a => {
+    const query = searchQuery.toLowerCase();
+    return (
+      a.name.toLowerCase().includes(query) ||
+      (a.nameBn && a.nameBn.toLowerCase().includes(query)) ||
+      a.phoneNumber.includes(query) ||
+      (a.ambulanceNumber && a.ambulanceNumber.toLowerCase().includes(query)) ||
+      (a.thana && a.thana.toLowerCase().includes(query)) ||
+      (a.thanaBn && a.thanaBn.toLowerCase().includes(query)) ||
+      (a.district && a.district.toLowerCase().includes(query)) ||
+      (a.districtBn && a.districtBn.toLowerCase().includes(query)) ||
+      (a.division && a.division.toLowerCase().includes(query)) ||
+      (a.divisionBn && a.divisionBn.toLowerCase().includes(query))
+    );
+  });
 
   if (loading && ambulances.length === 0) {
     return (
@@ -115,7 +124,7 @@ export default function AmbulancesPage() {
         </div>
         <Input
           type="text"
-          placeholder={t("searchByNameOrPhone", language)}
+          placeholder={t("searchByNameAddressOrPhone", language)}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-12 h-14 text-lg border-2 border-gray-100 rounded-2xl bg-white shadow-sm focus:ring-primary focus:border-primary transition-all pr-4 font-bold"
@@ -142,89 +151,79 @@ export default function AmbulancesPage() {
            </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredAmbulances.map((ambulance) => (
-            <Card key={ambulance._id} className="group relative p-0 bg-white border-2 border-gray-100 hover:border-blue-200 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all duration-500 rounded-[2rem] overflow-hidden flex flex-col">
-               <div className="p-8 space-y-6 flex-1">
-                  <div className="flex items-start justify-between gap-5">
-                     <div className="flex items-start gap-4 flex-1 min-w-0">
-                        <div className="shrink-0">
-                           <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center border-2 border-white shadow-sm ring-1 ring-blue-100 group-hover:ring-blue-200 transition-all">
-                              <Car className="h-8 w-8 text-blue-600" />
-                           </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                           <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-blue-600 transition-colors">
-                              {language === 'bn' && ambulance.nameBn ? ambulance.nameBn : ambulance.name}
-                           </h3>
-                           <div className="flex items-center gap-2 mt-1.5">
-                              <div className={clsx(
-                                "h-2 w-2 rounded-full shadow-sm",
-                                ambulance.availabilityStatus === "Available" ? "bg-green-500" :
-                                ambulance.availabilityStatus === "On Call" ? "bg-yellow-500" : "bg-red-500"
-                              )} />
-                              <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">
-                                 {ambulance.availabilityStatus === "Available" ? t("available", language) : 
-                                  ambulance.availabilityStatus === "On Call" ? t("onCall", language) : t("unavailable", language)}
-                              </span>
-                           </div>
-                        </div>
-                     </div>
-                     <div className="bg-blue-50/50 text-blue-600 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-blue-100 whitespace-nowrap">
-                        {ambulance.vehicleType}
-                     </div>
+            <Card key={ambulance._id} className="group relative p-0 bg-white border-2 border-gray-100 hover:border-primary/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all duration-500 rounded-[2rem] overflow-hidden flex flex-col h-full">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary/50 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="p-8 space-y-6 flex-1">
+                <div className="flex items-start gap-4">
+                  <div className="h-16 w-16 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Car className="h-8 w-8 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xl font-semibold text-[#009A98] truncate">
+                      {getLocalizedValue(ambulance.name, ambulance.nameBn, language)}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">{ambulance.vehicleType}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Phone className="h-4 w-4" />
+                    <a href={`tel:${ambulance.phoneNumber}`} className="font-medium text-primary hover:underline">
+                      {ambulance.phoneNumber}
+                    </a>
+                  </div>
+                  {(ambulance.division || ambulance.district || ambulance.thana) && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <MapPin className="h-4 w-4" />
+                      <span className="text-xs">
+                        {language === 'bn' ? 
+                          [ambulance.thanaBn || ambulance.thana, ambulance.districtBn || ambulance.district, ambulance.divisionBn || ambulance.division].filter(Boolean).join(", ") :
+                          [ambulance.thana, ambulance.district, ambulance.division].filter(Boolean).join(", ")
+                        }
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      ambulance.availabilityStatus === "Available" ? "bg-green-100 text-green-700" :
+                      ambulance.availabilityStatus === "On Call" ? "bg-yellow-100 text-yellow-700" :
+                      "bg-red-100 text-red-700"
+                    }`}>
+                      {ambulance.availabilityStatus === "Available" ? t("available", language) : 
+                       ambulance.availabilityStatus === "On Call" ? t("onCall", language) : t("unavailable", language)}
+                    </span>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4 bg-gray-50/50 p-6 rounded-2xl border border-gray-100 group-hover:bg-white transition-all">
-                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                           <Phone className="h-4 w-4 text-green-500" />
-                           <span className="text-sm font-black text-gray-700">{ambulance.phoneNumber}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs font-black text-gray-400 uppercase tracking-widest">
-                           {language === 'bn' ? 'নম্বর' : 'No'}: {ambulance.ambulanceNumber || '—'}
-                        </div>
-                     </div>
-
-                     <div className="flex items-start gap-3 pt-3 border-t border-gray-100">
-                        <MapPin className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                        <div className="text-sm font-bold text-gray-600">
-                           {[
-                              language === 'bn' ? ambulance.thanaBn || ambulance.thana : ambulance.thana,
-                              language === 'bn' ? ambulance.districtBn || ambulance.district : ambulance.district,
-                              language === 'bn' ? ambulance.divisionBn || ambulance.division : ambulance.division,
-                           ].filter(Boolean).join(", ")}
-                        </div>
-                     </div>
+                  <div className="pt-3 border-t border-gray-50 grid grid-cols-2 gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                    <div>
+                      {language === 'bn' ? 'নম্বর' : 'No'}: <span className="text-gray-600">{ambulance.ambulanceNumber || '—'}</span>
+                    </div>
+                    <div>
+                      {t("drivingLicence", language)}: <span className="text-gray-600 truncate block">{ambulance.drivingLicence || '—'}</span>
+                    </div>
                   </div>
+                </div>
+              </div>
 
-                  <div className="space-y-2">
-                     <div className="text-[10px] font-black text-gray-300 uppercase tracking-widest flex items-center">
-                        <Info className="h-3 w-3 mr-2" />
-                        {t("drivingLicence", language)}
-                     </div>
-                     <div className="text-sm font-black text-gray-500 truncate bg-gray-50 group-hover:bg-white px-3 py-2 rounded-lg border border-transparent transition-all">
-                        {ambulance.drivingLicence || '—'}
-                     </div>
-                  </div>
-               </div>
-
-               <div className="flex gap-1 p-4 bg-gray-50 border-t border-gray-100">
-                  <Link href={`/admin/ambulances/edit/${ambulance._id}`} className="flex-1">
-                     <Button variant="ghost" className="w-full h-12 font-black text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl">
-                        <Edit className="h-4 w-4 mr-2" />
-                        {t("edit", language)}
-                     </Button>
-                  </Link>
-                  <Button 
-                    variant="ghost" 
-                    className="flex-1 h-12 font-black text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl"
-                    onClick={() => handleDelete(ambulance._id, ambulance.name)}
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    {t("delete", language)}
+              <div className="flex gap-2 p-4 bg-gray-50/50 border-t border-gray-100">
+                <Link href={`/admin/ambulances/edit/${ambulance._id}`} className="flex-1">
+                  <Button variant="outline" className="w-full h-10 text-sm font-bold border-gray-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors">
+                    <Edit className="h-4 w-4 mr-2" />
+                    {t("edit", language)}
                   </Button>
-               </div>
+                </Link>
+                <Button 
+                  variant="outline" 
+                  className="flex-1 h-10 text-sm font-bold border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors"
+                  onClick={() => handleDelete(ambulance._id, ambulance.name)}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t("delete", language)}
+                </Button>
+              </div>
             </Card>
           ))}
         </div>

@@ -5,9 +5,11 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-import { MapPin, Phone, Car, Loader2 } from "lucide-react";
+import { MapPin, Phone, Car, Loader2, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
+import { Input } from "@/components/ui/input";
+import { t } from "@/lib/translations";
 
 interface Ambulance {
   _id: string;
@@ -15,8 +17,11 @@ interface Ambulance {
   nameBn?: string;
   phoneNumber: string;
   division?: string;
+  divisionBn?: string;
   district?: string;
+  districtBn?: string;
   thana?: string;
+  thanaBn?: string;
   availabilityStatus: string;
   vehicleType: string;
 }
@@ -53,6 +58,7 @@ export default function AmbulancePage() {
   const [selectedThana, setSelectedThana] = useState("");
   const [availabilityStatusFilter, setAvailabilityStatusFilter] = useState("");
   const [vehicleTypeFilter, setVehicleTypeFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const { language } = useLanguage();
 
   const fetchDivisions = async () => {
@@ -145,15 +151,33 @@ export default function AmbulancePage() {
   // Language-based filter: Only show ambulances with content in the selected language
   const filteredAmbulances = useMemo(() => {
     return ambulances.filter((ambulance) => {
+      // 1. Language filter
+      let matchesLanguage = false;
       if (language === 'en') {
-        // For English, show only ambulances that have English name
-        return ambulance.name && ambulance.name.trim() !== '';
+        matchesLanguage = !!(ambulance.name && ambulance.name.trim() !== '');
       } else {
-        // For Bangla, show only ambulances that have Bangla name
-        return ambulance.nameBn && ambulance.nameBn.trim() !== '';
+        matchesLanguage = !!(ambulance.nameBn && ambulance.nameBn.trim() !== '');
       }
+
+      if (!matchesLanguage) return false;
+
+      // 2. Search query filter (name, thana, district, division)
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const matchesSearch = 
+          ambulance.name.toLowerCase().includes(query) ||
+          !!(ambulance.nameBn && ambulance.nameBn.toLowerCase().includes(query)) ||
+          ambulance.phoneNumber.includes(query) ||
+          !!(ambulance.thana && ambulance.thana.toLowerCase().includes(query)) ||
+          !!(ambulance.district && ambulance.district.toLowerCase().includes(query)) ||
+          !!(ambulance.division && ambulance.division.toLowerCase().includes(query));
+        
+        if (!matchesSearch) return false;
+      }
+
+      return true;
     });
-  }, [ambulances, language]);
+  }, [ambulances, language, searchQuery]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -211,7 +235,19 @@ export default function AmbulancePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Filters */}
           <Card className="p-6 mb-8">
-            <h2 className="text-xl font-bold text-[#009A98] mb-4">Filter Ambulances</h2>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+              <h2 className="text-xl font-bold text-[#009A98]">{language === 'bn' ? 'অ্যাম্বুলেন্স খুঁজুন' : 'Filter Ambulances'}</h2>
+              <div className="relative w-full md:max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder={t("searchByNameAddressOrPhone", language)}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
               <div>
                 <Label htmlFor="division" className="text-sm font-medium text-gray-700 mb-2 block">Division</Label>
@@ -343,7 +379,10 @@ export default function AmbulancePage() {
                           <div className="flex items-center gap-2 text-gray-600">
                             <MapPin className="h-4 w-4" />
                             <span className="text-xs">
-                              {[ambulance.division, ambulance.district, ambulance.thana].filter(Boolean).join(", ")}
+                                {language === 'bn' ? 
+                                  [ambulance.thanaBn || ambulance.thana, ambulance.districtBn || ambulance.district, ambulance.divisionBn || ambulance.division].filter(Boolean).join(", ") :
+                                  [ambulance.thana, ambulance.district, ambulance.division].filter(Boolean).join(", ")
+                                }
                             </span>
                           </div>
                         )}

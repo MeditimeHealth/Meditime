@@ -80,6 +80,7 @@ export const translations = {
     allAmbulances: "All Ambulances",
     ambulanceSubTitle: "Manage emergency ambulance services and fleet information",
     searchByNameOrPhone: "Search by name or phone number...",
+    searchByNameAddressOrPhone: "Search by name, address, or phone...",
 
     // Department Specific
     manageDepartments: "Manage Departments",
@@ -263,6 +264,7 @@ export const translations = {
     allAmbulances: "সকল অ্যাম্বুলেন্স",
     ambulanceSubTitle: "জরুরি অ্যাম্বুলেন্স সেবা পরিচালনা এবং তদারকি করুন",
     searchByNameOrPhone: "নাম বা ফোন নম্বর দিয়ে খুঁজুন...",
+    searchByNameAddressOrPhone: "নাম, ঠিকানা বা ফোন নম্বর দিয়ে খুঁজুন...",
 
     // Department Specific
     manageDepartments: "বিভাগ পরিচালনা করুন",

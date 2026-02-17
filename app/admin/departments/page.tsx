@@ -228,15 +228,15 @@ export default function DepartmentsPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex justify-end mb-4">
-              <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+            <div className="flex justify-end mb-8">
+              <div className="bg-gray-100/80 p-1.5 rounded-xl inline-flex shadow-inner">
                 <button
                   type="button"
                   onClick={() => setFormLanguage('en')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
                     formLanguage === 'en'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-900'
+                      ? 'bg-white text-primary shadow-sm scale-105'
+                      : 'text-gray-500 hover:text-gray-800'
                   }`}
                 >
                   English
@@ -244,10 +244,10 @@ export default function DepartmentsPage() {
                 <button
                   type="button"
                   onClick={() => setFormLanguage('bn')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
                     formLanguage === 'bn'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-900'
+                      ? 'bg-white text-primary shadow-sm scale-105'
+                      : 'text-gray-500 hover:text-gray-800'
                   }`}
                 >
                   বাংলা
@@ -328,11 +328,11 @@ export default function DepartmentsPage() {
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4">
+            <div className="flex gap-4 pt-8">
               <Button 
                 type="submit" 
                 disabled={loading} 
-                className="flex-1 py-6 text-lg font-semibold bg-primary hover:bg-primary/90"
+                className="flex-1 h-12 text-lg font-bold bg-primary hover:bg-primary/90 shadow-md rounded-xl transition-all active:scale-95"
               >
                 {loading ? (
                   <>
@@ -352,7 +352,7 @@ export default function DepartmentsPage() {
                   setFormData({ name: "", nameBn: "", image: "" });
                   setImagePreview("");
                 }}
-                className="flex-1 py-6 text-lg"
+                className="flex-1 h-12 text-lg font-bold border-2 rounded-xl transition-all"
               >
                 {t("cancel", language)}
               </Button>
@@ -391,34 +391,35 @@ export default function DepartmentsPage() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-900 text-lg group-hover:text-primary transition-colors">
-                      {department.name}
-                    </h3>
-                    {department.nameBn && (
-                      <p className="text-gray-500 font-medium">
-                        {department.nameBn}
-                      </p>
-                    )}
-                  </div>
+                  <h3 className="font-bold text-gray-900 text-lg group-hover:text-primary transition-colors pr-10">
+                    {department.name}
+                  </h3>
+                  {department.nameBn && (
+                    <p className="text-gray-500 font-medium">
+                      {department.nameBn}
+                    </p>
+                  )}
                 </div>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleEdit(department)}
-                    className="h-8 w-8 p-0 text-gray-500 hover:text-primary hover:bg-primary/10"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(department._id)}
-                    className="h-8 w-8 p-0 text-gray-500 hover:text-red-500 hover:bg-red-50"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+              </div>
+
+              <div className="flex gap-1 p-4 bg-gray-50 border-t border-gray-100 mt-auto">
+                <Button
+                  variant="ghost"
+                  className="flex-1 h-10 font-black text-gray-600 hover:text-primary hover:bg-primary/5 rounded-xl"
+                  onClick={() => handleEdit(department)}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  {t("edit", language)}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="flex-1 h-10 font-black text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl"
+                  onClick={() => handleDelete(department._id)}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t("delete", language)}
+                </Button>
+              </div>
               </div>
             </Card>
           ))}

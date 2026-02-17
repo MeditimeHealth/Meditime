@@ -42,6 +42,7 @@ export default function HospitalsListPage() {
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState<'all' | 'missing_bn' | 'missing_en' | 'complete'>('all');
 
   useEffect(() => {
     fetchHospitals();
@@ -109,52 +110,90 @@ export default function HospitalsListPage() {
     return parts.join(", ");
   };
 
-  const filteredHospitals = hospitals.filter(h => 
-    (h.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    h.nameBn?.includes(searchQuery) ||
-    (h.address || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    h.addressBn?.includes(searchQuery)
-  );
+  const filteredHospitals = hospitals.filter(h => {
+    // 1. Language Filter Logic
+    const hasEnglish = !!(h.name && h.address);
+    const hasBangla = !!(h.nameBn && h.addressBn);
+
+    if (filterStatus === 'missing_bn' && hasBangla) return false;
+    if (filterStatus === 'missing_en' && hasEnglish) return false;
+    if (filterStatus === 'complete' && (!hasBangla || !hasEnglish)) return false;
+
+    // 2. Search Query Logic
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return true;
+    
+    return (
+      (h.name || '').toLowerCase().includes(query) ||
+      (h.nameBn || '').includes(query) ||
+      (h.address || '').toLowerCase().includes(query) ||
+      (h.addressBn || '').includes(query) ||
+      (h.phone || '').includes(query) ||
+      (h.thana?.name || '').toLowerCase().includes(query) ||
+      (h.thana?.nameBn || '').includes(query)
+    );
+  });
 
   if (loading && hospitals.length === 0) {
     return (
-      <div className="flex flex-col h-[50vh] items-center justify-center space-y-4">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="text-gray-500 font-medium">{t("loading", language)}</p>
+      <div className="flex flex-col h-[60vh] items-center justify-center space-y-4">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="text-gray-500 font-bold text-lg">{t("loading", language)}</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b pb-8">
+    <div className="max-w-7xl mx-auto p-6 space-y-12 animate-in fade-in duration-700">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-gray-100 pb-10">
         <div>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight">
+          <h1 className="text-5xl font-black text-gray-900 tracking-tight">
              {language === 'bn' ? 'সকল হাসপাতাল' : 'All Hospitals'}
           </h1>
-          <p className="text-gray-500 mt-2 text-lg font-medium">
+          <p className="text-gray-500 mt-3 text-xl font-medium">
             {language === 'bn' ? `হাসপাতালের তথ্য পরিচালনা করুন (${total} টি মোট)` : `Manage hospital information and resources (${total} total)`}
           </p>
         </div>
         <Link href="/admin/hospitals/create">
-          <Button className="bg-primary hover:bg-primary/90 text-white px-8 py-7 text-xl font-black rounded-2xl shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95">
-            <Plus className="h-6 w-6 mr-2" />
+          <Button className="bg-primary hover:bg-primary/90 text-white px-10 py-8 text-2xl font-black rounded-[1.5rem] shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 border-none">
+            <Plus className="h-7 w-7 mr-3 stroke-[3]" />
             {t("addHospital", language)}
           </Button>
         </Link>
       </div>
 
-      <div className="relative group max-w-2xl">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" />
+      <div className="flex flex-col md:flex-row gap-6 items-center max-w-5xl mx-auto md:mx-0">
+        <div className="relative group flex-1 w-full">
+          <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+            <Search className="h-6 w-6 text-gray-300 group-focus-within:text-primary transition-colors stroke-[2.5]" />
+          </div>
+          <Input
+            type="text"
+            placeholder={language === 'bn' ? 'হাসপাতালের নাম, ঠিকানা বা ফোন দিয়ে খুঁজুন...' : 'Search by name, address, or phone...'}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-16 h-16 text-xl border-2 border-gray-100 rounded-[1.5rem] bg-white shadow-lg shadow-gray-100/50 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all pr-6 font-bold placeholder:text-gray-300"
+          />
         </div>
-        <Input
-          type="text"
-          placeholder={language === 'bn' ? 'হাসপাতালের নাম বা ঠিকানা দিয়ে খুঁজুন...' : 'Search by hospital name or address...'}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-12 h-14 text-lg border-2 border-gray-100 rounded-2xl bg-white shadow-sm focus:ring-primary focus:border-primary transition-all pr-4 font-bold"
-        />
+
+        <div className="relative w-full md:w-72">
+           <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+             <Globe className="h-5 w-5 text-gray-400 stroke-[2.5]" />
+           </div>
+           <select 
+             value={filterStatus}
+             onChange={(e) => setFilterStatus(e.target.value as any)}
+             className="w-full h-16 pl-14 pr-10 text-lg border-2 border-gray-100 rounded-[1.5rem] bg-white shadow-lg shadow-gray-100/50 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-bold appearance-none cursor-pointer"
+           >
+             <option value="all">{language === 'bn' ? 'সব হাসপাতাল' : 'All Hospitals'}</option>
+             <option value="missing_bn">{language === 'bn' ? 'বাংলা তথ্য নেই' : 'Missing Bangla'}</option>
+             <option value="missing_en">{language === 'bn' ? 'ইংরেজি তথ্য নেই' : 'Missing English'}</option>
+             <option value="complete">{language === 'bn' ? 'সম্পূর্ণ প্রোফাইল' : 'Complete'}</option>
+           </select>
+           <div className="absolute inset-y-0 right-0 pr-5 flex items-center pointer-events-none">
+             <div className="h-2 w-2 border-r-2 border-b-2 border-gray-400 rotate-45 mb-1" />
+           </div>
+        </div>
       </div>
 
       {filteredHospitals.length === 0 ? (
@@ -177,18 +216,19 @@ export default function HospitalsListPage() {
            </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredHospitals.map((hospital) => (
-            <Card key={hospital._id} className="group relative p-0 bg-white border-2 border-gray-100 hover:border-purple-200 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all duration-500 rounded-[2rem] overflow-hidden flex flex-col">
+            <Card key={hospital._id} className="group relative p-0 bg-white border-2 border-gray-100 hover:border-primary/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all duration-500 rounded-[2rem] overflow-hidden flex flex-col h-full">
+               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary/50 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                <div className="p-8 space-y-6 flex-1">
                   <div className="flex items-start gap-5">
                      <div className="shrink-0">
-                        <div className="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center border-2 border-white shadow-sm ring-1 ring-purple-100 group-hover:ring-purple-200 transition-all">
-                           <Building2 className="h-8 w-8 text-purple-600" />
+                        <div className="w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center border-2 border-white shadow-sm ring-1 ring-primary/10 group-hover:ring-primary/20 transition-all">
+                           <Building2 className="h-8 w-8 text-primary/60" />
                         </div>
                      </div>
                      <div className="flex-1 min-w-0">
-                        <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-purple-600 transition-colors">
+                        <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-primary transition-colors">
                            {getLocalizedValue(hospital.name, hospital.nameBn, language)}
                         </h3>
                         {getFullLocation(hospital) && (
@@ -202,7 +242,7 @@ export default function HospitalsListPage() {
                      </div>
                   </div>
 
-                  <div className="space-y-4 bg-gray-50/50 p-6 rounded-2xl border border-gray-100 group-hover:bg-white group-hover:border-purple-50 transition-all">
+                  <div className="space-y-4 bg-gray-50/50 p-6 rounded-2xl border border-gray-100 group-hover:bg-white group-hover:border-primary/5 transition-all">
                      <div className="flex items-start gap-3">
                         <Info className="h-4 w-4 text-gray-400 mt-1 shrink-0" />
                         <div className="text-sm font-bold text-gray-600">
@@ -221,7 +261,7 @@ export default function HospitalsListPage() {
 
                <div className="flex gap-1 p-4 bg-gray-50 border-t border-gray-100">
                   <Link href={`/admin/hospitals/${hospital._id}/edit`} className="flex-1">
-                     <Button variant="ghost" className="w-full h-12 font-black text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl">
+                     <Button variant="ghost" className="w-full h-12 font-black text-gray-600 hover:text-primary hover:bg-primary/5 rounded-xl">
                         <Edit className="h-4 w-4 mr-2" />
                         {t("edit", language)}
                      </Button>
