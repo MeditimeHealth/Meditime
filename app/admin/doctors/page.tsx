@@ -232,10 +232,10 @@ export default function DoctorsPage() {
                   )}
 
                   <div className="bg-gray-50/80 rounded-2xl p-4 border border-gray-100 group-hover:bg-white group-hover:border-primary/5 transition-all space-y-3 shadow-inner">
-                    <div className="flex items-center gap-3">
+                    {/* <div className="flex items-center gap-3">
                       <Phone className="h-4 w-4 text-green-500 shrink-0" />
                       <div className="text-sm font-black text-gray-700">{doctor.phoneNumber || 'N/A'}</div>
-                    </div>
+                    </div> */}
 
                     <div className="flex items-start gap-3">
                       <Clock className="h-4 w-4 text-primary shrink-0 mt-0.5" />

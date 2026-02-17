@@ -422,8 +422,11 @@ export default function DiseasesPage() {
                     <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-primary transition-colors">
                       {disease.name}
                     </h3>
-                    {disease.bangla && (
-                      <p className="text-gray-500 font-medium text-lg leading-tight">
+                    {disease.bangla && disease.bangla !== disease.name && (
+                      <p 
+                        className="text-gray-500 font-medium text-lg leading-tight"
+                        style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                      >
                         {disease.bangla}
                       </p>
                     )}
