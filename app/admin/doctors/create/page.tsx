@@ -26,7 +26,6 @@ const doctorSchema = z.object({
   qualificationBn: z.string().optional(),
   designation: z.string().optional(),
   designationBn: z.string().optional(),
-  consultationFee: z.number().min(0).optional(),
   newPatientFee: z.number().min(0).optional(),
   oldPatientFee: z.number().min(0).optional(),
   bio: z.string().optional(),
@@ -94,7 +93,6 @@ export default function CreateDoctorPage() {
       phone: "",
       image: "",
       availability: [{ days: [], time: "" }],
-      consultationFee: 0,
       newPatientFee: 0,
       oldPatientFee: 0,
       experience: 0,
@@ -425,18 +423,6 @@ export default function CreateDoctorPage() {
               />
             </div>
 
-             <div>
-              <Label htmlFor="consultationFee">
-                {t("consultationFee", language)}
-              </Label>
-              <Input
-                id="consultationFee"
-                type="number"
-                {...register("consultationFee", { valueAsNumber: true })}
-                placeholder="0"
-                className="mt-1"
-              />
-            </div>
 
              <div>
               <Label htmlFor="experience">

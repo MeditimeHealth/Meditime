@@ -17,7 +17,6 @@ interface Doctor {
   qualification: string;
   designation?: string;
   phoneNumber?: string;
-  consultationFee: number;
   slotDuration?: number;
   availability: Array<{
     days: string[];
@@ -240,11 +239,6 @@ export default function DoctorsPage() {
                         {formatAvailability(doctor.availability)}
                       </div>
                     </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2">
-                    <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t("consultationFee", language)}</div>
-                    <div className="text-2xl font-black text-primary">৳{doctor.consultationFee}</div>
                   </div>
                 </div>
               </div>

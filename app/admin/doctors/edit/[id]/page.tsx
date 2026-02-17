@@ -26,7 +26,6 @@ const doctorSchema = z.object({
   thana: z.string().optional(),
 
   department: z.string().optional(),
-  consultationFee: z.coerce.number().min(0, "Consultation fee must be at least 0").optional(),
   oldPatientFee: z.coerce.number().min(0, "Old patient fee must be at least 0").optional(),
   newPatientFee: z.coerce.number().min(0, "New patient fee must be at least 0").optional(),
   diseases: z.array(z.string()).optional(),
@@ -136,7 +135,6 @@ export default function EditDoctorPage() {
       district: "",
       thana: "",
       department: "",
-      consultationFee: 0,
       oldPatientFee: 0,
       newPatientFee: 0,
       diseases: [],
@@ -348,9 +346,8 @@ export default function EditDoctorPage() {
           thana: doctor.thana || "",
 
           department: doctor.department || "",
-          consultationFee: doctor.consultationFee || 0,
           oldPatientFee: doctor.oldPatientFee || 0,
-          newPatientFee: doctor.newPatientFee || (doctor.consultationFee || 0),
+          newPatientFee: doctor.newPatientFee || 0,
           diseases: doctor.diseases || [],
           bio: doctor.bio || "",
           bioBn: doctor.bioBn || "",
