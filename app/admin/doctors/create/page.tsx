@@ -229,8 +229,7 @@ export default function CreateDoctorPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              {formLanguage === 'en' ? (
-                <>
+              <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
                   <Label htmlFor="name">
                     {t("name", language)} <span className="text-red-500">*</span>
                   </Label>
@@ -245,9 +244,8 @@ export default function CreateDoctorPage() {
                       {errors.name.message}
                     </p>
                   )}
-                </>
-              ) : (
-                <>
+              </div>
+              <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
                   <Label htmlFor="nameBn">
                     {t("nameBn", language)}
                   </Label>
@@ -263,13 +261,11 @@ export default function CreateDoctorPage() {
                       {errors.name.message}
                     </p>
                   )}
-                </>
-              )}
+              </div>
             </div>
 
             <div>
-              {formLanguage === 'en' ? (
-                <>
+              <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
                   <Label htmlFor="specialty">
                     {t("specialty", language)}
                   </Label>
@@ -279,9 +275,8 @@ export default function CreateDoctorPage() {
                     placeholder="e.g. Cardiologist"
                     className="mt-1"
                   />
-                </>
-              ) : (
-                <>
+              </div>
+              <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
                   <Label htmlFor="specialtyBn">
                     {t("specialtyBn", language)}
                   </Label>
@@ -292,13 +287,11 @@ export default function CreateDoctorPage() {
                     className="mt-1"
                     style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                   />
-                </>
-              )}
+              </div>
             </div>
 
             <div>
-              {formLanguage === 'en' ? (
-                <>
+              <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
                   <Label htmlFor="qualification">
                     {t("qualification", language)} <span className="text-red-500">*</span>
                   </Label>
@@ -314,9 +307,8 @@ export default function CreateDoctorPage() {
                       {errors.qualification.message}
                     </p>
                   )}
-                </>
-              ) : (
-                <>
+              </div>
+              <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
                   <Label htmlFor="qualificationBn">
                     {t("qualificationBn", language)}
                   </Label>
@@ -333,13 +325,11 @@ export default function CreateDoctorPage() {
                       {errors.qualification.message}
                     </p>
                   )}
-                </>
-              )}
+              </div>
             </div>
 
             <div>
-              {formLanguage === 'en' ? (
-                <>
+              <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
                   <Label htmlFor="designation">{t("designation", language)}</Label>
                   <Input
                     id="designation"
@@ -347,9 +337,8 @@ export default function CreateDoctorPage() {
                     placeholder="e.g. Senior Consultant"
                     className="mt-1"
                   />
-                </>
-              ) : (
-                <>
+              </div>
+              <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
                   <Label htmlFor="designationBn">{t("designationBn", language)}</Label>
                   <Input
                     id="designationBn"
@@ -358,8 +347,7 @@ export default function CreateDoctorPage() {
                     className="mt-1"
                     style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                   />
-                </>
-              )}
+              </div>
             </div>
 
             <div>
@@ -481,8 +469,7 @@ export default function CreateDoctorPage() {
           </div>
 
           <div>
-            {formLanguage === 'en' ? (
-              <>
+            <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
                 <Label htmlFor="bio">
                   {t("bio", language)} <span className="text-gray-500 text-xs">(Optional)</span>
                 </Label>
@@ -493,9 +480,8 @@ export default function CreateDoctorPage() {
                   className="mt-1"
                   placeholder="Doctor's biography..."
                 />
-              </>
-            ) : (
-              <>
+            </div>
+            <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
                 <Label htmlFor="bioBn">
                   {t("bioBn", language)} <span className="text-gray-500 text-xs">(Optional)</span>
                 </Label>
@@ -507,8 +493,7 @@ export default function CreateDoctorPage() {
                   placeholder="ডাক্তারের জীবনী..."
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                 />
-              </>
-            )}
+            </div>
           </div>
 
           <div className="space-y-6">

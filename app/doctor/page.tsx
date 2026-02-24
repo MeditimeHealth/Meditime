@@ -162,6 +162,7 @@ interface Thana {
 interface Hospital {
   _id: string;
   name: string;
+  nameBn?: string;
   thana?: Thana;
 }
 
@@ -1613,9 +1614,16 @@ function DoctorListPageContent() {
           </motion.div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {filteredAndSortedDoctors.map((doctor, index) => (
-              <DoctorCard key={doctor._id} doctor={doctor} index={index} />
-            ))}
+            {filteredAndSortedDoctors.map((doctor, index) => {
+              const matchedHospital = hospitals.find(h => h.name === doctor.hospital);
+              const doctorWithBnHospital = {
+                ...doctor,
+                hospitalBn: matchedHospital?.nameBn || doctor.hospitalBn || ""
+              };
+              return (
+                <DoctorCard key={doctor._id} doctor={doctorWithBnHospital} index={index} />
+              );
+            })}
           </div>
         )}
       </div>

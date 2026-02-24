@@ -257,35 +257,32 @@ export default function DepartmentsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                {formLanguage === 'en' ? (
-                  <>
-                    <Label htmlFor="name" className="text-base font-semibold text-gray-700">
-                      {t("departmentName", language)} <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="Cardiology"
-                      className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
-                      required
-                    />
-                  </>
-                ) : (
-                  <>
-                    <Label htmlFor="nameBn" className="text-base font-semibold text-gray-700">
-                      {t("nameBn", language)} <span className="text-gray-400 text-sm">(Optional)</span>
-                    </Label>
-                    <Input
-                      id="nameBn"
-                      value={formData.nameBn}
-                      onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
-                      placeholder="বিভাগের নাম লিখুন"
-                      className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
-                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
-                    />
-                  </>
-                )}
+                <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
+                  <Label htmlFor="name" className="text-base font-semibold text-gray-700">
+                    {t("departmentName", language)} <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Cardiology"
+                    className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary mt-2"
+                    required={formLanguage === 'en'}
+                  />
+                </div>
+                <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
+                  <Label htmlFor="nameBn" className="text-base font-semibold text-gray-700">
+                    {t("nameBn", language)} <span className="text-gray-400 text-sm">(Optional)</span>
+                  </Label>
+                  <Input
+                    id="nameBn"
+                    value={formData.nameBn}
+                    onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
+                    placeholder="বিভাগের নাম লিখুন"
+                    className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary mt-2"
+                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">

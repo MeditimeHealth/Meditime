@@ -177,35 +177,32 @@ export default function CreateAmbulancePage() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {language === 'en' ? (
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-base font-semibold text-gray-700">
-                  {t("ambulanceServiceName", language)} <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="name"
-                  {...register("name")}
-                  placeholder="Ambulance Service Name"
-                  className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
-                />
-                {errors.name && (
-                  <p className="text-sm text-red-500">{errors.name.message}</p>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <Label htmlFor="nameBn" className="text-base font-semibold text-gray-700">
-                  {t("nameBn", language)} <span className="text-gray-400 text-sm">(Optional)</span>
-                </Label>
-                <Input
-                  id="nameBn"
-                  {...register("nameBn")}
-                  placeholder="অ্যাম্বুলেন্স সার্ভিসের নাম লিখুন"
-                  className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
-                />
-              </div>
-            )}
+            <div className={language === 'en' ? 'block space-y-2' : 'hidden'}>
+              <Label htmlFor="name" className="text-base font-semibold text-gray-700">
+                {t("ambulanceServiceName", language)} <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="name"
+                {...register("name")}
+                placeholder="Ambulance Service Name"
+                className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
+              />
+              {errors.name && (
+                <p className="text-sm text-red-500">{errors.name.message}</p>
+              )}
+            </div>
+            <div className={language === 'bn' ? 'block space-y-2' : 'hidden'}>
+              <Label htmlFor="nameBn" className="text-base font-semibold text-gray-700">
+                {t("nameBn", language)} <span className="text-gray-400 text-sm">(Optional)</span>
+              </Label>
+              <Input
+                id="nameBn"
+                {...register("nameBn")}
+                placeholder="অ্যাম্বুলেন্স সার্ভিসের নাম লিখুন"
+                className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
+                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+              />
+            </div>
 
             <div className="space-y-2">
               <Label htmlFor="phoneNumber" className="text-base font-semibold text-gray-700">

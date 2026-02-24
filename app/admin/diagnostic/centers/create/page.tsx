@@ -172,35 +172,32 @@ export default function CreateDiagnosticCenterPage() {
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
-              {formLanguage === 'en' ? (
-                <>
-                  <Label htmlFor="name" className="text-base font-bold text-gray-700">
-                    {t("diagnosticCenterName", language)} <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g., Square Diagnostic Center"
-                    className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl"
-                    required
-                  />
-                </>
-              ) : (
-                <>
-                  <Label htmlFor="nameBn" className="text-base font-bold text-gray-700">
-                    {t("nameBn", language)}
-                  </Label>
-                  <Input
-                    id="nameBn"
-                    value={formData.nameBn}
-                    onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
-                    placeholder="স্কয়ার ডায়াগনস্টিক সেন্টার"
-                    className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl"
-                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
-                  />
-                </>
-              )}
+              <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
+                <Label htmlFor="name" className="text-base font-bold text-gray-700">
+                  {t("diagnosticCenterName", language)} <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g., Square Diagnostic Center"
+                  className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl mt-3"
+                  required={formLanguage === 'en'}
+                />
+              </div>
+              <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
+                <Label htmlFor="nameBn" className="text-base font-bold text-gray-700">
+                  {t("nameBn", language)}
+                </Label>
+                <Input
+                  id="nameBn"
+                  value={formData.nameBn}
+                  onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
+                  placeholder="স্কয়ার ডায়াগনস্টিক সেন্টার"
+                  className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl mt-3"
+                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                />
+              </div>
             </div>
 
             <div className="space-y-3">

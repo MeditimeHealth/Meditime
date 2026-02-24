@@ -317,23 +317,46 @@ export default function DiseasesPage() {
                    {formLanguage === 'en' ? t("diseaseNames", language) : t("diseaseNames", language)}
                 </Label>
                 
-                <div className="space-y-3">
-                  {(formLanguage === 'en' ? diseaseNames : diseaseNamesBn).map((name, index) => (
+                <div className={formLanguage === 'en' ? 'space-y-3 block' : 'hidden'}>
+                  {diseaseNames.map((name, index) => (
                     <div key={index} className="group relative flex gap-3 animate-in fade-in slide-in-from-left-2 transition-all">
                       <div className="flex-1">
                         <Input
                           value={name}
-                          onChange={(e) => formLanguage === 'en' 
-                            ? handleNameChange(index, e.target.value)
-                            : handleNameBnChange(index, e.target.value)
-                          }
-                          placeholder={formLanguage === 'en' ? "Enter disease name (e.g. Asthma)" : "রোগের নাম লিখুন (যেমন: হাঁপানি)"}
-                          required={formLanguage === 'en' && index === 0}
+                          onChange={(e) => handleNameChange(index, e.target.value)}
+                          placeholder="Enter disease name (e.g. Asthma)"
+                          required={index === 0 && formLanguage === 'en'}
                           className="h-12 text-lg border-gray-200 rounded-xl focus:ring-primary"
-                          style={formLanguage === 'bn' ? { fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" } : undefined}
                         />
                       </div>
                       {!editingId && diseaseNames.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveNameField(index)}
+                          className="h-12 w-12 rounded-xl text-red-400 hover:text-red-500 hover:bg-red-50"
+                        >
+                          <Minus className="h-5 w-5" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div className={formLanguage === 'bn' ? 'space-y-3 block' : 'hidden'}>
+                  {diseaseNamesBn.map((name, index) => (
+                    <div key={index} className="group relative flex gap-3 animate-in fade-in slide-in-from-left-2 transition-all">
+                      <div className="flex-1">
+                        <Input
+                          value={name}
+                          onChange={(e) => handleNameBnChange(index, e.target.value)}
+                          placeholder="রোগের নাম লিখুন (যেমন: হাঁপানি)"
+                          required={index === 0 && formLanguage === 'bn'}
+                          className="h-12 text-lg border-gray-200 rounded-xl focus:ring-primary"
+                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                        />
+                      </div>
+                      {!editingId && diseaseNamesBn.length > 1 && (
                         <Button
                           type="button"
                           variant="ghost"

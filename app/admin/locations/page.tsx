@@ -338,17 +338,14 @@ export default function LocationsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-3">
-                {formLanguage === 'en' ? (
-                  <>
-                    <Label htmlFor="name" className="text-base font-bold text-gray-700">{t("name", language)} <span className="text-gray-400 text-sm">({t("optional", language)})</span></Label>
-                    <Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Dhaka" className="h-12 text-lg rounded-xl" />
-                  </>
-                ) : (
-                  <>
-                    <Label htmlFor="nameBn" className="text-base font-bold text-gray-700">{t("nameBn", language)} <span className="text-red-500">*</span></Label>
-                    <Input id="nameBn" value={formData.nameBn} onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })} placeholder="ঢাকা" className="h-12 text-lg rounded-xl" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }} required />
-                  </>
-                )}
+                <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
+                  <Label htmlFor="name" className="text-base font-bold text-gray-700">{t("name", language)} <span className="text-gray-400 text-sm">({t("optional", language)})</span></Label>
+                  <Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Dhaka" className="h-12 text-lg rounded-xl mt-2" required={formLanguage === 'en' && activeTab === 'division'} />
+                </div>
+                <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
+                  <Label htmlFor="nameBn" className="text-base font-bold text-gray-700">{t("nameBn", language)} <span className="text-red-500">*</span></Label>
+                  <Input id="nameBn" value={formData.nameBn} onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })} placeholder="ঢাকা" className="h-12 text-lg rounded-xl mt-2" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }} required={formLanguage === 'bn'} />
+                </div>
               </div>
 
               {(activeTab === "district" || activeTab === "thana") && (

@@ -573,8 +573,7 @@ export default function EditDoctorPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              {language === 'en' ? (
-                <>
+              <div className={language === 'en' ? 'block' : 'hidden'}>
                   <Label htmlFor="name">
                     Name <span className="text-gray-400 text-sm">(Optional)</span>
                   </Label>
@@ -587,9 +586,8 @@ export default function EditDoctorPage() {
                     {errors.name && (
                       <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
                     )}
-                </>
-              ) : (
-                <>
+              </div>
+              <div className={language === 'bn' ? 'block' : 'hidden'}>
                   <Label htmlFor="nameBn">
                     নাম (Name Bangla) <span className="text-gray-400 text-sm">(Optional)</span>
                   </Label>
@@ -603,8 +601,7 @@ export default function EditDoctorPage() {
                   {errors.name && (
                     <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
                   )}
-                </>
-              )}
+              </div>
             </div>
 
             <div>
@@ -623,8 +620,7 @@ export default function EditDoctorPage() {
             </div>
 
             <div>
-              {language === 'en' ? (
-                <>
+              <div className={language === 'en' ? 'block' : 'hidden'}>
                   <Label htmlFor="qualification">
                     Qualification <span className="text-red-500">*</span>
                   </Label>
@@ -638,9 +634,8 @@ export default function EditDoctorPage() {
                   {errors.qualification && (
                     <p className="text-sm text-red-500 mt-1">{errors.qualification.message}</p>
                   )}
-                </>
-              ) : (
-                <>
+              </div>
+              <div className={language === 'bn' ? 'block' : 'hidden'}>
                   <Label htmlFor="qualificationBn">
                     যোগ্যতা (Qualification Bangla) <span className="text-red-500">*</span>
                   </Label>
@@ -655,8 +650,7 @@ export default function EditDoctorPage() {
                   {errors.qualification && (
                     <p className="text-sm text-red-500 mt-1">{errors.qualification.message}</p>
                   )}
-                </>
-              )}
+              </div>
             </div>
 
             <div>

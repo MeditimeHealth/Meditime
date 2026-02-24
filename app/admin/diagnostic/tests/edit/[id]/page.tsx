@@ -232,35 +232,32 @@ export default function EditDiagnosticTestPage({ params }: Props) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
-              {formLanguage === 'en' ? (
-                <>
-                  <Label htmlFor="name" className="text-base font-bold text-gray-700">
-                    {t("testName", language)} <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Complete Blood Count (CBC)"
-                    className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl"
-                    required
-                  />
-                </>
-              ) : (
-                <>
-                  <Label htmlFor="nameBn" className="text-base font-bold text-gray-700">
-                    {t("nameBn", language)}
-                  </Label>
-                  <Input
-                    id="nameBn"
-                    value={formData.nameBn}
-                    onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
-                    placeholder="সম্পূর্ণ রক্ত গণনা (CBC)"
-                    className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl"
-                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
-                  />
-                </>
-              )}
+              <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
+                <Label htmlFor="name" className="text-base font-bold text-gray-700">
+                  {t("testName", language)} <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g. Complete Blood Count (CBC)"
+                  className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl mt-3"
+                  required={formLanguage === 'en'}
+                />
+              </div>
+              <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
+                <Label htmlFor="nameBn" className="text-base font-bold text-gray-700">
+                  {t("nameBn", language)}
+                </Label>
+                <Input
+                  id="nameBn"
+                  value={formData.nameBn}
+                  onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
+                  placeholder="সম্পূর্ণ রক্ত গণনা (CBC)"
+                  className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl mt-3"
+                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+                />
+              </div>
             </div>
 
             <div className="space-y-3">
@@ -281,32 +278,29 @@ export default function EditDiagnosticTestPage({ params }: Props) {
           </div>
 
           <div className="space-y-3">
-            {formLanguage === 'en' ? (
-              <>
-                <Label htmlFor="description" className="text-base font-bold text-gray-700">{t("description", language)}</Label>
-                <textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={4}
-                  placeholder="Detailed description of the diagnostic test..."
-                  className="flex w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                />
-              </>
-            ) : (
-              <>
-                <Label htmlFor="descriptionBn" className="text-base font-bold text-gray-700">{t("description", language)}</Label>
-                <textarea
-                  id="descriptionBn"
-                  value={formData.descriptionBn}
-                  onChange={(e) => setFormData({ ...formData, descriptionBn: e.target.value })}
-                  rows={4}
-                  placeholder="টেস্টের বিস্তারিত বিবরণ লিখুন..."
-                  className="flex w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
-                />
-              </>
-            )}
+            <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
+              <Label htmlFor="description" className="text-base font-bold text-gray-700">{t("description", language)}</Label>
+              <textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={4}
+                placeholder="Detailed description of the diagnostic test..."
+                className="flex w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all mt-3"
+              />
+            </div>
+            <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
+              <Label htmlFor="descriptionBn" className="text-base font-bold text-gray-700">{t("description", language)}</Label>
+              <textarea
+                id="descriptionBn"
+                value={formData.descriptionBn}
+                onChange={(e) => setFormData({ ...formData, descriptionBn: e.target.value })}
+                rows={4}
+                placeholder="টেস্টের বিস্তারিত বিবরণ লিখুন..."
+                className="flex w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all mt-3"
+                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+              />
+            </div>
           </div>
 
           <div className="flex gap-4 pt-8">

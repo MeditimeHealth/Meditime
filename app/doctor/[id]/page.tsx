@@ -93,6 +93,7 @@ export default function DoctorProfilePage() {
   const doctorId = params?.id as string;
   const [doctor, setDoctor] = useState<Doctor | null>(null);
   const [relatedDoctors, setRelatedDoctors] = useState<Doctor[]>([]);
+  const [hospitals, setHospitals] = useState<{name: string, nameBn?: string}[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [departmentDiseases, setDepartmentDiseases] = useState<string[]>([]);
@@ -102,9 +103,22 @@ export default function DoctorProfilePage() {
     if (doctorId) {
       fetchDoctor();
       fetchRelatedDoctors();
+      fetchHospitals();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doctorId]);
+
+  const fetchHospitals = async () => {
+    try {
+      const response = await fetch("/api/locations/hospitals");
+      const data = await response.json();
+      if (response.ok && data.hospitals) {
+        setHospitals(data.hospitals);
+      }
+    } catch (error) {
+      console.error("Error fetching hospitals:", error);
+    }
+  };
 
   const fetchDoctor = async () => {
     try {
@@ -233,8 +247,15 @@ export default function DoctorProfilePage() {
   const newPatientFee = doctor.newPatientFee || doctor.consultationFee;
   const oldPatientFee = doctor.oldPatientFee;
   
+  const enrichedDoctor = {
+    ...doctor,
+    hospitalBn: hospitals.find(h => h.name === doctor.hospital)?.nameBn || doctor.hospitalBn || ""
+  };
 
-
+  const enrichedRelatedDoctors = relatedDoctors.map(rd => ({
+    ...rd,
+    hospitalBn: hospitals.find(h => h.name === rd.hospital)?.nameBn || rd.hospitalBn || ""
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -438,7 +459,7 @@ export default function DoctorProfilePage() {
                     সংশ্লিষ্ট ডাক্তার
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {relatedDoctors.map((relatedDoctor, index) => (
+                    {enrichedRelatedDoctors.map((relatedDoctor, index) => (
                       <DoctorCard key={relatedDoctor._id} doctor={relatedDoctor as any} index={index} />
                     ))}
                   </div>
@@ -546,7 +567,7 @@ export default function DoctorProfilePage() {
                           fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                         }}
                       >
-                        {getLocalizedValue(doctor.hospital, doctor.hospitalBn, language)}
+                        {getLocalizedValue(enrichedDoctor.hospital, enrichedDoctor.hospitalBn, language)}
                       </p>
                     </div>
                   )}
@@ -702,7 +723,7 @@ export default function DoctorProfilePage() {
                           fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                         }}
                       >
-                        {getLocalizedValue(doctor.hospital, doctor.hospitalBn, language)}
+                        {getLocalizedValue(enrichedDoctor.hospital, enrichedDoctor.hospitalBn, language)}
                       </p>
                     </div>
                   )}
@@ -766,7 +787,7 @@ export default function DoctorProfilePage() {
                   সংশ্লিষ্ট ডাক্তার
                 </h2>
                 <div className="grid grid-cols-1 gap-5">
-                  {relatedDoctors.map((relatedDoctor, index) => (
+                  {enrichedRelatedDoctors.map((relatedDoctor, index) => (
                     <DoctorCard key={relatedDoctor._id} doctor={relatedDoctor as any} index={index} />
                   ))}
                 </div>
