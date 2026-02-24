@@ -188,11 +188,37 @@ export default function DoctorProfilePage() {
       const data = await response.json();
       if (response.ok && data.doctors) {
         // Filter out current doctor
-        const others = data.doctors.filter((d: Doctor) => d._id !== doctorId);
+        let filtered = data.doctors.filter((d: Doctor) => d._id !== doctorId);
+        
+        // If in Bangla mode, prioritize/filter doctors with Bangla names to avoid mixing
+        if (language === 'bn') {
+          const withBn = filtered.filter((d: Doctor) => d.nameBn);
+          // If we have enough Bangla doctors, use only them. Otherwise, keep original to show something.
+          if (withBn.length >= 3) {
+            filtered = withBn;
+          } else {
+            // Sort so Bangla ones come first
+            filtered = filtered.sort((a: Doctor, b: Doctor) => {
+              if (a.nameBn && !b.nameBn) return -1;
+              if (!a.nameBn && b.nameBn) return 1;
+              return 0;
+            });
+          }
+        }
         
         // Sort by relevance score
-        const sorted = others.sort((a: Doctor, b: Doctor) => {
-          return calculateRelevanceScore(doctor, b) - calculateRelevanceScore(doctor, a);
+        const sorted = filtered.sort((a: Doctor, b: Doctor) => {
+          const relevanceA = calculateRelevanceScore(doctor, a);
+          const relevanceB = calculateRelevanceScore(doctor, b);
+          
+          // Secondary sort by relevance
+          if (relevanceA !== relevanceB) return relevanceB - relevanceA;
+          
+          // Tertiary sort: prioritize doctors with images if scores are same
+          if (a.image && !b.image) return -1;
+          if (!a.image && b.image) return 1;
+          
+          return 0;
         });
 
         setRelatedDoctors(sorted.slice(0, 3)); // Take top 3
@@ -209,7 +235,7 @@ export default function DoctorProfilePage() {
       fetchRelatedDoctors();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [doctor]);
+  }, [doctor, language]);
 
   if (loading) {
     return (
@@ -572,24 +598,40 @@ export default function DoctorProfilePage() {
                     </div>
                   )}
                   <div className="space-y-2">
-                    {Array.from(new Set(availabilityArray.map(slot => 
-                      (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "")
-                    ).filter(Boolean))).map((time, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-3 p-3 bg-gray-50 rounded-full"
-                      >
-                        <Clock className="h-4 w-4 text-primary shrink-0" />
-                        <span
-                          className="text-sm md:text-base font-semibold text-gray-700"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
+                    {availabilityArray.map((slot, index) => {
+                      const sortedDays = (slot.days || []).sort((a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b));
+                      const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
+                      
+                      let dayRange = "";
+                      if (sortedDays.length > 0) {
+                        if (language === 'bn') {
+                          dayRange = sortedDays.length === 1 
+                            ? getBengaliDay(sortedDays[0]) 
+                            : `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])}`;
+                        } else {
+                          dayRange = sortedDays.length === 1 
+                            ? sortedDays[0] 
+                            : `${sortedDays[0]} to ${sortedDays[sortedDays.length - 1]}`;
+                        }
+                      }
+
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-full"
                         >
-                          {time}
-                        </span>
-                      </div>
-                    ))}
+                          <Clock className="h-4 w-4 text-primary shrink-0" />
+                          <span
+                            className="text-sm md:text-base font-semibold text-gray-700"
+                            style={{
+                              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
+                            }}
+                          >
+                            {dayRange} {time}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

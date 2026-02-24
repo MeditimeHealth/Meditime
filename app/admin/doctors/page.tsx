@@ -4,43 +4,26 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, Search, Loader2, Stethoscope, Phone, Award, Briefcase, Calendar, Clock, MapPin } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Loader2, Stethoscope } from "lucide-react";
 import { showToast } from "@/lib/toast";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 import { Input } from "@/components/ui/input";
+import DoctorCard, { Doctor as DoctorType } from "@/components/doctor-card";
 
-interface Doctor {
+
+interface Hospital {
   _id: string;
   name: string;
-  specialty?: string;
-  qualification: string;
-  designation?: string;
-  phoneNumber?: string;
-  slotDuration?: number;
-  availability: Array<{
-    days: string[];
-    time: string;
-    timeBn?: string;
-  }> | {
-    days: string[];
-    time: string;
-    timeBn?: string;
-  };
   nameBn?: string;
-  specialtyBn?: string;
-  qualificationBn?: string;
-  designationBn?: string;
-  image?: string;
-  hospital?: string;
-  hospitalBn?: string;
 }
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const banglaDaysFull = ["সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার", "রবিবার"];
 
 export default function DoctorsPage() {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [doctors, setDoctors] = useState<DoctorType[]>([]);
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const { language } = useLanguage();
@@ -65,7 +48,20 @@ export default function DoctorsPage() {
 
   useEffect(() => {
     fetchDoctors();
+    fetchHospitals();
   }, []);
+
+  const fetchHospitals = async () => {
+    try {
+      const response = await fetch("/api/locations/hospitals");
+      const data = await response.json();
+      if (response.ok && data.hospitals) {
+        setHospitals(data.hospitals);
+      }
+    } catch (error) {
+      console.error("Error fetching hospitals:", error);
+    }
+  };
 
   const fetchDoctors = async () => {
     try {
@@ -171,100 +167,40 @@ export default function DoctorsPage() {
           </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredDoctors.map((doctor) => (
-            <Card key={doctor._id} className="group relative p-0 bg-white border border-gray-200 hover:border-primary/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all duration-500 rounded-[2rem] overflow-hidden flex flex-col h-full">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/50 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-              
-              <div className="p-8 space-y-5 flex-1">
-                <div className="flex items-start justify-between">
-                  <div className="relative shrink-0">
-                    <div className="w-20 h-20 rounded-2xl bg-gray-50 overflow-hidden border-2 border-white shadow-md ring-1 ring-gray-100 group-hover:ring-primary/20 transition-all">
-                      {doctor.image ? (
-                        <img src={doctor.image} alt={doctor.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-primary/5">
-                           <Stethoscope className="h-10 w-10 text-primary/20" />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="bg-gray-50/80 px-3 py-1.5 rounded-xl border border-gray-100 shadow-inner">
-                    <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary/40 animate-pulse" />
-                      {language === 'bn' ? 'আইডি' : 'ID'}: {doctor._id.slice(-6)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-1">
-                    <h3 className="text-2xl font-black text-[#2C5282] leading-tight" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}>
-                      {getLocalizedValue(doctor.name, doctor.nameBn, language)}
-                    </h3>
-                    <p className="text-[#4A90A4] font-black text-sm" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}>
-                       {getLocalizedValue(doctor.specialty, doctor.specialtyBn, language)}
-                    </p>
-                  </div>
-
-                  <div className="w-12 h-1 bg-[#8B4513] rounded-full opacity-60" />
-
-                  <div className="space-y-3">
-                    {getLocalizedValue(doctor.qualification, doctor.qualificationBn, language) && (
-                      <p className="text-sm font-bold text-gray-600 leading-relaxed" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}>
-                        {getLocalizedValue(doctor.qualification, doctor.qualificationBn, language)}
-                      </p>
-                    )}
-                    {getLocalizedValue(doctor.designation, doctor.designationBn, language) && (
-                      <p className="text-sm font-medium text-gray-500 italic" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}>
-                        {getLocalizedValue(doctor.designation, doctor.designationBn, language)}
-                      </p>
-                    )}
-                  </div>
-
-                  {(doctor.hospital || doctor.hospitalBn) && (
-                    <div className="flex items-center gap-2 pt-2">
-                       <MapPin className="h-4 w-4 text-primary shrink-0 stroke-[2.5]" />
-                       <span className="text-base font-black text-gray-700" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}>
-                          {getLocalizedValue(doctor.hospital, doctor.hospitalBn, language)}
-                       </span>
-                    </div>
-                  )}
-
-                  <div className="bg-gray-50/80 rounded-2xl p-4 border border-gray-100 group-hover:bg-white group-hover:border-primary/5 transition-all space-y-3 shadow-inner">
-                    {/* <div className="flex items-center gap-3">
-                      <Phone className="h-4 w-4 text-green-500 shrink-0" />
-                      <div className="text-sm font-black text-gray-700">{doctor.phoneNumber || 'N/A'}</div>
-                    </div> */}
-
-                    <div className="flex items-start gap-3">
-                      <Clock className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                      <div className="text-xs font-bold text-gray-600 leading-relaxed" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}>
-                        {formatAvailability(doctor.availability)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-1 p-4 bg-gray-50/50 border-t border-gray-100">
-                <Link href={`/admin/doctors/edit/${doctor._id}`} className="flex-1">
-                  <Button variant="ghost" className="w-full h-12 font-black text-gray-600 hover:text-primary hover:bg-primary/5 rounded-xl transition-all">
-                    <Edit className="h-4 w-4 mr-2" />
-                    {t("edit", language)}
-                  </Button>
-                </Link>
-                <Button 
-                  variant="ghost" 
-                  className="flex-1 h-12 font-black text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                  onClick={() => handleDelete(doctor._id)}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  {t("delete", language)}
-                </Button>
-              </div>
-            </Card>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {filteredDoctors.map((doctor) => {
+            const matchedHospital = hospitals.find(h => h.name === doctor.hospital);
+            const enrichedDoctor = {
+              ...doctor,
+              hospitalBn: matchedHospital?.nameBn || doctor.hospitalBn || ""
+            };
+            
+            return (
+              <DoctorCard 
+                key={doctor._id} 
+                doctor={enrichedDoctor} 
+                disableLink={true}
+                actions={
+                  <>
+                    <Link href={`/admin/doctors/edit/${doctor._id}`} className="flex-1">
+                      <Button variant="ghost" className="w-full h-10 font-bold text-gray-600 hover:text-primary hover:bg-primary/5 rounded-xl transition-all border border-gray-100">
+                        <Edit className="h-4 w-4 mr-2" />
+                        {t("edit", language)}
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="ghost" 
+                      className="flex-1 h-10 font-bold text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-gray-100"
+                      onClick={() => handleDelete(doctor._id)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {t("delete", language)}
+                    </Button>
+                  </>
+                }
+              />
+            );
+          })}
         </div>
       )}
     </div>
