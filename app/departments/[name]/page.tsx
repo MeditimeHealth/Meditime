@@ -70,23 +70,23 @@ const banglaLabels = {
 };
 
 const daysOfWeek = [
+  "Saturday",
+  "Sunday",
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
   "Friday",
-  "Saturday",
-  "Sunday",
 ];
 
 const banglaDays = [
+  "শনিবার",
+  "রবিবার",
   "সোমবার",
   "মঙ্গলবার",
   "বুধবার",
   "বৃহস্পতিবার",
   "শুক্রবার",
-  "শনিবার",
-  "রবিবার",
 ];
 
 // Convert English number to Bengali
@@ -113,6 +113,17 @@ const getBengaliDay = (day: string): string => {
   return dayIndex >= 0 ? banglaDays[dayIndex] : day;
 };
 
+// Check if days are consecutive
+const areDaysConsecutive = (sortedDays: string[]): boolean => {
+  if (sortedDays.length <= 1) return true;
+  for (let i = 1; i < sortedDays.length; i++) {
+    const prevIndex = daysOfWeek.indexOf(sortedDays[i - 1]);
+    const currIndex = daysOfWeek.indexOf(sortedDays[i]);
+    if (currIndex - prevIndex !== 1) return false;
+  }
+  return true;
+};
+
 // Format availability in Bengali
 const formatAvailability = (
   availability:
@@ -132,17 +143,20 @@ const formatAvailability = (
       });
 
       let timeRange = "";
+      const startTime = formatTimeToBengali(slot.startTime);
+      const endTime = formatTimeToBengali(slot.endTime);
+      const consecutive = areDaysConsecutive(sortedDays);
+
       if (sortedDays.length === 1) {
         const day = getBengaliDay(sortedDays[0]);
-        const startTime = formatTimeToBengali(slot.startTime);
-        const endTime = formatTimeToBengali(slot.endTime);
         timeRange = `${day} ${startTime} থেকে ${endTime}`;
-      } else {
+      } else if (consecutive) {
         const firstDay = getBengaliDay(sortedDays[0]);
         const lastDay = getBengaliDay(sortedDays[sortedDays.length - 1]);
-        const startTime = formatTimeToBengali(slot.startTime);
-        const endTime = formatTimeToBengali(slot.endTime);
         timeRange = `${firstDay} থেকে ${lastDay} ${startTime} থেকে ${endTime}`;
+      } else {
+        const daysList = sortedDays.map(d => getBengaliDay(d)).join(", ");
+        timeRange = `${daysList} ${startTime} থেকে ${endTime}`;
       }
 
       return timeRange;

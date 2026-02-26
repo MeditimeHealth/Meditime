@@ -18,8 +18,8 @@ interface Hospital {
   nameBn?: string;
 }
 
-const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const banglaDaysFull = ["সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার", "রবিবার"];
+const daysOfWeek = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+const banglaDaysFull = ["শনিবার", "রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার"];
 
 export default function DoctorsPage() {
   const [doctors, setDoctors] = useState<DoctorType[]>([]);
@@ -33,6 +33,16 @@ export default function DoctorsPage() {
     return dayIndex >= 0 ? banglaDaysFull[dayIndex] : day;
   };
 
+  const areDaysConsecutive = (sortedDays: string[]): boolean => {
+    if (sortedDays.length <= 1) return true;
+    for (let i = 1; i < sortedDays.length; i++) {
+      const prevIndex = daysOfWeek.indexOf(sortedDays[i - 1]);
+      const currIndex = daysOfWeek.indexOf(sortedDays[i]);
+      if (currIndex - prevIndex !== 1) return false;
+    }
+    return true;
+  };
+
   const formatAvailability = (availability: any): string => {
     const slots = Array.isArray(availability) ? availability : [availability];
     return slots.map((slot) => {
@@ -40,9 +50,13 @@ export default function DoctorsPage() {
       if (!sortedDays.length) return "";
       
       const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
+      const consecutive = areDaysConsecutive(sortedDays);
 
       if (sortedDays.length === 1) return `${getBengaliDay(sortedDays[0])} ${time}`;
-      return `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])} ${time}`;
+      if (consecutive) {
+        return `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])} ${time}`;
+      }
+      return `${sortedDays.map((d: string) => getBengaliDay(d)).join(", ")} ${time}`;
     }).join("। ");
   };
 

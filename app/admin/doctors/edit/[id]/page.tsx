@@ -55,23 +55,23 @@ const doctorSchema = z.object({
 type DoctorFormValues = z.infer<typeof doctorSchema>;
 
 const daysOfWeek = [
+  "Saturday",
+  "Sunday",
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
   "Friday",
-  "Saturday",
-  "Sunday",
 ];
 
 const banglaDays = [
+  "শনি",
+  "রবি",
   "সোম",
   "মঙ্গল",
   "বুধ",
   "বৃহস্পতি",
   "শুক্র",
-  "শনি",
-  "রবি",
 ];
 
 interface AvailabilitySlot {

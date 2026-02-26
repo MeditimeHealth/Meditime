@@ -55,29 +55,39 @@ interface DoctorCardProps {
 }
 
 const daysOfWeek = [
+  "Saturday",
+  "Sunday",
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
   "Friday",
-  "Saturday",
-  "Sunday",
 ];
 
 const banglaDays = [
+  "শনিবার",
+  "রবিবার",
   "সোমবার",
   "মঙ্গলবার",
   "বুধবার",
   "বৃহস্পতিবার",
   "শুক্রবার",
-  "শনিবার",
-  "রবিবার",
 ];
 
 // Helper functions
 const getBengaliDay = (day: string): string => {
   const dayIndex = daysOfWeek.indexOf(day);
   return dayIndex >= 0 ? banglaDays[dayIndex] : day;
+};
+
+const areDaysConsecutive = (sortedDays: string[]): boolean => {
+  if (sortedDays.length <= 1) return true;
+  for (let i = 1; i < sortedDays.length; i++) {
+    const prevIndex = daysOfWeek.indexOf(sortedDays[i - 1]);
+    const currIndex = daysOfWeek.indexOf(sortedDays[i]);
+    if (currIndex - prevIndex !== 1) return false;
+  }
+  return true;
 };
 
 const formatAvailability = (
@@ -94,13 +104,20 @@ const formatAvailability = (
     if (!sortedDays.length) return "";
     
     const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
+    const consecutive = areDaysConsecutive(sortedDays);
 
     if (language === 'bn') {
       if (sortedDays.length === 1) return `${getBengaliDay(sortedDays[0])} ${time}`;
-      return `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])} ${time}`;
+      if (consecutive) {
+        return `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])} ${time}`;
+      }
+      return `${sortedDays.map(d => getBengaliDay(d)).join(", ")} ${time}`;
     } else {
       if (sortedDays.length === 1) return `${sortedDays[0]} ${time}`;
-      return `${sortedDays[0]} to ${sortedDays[sortedDays.length - 1]} ${time}`;
+      if (consecutive) {
+        return `${sortedDays[0]} to ${sortedDays[sortedDays.length - 1]} ${time}`;
+      }
+      return `${sortedDays.join(", ")} ${time}`;
     }
   }).join(language === 'bn' ? "। " : ", ");
 };
