@@ -1,0 +1,47 @@
+Burn, Plastic & Reconstructive Surgery | (none)
+Cancer Specialist / Oncology | (none)
+Cardiology & Medicine | (none)
+Chest Diseases & Asthma | (none)
+Chest/Thoracic Surgery | (none)
+Dermatology & Venereology | (none)
+Diabetes | (none)
+ENT (Ear, Nose & Throat) | ইএনটি (নাক,কান ও গলা)
+Food & Nutrition | (none)
+Gastro-Liver Diseases | (none)
+Gastroenterology | গ্যাস্ট্রো-লিভার রোগ
+General & Laparoscopic Surgery | (none)
+Gynecology & Obstetrics | গাইনি ও প্রসূতি
+Hematology & Medicine | (none)
+Hepato-Biliary & Liver Transplant Surgery | (none)
+Medicine Specialist | মেডিসিন বিশেষজ্ঞ
+Neonatal & Pediatrics | নবজাতক ও শিশু রোগ
+Nephrology & Medicine | কিডনি ও মেডিসিন
+Neuro-Medicine & Surgery | নিউরো-মেডিসিন ও সার্জারি
+Nuclear Medicine | নিউক্লিয়ার মেডিসিন
+Nutrition & Dietetics | খাদ্য ও পুষ্টি
+Oncology | ক্যান্সার বিশেষজ্ঞ
+Ophthalmology | চক্ষুরোগ
+Oral & Dental Diseases | মুখ ও দন্তরোগ
+Pain Medicine & Rheumatology | ব্যথা ও বাতরোগ
+Physiotherapy | ফিজিওথেরাপি
+Psychiatrist and psychotherapist | মনোরোগ বিশেষজ্ঞ
+Thyroid & Hormone Specialist | থাইরয়েড ও হরমোন বিশেষজ্ঞ
+Trauma & Orthopedic Surgery | ট্রমা ও অর্থোপেডিক সার্জারি
+Urology & Nephrology | ইউরোলজি ও নেফ্রোলজি
+Vascular Surgery | ভাস্কুলার সার্জারি
+চর্ম ও যৌনরোগ | (none)
+চেস্ট/থোরাসিক সার্জারি | (none)
+জেনারেল ও ল্যাপারোস্কোপিক সার্জারি | (none)
+ডায়াবেটিস | (none)
+থাইরয়েড ও হরমোন | (none)
+নবজাতক ও শিশুরোগ | (none)
+নিউরোমেডিসিন ও সার্জারি | (none)
+পেইন মেডিসিন ও বাত-ব্যথা | (none)
+বক্ষব্যাধী ও অ্যাজমা | (none)
+বার্ণ প্লাস্টিক এন্ড রিকনস্ট্রাক্টিভ সার্জারি | (none)
+মনোরোগ ও সাইকোথেরাপিস্ট | (none)
+মূত্রনালী ও কিডনি রোগ | (none)
+রক্তরোগ ও মেডিসিন | (none)
+স্ত্রীরোগ ও প্রসূতিবিদ্যা | (none)
+হৃদরোগ ও মেডিসিন | (none)
+হেপাটো-বিলিয়ারি ও লিভার ট্রান্সপ্ল্যান্ট সার্জারি | (none)

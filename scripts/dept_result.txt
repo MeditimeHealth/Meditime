@@ -1,0 +1,81 @@
+=== LOG ===
+OK: "Vascular Surgery" / "ভাস্কুলার সার্জারি"
+ADD nameBn: "Hepato-Biliary & Liver Transplant Surgery" -> "হেপাটো-বিলিয়ারি ও লিভার ট্রান্সপ্ল্যান্ট সার্জারি"
+ADD nameBn: "Chest/Thoracic Surgery" -> "চেস্ট/থোরাসিক সার্জারি"
+ADD nameBn: "Burn, Plastic & Reconstructive Surgery" -> "বার্ণ প্লাস্টিক এন্ড রিকনস্ট্রাক্টিভ সার্জারি"
+OK: "Physiotherapy" / "ফিজিওথেরাপি"
+ADD nameBn: "Food & Nutrition" -> "খাদ্য ও পুষ্টি"
+ADD nameBn: "Hematology & Medicine" -> "রক্তরোগ ও মেডিসিন"
+ADD nameBn: "Cancer Specialist / Oncology" -> "ক্যান্সার বিশেষজ্ঞ / অনকোলজি"
+OK: "Nuclear Medicine" / "নিউক্লিয়ার মেডিসিন"
+OK: "Psychiatrist and psychotherapist" / "মনোরোগ বিশেষজ্ঞ"
+OK: "Neuro-Medicine & Surgery" / "নিউরো-মেডিসিন ও সার্জারি"
+OK: "Thyroid & Hormone Specialist" / "থাইরয়েড ও হরমোন বিশেষজ্ঞ"
+OK: "Urology & Nephrology" / "ইউরোলজি ও নেফ্রোলজি"
+ADD nameBn: "Chest Diseases & Asthma" -> "বক্ষব্যাধী ও অ্যাজমা"
+OK: "Ophthalmology" / "চক্ষুরোগ"
+ADD nameBn: "Diabetes" -> "ডায়াবেটিস"
+OK: "Oral & Dental Diseases" / "মুখ ও দন্তরোগ"
+OK: "Neonatal & Pediatrics" / "নবজাতক ও শিশু রোগ"
+OK: "Pain Medicine & Rheumatology" / "ব্যথা ও বাতরোগ"
+ADD nameBn: "General & Laparoscopic Surgery" -> "জেনারেল ও ল্যাপারোস্কোপিক সার্জারি"
+OK: "Trauma & Orthopedic Surgery" / "ট্রমা ও অর্থোপেডিক সার্জারি"
+ADD nameBn: "Gastro-Liver Diseases" -> "গ্যাস্ট্রো-লিভার রোগ"
+ADD nameBn: "Dermatology & Venereology" -> "চর্ম ও যৌনরোগ"
+OK: "ENT (Ear, Nose & Throat)" / "ইএনটি (নাক,কান ও গলা)"
+OK: "Gynecology & Obstetrics" / "গাইনি ও প্রসূতি"
+OK: "Nephrology & Medicine" / "কিডনি ও মেডিসিন"
+ADD nameBn: "Cardiology & Medicine" -> "হৃদরোগ ও মেডিসিন"
+OK: "Medicine Specialist" / "মেডিসিন বিশেষজ্ঞ"
+MERGE+DELETE: "হৃদরোগ ও মেডিসিন" -> merged into "Cardiology & Medicine"
+MERGE+DELETE: "স্ত্রীরোগ ও প্রসূতিবিদ্যা" -> merged into "Gynecology & Obstetrics"
+MERGE+DELETE: "চর্ম ও যৌনরোগ" -> merged into "Dermatology & Venereology"
+OK: "Gastroenterology" / "গ্যাস্ট্রো-লিভার রোগ"
+MERGE+DELETE: "জেনারেল ও ল্যাপারোস্কোপিক সার্জারি" -> merged into "General & Laparoscopic Surgery"
+MERGE+DELETE: "পেইন মেডিসিন ও বাত-ব্যথা" -> merged into "Pain Medicine & Rheumatology"
+MERGE+DELETE: "নবজাতক ও শিশুরোগ" -> merged into "Neonatal & Pediatrics"
+MERGE+DELETE: "ডায়াবেটিস" -> merged into "Diabetes"
+MERGE+DELETE: "বক্ষব্যাধী ও অ্যাজমা" -> merged into "Chest Diseases & Asthma"
+MERGE+DELETE: "মূত্রনালী ও কিডনি রোগ" -> merged into "Urology & Nephrology"
+MERGE+DELETE: "থাইরয়েড ও হরমোন" -> merged into "Thyroid & Hormone Specialist"
+MERGE+DELETE: "নিউরোমেডিসিন ও সার্জারি" -> merged into "Neuro-Medicine & Surgery"
+MERGE+DELETE: "মনোরোগ ও সাইকোথেরাপিস্ট" -> merged into "Psychiatrist and psychotherapist"
+OK: "Oncology" / "ক্যান্সার বিশেষজ্ঞ"
+MERGE+DELETE: "রক্তরোগ ও মেডিসিন" -> merged into "Hematology & Medicine"
+OK: "Nutrition & Dietetics" / "খাদ্য ও পুষ্টি"
+MERGE+DELETE: "বার্ণ প্লাস্টিক এন্ড রিকনস্ট্রাক্টিভ সার্জারি" -> merged into "Burn, Plastic & Reconstructive Surgery"
+MERGE+DELETE: "চেস্ট/থোরাসিক সার্জারি" -> merged into "Chest/Thoracic Surgery"
+MERGE+DELETE: "হেপাটো-বিলিয়ারি ও লিভার ট্রান্সপ্ল্যান্ট সার্জারি" -> merged into "Hepato-Biliary & Liver Transplant Surgery"
+
+=== FINAL (31 departments) ===
+OK: Burn, Plastic & Reconstructive Surgery | বার্ণ প্লাস্টিক এন্ড রিকনস্ট্রাক্টিভ সার্জারি
+OK: Cancer Specialist / Oncology | ক্যান্সার বিশেষজ্ঞ / অনকোলজি
+OK: Cardiology & Medicine | হৃদরোগ ও মেডিসিন
+OK: Chest Diseases & Asthma | বক্ষব্যাধী ও অ্যাজমা
+OK: Chest/Thoracic Surgery | চেস্ট/থোরাসিক সার্জারি
+OK: Dermatology & Venereology | চর্ম ও যৌনরোগ
+OK: Diabetes | ডায়াবেটিস
+OK: ENT (Ear, Nose & Throat) | ইএনটি (নাক,কান ও গলা)
+OK: Food & Nutrition | খাদ্য ও পুষ্টি
+OK: Gastro-Liver Diseases | গ্যাস্ট্রো-লিভার রোগ
+OK: Gastroenterology | গ্যাস্ট্রো-লিভার রোগ
+OK: General & Laparoscopic Surgery | জেনারেল ও ল্যাপারোস্কোপিক সার্জারি
+OK: Gynecology & Obstetrics | গাইনি ও প্রসূতি
+OK: Hematology & Medicine | রক্তরোগ ও মেডিসিন
+OK: Hepato-Biliary & Liver Transplant Surgery | হেপাটো-বিলিয়ারি ও লিভার ট্রান্সপ্ল্যান্ট সার্জারি
+OK: Medicine Specialist | মেডিসিন বিশেষজ্ঞ
+OK: Neonatal & Pediatrics | নবজাতক ও শিশু রোগ
+OK: Nephrology & Medicine | কিডনি ও মেডিসিন
+OK: Neuro-Medicine & Surgery | নিউরো-মেডিসিন ও সার্জারি
+OK: Nuclear Medicine | নিউক্লিয়ার মেডিসিন
+OK: Nutrition & Dietetics | খাদ্য ও পুষ্টি
+OK: Oncology | ক্যান্সার বিশেষজ্ঞ
+OK: Ophthalmology | চক্ষুরোগ
+OK: Oral & Dental Diseases | মুখ ও দন্তরোগ
+OK: Pain Medicine & Rheumatology | ব্যথা ও বাতরোগ
+OK: Physiotherapy | ফিজিওথেরাপি
+OK: Psychiatrist and psychotherapist | মনোরোগ বিশেষজ্ঞ
+OK: Thyroid & Hormone Specialist | থাইরয়েড ও হরমোন বিশেষজ্ঞ
+OK: Trauma & Orthopedic Surgery | ট্রমা ও অর্থোপেডিক সার্জারি
+OK: Urology & Nephrology | ইউরোলজি ও নেফ্রোলজি
+OK: Vascular Surgery | ভাস্কুলার সার্জারি
