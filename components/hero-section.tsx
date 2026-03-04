@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay, EffectFade } from "swiper/modules";
 import { Button } from "./ui/button";
@@ -51,12 +50,10 @@ const slides = [
 ];
 
 export default function HeroSection() {
-
-
   return (
     <div className="relative">
-      {/* Mobile Hero - Full Bleed Image with Overlaid Text */}
-      <div className="lg:hidden relative min-h-[85vh] pt-20">
+      {/* Mobile Hero */}
+      <div className="lg:hidden relative min-h-screen">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}
@@ -66,19 +63,15 @@ export default function HeroSection() {
             bulletClass: "swiper-pagination-bullet-custom",
             bulletActiveClass: "swiper-pagination-bullet-active-custom",
           }}
-          autoplay={{
-            delay: 6000,
-            disableOnInteraction: false,
-          }}
+          autoplay={{ delay: 6000, disableOnInteraction: false }}
           loop={true}
           effect="fade"
           fadeEffect={{ crossFade: true }}
-          className="h-full min-h-[85vh]"
+          className="h-full min-h-screen"
         >
           {slides.map((slide, index) => (
             <SwiperSlide key={index}>
-              <div className="relative min-h-[85vh] w-full">
-                {/* Full Background Image */}
+              <div className="relative min-h-screen w-full">
                 <Image
                   src={slide.image}
                   alt={slide.title}
@@ -86,24 +79,28 @@ export default function HeroSection() {
                   className="object-cover"
                   priority={index === 0}
                 />
-                
-                {/* Gradient Overlay - Doctor Page Style */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1a365d]/80 via-[#2C5282]/70 to-primary/50" />
-                
-                {/* Content Overlay - Centered */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
-                  <h1 className="text-4xl sm:text-5xl font-bold leading-tight mb-4 drop-shadow-lg">
-                    {slide.title}
-                  </h1>
-                  <p className="text-xl text-white/90 mb-6 max-w-xl leading-relaxed drop-shadow-md font-light">
-                    {slide.description}
-                  </p>
-                  <Link href={slide.ctaLink} target={slide.ctaLink.startsWith('http') ? '_blank' : '_self'} className="mt-10">
-                    <Button className="bg-primary hover:bg-primary-dark text-white text-base h-12 px-8 rounded-full shadow-lg hover:shadow-xl transition-all inline-flex items-center gap-2">
-                      {slide.ctaText}
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
+                {/* Subtle overlay - image shows through */}
+                <div className="absolute inset-0 bg-black/40" />
+
+                {/* LEFT-aligned content */}
+                <div className="absolute inset-0 flex flex-col justify-center px-8 text-white">
+                  <div className="max-w-sm">
+                    <h1 className="text-3xl sm:text-4xl font-bold leading-tight mb-4">
+                      {slide.title}
+                    </h1>
+                    <p className="text-base text-white/85 mb-8 leading-relaxed">
+                      {slide.description}
+                    </p>
+                    <Link
+                      href={slide.ctaLink}
+                      target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
+                    >
+                      <Button className="bg-white hover:bg-white/90 text-gray-900 font-semibold text-sm h-11 px-7 rounded-full shadow-md transition-all inline-flex items-center gap-2">
+                        {slide.ctaText}
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </SwiperSlide>
@@ -111,8 +108,8 @@ export default function HeroSection() {
         </Swiper>
       </div>
 
-      {/* Desktop Hero - Full Width Slider */}
-      <div className="hidden lg:block relative h-[85vh] min-h-[600px]">
+      {/* Desktop Hero */}
+      <div className="hidden lg:block relative h-screen min-h-[700px]">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}
@@ -122,10 +119,7 @@ export default function HeroSection() {
             bulletClass: "swiper-pagination-bullet-custom",
             bulletActiveClass: "swiper-pagination-bullet-active-custom",
           }}
-          autoplay={{
-            delay: 6000,
-            disableOnInteraction: false,
-          }}
+          autoplay={{ delay: 6000, disableOnInteraction: false }}
           loop={true}
           effect="fade"
           fadeEffect={{ crossFade: true }}
@@ -134,7 +128,6 @@ export default function HeroSection() {
           {slides.map((slide, index) => (
             <SwiperSlide key={index}>
               <div className="relative h-full w-full">
-                {/* Full Background Image */}
                 <Image
                   src={slide.image}
                   alt={slide.title}
@@ -142,26 +135,31 @@ export default function HeroSection() {
                   className="object-cover"
                   priority={index === 0}
                 />
-                
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-[#1a365d]/70 via-[#1a365d]/60 to-[#1a365d]/80" />
-                
-                {/* Content Overlay - Centered for Desktop */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 container mx-auto text-white text-center">
-                  <div className="max-w-4xl space-y-6">
-                    <h1 className="text-5xl lg:text-7xl font-bold leading-tight drop-shadow-lg">
-                      {slide.title}
-                    </h1>
-                    <p className="text-xl lg:text-2xl text-white/90 leading-relaxed drop-shadow-md font-light max-w-2xl mx-auto">
-                      {slide.description}
-                    </p>
-                    <div className="pt-4 flex justify-center">
-                      <Link href={slide.ctaLink} target={slide.ctaLink.startsWith('http') ? '_blank' : '_self'}>
-                        <Button className="bg-primary hover:bg-primary-dark text-white text-lg h-14 px-10 rounded-full shadow-lg hover:shadow-xl transition-all inline-flex items-center gap-2">
-                          {slide.ctaText}
-                          <ArrowRight className="h-5 w-5" />
-                        </Button>
-                      </Link>
+
+                {/* Subtle dark overlay — image stays visible */}
+                <div className="absolute inset-0 bg-black/35" />
+
+                {/* LEFT-aligned content — occupies left ~45% */}
+                <div className="absolute inset-0 flex items-center">
+                  <div className="container mx-auto px-8 lg:px-16">
+                    <div className="max-w-lg space-y-5">
+                      <h1 className="text-4xl lg:text-5xl font-bold leading-tight text-white">
+                        {slide.title}
+                      </h1>
+                      <p className="text-base lg:text-lg text-white/85 leading-relaxed">
+                        {slide.description}
+                      </p>
+                      <div className="pt-2">
+                        <Link
+                          href={slide.ctaLink}
+                          target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
+                        >
+                          <Button className="bg-white hover:bg-white/90 text-gray-900 font-semibold text-base h-12 px-8 rounded-full shadow-md transition-all inline-flex items-center gap-2">
+                            {slide.ctaText}
+                            <ArrowRight className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>

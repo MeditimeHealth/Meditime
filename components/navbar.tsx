@@ -42,7 +42,6 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    // Check for user in localStorage on mount and when storage changes
     const checkUser = () => {
       if (typeof window !== "undefined") {
         const userData = localStorage.getItem("user");
@@ -57,7 +56,6 @@ export default function Navbar() {
           setUser(null);
         }
         
-        // Also check for affiliate
         const affiliateData = localStorage.getItem("affiliate");
         if (affiliateData) {
           try {
@@ -74,13 +72,8 @@ export default function Navbar() {
 
     checkUser(); 
 
-    // Listen for storage changes (e.g., when user logs in from another tab)
     window.addEventListener("storage", checkUser);
-    
-    // Listen for custom login event (same window)
     window.addEventListener("userLogin", checkUser);
-    
-    // Listen for logout events
     window.addEventListener("userLogout", checkUser);
 
     return () => {
@@ -100,7 +93,6 @@ export default function Navbar() {
     } finally {
       localStorage.removeItem("user");
       setUser(null);
-      // Dispatch event to update navbar
       window.dispatchEvent(new Event("userLogout"));
       router.push("/");
       router.refresh();
@@ -112,17 +104,14 @@ export default function Navbar() {
     { href: "/hospital", label: "Hospitals" },
     { href: "/service", label: "Services" },
     { href: "/diagnostic", label: "Diagnostic Tests" },
-
     { href: "/membership", label: "Discount Cards" },
     { href: "/contact", label: "Contact" },
   ];
 
-  // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -163,7 +152,7 @@ export default function Navbar() {
             </motion.div>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden lg:flex items-center gap-4 xl:gap-8">
+            <div className="hidden lg:flex items-center gap-4 xl:gap-6 flex-1 justify-center px-4">
               {navLinks.map((link, index) => {
                 const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
                 return (
@@ -176,13 +165,12 @@ export default function Navbar() {
                     <Link
                       href={link.href}
                       className="relative group"
-                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                     >
                       <span
-                        className={`text-base xl:text-lg font-semibold transition-all duration-300 ${
+                        className={`text-xs xl:text-sm font-bold uppercase tracking-wider transition-all duration-300 whitespace-nowrap ${
                           isActive
-                            ? "text-primary font-bold"
-                            : "text-slate-600 group-hover:text-primary font-medium"
+                            ? "text-primary"
+                            : "text-slate-700 group-hover:text-primary"
                         }`}
                       >
                         {link.label}
@@ -190,7 +178,7 @@ export default function Navbar() {
                       {isActive && (
                         <motion.div
                           layoutId="navbar-indicator"
-                          className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-primary-light via-primary to-primary-dark rounded-full"
+                          className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full"
                           initial={false}
                           transition={{ type: "spring", stiffness: 380, damping: 30 }}
                         />
@@ -210,23 +198,20 @@ export default function Navbar() {
             </div>
 
             {/* Desktop Right Side Actions */}
-            <div className="hidden lg:flex items-center gap-3 md:gap-4">
+            <div className="hidden lg:flex items-center gap-3">
               {/* Language Toggle */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleLanguage}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all border border-gray-200"
+                className="flex items-center justify-center px-3 py-1.5 rounded-md border border-primary text-primary hover:bg-primary/5 transition-all text-sm font-medium"
                 title={language === 'en' ? 'Switch to Bangla' : 'Switch to English'}
               >
-                <Globe className="h-4 w-4" />
-                <span className="text-sm font-semibold">
-                  {language === 'en' ? 'EN' : 'বাং'}
-                </span>
+                {language === 'en' ? 'বাংলা' : 'English'}
               </motion.button>
+
               {user || affiliate ? (
                 <>
-                  {/* Profile Menu Button - Drawer Icon */}
                   <Sheet>
                     <SheetTrigger asChild>
                       <button className="h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 hover:text-primary transition-all hover:scale-105 border border-gray-200">
@@ -257,31 +242,24 @@ export default function Navbar() {
                         </div>
                       </SheetHeader>
                       <div className="mt-6 space-y-2">
-                        {/* For Affiliates */}
                         {affiliate && (
                           <>
                             <button
-                              onClick={() => {
-                                router.push('/affiliate-program/dashboard');
-                              }}
+                              onClick={() => { router.push('/affiliate-program/dashboard'); }}
                               className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
                             >
                               <Wallet className="h-5 w-5 text-gray-600" />
                               <span className="font-medium">Dashboard</span>
                             </button>
                             <button
-                              onClick={() => {
-                                router.push('/affiliate-program/profile');
-                              }}
+                              onClick={() => { router.push('/affiliate-program/profile'); }}
                               className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
                             >
                               <UserCircle className="h-5 w-5 text-gray-600" />
                               <span className="font-medium">My Profile</span>
                             </button>
                             <button
-                              onClick={() => {
-                                router.push('/affiliate-program/withdrawal');
-                              }}
+                              onClick={() => { router.push('/affiliate-program/withdrawal'); }}
                               className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
                             >
                               <DollarSign className="h-5 w-5 text-gray-600" />
@@ -290,22 +268,17 @@ export default function Navbar() {
                           </>
                         )}
                         
-                        {/* For Regular Users */}
                         {user && !affiliate && (
                           <>
                             <button
-                              onClick={() => {
-                                router.push('/user/profile');
-                              }}
+                              onClick={() => { router.push('/user/profile'); }}
                               className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
                             >
                               <UserCircle className="h-5 w-5 text-gray-600" />
                               <span className="font-medium">My Profile</span>
                             </button>
                             <button
-                              onClick={() => {
-                                router.push('/appointments');
-                              }}
+                              onClick={() => { router.push('/appointments'); }}
                               className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
                             >
                               <Wallet className="h-5 w-5 text-gray-600" />
@@ -314,12 +287,9 @@ export default function Navbar() {
                           </>
                         )}
                         
-                        {/* Admin Dashboard (for admins) */}
                         {user?.role === 'admin' && (
                           <button
-                            onClick={() => {
-                              router.push('/admin');
-                            }}
+                            onClick={() => { router.push('/admin'); }}
                             className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-primary/10 rounded-lg transition-colors text-primary"
                           >
                             <Settings className="h-5 w-5" />
@@ -329,7 +299,6 @@ export default function Navbar() {
                         
                         <div className="border-t my-2"></div>
                         
-                        {/* Logout */}
                         <button
                           onClick={() => {
                             if (affiliate) {
@@ -354,17 +323,15 @@ export default function Navbar() {
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link
                       href="/login"
-                      className="text-base font-semibold text-gray-700 hover:text-primary transition-colors duration-300 px-3 py-2 rounded-lg hover:bg-primary/5"
-                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                      className="text-sm font-semibold text-gray-700 hover:text-primary transition-colors duration-300 px-3 py-2 rounded-lg hover:bg-primary/5"
                     >
-                      Login
+                      Log In
                     </Link>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link
                       href="/signup"
-                      className="px-6 py-2.5 btn-primary text-white text-base shadow-lg hover:shadow-primary/30"
-                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                      className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-white text-sm font-semibold shadow-lg shadow-teal-500/40 hover:shadow-teal-500/50 transition-all duration-300"
                     >
                       Sign Up
                     </Link>
@@ -393,7 +360,6 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -403,7 +369,6 @@ export default function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
             />
 
-            {/* Mobile Menu */}
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
@@ -412,14 +377,8 @@ export default function Navbar() {
               className="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl z-50 lg:hidden overflow-y-auto"
             >
               <div className="flex flex-col h-full">
-                {/* Mobile Menu Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                  <h2
-                    className="text-xl font-bold text-gray-900"
-                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                  >
-                    Menu
-                  </h2>
+                  <h2 className="text-xl font-bold text-gray-900">Menu</h2>
                   <button
                     onClick={() => setMobileMenuOpen(false)}
                     className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -433,14 +392,11 @@ export default function Navbar() {
                 <div className="px-4 pt-4">
                   <button
                     onClick={toggleLanguage}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all border border-gray-200"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-primary text-primary hover:bg-primary/5 transition-all font-semibold"
                   >
                     <Globe className="h-5 w-5" />
-                    <span className="text-base font-semibold">
-                      {language === 'en' ? 'English' : 'বাংলা'}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {language === 'en' ? '→ বাংলা' : '→ English'}
+                    <span className="text-base">
+                      {language === 'en' ? 'বাংলা' : 'English'}
                     </span>
                   </button>
                 </div>
@@ -459,12 +415,11 @@ export default function Navbar() {
                         <Link
                           href={link.href}
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`block px-4 py-3 rounded-lg text-lg font-semibold transition-all duration-200 ${
+                          className={`block px-4 py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-200 ${
                             isActive
                               ? "bg-primary/10 text-primary border-2 border-primary/20"
                               : "text-gray-700 hover:bg-gray-100 hover:text-primary"
                           }`}
-                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                         >
                           {link.label}
                         </Link>
@@ -493,12 +448,7 @@ export default function Navbar() {
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <p
-                            className="text-base font-semibold text-gray-800 truncate"
-                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                          >
-                            {user.fullName}
-                          </p>
+                          <p className="text-base font-semibold text-gray-800 truncate">{user.fullName}</p>
                           {user.phoneNumber && (
                             <p className="text-sm text-gray-600 truncate">{user.phoneNumber}</p>
                           )}
@@ -509,7 +459,6 @@ export default function Navbar() {
                           href="/admin"
                           onClick={() => setMobileMenuOpen(false)}
                           className="block w-full px-4 py-3 bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base font-semibold rounded-lg transition-all duration-300 shadow-lg text-center"
-                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                         >
                           Dashboard
                         </Link>
@@ -520,7 +469,6 @@ export default function Navbar() {
                           handleLogout();
                         }}
                         className="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 text-base font-semibold rounded-lg transition-all duration-300 border border-gray-200"
-                        style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                       >
                         Logout
                       </button>
@@ -531,15 +479,13 @@ export default function Navbar() {
                         href="/login"
                         onClick={() => setMobileMenuOpen(false)}
                         className="block w-full px-4 py-3 text-center text-base font-semibold text-gray-700 hover:text-primary transition-colors duration-300 rounded-lg hover:bg-primary/5 border-2 border-gray-200"
-                        style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                       >
-                        Login
+                        Log In
                       </Link>
                       <Link
                         href="/signup"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="block w-full px-4 py-3 bg-gradient-to-r from-primary-light via-primary to-primary-dark hover:from-primary hover:via-primary-dark hover:to-primary text-white text-base font-semibold rounded-lg transition-all duration-300 shadow-lg text-center"
-                        style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                        className="block w-full px-4 py-3 rounded-full bg-primary hover:bg-primary/90 text-white text-base font-semibold transition-all duration-300 shadow-lg text-center"
                       >
                         Sign Up
                       </Link>
