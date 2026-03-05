@@ -105,7 +105,7 @@ export default function ServicesSection() {
                 <Card
                   className={`p-6 lg:p-8 border h-full flex flex-col rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
                     service.highlight
-                      ? "bg-yellow-400 border-yellow-400 shadow-md"
+                      ? "bg-yellow-300 border-yellow-300 shadow-md"
                       : "bg-white border-slate-200 shadow-sm"
                   }`}
                 >
