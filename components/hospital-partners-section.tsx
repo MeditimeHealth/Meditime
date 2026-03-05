@@ -3,24 +3,20 @@
 import { useRef, useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
-import { Navigation, Autoplay } from "swiper/modules";
-import { ChevronLeft, ChevronRight, Building2 } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Autoplay, Navigation } from "swiper/modules";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 import "swiper/css";
-import "swiper/css/navigation";
 
 interface Hospital {
   _id: string;
   name: string;
   location?: string;
-  thana?: {
-    name: string;
-  };
+  photo?: string;
+  thana?: { name: string };
 }
 
 export default function HospitalPartnersSection() {
-  const prevRef = useRef<HTMLButtonElement>(null);
-  const nextRef = useRef<HTMLButtonElement>(null);
   const swiperRef = useRef<SwiperType | null>(null);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,153 +24,117 @@ export default function HospitalPartnersSection() {
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
-        const response = await fetch('/api/locations/hospitals');
+        const response = await fetch("/api/locations/hospitals");
         const data = await response.json();
         if (response.ok) {
-          // Limit to first 12 hospitals
           setHospitals(data.hospitals.slice(0, 12));
         }
       } catch (error) {
-        console.error('Error fetching hospitals:', error);
+        console.error("Error fetching hospitals:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchHospitals();
   }, []);
 
   if (loading) {
     return (
       <div className="w-full py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="w-16 h-16 border-4 border-[#009A98] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-xl font-semibold text-gray-700">Loading hospitals...</p>
-          </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full py-16 bg-white">
+    <div className="w-full py-14 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Section */}
-        <div className="text-center mb-12">
-          <h2
-            className="text-4xl md:text-5xl font-bold mb-4"
-            style={{
-              color: "#009A98",
-            }}
-          >
+
+        {/* Header — plain black, centered */}
+        <div className="text-center mb-10">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
             Partner Hospitals
           </h2>
-          <p
-            className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto"
-          >
+          <p className="text-base text-slate-500 max-w-md mx-auto">
             Our partnership with leading hospitals across Savar and surrounding areas
           </p>
         </div>
 
-        {/* Hospital Partners Carousel */}
+        {/* Carousel */}
         <div className="relative">
           <Swiper
-            modules={[Navigation, Autoplay]}
-            spaceBetween={24}
-            slidesPerView={2}
+            modules={[Autoplay, Navigation]}
+            spaceBetween={20}
+            slidesPerView={1}
             breakpoints={{
-              640: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              768: {
-                slidesPerView: 3,
-                spaceBetween: 24,
-              },
-              1024: {
-                slidesPerView: 4,
-                spaceBetween: 24,
-              },
+              640:  { slidesPerView: 2, spaceBetween: 16 },
+              1024: { slidesPerView: 3, spaceBetween: 20 },
             }}
-            onSwiper={(swiper) => {
-              swiperRef.current = swiper;
-              if (swiper.params.navigation && typeof swiper.params.navigation !== 'boolean') {
-                swiper.params.navigation.prevEl = prevRef.current;
-                swiper.params.navigation.nextEl = nextRef.current;
-                swiper.navigation.init();
-                swiper.navigation.update();
-              }
-            }}
-            onInit={(swiper) => {
-              if (swiper.params.navigation && typeof swiper.params.navigation !== 'boolean') {
-                swiper.params.navigation.prevEl = prevRef.current;
-                swiper.params.navigation.nextEl = nextRef.current;
-                swiper.navigation.init();
-                swiper.navigation.update();
-              }
-            }}
-            autoplay={{
-              delay: 3000,
-              disableOnInteraction: false,
-            }}
-            loop={hospitals.length > 4}
-            className="pb-12"
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+            loop={hospitals.length > 3}
+            onSwiper={(swiper) => { swiperRef.current = swiper; }}
           >
             {hospitals.map((hospital) => (
               <SwiperSlide key={hospital._id}>
-                <Card className="p-6 bg-white border-2 border-gray-200 hover:border-[#009A98] transition-all shadow-md hover:shadow-lg h-[280px] flex flex-col items-center justify-center text-center">
-                  {/* Hospital Logo/Icon */}
-                  <div className="mb-4 flex-shrink-0">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#009A98] to-[#00B5B2] flex items-center justify-center">
-                      <Building2 className="w-10 h-10 text-white" />
+                {/* Photo card — tall aspect ratio */}
+                <div className="relative rounded-2xl overflow-hidden aspect-[3/4] w-full group cursor-pointer">
+                  {/* Hospital photo or placeholder */}
+                  {hospital.photo ? (
+                    <Image
+                      src={hospital.photo}
+                      alt={hospital.name}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-300 to-slate-500">
+                      <Image
+                        src="/slide.jpg"
+                        alt={hospital.name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                  )}
+
+                  {/* Subtle dark gradient at bottom */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+
+                  {/* Frosted glass name pill at bottom */}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl px-4 py-3">
+                      <p className="text-white font-bold text-base leading-tight truncate">
+                        {hospital.name}
+                      </p>
+                      <p className="text-white/80 text-xs mt-0.5 truncate">
+                        {hospital.location || hospital.thana?.name || "Savar, Dhaka"}
+                      </p>
                     </div>
                   </div>
-
-                  {/* Hospital Name */}
-                  <h3
-                    className="text-lg font-bold text-gray-900 mb-2"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
-                  >
-                    {hospital.name}
-                  </h3>
-
-                  {/* Location */}
-                  <p
-                    className="text-sm text-gray-500"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
-                  >
-                    {hospital.location || hospital.thana?.name || 'Savar, Dhaka'}
-                  </p>
-                </Card>
+                </div>
               </SwiperSlide>
             ))}
           </Swiper>
 
-          {/* Navigation Buttons - Outside */}
+          {/* Nav arrows — outside left/right */}
           <button
-            ref={prevRef}
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute left-0 lg:-left-12 top-1/2 -translate-y-1/2 z-10 text-[#009A98] hover:text-[#007c7a] transition-colors p-2"
-            aria-label="Previous hospital"
+            className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"
+            aria-label="Previous"
           >
-            <ChevronLeft className="h-8 w-8" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
           <button
-            ref={nextRef}
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute right-0 lg:-right-12 top-1/2 -translate-y-1/2 z-10 text-[#009A98] hover:text-[#007c7a] transition-colors p-2"
-            aria-label="Next hospital"
+            className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"
+            aria-label="Next"
           >
-            <ChevronRight className="h-8 w-8" />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       </div>
     </div>
   );
 }
-
