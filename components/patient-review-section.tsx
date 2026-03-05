@@ -3,11 +3,10 @@
 import { useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
-import { Navigation, Autoplay } from "swiper/modules";
+import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import "swiper/css";
-import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const reviews = [
   {
@@ -18,6 +17,7 @@ const reviews = [
     review:
       "Found the best Diabetic Specialist in Savar I have ever met in the last 7 years. Recommended",
     date: "2 weeks ago",
+    avatar: null,
   },
   {
     id: 2,
@@ -27,6 +27,7 @@ const reviews = [
     review:
       "Easily Booked doctor appointment in Ibn Sina for My 80 Year Old Mother Suffering from Kidney complications.",
     date: "1 month ago",
+    avatar: null,
   },
   {
     id: 3,
@@ -36,6 +37,7 @@ const reviews = [
     review:
       "Tested My lipid panel found the platform useful, enjoyed a 15% discount using my corporate membership card.",
     date: "3 weeks ago",
+    avatar: null,
   },
   {
     id: 4,
@@ -45,6 +47,7 @@ const reviews = [
     review:
       "Very helpful service! Got appointment with a renowned cardiologist at Square Hospital within 2 days. The process was smooth and hassle-free.",
     date: "1 week ago",
+    avatar: null,
   },
   {
     id: 5,
@@ -54,6 +57,7 @@ const reviews = [
     review:
       "Excellent platform for finding qualified doctors. I found a great orthopedic specialist for my sports injury. Highly recommended!",
     date: "2 weeks ago",
+    avatar: null,
   },
   {
     id: 6,
@@ -63,6 +67,7 @@ const reviews = [
     review:
       "The best medical service platform in Savar area. Booked gynecologist appointment for my sister and got 15% discount with the membership card.",
     date: "3 weeks ago",
+    avatar: null,
   },
   {
     id: 7,
@@ -72,149 +77,156 @@ const reviews = [
     review:
       "Amazing service! Found experienced medicine specialist for regular checkup. The mobile app is very user-friendly and convenient.",
     date: "4 weeks ago",
+    avatar: null,
   },
 ];
 
 export default function PatientReviewSection() {
-  const prevRef = useRef<HTMLButtonElement>(null);
-  const nextRef = useRef<HTMLButtonElement>(null);
   const swiperRef = useRef<SwiperType | null>(null);
 
   return (
-    <div className="w-full py-16 bg-gradient-to-b from-white to-[#009A98]/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Section */}
-        <div className="text-center mb-12">
-          <h2
-            className="text-4xl md:text-5xl font-bold mb-4"
-            style={{
-              color: "#009A98",
-            }}
-          >
-            Patient Reviews
-          </h2>
-        </div>
+    <div className="relative w-full min-h-[520px] overflow-hidden">
+      {/* Background image with dark overlay */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/slide.jpg')", filter: "grayscale(100%)" }}
+      />
+      <div className="absolute inset-0 bg-black/55" />
 
-        {/* Reviews Carousel */}
-        <div className="relative">
-          <Swiper
-            modules={[Navigation, Autoplay]}
-            spaceBetween={24}
-            slidesPerView={1}
-            breakpoints={{
-              640: {
-                slidesPerView: 1,
-                spaceBetween: 20,
-              },
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 24,
-              },
-              1024: {
-                slidesPerView: 3,
-                spaceBetween: 24,
-              },
-            }}
-            onSwiper={(swiper) => {
-              swiperRef.current = swiper;
-              if (swiper.params.navigation && typeof swiper.params.navigation !== 'boolean') {
-                swiper.params.navigation.prevEl = prevRef.current;
-                swiper.params.navigation.nextEl = nextRef.current;
-                swiper.navigation.init();
-                swiper.navigation.update();
-              }
-            }}
-            onInit={(swiper) => {
-              if (swiper.params.navigation && typeof swiper.params.navigation !== 'boolean') {
-                swiper.params.navigation.prevEl = prevRef.current;
-                swiper.params.navigation.nextEl = nextRef.current;
-                swiper.navigation.init();
-                swiper.navigation.update();
-              }
-            }}
-            autoplay={{
-              delay: 4000,
-              disableOnInteraction: false,
-            }}
-            loop={true}
-            className="pb-12"
-          >
-            {reviews.map((review) => (
-              <SwiperSlide key={review.id}>
-                <Card className="p-6 bg-white border border-gray-200 shadow-md hover:shadow-lg transition-all h-[320px] flex flex-col">
-                  {/* Rating Stars */}
-                  <div className="flex items-center gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-5 h-5 fill-[#FFD700] text-[#FFD700]"
-                        strokeWidth={1.5}
-                      />
-                    ))}
-                  </div>
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-                  {/* Review Text */}
-                  <p
-                    className="text-gray-700 leading-relaxed mb-6 grow line-clamp-4"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
-                  >
-                    "{review.review}"
-                  </p>
-
-                  {/* Reviewer Info */}
-                  <div className="border-t border-gray-200 pt-4">
-                    <div className="flex items-center gap-3">
-                      {/* Avatar */}
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#009A98] to-[#00B5B2] flex items-center justify-center text-white font-bold text-lg">
-                        {review.name.charAt(0)}
+          {/* LEFT — Review card slider */}
+          <div className="relative">
+            {/* Outer frame (light border) */}
+            <div className="rounded-3xl border border-white/20 p-3 bg-white/5 backdrop-blur-sm">
+              <Swiper
+                modules={[Autoplay, Pagination]}
+                slidesPerView={1}
+                autoplay={{ delay: 4500, disableOnInteraction: false }}
+                loop={true}
+                pagination={{
+                  clickable: true,
+                  el: ".review-pagination",
+                  bulletClass: "review-bullet",
+                  bulletActiveClass: "review-bullet-active",
+                }}
+                onSwiper={(swiper) => { swiperRef.current = swiper; }}
+              >
+                {reviews.map((review) => (
+                  <SwiperSlide key={review.id}>
+                    {/* Teal card */}
+                    <div className="bg-primary rounded-2xl p-7 flex flex-col min-h-[280px]">
+                      {/* Stars */}
+                      <div className="flex items-center gap-1 mb-5">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" strokeWidth={0} />
+                        ))}
                       </div>
-                      <div className="flex-1">
-                        <h4
-                          className="font-bold text-gray-900"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {review.name}
-                        </h4>
-                        <p
-                          className="text-sm text-gray-500"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
-                        >
-                          {review.location} • {review.date}
-                        </p>
+
+                      {/* Review text */}
+                      <p className="text-white text-base leading-relaxed flex-grow mb-6">
+                        "{review.review}"
+                      </p>
+
+                      {/* Divider */}
+                      <div className="border-t border-white/20 pt-5">
+                        <div className="flex items-center gap-3">
+                          {/* Avatar */}
+                          <div className="w-11 h-11 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center text-white font-bold text-base shrink-0 overflow-hidden">
+                            {review.avatar ? (
+                              <img src={review.avatar} alt={review.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <span>{review.name.charAt(0)}</span>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-white font-semibold text-sm">{review.name}</p>
+                            <p className="text-white/70 text-xs mt-0.5">{review.location}</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Card>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
 
-          {/* Navigation Buttons */}
-          <button
-            ref={prevRef}
-            onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute left-0 lg:-left-12 top-1/2 -translate-y-1/2 z-10 text-[#009A98] hover:text-[#007c7a] transition-colors p-2"
-            aria-label="Previous review"
-          >
-            <ChevronLeft className="h-8 w-8" />
-          </button>
-          <button
-            ref={nextRef}
-            onClick={() => swiperRef.current?.slideNext()}
-            className="absolute right-0 lg:-right-12 top-1/2 -translate-y-1/2 z-10 text-[#009A98] hover:text-[#007c7a] transition-colors p-2"
-            aria-label="Next review"
-          >
-            <ChevronRight className="h-8 w-8" />
-          </button>
+              {/* Pagination dots */}
+              <div className="review-pagination flex justify-center gap-1.5 mt-4 pb-1" />
+            </div>
+
+            {/* Prev / Next arrows */}
+            <div className="flex items-center justify-center gap-3 mt-5">
+              <button
+                onClick={() => swiperRef.current?.slidePrev()}
+                className="w-9 h-9 rounded-full border border-white/40 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+                aria-label="Previous"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => swiperRef.current?.slideNext()}
+                className="w-9 h-9 rounded-full border border-white/40 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+                aria-label="Next"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* RIGHT — Title + stats */}
+          <div className="flex flex-col gap-6">
+            {/* Pill label */}
+            <div className="inline-flex w-fit items-center px-4 py-1.5 rounded-full border border-white/40 text-white/80 text-xs font-semibold tracking-widest">
+              - CLIENT'S FEEDBACK -
+            </div>
+
+            {/* Title */}
+            <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+              Patient Reviews
+            </h2>
+
+            {/* Stats box */}
+            <div className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm p-2">
+              <div className="bg-primary rounded-xl px-8 py-6 flex items-center gap-0">
+                {/* Rating */}
+                <div className="flex-1 text-center">
+                  <p className="text-white text-4xl font-bold leading-none mb-1">4.9</p>
+                  <p className="text-white/80 text-sm">Over All Rating</p>
+                </div>
+
+                {/* Divider */}
+                <div className="w-px h-12 bg-white/30 mx-4 shrink-0" />
+
+                {/* Clients */}
+                <div className="flex-1 text-center">
+                  <p className="text-white text-4xl font-bold leading-none mb-1">1.5k+</p>
+                  <p className="text-white/80 text-sm">Clients Served</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
+
+      {/* Swiper bullet styles */}
+      <style jsx global>{`
+        .review-bullet {
+          display: inline-block;
+          width: 8px;
+          height: 8px;
+          border-radius: 9999px;
+          background: rgba(255,255,255,0.35);
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+        .review-bullet-active {
+          background: white;
+          width: 20px;
+        }
+      `}</style>
     </div>
   );
 }
-
