@@ -9,6 +9,7 @@ import StatsSection from "@/components/stats-section";
 import PatientReviewSection from "@/components/patient-review-section";
 import HospitalPartnersSection from "@/components/hospital-partners-section";
 import BlogSection from "@/components/blog-section";
+import BookAppointmentSection from "@/components/book-appointment-section";
 import AppDownloadSection from "@/components/app-download-section";
 import Footer from "@/components/footer";
 
@@ -27,6 +28,7 @@ export default function Home() {
       <PatientReviewSection />
       <HospitalPartnersSection />
       <BlogSection />
+      <BookAppointmentSection />
       <AppDownloadSection />
       <Footer />
     </div>
