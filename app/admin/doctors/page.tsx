@@ -53,6 +53,7 @@ export default function DoctorsPage() {
       const consecutive = areDaysConsecutive(sortedDays);
  
       
+      
       if (sortedDays.length === 1) return `${getBengaliDay(sortedDays[0])} ${time}`;
       if (consecutive) {
         return `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])} ${time}`;
