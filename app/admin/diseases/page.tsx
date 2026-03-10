@@ -113,23 +113,37 @@ export default function DiseasesPage() {
         : "/api/diseases";
       const method = editingId ? "PUT" : "POST";
 
-      const validNames = diseaseNames.filter(n => n.trim() !== "");
-      
-      if (validNames.length === 0) {
-        showToast.error("Please enter at least one disease name");
+      // Combine English & Bangla names by index so either can be primary
+      const combined = diseaseNames.map((enName, index) => ({
+        name: enName.trim(),
+        bangla: (diseaseNamesBn[index] || "").trim(),
+      }));
+
+      const validEntries = combined.filter(entry => entry.name || entry.bangla);
+
+      if (validEntries.length === 0) {
+        showToast.error(
+          language === "bn"
+            ? "কমপক্ষে একটি রোগের নাম (ইংরেজি বা বাংলা) লিখুন"
+            : "Please enter at least one disease name (English or Bangla)"
+        );
         setLoading(false);
         return;
       }
 
-      // Ensure banglas array matches names array length and filter out empty values
-      const validBanglas = diseaseNamesBn.map((bn, index) => {
-        // If bangla is empty, use empty string (don't copy English name)
-        return bn.trim() || "";
-      });
+      const primary = validEntries[0];
 
-      const payload = editingId 
-        ? { name: validNames[0], bangla: validBanglas[0] || "", departmentId } 
-        : { names: validNames, banglas: validBanglas, departmentId };
+      const payload = editingId
+        ? {
+            name: primary.name || "",
+            bangla: primary.bangla || "",
+            departmentId,
+          }
+        : {
+            names: validEntries.map(entry => entry.name || ""),
+            banglas: validEntries.map(entry => entry.bangla || ""),
+            departmentId,
+          };
 
       const response = await fetch(url, {
         method,
