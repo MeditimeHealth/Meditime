@@ -13,6 +13,7 @@ import { showToast } from "@/lib/toast";
 interface Department {
   _id: string;
   name: string;
+  nameBn?: string;
   image?: string;
 }
 
