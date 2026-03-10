@@ -313,7 +313,9 @@ export default function DiseasesPage() {
                 >
                   <option value="">{t("noDepartment", language)}</option>
                   {departments.map((dept) => (
-                    <option key={dept._id} value={dept._id}>{dept.name}</option>
+                    <option key={dept._id} value={dept._id}>
+                      {formLanguage === "bn" ? (dept.nameBn || dept.name) : dept.name}
+                    </option>
                   ))}
                 </select>
               </div>
