@@ -112,7 +112,7 @@ export default function CreateDoctorPage() {
       try {
         const [deptsRes, hospsRes] = await Promise.all([
           fetch("/api/departments"),
-          fetch("/api/locations/hospitals")
+          fetch("/api/locations/hospitals?limit=1000")
         ]);
         
         if (deptsRes.ok) {
