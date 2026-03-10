@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
-import { Plus, X, Loader2 } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 
@@ -83,6 +83,11 @@ interface AvailabilitySlot {
 export default function EditDoctorPage() {
   const { language: globalLanguage } = useLanguage();
   const [language, setLanguage] = useState<'en' | 'bn'>(globalLanguage);
+  
+  // Debug: log language changes
+  useEffect(() => {
+    console.log('[LANGUAGE STATE] Current language:', language);
+  }, [language]);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -107,8 +112,9 @@ export default function EditDoctorPage() {
   const hospitalDropdownRef = useRef<HTMLDivElement>(null);
   const hospitalSearchInitialized = useRef(false);
   const [departments, setDepartments] = useState<Array<{_id: string; name: string; nameBn?: string; image?: string}>>([]);
-  const [diseases, setDiseases] = useState<Array<{_id: string; name: string; bangla: string}>>([]);
+  const [diseases, setDiseases] = useState<Array<{_id: string; name: string; bangla: string; department?: {_id: string; name: string} | string}>>([]);
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
+  const [filteredDiseases, setFilteredDiseases] = useState<Array<{_id: string; name: string; bangla: string; department?: {_id: string; name: string} | string}>>([]);
 
   const [availabilitySlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>([
     { days: [], time: "" },
@@ -198,13 +204,38 @@ export default function EditDoctorPage() {
 
   useEffect(() => {
     fetchHospitals("", 1);
+  }, []);
+
+  // Sync internal language with global language on mount
+  useEffect(() => {
+    setLanguage(globalLanguage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync internal language with global language
+  // Watch department field and filter diseases
+  const selectedDepartment = watch("department");
+  
   useEffect(() => {
-    setLanguage(globalLanguage);
-  }, [globalLanguage]);
+    if (!selectedDepartment || selectedDepartment === "") {
+      // Show all diseases if no department selected
+      setFilteredDiseases(diseases);
+    } else {
+      // Find department by name
+      const dept = departments.find(d => d.name === selectedDepartment);
+      if (dept) {
+        // Filter diseases by department
+        const filtered = diseases.filter(disease => {
+          if (!disease.department) return false;
+          const deptId = typeof disease.department === 'object' ? disease.department._id : disease.department;
+          return deptId === dept._id;
+        });
+        setFilteredDiseases(filtered);
+      } else {
+        // If department not found, show diseases without department
+        setFilteredDiseases(diseases.filter(disease => !disease.department));
+      }
+    }
+  }, [selectedDepartment, departments, diseases]);
 
   useEffect(() => {
     if (!hospitalSearchInitialized.current) {
@@ -285,6 +316,7 @@ export default function EditDoctorPage() {
       const diseasesData = await diseasesRes.json();
       if (diseasesData.diseases) {
         setDiseases(diseasesData.diseases);
+        setFilteredDiseases(diseasesData.diseases);
       }
 
       // Load doctor data
@@ -358,6 +390,8 @@ export default function EditDoctorPage() {
           image: doctor.image || "",
           availabilitySlots: availabilityArray,
         });
+
+        // Filtered diseases will be updated by the useEffect that watches department
 
         // Set image preview if image exists
         if (doctor.image) {
@@ -547,7 +581,10 @@ export default function EditDoctorPage() {
           <div className="bg-gray-100/80 p-1.5 rounded-xl inline-flex shadow-inner">
             <button
               type="button"
-              onClick={() => setLanguage('en')}
+              onClick={() => {
+                console.log('Setting language to en');
+                setLanguage('en');
+              }}
               className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
                 language === 'en'
                   ? 'bg-white text-primary shadow-sm scale-105'
@@ -558,7 +595,10 @@ export default function EditDoctorPage() {
             </button>
             <button
               type="button"
-              onClick={() => setLanguage('bn')}
+              onClick={() => {
+                console.log('Setting language to bn');
+                setLanguage('bn');
+              }}
               className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
                 language === 'bn'
                   ? 'bg-white text-primary shadow-sm scale-105'
@@ -804,53 +844,105 @@ export default function EditDoctorPage() {
             </div>
 
             <div className="md:col-span-2">
-              <Label className="mb-3 block font-semibold text-gray-900">
-                যে সকল রোগের চিকিৎসা করা হয় (Diseases Treated) <span className="text-gray-500 text-xs">(Optional)</span>
-              </Label>
+              <div className="flex items-center justify-between mb-3">
+                <Label className="block font-semibold text-gray-900">
+                  {language === 'bn' ? 'যে সকল রোগের চিকিৎসা করা হয় (Diseases Treated)' : 'Diseases Treated'} <span className="text-gray-500 text-xs">(Optional)</span>
+                </Label>
+                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                  {language === 'bn' ? 'বাংলা' : 'English'}
+                </span>
+              </div>
+              {selectedDepartment && (
+                <p className="text-xs text-gray-600 mb-2">
+                  {language === 'bn' 
+                    ? `বিভাগ অনুযায়ী রোগসমূহ দেখানো হচ্ছে: ${departments.find(d => d.name === selectedDepartment)?.nameBn || selectedDepartment}`
+                    : `Showing diseases for department: ${selectedDepartment}`}
+                </p>
+              )}
               <div className="max-h-60 overflow-y-auto border-2 border-gray-300 rounded-lg p-4 bg-white">
-                {diseases.length === 0 ? (
+                {filteredDiseases.length === 0 ? (
                   <p className="text-sm text-gray-500 text-center py-4">
-                    No diseases available. Please add diseases from the admin panel.
+                    {language === 'bn' 
+                      ? selectedDepartment 
+                        ? 'এই বিভাগের জন্য কোনো রোগ পাওয়া যায়নি।' 
+                        : 'কোনো রোগ পাওয়া যায়নি। অ্যাডমিন প্যানেল থেকে রোগ যোগ করুন।'
+                      : selectedDepartment
+                        ? 'No diseases found for this department.'
+                        : 'No diseases available. Please add diseases from the admin panel.'}
                   </p>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {diseases.map((disease) => (
-                      <label
-                        key={disease._id}
-                        className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedDiseases.includes(disease.bangla)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              const updated = [...selectedDiseases, disease.bangla];
-                              setSelectedDiseases(updated);
-                              setValue("diseases", updated);
-                            } else {
-                              const updated = selectedDiseases.filter(d => d !== disease.bangla);
-                              setSelectedDiseases(updated);
-                              setValue("diseases", updated);
-                            }
-                          }}
-                          className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
-                        />
-                        <span
-                          className="text-sm"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2" key={`diseases-${language}`}>
+                    {filteredDiseases.map((disease) => {
+                      // Get raw values - handle null, undefined, empty string
+                      const rawBangla = disease.bangla;
+                      const rawEnglish = disease.name;
+                      
+                      // Convert to strings and trim
+                      const banglaValue = rawBangla ? String(rawBangla).trim() : '';
+                      const englishValue = rawEnglish ? String(rawEnglish).trim() : '';
+                      
+                      // Check if bangla is actually different from English (not just a copy)
+                      const banglaIsDifferent = banglaValue !== '' && banglaValue !== englishValue;
+                      
+                      // Determine display name based on language
+                      let diseaseName: string;
+                      if (language === 'bn') {
+                        // For Bangla language: show bangla if it exists and is different from English
+                        // If bangla is same as English (no translation), still show it but it will be English text
+                        diseaseName = banglaValue || englishValue;
+                      } else {
+                        // For English language: always show English name
+                        diseaseName = englishValue || banglaValue;
+                      }
+                      
+                      // Debug: log first disease to verify language is working
+                      if (filteredDiseases.indexOf(disease) === 0) {
+                        console.log(`[DEBUG] Language: ${language}, Disease: ${diseaseName}, Bangla: ${banglaValue}, English: ${englishValue}, BanglaIsDifferent: ${banglaIsDifferent}`);
+                      }
+                      
+                      // Use bangla for form value if available and different, otherwise use name
+                      const diseaseValue = banglaIsDifferent ? banglaValue : englishValue;
+                      
+                      return (
+                        <label
+                          key={disease._id}
+                          className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
                         >
-                          {disease.bangla}
-                        </span>
-                      </label>
-                    ))}
+                          <input
+                            type="checkbox"
+                            checked={selectedDiseases.includes(diseaseValue)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                const updated = [...selectedDiseases, diseaseValue];
+                                setSelectedDiseases(updated);
+                                setValue("diseases", updated);
+                              } else {
+                                const updated = selectedDiseases.filter(d => d !== diseaseValue);
+                                setSelectedDiseases(updated);
+                                setValue("diseases", updated);
+                              }
+                            }}
+                            className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                          />
+                          <span
+                            className="text-sm"
+                            style={{
+                              fontFamily: language === 'bn' 
+                                ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif"
+                                : 'inherit',
+                            }}
+                          >
+                            {diseaseName}
+                          </span>
+                        </label>
+                      );
+                    })}
                   </div>
                 )}
               </div>
               {selectedDiseases.length > 0 && (
                 <p className="text-xs text-gray-500 mt-2">
-                  {selectedDiseases.length} disease(s) selected
+                  {selectedDiseases.length} {language === 'bn' ? 'টি রোগ নির্বাচিত হয়েছে' : 'disease(s) selected'}
                 </p>
               )}
             </div>

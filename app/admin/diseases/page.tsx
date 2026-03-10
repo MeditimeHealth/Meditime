@@ -121,9 +121,15 @@ export default function DiseasesPage() {
         return;
       }
 
+      // Ensure banglas array matches names array length and filter out empty values
+      const validBanglas = diseaseNamesBn.map((bn, index) => {
+        // If bangla is empty, use empty string (don't copy English name)
+        return bn.trim() || "";
+      });
+
       const payload = editingId 
-        ? { name: validNames[0], bangla: diseaseNamesBn[0], departmentId } 
-        : { names: validNames, namesBn: diseaseNamesBn, departmentId };
+        ? { name: validNames[0], bangla: validBanglas[0] || "", departmentId } 
+        : { names: validNames, banglas: validBanglas, departmentId };
 
       const response = await fetch(url, {
         method,

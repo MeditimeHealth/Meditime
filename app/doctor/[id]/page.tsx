@@ -96,7 +96,8 @@ export default function DoctorProfilePage() {
   const [hospitals, setHospitals] = useState<{name: string, nameBn?: string}[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [departmentDiseases, setDepartmentDiseases] = useState<string[]>([]);
+  const [departmentDiseases, setDepartmentDiseases] = useState<Array<{name: string, bangla: string}>>([]);
+  const [departmentInfo, setDepartmentInfo] = useState<{name: string, nameBn?: string} | null>(null);
   const { language } = useLanguage();
 
   useEffect(() => {
@@ -151,18 +152,32 @@ export default function DoctorProfilePage() {
       
       if (deptData.departments && deptData.departments.length > 0) {
         const department = deptData.departments[0];
+        // Store department info for language switching
+        setDepartmentInfo({
+          name: department.name || departmentName,
+          nameBn: department.nameBn
+        });
         
         // Then fetch diseases for this department
         const diseaseResponse = await fetch(`/api/diseases?department=${department._id}`);
         const diseaseData = await diseaseResponse.json();
         
         if (diseaseData.diseases && diseaseData.diseases.length > 0) {
-          // Extract bangla names from diseases
-          const diseaseBanglaNames = diseaseData.diseases
-            .map((disease: { bangla: string }) => disease.bangla)
-            .filter((name: string) => name); // Filter out empty names
-          setDepartmentDiseases(diseaseBanglaNames);
+          // Store both English and Bangla names
+          const diseasesWithBothNames = diseaseData.diseases
+            .map((disease: { name: string, bangla: string }) => ({
+              name: disease.name || '',
+              bangla: disease.bangla || disease.name || ''
+            }))
+            .filter((d: {name: string, bangla: string}) => d.name || d.bangla); // Filter out empty diseases
+          setDepartmentDiseases(diseasesWithBothNames);
         }
+      } else {
+        // If department not found, still set the department name
+        setDepartmentInfo({
+          name: departmentName,
+          nameBn: undefined
+        });
       }
     } catch (error) {
       console.error("Error fetching department diseases:", error);
@@ -367,6 +382,16 @@ export default function DoctorProfilePage() {
                       {getLocalizedValue(doctor.specialty, doctor.specialtyBn, language)}
                     </p>
 
+                    {/* Department */}
+                    {doctor.department && (
+                      <p className="text-primary font-semibold text-base md:text-lg">
+                        {departmentInfo 
+                          ? getLocalizedValue(departmentInfo.name, departmentInfo.nameBn, language)
+                          : doctor.department
+                        }
+                      </p>
+                    )}
+
                     {/* Degree/Qualification */}
                     <p
                       className="text-lg md:text-xl text-gray-700 font-semibold"
@@ -424,7 +449,7 @@ export default function DoctorProfilePage() {
                           }}
                         >
                           <span className="text-primary mt-1">•</span>
-                          <span>{disease}</span>
+                          <span>{getLocalizedValue(disease.name, disease.bangla, language)}</span>
                         </li>
                       ))}
                     </ul>
@@ -439,7 +464,7 @@ export default function DoctorProfilePage() {
                           }}
                         >
                           <span className="text-primary mt-1">•</span>
-                          <span>{disease}</span>
+                          <span>{getLocalizedValue(disease.name, disease.bangla, language)}</span>
                         </li>
                       ))}
                     </ul>

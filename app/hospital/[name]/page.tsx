@@ -39,12 +39,16 @@ interface Doctor {
   newPatientFee?: number;
   availability: Array<{
     days: string[];
-    startTime: string;
-    endTime: string;
+    startTime?: string;
+    endTime?: string;
+    time?: string;
+    timeBn?: string;
   }> | {
     days: string[];
-    startTime: string;
-    endTime: string;
+    startTime?: string;
+    endTime?: string;
+    time?: string;
+    timeBn?: string;
   };
   bio?: string;
   image?: string;
@@ -130,10 +134,25 @@ const toBengaliNumber = (num: number): string => {
 
 // Convert time to Bengali format (e.g., "10:00" -> "১০টা")
 const formatTimeToBengali = (time: string): string => {
-  const [hours, minutes] = time.split(":").map(Number);
-  const hourStr = toBengaliNumber(hours);
-  const minuteStr = minutes > 0 ? ` ${toBengaliNumber(minutes)} মিনিট` : "";
-  return `${hourStr}টা${minuteStr}`;
+  if (!time || typeof time !== "string" || !time.includes(":")) {
+    return time || "";
+  }
+  try {
+    const parts = time.split(":");
+    if (parts.length < 2) return time;
+    
+    const hours = parseInt(parts[0], 10);
+    const minutes = parseInt(parts[1], 10);
+    
+    if (isNaN(hours) || isNaN(minutes)) return time;
+
+    const hourStr = toBengaliNumber(hours);
+    const minuteStr = minutes > 0 ? ` ${toBengaliNumber(minutes)} মিনিট` : "";
+    return `${hourStr}টা${minuteStr}`;
+  } catch (e) {
+    console.error("Error formatting time:", e);
+    return time;
+  }
 };
 
 // Get Bengali day name
@@ -154,34 +173,45 @@ const areDaysConsecutive = (sortedDays: string[]): boolean => {
 };
 
 // Format availability in Bengali
-const formatAvailability = (availability: Array<{ days: string[]; startTime: string; endTime: string; }> | { days: string[]; startTime: string; endTime: string; }): string => {
+const formatAvailability = (availability: any): string => {
   // Handle backward compatibility - convert old format to array
   const slots = Array.isArray(availability) ? availability : [availability];
   
   return slots.map(slot => {
-    const sortedDays = slot.days.sort((a, b) => {
+    if (!slot || !slot.days || !Array.isArray(slot.days)) return "";
+
+    const sortedDays = [...slot.days].sort((a, b) => {
       return daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b);
     });
     
     let timeRange = "";
-    const startTime = formatTimeToBengali(slot.startTime);
-    const endTime = formatTimeToBengali(slot.endTime);
+    
+    // Check for new format fields first
+    if (slot.timeBn && slot.timeBn.trim() !== "") {
+      timeRange = slot.timeBn;
+    } else if (slot.time && slot.time.trim() !== "") {
+      timeRange = slot.time;
+    } else if (slot.startTime && slot.endTime) {
+      // Old format fallback
+      const startTime = formatTimeToBengali(slot.startTime);
+      const endTime = formatTimeToBengali(slot.endTime);
+      timeRange = `${startTime} থেকে ${endTime}`;
+    }
+
     const consecutive = areDaysConsecutive(sortedDays);
 
     if (sortedDays.length === 1) {
       const day = getBengaliDay(sortedDays[0]);
-      timeRange = `${day} ${startTime} থেকে ${endTime}`;
+      return `${day} ${timeRange}`;
     } else if (consecutive) {
       const firstDay = getBengaliDay(sortedDays[0]);
       const lastDay = getBengaliDay(sortedDays[sortedDays.length - 1]);
-      timeRange = `${firstDay} থেকে ${lastDay} ${startTime} থেকে ${endTime}`;
+      return `${firstDay} থেকে ${lastDay} ${timeRange}`;
     } else {
       const daysList = sortedDays.map(d => getBengaliDay(d)).join(", ");
-      timeRange = `${daysList} ${startTime} থেকে ${endTime}`;
+      return `${daysList} ${timeRange}`;
     }
-    
-    return timeRange;
-  }).join("। ");
+  }).filter(Boolean).join("। ");
 };
 
 export default function HospitalDetailPage() {

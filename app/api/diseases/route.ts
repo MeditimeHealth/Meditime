@@ -50,10 +50,13 @@ export async function POST(request: NextRequest) {
     // Handle bulk creation
     if (names && Array.isArray(names) && names.length > 0) {
       const diseasesToCreate = names.map((n: string, index: number) => {
+        // Get bangla name from array if available
         const bnName = body.banglas && Array.isArray(body.banglas) ? body.banglas[index] : undefined;
+        // Use bangla if provided (even if empty string), otherwise fallback to single bangla param, but don't copy English name
+        const banglaValue = bnName !== undefined ? bnName : (bangla || "");
         return {
           name: n,
-          bangla: bnName || bangla || n, // Use specific bangla, or fallback to single bangla, or fallback to name
+          bangla: banglaValue.trim() || "", // Use bangla value or empty string, don't copy English name
           department: departmentId || undefined
         };
       });
@@ -114,7 +117,7 @@ export async function POST(request: NextRequest) {
 
     const disease = await Disease.create({ 
       name: name || "", 
-      bangla: bangla || name || "", 
+      bangla: bangla || "", // Don't copy English name to bangla field if bangla is not provided
       department: departmentId || undefined 
     });
     
