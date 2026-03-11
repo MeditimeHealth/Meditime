@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, X, Edit, Trash2, Filter, Minus, Loader2, Hospital } from "lucide-react";
+import { Plus, X, Edit, Trash2, Filter, Minus, Loader2, Hospital, Globe } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 import { showToast } from "@/lib/toast";
@@ -32,6 +32,7 @@ export default function DiseasesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState<string>("all");
   const { language } = useLanguage();
+  const [filterLanguage, setFilterLanguage] = useState<'en' | 'bn'>('en');
   const [formLanguage, setFormLanguage] = useState<'en' | 'bn'>(language);
   
   // Form state
@@ -209,9 +210,20 @@ export default function DiseasesPage() {
   };
 
   const filteredDiseases = diseases.filter((disease) => {
-    if (selectedDepartmentFilter === "all") return true;
-    if (selectedDepartmentFilter === "none") return !disease.department;
-    return disease.department?._id === selectedDepartmentFilter;
+    // 1. Department Filter
+    if (selectedDepartmentFilter !== "all") {
+      if (selectedDepartmentFilter === "none") {
+        if (disease.department) return false;
+      } else if (disease.department?._id !== selectedDepartmentFilter) {
+        return false;
+      }
+    }
+
+    // 2. Language Filter
+    if (filterLanguage === 'en' && !disease.name) return false;
+    if (filterLanguage === 'bn' && !disease.bangla) return false;
+
+    return true;
   });
 
   if (loading && diseases.length === 0) {
@@ -249,24 +261,46 @@ export default function DiseasesPage() {
         </Button>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-        <div className="flex items-center gap-2 text-gray-600 px-3">
-          <Filter className="h-4 w-4" />
-          <span className="text-sm font-bold uppercase tracking-wider">{t("allDepartments", language)}:</span>
+      <div className="flex flex-col md:flex-row items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+        <div className="flex flex-1 flex-col sm:flex-row items-center gap-4 w-full">
+          <div className="flex items-center gap-2 text-gray-600 px-3">
+            <Filter className="h-4 w-4" />
+            <span className="text-sm font-bold uppercase tracking-wider">{t("allDepartments", language)}:</span>
+          </div>
+          <select 
+            value={selectedDepartmentFilter} 
+            onChange={(e) => setSelectedDepartmentFilter(e.target.value)}
+            className="flex-1 min-w-[200px] h-11 rounded-xl border-gray-200 bg-gray-50 px-4 py-2 font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+          >
+            <option value="all">{t("allDepartments", language)}</option>
+            <option value="none">{t("noDepartment", language)}</option>
+            {departments.map((dept) => (
+              <option key={dept._id} value={dept._id}>{dept.name}</option>
+            ))}
+          </select>
         </div>
-        <select 
-          value={selectedDepartmentFilter} 
-          onChange={(e) => setSelectedDepartmentFilter(e.target.value)}
-          className="flex-1 min-w-[200px] h-11 rounded-xl border-gray-200 bg-gray-50 px-4 py-2 font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-        >
-          <option value="all">{t("allDepartments", language)}</option>
-          <option value="none">{t("noDepartment", language)}</option>
-          {departments.map((dept) => (
-            <option key={dept._id} value={dept._id}>{dept.name}</option>
-          ))}
-        </select>
-        <div className="text-sm font-bold text-primary px-4 py-2 bg-primary/5 rounded-lg border border-primary/10">
-          {filteredDiseases.length} {language === 'bn' ? 'টি পাওয়া গেছে' : 'Diseases Found'}
+
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <div className="relative w-full md:w-48">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Globe className="h-4 w-4 text-gray-400" />
+            </div>
+            <select 
+              value={filterLanguage}
+              onChange={(e) => setFilterLanguage(e.target.value as 'en' | 'bn')}
+              className="w-full h-11 pl-10 pr-8 rounded-xl border-gray-200 bg-gray-50 px-4 py-2 font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none cursor-pointer"
+            >
+              <option value="en">{language === 'bn' ? 'ইংরেজি' : 'English'}</option>
+              <option value="bn">{language === 'bn' ? 'বাংলা' : 'Bangla'}</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <div className="h-1.5 w-1.5 border-r-2 border-b-2 border-gray-400 rotate-45 mb-1" />
+            </div>
+          </div>
+
+          <div className="text-xs font-bold text-primary px-4 py-3 bg-primary/5 rounded-xl border border-primary/10 whitespace-nowrap">
+            {filteredDiseases.length} {language === 'bn' ? 'টি পাওয়া গেছে' : 'Found'}
+          </div>
         </div>
       </div>
 
@@ -466,9 +500,12 @@ export default function DiseasesPage() {
                 <div className="flex items-start justify-between gap-5">
                   <div className="space-y-4 flex-1">
                     <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-primary transition-colors">
-                      {disease.name}
+                      {filterLanguage === 'bn' ? (disease.bangla || disease.name) : disease.name}
                     </h3>
-                    {disease.bangla && disease.bangla !== disease.name && (
+                    {filterLanguage === 'bn' && disease.name && disease.name !== disease.bangla && (
+                       <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">{disease.name}</p>
+                    )}
+                    {filterLanguage === 'en' && disease.bangla && disease.bangla !== disease.name && (
                       <p 
                         className="text-gray-500 font-medium text-lg leading-tight"
                         style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
@@ -478,9 +515,9 @@ export default function DiseasesPage() {
                     )}
                     
                     {disease.department && (
-                      <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/5 text-primary rounded-xl w-fit text-xs font-bold tracking-tight">
+                      <div className="flex items-center gap-2 mt-4 px-3 py-1.5 bg-primary/5 text-primary rounded-xl w-fit text-xs font-bold tracking-tight">
                          <Hospital className="h-3.5 w-3.5" />
-                         <span>{disease.department.name}</span>
+                         <span>{language === 'bn' ? (disease.department.nameBn || disease.department.name) : disease.department.name}</span>
                       </div>
                     )}
                   </div>

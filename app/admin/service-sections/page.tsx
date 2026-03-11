@@ -213,6 +213,7 @@ export default function ServiceSectionsPage() {
       order: section.order.toString(),
     });
     setShowAddForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleCancel = () => {

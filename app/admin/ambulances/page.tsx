@@ -199,7 +199,7 @@ export default function AmbulancesPage() {
 
                   <div className="pt-3 border-t border-gray-50 grid grid-cols-2 gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                     <div>
-                      {language === 'bn' ? 'নম্বর' : 'No'}: <span className="text-gray-600">{ambulance.ambulanceNumber || '—'}</span>
+                      {language === 'bn' ? 'যানবাহন নম্বর' : 'Vehicle No'}: <span className="text-gray-600">{ambulance.ambulanceNumber || '—'}</span>
                     </div>
                     <div>
                       {t("drivingLicence", language)}: <span className="text-gray-600 truncate block">{ambulance.drivingLicence || '—'}</span>

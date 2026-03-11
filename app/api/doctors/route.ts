@@ -36,7 +36,8 @@ export async function GET(request: NextRequest) {
     }
 
     const doctors = await Doctor.find(query).sort({ createdAt: -1 });
-    return NextResponse.json({ doctors }, { status: 200 });
+    const total = await Doctor.countDocuments(query);
+    return NextResponse.json({ doctors, total }, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching doctors:", error);
     return NextResponse.json(

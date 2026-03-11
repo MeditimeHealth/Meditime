@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     const totalCount = await Hospital.countDocuments(query);
     const hasMore = skip + hospitals.length < totalCount;
     
-    return NextResponse.json({ hospitals, hasMore }, { status: 200 });
+    return NextResponse.json({ hospitals, hasMore, total: totalCount }, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching hospitals:", error);
     return NextResponse.json(

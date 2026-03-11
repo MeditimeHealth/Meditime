@@ -51,7 +51,7 @@ export default function HospitalsListPage() {
   const fetchHospitals = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/locations/hospitals?page=${page}&limit=20`);
+      const response = await fetch(`/api/locations/hospitals?page=${page}&limit=50`);
       const data = await response.json();
       
       if (response.ok) {

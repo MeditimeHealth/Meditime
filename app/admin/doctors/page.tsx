@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, Search, Loader2, Stethoscope } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Loader2, Stethoscope, Globe } from "lucide-react";
 import { showToast } from "@/lib/toast";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
@@ -25,8 +25,10 @@ export default function DoctorsPage() {
   const [doctors, setDoctors] = useState<DoctorType[]>([]);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const { language } = useLanguage();
+  const [filterLanguage, setFilterLanguage] = useState<'en' | 'bn'>('en');
+  const { language: currentLanguage } = useLanguage();
 
   const getBengaliDay = (day: string): string => {
     const dayIndex = daysOfWeek.indexOf(day);
@@ -49,7 +51,7 @@ export default function DoctorsPage() {
       const sortedDays = (slot.days || []).sort((a: string, b: string) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b));
       if (!sortedDays.length) return "";
       
-      const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
+      const time = (currentLanguage === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
       const consecutive = areDaysConsecutive(sortedDays);
  
       
@@ -84,7 +86,8 @@ export default function DoctorsPage() {
       const response = await fetch("/api/doctors");
       const data = await response.json();
       if (response.ok) {
-        setDoctors(data.doctors);
+        setDoctors(data.doctors || []);
+        setTotal(data.total || data.doctors?.length || 0);
       }
     } catch (error) {
       console.error("Error fetching doctors:", error);
@@ -95,7 +98,7 @@ export default function DoctorsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm(language === 'bn' ? "আপনি কি নিশ্চিত যে আপনি এই ডিটেইলসটি মুছে ফেলতে চান?" : "Are you sure you want to delete this doctor profile?")) return;
+    if (!confirm(currentLanguage === 'bn' ? "আপনি কি নিশ্চিত যে আপনি এই ডিটেইলসটি মুছে ফেলতে চান?" : "Are you sure you want to delete this doctor profile?")) return;
 
     try {
       const response = await fetch(`/api/doctors/${id}`, {
@@ -104,6 +107,7 @@ export default function DoctorsPage() {
 
       if (response.ok) {
         setDoctors(doctors.filter((doctor) => doctor._id !== id));
+        setTotal(prev => Math.max(0, prev - 1));
         showToast.success("Doctor deleted successfully");
       } else {
         const data = await response.json();
@@ -115,18 +119,31 @@ export default function DoctorsPage() {
     }
   };
 
-  const filteredDoctors = doctors.filter(doctor => 
-    doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    doctor.nameBn?.includes(searchQuery) ||
-    doctor.specialty?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    doctor.specialtyBn?.includes(searchQuery)
-  );
+  const filteredDoctors = doctors.filter(doctor => {
+    // 1. Language Filter Logic
+    const hasEnglish = !!doctor.name;
+    const hasBangla = !!doctor.nameBn;
+
+    if (filterLanguage === 'en' && !hasEnglish) return false;
+    if (filterLanguage === 'bn' && !hasBangla) return false;
+
+    // 2. Search Query Logic
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return true;
+
+    return (
+      doctor.name.toLowerCase().includes(query) ||
+      doctor.nameBn?.includes(query) ||
+      doctor.specialty?.toLowerCase().includes(query) ||
+      doctor.specialtyBn?.includes(query)
+    );
+  });
 
   if (loading && doctors.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="text-gray-500 font-medium">{t("loading", language)}</p>
+        <p className="text-gray-500 font-medium">{t("loading", currentLanguage)}</p>
       </div>
     );
   }
@@ -136,31 +153,50 @@ export default function DoctorsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-gray-100 pb-10">
         <div>
           <h1 className="text-5xl font-black text-gray-900 tracking-tight">
-            {t("manageDoctors", language)}
+            {t("manageDoctors", currentLanguage)}
           </h1>
           <p className="text-gray-500 mt-3 text-xl font-medium">
-            {language === 'bn' ? 'ডাক্তারদের প্রোফাইল এবং সিরিয়াল পরিচালনা করুন' : 'Administrative control panel for medical professionals'}
+            {currentLanguage === 'bn' ? `ডাক্তারদের প্রোফাইল এবং সিরিয়াল পরিচালনা করুন (${total} জন মোট)` : `Administrative control panel for medical professionals (${total} total)`}
           </p>
         </div>
         <Link href="/admin/doctors/create">
           <Button className="bg-primary hover:bg-primary/90 text-white px-10 py-8 text-2xl font-black rounded-[1.5rem] shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 border-none">
             <Plus className="h-7 w-7 mr-3 stroke-[3]" />
-            {t("createDoctorProfile", language)}
+            {t("createDoctorProfile", currentLanguage)}
           </Button>
         </Link>
       </div>
 
-      <div className="relative group max-w-3xl">
-        <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-          <Search className="h-6 w-6 text-gray-300 group-focus-within:text-primary transition-colors stroke-[2.5]" />
+      <div className="flex flex-col md:flex-row gap-6 items-center max-w-5xl mx-auto md:mx-0">
+        <div className="relative group flex-1 w-full">
+          <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+            <Search className="h-6 w-6 text-gray-300 group-focus-within:text-primary transition-colors stroke-[2.5]" />
+          </div>
+          <Input
+            type="text"
+            placeholder={currentLanguage === 'bn' ? 'ডাক্তারের নাম বা বিশেষজ্ঞ দিয়ে খুঁজুন...' : 'Search by name or specialty...'}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-16 h-16 text-xl border-2 border-gray-100 rounded-[1.5rem] bg-white shadow-lg shadow-gray-100/50 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all pr-6 font-bold placeholder:text-gray-300"
+          />
         </div>
-        <Input
-          type="text"
-          placeholder={language === 'bn' ? 'ডাক্তারের নাম বা বিশেষজ্ঞ দিয়ে খুঁজুন...' : 'Search by name or specialty...'}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-16 h-16 text-xl border-2 border-gray-100 rounded-[1.5rem] bg-white shadow-lg shadow-gray-100/50 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all pr-6 font-bold placeholder:text-gray-300"
-        />
+
+        <div className="relative w-full md:w-72">
+           <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+             <Globe className="h-5 w-5 text-gray-400 stroke-[2.5]" />
+           </div>
+           <select 
+             value={filterLanguage}
+             onChange={(e) => setFilterLanguage(e.target.value as any)}
+             className="w-full h-16 pl-14 pr-10 text-lg border-2 border-gray-100 rounded-[1.5rem] bg-white shadow-lg shadow-gray-100/50 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-bold appearance-none cursor-pointer"
+           >
+             <option value="en">{currentLanguage === 'bn' ? 'ইংরেজি' : 'English'}</option>
+             <option value="bn">{currentLanguage === 'bn' ? 'বাংলা' : 'Bangla'}</option>
+           </select>
+           <div className="absolute inset-y-0 right-0 pr-5 flex items-center pointer-events-none">
+             <div className="h-2 w-2 border-r-2 border-b-2 border-gray-400 rotate-45 mb-1" />
+           </div>
+        </div>
       </div>
 
       {filteredDoctors.length === 0 ? (
@@ -170,13 +206,13 @@ export default function DoctorsPage() {
               <Stethoscope className="h-14 w-14 text-gray-200" />
             </div>
             <p className="text-gray-500 text-2xl font-black tracking-tight">
-              {doctors.length === 0 ? t("noDoctors", language) : (language === 'bn' ? 'কোনো ডাক্তার পাওয়া যায়নি' : 'No doctors match your search')}
+              {doctors.length === 0 ? t("noDoctors", currentLanguage) : (currentLanguage === 'bn' ? 'কোনো ডাক্তার পাওয়া যায়নি' : 'No doctors match your search')}
             </p>
             {doctors.length === 0 && (
               <Link href="/admin/doctors/create">
                 <Button className="bg-primary text-white h-16 px-10 text-xl font-black rounded-2xl shadow-xl shadow-primary/10">
                   <Plus className="h-6 w-6 mr-2" />
-                  {t("createFirstDoctor", language)}
+                  {t("createFirstDoctor", currentLanguage)}
                 </Button>
               </Link>
             )}
@@ -196,12 +232,13 @@ export default function DoctorsPage() {
                 key={doctor._id} 
                 doctor={enrichedDoctor} 
                 disableLink={true}
+                language={filterLanguage}
                 actions={
                   <>
                     <Link href={`/admin/doctors/edit/${doctor._id}`} className="flex-1">
                       <Button variant="ghost" className="w-full h-10 font-bold text-gray-600 hover:text-primary hover:bg-primary/5 rounded-xl transition-all border border-gray-100">
                         <Edit className="h-4 w-4 mr-2" />
-                        {t("edit", language)}
+                        {t("edit", currentLanguage)}
                       </Button>
                     </Link>
                     <Button 
@@ -210,7 +247,7 @@ export default function DoctorsPage() {
                       onClick={() => handleDelete(doctor._id)}
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
-                      {t("delete", language)}
+                      {t("delete", currentLanguage)}
                     </Button>
                   </>
                 }

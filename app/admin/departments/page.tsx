@@ -151,6 +151,7 @@ export default function DepartmentsPage() {
     });
     setImagePreview(department.image || "");
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id: string) => {

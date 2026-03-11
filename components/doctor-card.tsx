@@ -52,6 +52,7 @@ interface DoctorCardProps {
   index?: number;
   actions?: React.ReactNode;
   disableLink?: boolean;
+  language?: 'en' | 'bn';
 }
 
 const daysOfWeek = [
@@ -126,9 +127,11 @@ export default function DoctorCard({
   doctor, 
   index = 0, 
   actions, 
-  disableLink = false 
+  disableLink = false,
+  language: propLanguage
 }: DoctorCardProps) {
-  const { language } = useLanguage();
+  const { language: contextLanguage } = useLanguage();
+  const language = propLanguage || contextLanguage;
   
   // Get localized values
   const displayName = getLocalizedValue(doctor.name, doctor.nameBn, language);

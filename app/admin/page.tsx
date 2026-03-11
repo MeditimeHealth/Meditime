@@ -53,8 +53,8 @@ export default function AdminDashboard() {
       );
 
       setStats({
-        totalDoctors: doctorsData.doctors?.length || 0,
-        totalHospitals: hospitalsData.hospitals?.length || 0,
+        totalDoctors: doctorsData.total || doctorsData.doctors?.length || 0,
+        totalHospitals: hospitalsData.total || hospitalsData.hospitals?.length || 0,
         totalAppointments: appointmentsData.appointments?.length || 0,
         totalPatients: uniquePatients.size,
         pendingAppointments: pendingData.appointments?.length || 0,

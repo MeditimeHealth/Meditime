@@ -68,6 +68,9 @@ export default function CreateDoctorPage() {
   const [uploading, setUploading] = useState(false);
   const [departments, setDepartments] = useState<any[]>([]);
   const [hospitals, setHospitals] = useState<any[]>([]);
+  const [diseases, setDiseases] = useState<any[]>([]);
+  const [filteredDiseases, setFilteredDiseases] = useState<any[]>([]);
+  const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
 
   const {
     register,
@@ -124,6 +127,13 @@ export default function CreateDoctorPage() {
           const hospsData = await hospsRes.json();
           setHospitals(hospsData.hospitals || []);
         }
+
+        const diseasesRes = await fetch("/api/diseases");
+        if (diseasesRes.ok) {
+          const diseasesData = await diseasesRes.json();
+          setDiseases(diseasesData.diseases || []);
+          setFilteredDiseases(diseasesData.diseases || []);
+        }
       } catch (error) {
         console.error("Error fetching dependencies:", error);
       }
@@ -136,13 +146,30 @@ export default function CreateDoctorPage() {
     setFormLanguage(language);
   }, [language]);
 
+  const selectedDepartment = watch("department");
+  useEffect(() => {
+    if (!selectedDepartment) {
+      setFilteredDiseases(diseases);
+    } else {
+      const filtered = diseases.filter(d => {
+        const deptId = typeof d.department === 'object' ? d.department._id : d.department;
+        const dept = departments.find(dep => dep.name === selectedDepartment);
+        return deptId === dept?._id;
+      });
+      setFilteredDiseases(filtered);
+    }
+  }, [selectedDepartment, diseases, departments]);
+
   const onSubmit = async (data: DoctorFormValues) => {
     setLoading(true);
     try {
       const response = await fetch("/api/doctors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          diseases: selectedDiseases
+        }),
       });
 
       if (response.ok) {
@@ -410,6 +437,60 @@ export default function CreateDoctorPage() {
                 placeholder="400"
                 className="mt-1"
               />
+            </div>
+
+            <div className="md:col-span-2">
+              <div className="flex items-center justify-between mb-3">
+                <Label className="block font-semibold text-gray-900">
+                  {language === 'bn' ? 'যে সকল রোগের চিকিৎসা করা হয় (Diseases Treated)' : 'Diseases Treated'}
+                </Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const visibleValues = filteredDiseases.map(d => {
+                        const rawBangla = d.bangla;
+                        const rawEnglish = d.name;
+                        const banglaValue = rawBangla ? String(rawBangla).trim() : '';
+                        const englishValue = rawEnglish ? String(rawEnglish).trim() : '';
+                        return (banglaValue !== '' && banglaValue !== englishValue) ? banglaValue : englishValue;
+                      });
+                      const updated = Array.from(new Set([...selectedDiseases, ...visibleValues]));
+                      setSelectedDiseases(updated);
+                      setValue("availability", watch("availability")); // Dummy trigger
+                      // Actually we need to set diseases in form
+                    }}
+                    className="h-8 text-xs"
+                  >
+                    Select All
+                  </Button>
+                </div>
+              </div>
+              <div className="max-h-60 overflow-y-auto border-2 border-gray-300 rounded-lg p-4 bg-white grid grid-cols-1 md:grid-cols-2 gap-2">
+                {filteredDiseases.map((disease) => {
+                  const diseaseName = formLanguage === 'bn' ? (disease.bangla || disease.name) : (disease.name || disease.bangla);
+                  const diseaseValue = (disease.bangla && disease.bangla !== disease.name) ? disease.bangla : disease.name;
+                  
+                  return (
+                    <label key={disease._id} className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedDiseases.includes(diseaseValue)}
+                        onChange={(e) => {
+                          const updated = e.target.checked 
+                            ? [...selectedDiseases, diseaseValue]
+                            : selectedDiseases.filter(d => d !== diseaseValue);
+                          setSelectedDiseases(updated);
+                        }}
+                        className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                      />
+                      <span className="text-sm">{diseaseName}</span>
+                    </label>
+                  );
+                })}
+              </div>
             </div>
 
 
