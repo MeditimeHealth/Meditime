@@ -42,7 +42,7 @@ export default function HospitalsListPage() {
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState<'all' | 'missing_bn' | 'missing_en' | 'complete'>('all');
+  const [filterStatus, setFilterStatus] = useState<'english' | 'bangla'>('english');
 
   useEffect(() => {
     fetchHospitals();
@@ -96,14 +96,15 @@ export default function HospitalsListPage() {
     }
   };
 
-  const getFullLocation = (hospital: Hospital) => {
+  const getHospitalLocation = (hospital: Hospital) => {
     const parts = [];
+    const isBn = filterStatus === 'bangla';
     if (hospital.thana) {
-      parts.push(language === 'bn' ? (hospital.thana.nameBn || hospital.thana.name) : hospital.thana.name);
+      parts.push(isBn ? (hospital.thana.nameBn || hospital.thana.name) : hospital.thana.name);
       if (hospital.thana.district) {
-        parts.push(language === 'bn' ? (hospital.thana.district.nameBn || hospital.thana.district.name) : hospital.thana.district.name);
+        parts.push(isBn ? (hospital.thana.district.nameBn || hospital.thana.district.name) : hospital.thana.district.name);
         if (hospital.thana.district.division) {
-          parts.push(language === 'bn' ? (hospital.thana.district.division.nameBn || hospital.thana.district.division.name) : hospital.thana.district.division.name);
+          parts.push(isBn ? (hospital.thana.district.division.nameBn || hospital.thana.district.division.name) : hospital.thana.district.division.name);
         }
       }
     }
@@ -111,13 +112,11 @@ export default function HospitalsListPage() {
   };
 
   const filteredHospitals = hospitals.filter(h => {
-    // 1. Language Filter Logic
-    const hasEnglish = !!(h.name && h.address);
-    const hasBangla = !!(h.nameBn && h.addressBn);
+    const hasEnglish = !!h.name;
+    const hasBangla = !!h.nameBn;
 
-    if (filterStatus === 'missing_bn' && hasBangla) return false;
-    if (filterStatus === 'missing_en' && hasEnglish) return false;
-    if (filterStatus === 'complete' && (!hasBangla || !hasEnglish)) return false;
+    if (filterStatus === 'english' && !hasEnglish) return false;
+    if (filterStatus === 'bangla' && !hasBangla) return false;
 
     // 2. Search Query Logic
     const query = searchQuery.toLowerCase().trim();
@@ -185,10 +184,8 @@ export default function HospitalsListPage() {
              onChange={(e) => setFilterStatus(e.target.value as any)}
              className="w-full h-16 pl-14 pr-10 text-lg border-2 border-gray-100 rounded-[1.5rem] bg-white shadow-lg shadow-gray-100/50 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-bold appearance-none cursor-pointer"
            >
-             <option value="all">{language === 'bn' ? 'সব হাসপাতাল' : 'All Hospitals'}</option>
-             <option value="missing_bn">{language === 'bn' ? 'বাংলা তথ্য নেই' : 'Missing Bangla'}</option>
-             <option value="missing_en">{language === 'bn' ? 'ইংরেজি তথ্য নেই' : 'Missing English'}</option>
-             <option value="complete">{language === 'bn' ? 'সম্পূর্ণ প্রোফাইল' : 'Complete'}</option>
+             <option value="english">{language === 'bn' ? 'ইংরেজি' : 'English'}</option>
+             <option value="bangla">{language === 'bn' ? 'বাংলা' : 'Bangla'}</option>
            </select>
            <div className="absolute inset-y-0 right-0 pr-5 flex items-center pointer-events-none">
              <div className="h-2 w-2 border-r-2 border-b-2 border-gray-400 rotate-45 mb-1" />
@@ -229,13 +226,13 @@ export default function HospitalsListPage() {
                      </div>
                      <div className="flex-1 min-w-0">
                         <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-primary transition-colors">
-                           {getLocalizedValue(hospital.name, hospital.nameBn, language)}
+                           {filterStatus === 'bangla' ? hospital.nameBn : hospital.name}
                         </h3>
-                        {getFullLocation(hospital) && (
+                        {getHospitalLocation(hospital) && (
                           <div className="flex items-center gap-2 mt-2">
                              <MapPin className="h-3.5 w-3.5 text-gray-400" />
                              <span className="text-xs font-bold text-gray-500">
-                                {getFullLocation(hospital)}
+                                {getHospitalLocation(hospital)}
                              </span>
                           </div>
                         )}
@@ -246,7 +243,7 @@ export default function HospitalsListPage() {
                      <div className="flex items-start gap-3">
                         <Info className="h-4 w-4 text-gray-400 mt-1 shrink-0" />
                         <div className="text-sm font-bold text-gray-600">
-                           {getLocalizedValue(hospital.address, hospital.addressBn, language) || (language === 'bn' ? 'ঠিকানা নেই' : 'No address provided')}
+                           {filterStatus === 'bangla' ? hospital.addressBn : hospital.address}
                         </div>
                      </div>
 
