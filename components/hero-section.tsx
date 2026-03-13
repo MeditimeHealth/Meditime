@@ -14,8 +14,7 @@ const slides = [
   {
     title: "Book a Doctor Appointment in Minutes",
     subtitle: "20+ Departments, 1000+ Physicians",
-    description:
-      "Handpicked list of most experienced doctors from top hospitals near Savar and surroundings. Schedule your appointment with a doctor in just a few simple steps.",
+    description: "Handpicked list of most experienced doctors from top hospitals near Savar and surroundings. Schedule your appointment with a doctor in just a few simple steps.",
     image: "/slide.jpg",
     ctaText: "Book Appointment",
     ctaLink: "/doctor",
@@ -23,8 +22,7 @@ const slides = [
   {
     title: "Get Your Meditime Membership Card",
     subtitle: "Save Up to 50% on Medical Bills",
-    description:
-      "Enjoy on spot discounts in your medical bills using Meditime Health Discount Cards. Get delivered within 7 working days and enjoy amazing discounts.",
+    description: "Enjoy on spot discounts in your medical bills using Meditime Health Discount Cards. Get delivered within 7 working days and enjoy amazing discounts.",
     image: "/slide2.jpg",
     ctaText: "View Plans",
     ctaLink: "/membership",
@@ -32,8 +30,7 @@ const slides = [
   {
     title: "Download the Medicare Mobile App",
     subtitle: "Take Control of Your Health",
-    description:
-      "Doctor's Appointment Booking, Diagnostic Test Price Comparison, Online Doctor Consultation, Ambulance Contact — all in your pocket.",
+    description: "Doctor's Appointment Booking, Diagnostic Test Price Comparison, Online Doctor Consultation, Ambulance Contact — all in your pocket.",
     image: "/slide3.jpg",
     ctaText: "Download Now",
     ctaLink: "https://play.google.com/store",
@@ -41,8 +38,7 @@ const slides = [
   {
     title: "Find all the information about 100+ Diagnostic Test in one Place",
     subtitle: "Compare Prices & Save Up to 15%",
-    description:
-      "Compare pricing of diagnostic tests and get up to 50% discount using our health discounts cards.",
+    description: "Compare pricing of diagnostic tests and get up to 50% discount using our health discounts cards.",
     image: "/slide.jpg",
     ctaText: "View Tests",
     ctaLink: "/diagnostic",
@@ -52,8 +48,8 @@ const slides = [
 export default function HeroSection() {
   return (
     <div className="relative">
-      {/* Mobile Hero */}
-      <div className="lg:hidden relative min-h-screen">
+      {/* ── MOBILE HERO — half viewport height ── */}
+      <div className="lg:hidden relative h-[50vh] min-h-[280px]">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}
@@ -67,37 +63,31 @@ export default function HeroSection() {
           loop={true}
           effect="fade"
           fadeEffect={{ crossFade: true }}
-          className="h-full min-h-screen"
+          className="h-full w-full"
         >
           {slides.map((slide, index) => (
             <SwiperSlide key={index}>
-              <div className="relative min-h-screen w-full">
+              <div className="relative h-full w-full">
                 <Image
                   src={slide.image}
                   alt={slide.title}
                   fill
-                  className="object-cover"
+                  className="object-cover object-center"
                   priority={index === 0}
                 />
-                {/* Subtle overlay - image shows through */}
-                <div className="absolute inset-0 bg-black/40" />
-
-                {/* LEFT-aligned content */}
-                <div className="absolute inset-0 flex flex-col justify-center px-8 text-white">
-                  <div className="max-w-sm">
-                    <h1 className="text-3xl sm:text-4xl font-bold leading-tight mb-4">
+                <div className="absolute inset-0 bg-black/45" />
+                <div className="absolute inset-0 flex flex-col justify-center px-6">
+                  <div className="max-w-xs">
+                    <h1 className="text-xl sm:text-2xl font-bold leading-snug text-white mb-3">
                       {slide.title}
                     </h1>
-                    <p className="text-base text-white/85 mb-8 leading-relaxed">
-                      {slide.description}
-                    </p>
                     <Link
                       href={slide.ctaLink}
                       target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
                     >
-                      <Button className="bg-white hover:bg-white/90 text-gray-900 font-semibold text-sm h-11 px-7 rounded-full shadow-md transition-all inline-flex items-center gap-2">
+                      <Button className="bg-white hover:bg-white/90 text-gray-900 font-semibold text-xs h-9 px-5 rounded-full shadow-md transition-all inline-flex items-center gap-1.5">
                         {slide.ctaText}
-                        <ArrowRight className="h-4 w-4" />
+                        <ArrowRight className="h-3.5 w-3.5" />
                       </Button>
                     </Link>
                   </div>
@@ -108,7 +98,7 @@ export default function HeroSection() {
         </Swiper>
       </div>
 
-      {/* Desktop Hero */}
+      {/* ── DESKTOP HERO — full viewport height ── */}
       <div className="hidden lg:block relative h-screen min-h-[700px]">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
@@ -135,11 +125,7 @@ export default function HeroSection() {
                   className="object-cover"
                   priority={index === 0}
                 />
-
-                {/* Subtle dark overlay — image stays visible */}
                 <div className="absolute inset-0 bg-black/35" />
-
-                {/* LEFT-aligned content — occupies left ~45% */}
                 <div className="absolute inset-0 flex items-center">
                   <div className="container mx-auto px-8 lg:px-16">
                     <div className="max-w-lg space-y-5">
