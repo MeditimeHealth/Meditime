@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
 
 export default function AppDownloadSection() {
   return (
@@ -26,9 +25,8 @@ export default function AppDownloadSection() {
               one place.
             </p>
 
-            {/* Store buttons — stacked black pills */}
+            {/* Store buttons */}
             <div className="flex flex-col gap-3 w-fit">
-              {/* Google Play */}
               <a
                 href="#"
                 className="flex items-center gap-3 bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-xl transition-all w-48"
@@ -42,7 +40,6 @@ export default function AppDownloadSection() {
                 </div>
               </a>
 
-              {/* App Store */}
               <a
                 href="#"
                 className="flex items-center gap-3 bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-xl transition-all w-48"
@@ -56,9 +53,26 @@ export default function AppDownloadSection() {
                 </div>
               </a>
             </div>
+
+            {/* ── QR code: MOBILE ONLY — sits inside left column, no overlap ── */}
+            <div className="flex items-center gap-4 lg:hidden pt-2">
+              <div className="w-24 h-24 bg-white border-4 border-slate-900 rounded-xl overflow-hidden shadow-lg shrink-0">
+                <img
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://meditime.com.bd"
+                  alt="Scan to download"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <p className="text-xs font-semibold text-slate-900 leading-relaxed">
+                QR কোড স্ক্যান করে<br />ডাউনলোড করুন
+              </p>
+            </div>
           </motion.div>
 
-          {/* CENTER — Phone on circle */}
+          {/* CENTER — Phone on teal circle
+              Desktop: -mb-12 bleeds below section
+              Mobile:  no negative margin — lg:-mb-12 scopes it to desktop only
+          */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -66,27 +80,25 @@ export default function AppDownloadSection() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="flex items-center justify-center relative"
           >
-            {/* Large teal circle bg */}
             <div className="absolute w-72 h-72 rounded-full bg-primary/80" />
 
-            {/* Phone mockup — use actual app screenshot or fallback to built mockup */}
-            <div className="relative z-10 w-52 -mb-12 drop-shadow-2xl" style={{ transform: "rotate(-8deg)" }}>
-              {/* Phone frame */}
+            <div
+              className="relative z-10 w-52 drop-shadow-2xl lg:-mb-12"
+              style={{ transform: "rotate(-8deg)" }}
+            >
               <div className="w-full bg-slate-900 rounded-[2rem] p-1.5 shadow-2xl">
                 <div className="bg-white rounded-[1.7rem] overflow-hidden">
-                  {/* Status bar */}
                   <div className="bg-primary px-4 py-1.5 flex justify-between items-center">
                     <span className="text-white text-[10px] font-bold">9:41</span>
                     <span className="text-white text-[10px] font-bold">MEDI TIME</span>
                     <div className="w-6 h-2.5 border border-white rounded-sm" />
                   </div>
-                  {/* App content */}
                   <div className="p-3 space-y-2 bg-gray-50">
                     {[
-                      { label: "ডাক্তার অ্যাপয়েন্টমেন্ট", sub: "Doctor Appointment", color: "bg-primary", text: "text-white" },
-                      { label: "হাসপাতাল", sub: "Hospital", color: "bg-blue-50", text: "text-gray-800" },
-                      { label: "ভিডিও কনসালটেশন", sub: "Video Consultation", color: "bg-purple-50", text: "text-gray-800" },
-                      { label: "ডায়াগনস্টিক ও টেস্ট", sub: "Diagnostic & Tests", color: "bg-red-50", text: "text-gray-800" },
+                      { label: "ডাক্তার অ্যাপয়েন্টমেন্ট", sub: "Doctor Appointment", color: "bg-primary",    text: "text-white" },
+                      { label: "হাসপাতাল",                  sub: "Hospital",           color: "bg-blue-50",   text: "text-gray-800" },
+                      { label: "ভিডিও কনসালটেশন",          sub: "Video Consultation", color: "bg-purple-50", text: "text-gray-800" },
+                      { label: "ডায়াগনস্টিক ও টেস্ট",    sub: "Diagnostic & Tests", color: "bg-red-50",    text: "text-gray-800" },
                     ].map((item, i) => (
                       <div key={i} className={`${item.color} rounded-lg px-3 py-2`}>
                         <p className={`text-[10px] font-bold ${item.text}`}>{item.label}</p>
@@ -99,13 +111,13 @@ export default function AppDownloadSection() {
             </div>
           </motion.div>
 
-          {/* RIGHT — QR code */}
+          {/* RIGHT — QR code: DESKTOP ONLY */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex flex-col items-center lg:items-end gap-3"
+            className="hidden lg:flex flex-col items-end gap-3"
           >
             <div className="w-36 h-36 bg-white border-4 border-slate-900 rounded-xl overflow-hidden shadow-lg">
               <img
