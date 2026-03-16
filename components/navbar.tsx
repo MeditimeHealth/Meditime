@@ -167,7 +167,7 @@ export default function Navbar() {
                       className="relative group"
                     >
                       <span
-                        className={`text-xs xl:text-sm font-bold uppercase tracking-wider transition-all duration-300 whitespace-nowrap ${
+                        className={`text-xs xl:text-sm font-medium uppercase tracking-wider transition-all duration-300 whitespace-nowrap ${
                           isActive
                             ? "text-primary"
                             : "text-slate-700 group-hover:text-primary"
@@ -204,7 +204,7 @@ export default function Navbar() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleLanguage}
-                className="flex items-center justify-center px-3 py-1.5 rounded-md border border-primary text-primary hover:bg-primary/5 transition-all text-sm font-medium"
+                className="flex items-center justify-center w-14 py-1 rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-all text-xs font-medium shrink-0"
                 title={language === 'en' ? 'Switch to Bangla' : 'Switch to English'}
               >
                 {language === 'en' ? 'বাংলা' : 'English'}
@@ -331,7 +331,7 @@ export default function Navbar() {
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link
                       href="/signup"
-                      className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-white text-sm font-semibold shadow-lg shadow-teal-500/40 hover:shadow-teal-500/50 transition-all duration-300"
+                      className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-white text-sm font-semibold transition-all duration-300"
                     >
                       Sign Up
                     </Link>

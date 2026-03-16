@@ -128,21 +128,20 @@ export default function HeroSection() {
                 <div className="absolute inset-0 bg-black/35" />
                 <div className="absolute inset-0 flex items-center">
                   <div className="container mx-auto px-8 lg:px-16">
-                    <div className="max-w-lg space-y-5">
-                      <h1 className="text-4xl lg:text-5xl font-bold leading-tight text-white">
+                    <div className="flex flex-col gap-5 max-w-[732px] min-h-[280px] justify-center">
+                      <h1 className="text-[52px] lg:text-[64px] font-bold leading-[1.1] text-white">
                         {slide.title}
                       </h1>
-                      <p className="text-base lg:text-lg text-white/85 leading-relaxed">
+                      <p className="text-[20px] font-medium text-white/90 leading-[1.5] tracking-[0.16px] max-w-[578px]">
                         {slide.description}
                       </p>
-                      <div className="pt-2">
+                      <div>
                         <Link
                           href={slide.ctaLink}
                           target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
                         >
-                          <Button className="bg-white hover:bg-white/90 text-gray-900 font-semibold text-base h-12 px-8 rounded-full shadow-md transition-all inline-flex items-center gap-2">
+                          <Button className="bg-white hover:bg-white/90 text-[#212121] font-medium text-[16px] h-auto pl-5 pr-7 py-[15px] rounded-[40px] shadow-none transition-all">
                             {slide.ctaText}
-                            <ArrowRight className="h-4 w-4" />
                           </Button>
                         </Link>
                       </div>
