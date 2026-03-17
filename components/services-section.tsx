@@ -50,10 +50,14 @@ const IconDiagnostic = () => (
 
 const IconBloodDonor = () => (
   <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7">
-    <path d="M4 22 Q4 18 8 18 L12 18 L12 16 Q12 13 15 13 L21 13 Q24 13 24 16 L24 18 L28 18 Q32 18 32 22 L32 26 Q32 30 28 30 L8 30 Q4 30 4 26 Z"
-      stroke="white" strokeWidth="2.2" fill="none" strokeLinejoin="round"/>
-    <path d="M18 6 Q18 6 14 12 Q12 15 14.5 17.5 Q17 20 18 19 Q19 20 21.5 17.5 Q24 15 22 12 Z"
-      stroke="white" strokeWidth="2" fill="none" strokeLinejoin="round"/>
+    <path
+      d="M4 22 Q4 18 8 18 L12 18 L12 16 Q12 13 15 13 L21 13 Q24 13 24 16 L24 18 L28 18 Q32 18 32 22 L32 26 Q32 30 28 30 L8 30 Q4 30 4 26 Z"
+      stroke="white" strokeWidth="2.2" fill="none" strokeLinejoin="round"
+    />
+    <path
+      d="M18 6 Q18 6 14 12 Q12 15 14.5 17.5 Q17 20 18 19 Q19 20 21.5 17.5 Q24 15 22 12 Z"
+      stroke="white" strokeWidth="2" fill="none" strokeLinejoin="round"
+    />
   </svg>
 );
 
@@ -77,7 +81,7 @@ const services = [
     cta: "Book Appointment",
     href: "/doctor",
     description:
-      "Find the Most Experienced Physician from 20+ Specialities and Departments. Easy booking, guaranteed visit.",
+      "Find the Most Experienced Physician from 20+ Specialities and Departments. Easy booking, guaranteed visit",
     highlight: false,
     showArrow: false,
   },
@@ -107,7 +111,7 @@ const services = [
     cta: "Compare Prices",
     href: "/diagnostic",
     description:
-      "Diagnostic tests account for a significant portion of healthcare costs, potentially over 10% of total medical expenses.",
+      "Diagnostic tests account for a significant portion of healthcare costs, potentially over 10% of total medical",
     highlight: false,
     showArrow: true,
   },
@@ -117,7 +121,7 @@ const services = [
     cta: "Find Donors",
     href: "/blood-donors",
     description:
-      "31% of all maternal deaths happen due to haemorrhage (severe blood loss). Timely blood transfusion could save lives.",
+      "31% of all maternal deaths happen due to haemorrhage (severe blood loss). Timely blood transfusion could save",
     highlight: false,
     showArrow: false,
   },
@@ -140,7 +144,9 @@ export default function ServicesSection() {
     <div className="bg-gray-50 py-10 sm:py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Header */}
+        {/* ── Header
+              Figma: title ~36px (text-4xl), subtitle ~14px, narrow max-width
+        ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -148,16 +154,18 @@ export default function ServicesSection() {
           transition={{ duration: 0.5 }}
           className="mb-10 text-center"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-slate-800 tracking-tight">
+          {/* Figma title is ~36–40px — text-4xl matches, NOT text-5xl */}
+          <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-slate-800 tracking-tight">
             Meditime Services
           </h2>
-          <p className="text-slate-500 max-w-md mx-auto text-base leading-relaxed">
+          {/* Figma subtitle wraps to 3 short lines — keep max-w tight */}
+          <p className="text-[13px] text-slate-500 max-w-[240px] mx-auto leading-relaxed">
             Meditime has a broad range of medical information services from
             doctors&apos; appointment booking to ambulance contact numbers.
           </p>
         </motion.div>
 
-        {/* Service Cards */}
+        {/* ── Service Cards ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {services.map(({ Icon, title, cta, href, description, highlight, showArrow }, index) => (
             <motion.div
@@ -170,66 +178,72 @@ export default function ServicesSection() {
             >
               <Link href={href} className="block h-full group">
                 <Card
-                  className={`p-5 lg:p-6 border h-full flex flex-col rounded-2xl transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg ${
+                  className={`p-6 border h-full flex flex-col rounded-2xl transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg ${
                     highlight
                       ? "bg-yellow-300 border-yellow-300 shadow-md"
                       : "bg-white border-slate-200 shadow-sm"
                   }`}
                 >
-                  {/* Teal circle with inline SVG icon */}
-                  <div className="mb-4">
+                  {/* ── Teal circle icon
+                        Figma: ~56px circle, icon is ~28px — w-14 h-14 is correct
+                        mb-3 tighter than mb-4 to compress card height
+                  ── */}
+                  <div className="mb-3">
                     <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shrink-0">
                       <Icon />
                     </div>
                   </div>
 
-                  {/* Title */}
+                  {/* ── Title
+                        Figma: ~15-16px bold, tight leading
+                        mb-2 gap to description
+                  ── */}
                   <h3
-                    className={`text-base font-bold mb-2 leading-snug ${
+                    className={`text-[15px] font-bold mb-2 leading-snug ${
                       highlight ? "text-slate-900" : "text-slate-800"
                     }`}
                   >
                     {title}
                   </h3>
 
-                  {/* Description */}
+                  {/* ── Description
+                        Figma shows 2 lines max — line-clamp-2 to match card height
+                        text-[13px] to match Figma's smaller body text
+                        flex-grow pushes the button to the bottom
+                  ── */}
                   <p
-                    className={`text-sm leading-relaxed flex-grow mb-5 line-clamp-3 ${
+                    className={`text-[13px] leading-relaxed flex-grow mb-4 line-clamp-2 ${
                       highlight ? "text-slate-800" : "text-slate-500"
                     }`}
                   >
                     {description}
                   </p>
 
-                  {/* CTA row */}
+                  {/* ── CTA row
+                        group/btn scopes hover to the button only (not whole card)
+                        Default: outlined pill with CTA label
+                        Hover:   filled teal "View More" + ArrowUpRight
+                  ── */}
                   <div className="mt-auto flex items-center gap-2">
+                    <div className="group/btn relative h-8">
 
-                    {/*
-                      group/btn — scoped hover group on just the button area.
-                      Default state:  outlined pill with the service CTA label.
-                      Hover state:    filled teal "View More" + ArrowUpRight icon.
-                      Both layers are stacked via absolute positioning so the
-                      container keeps a stable height (h-9).
-                    */}
-                    <div className="group/btn relative h-9">
-
-                      {/* Default label — fades & shrinks out on hover */}
+                      {/* Default label — fades & shrinks out on button hover */}
                       <span
-                        className={`inline-flex items-center h-9 px-4 rounded-full text-sm font-medium border
+                        className={`inline-flex items-center h-8 px-4 rounded-full text-[13px] font-medium border
                           transition-all duration-200
-                          group-hover/btn:opacity-0 group-hover/btn:scale-90
-                          ${highlight
+                          group-hover/btn:opacity-0 group-hover/btn:scale-90 ${
+                          highlight
                             ? "bg-white border-white text-slate-800"
                             : "bg-white border-slate-300 text-slate-700"
-                          }`}
+                        }`}
                       >
                         {cta}
                       </span>
 
-                      {/* "View More" — fades & grows in on hover */}
+                      {/* Hover state — fades & grows in on button hover */}
                       <span
-                        className="absolute left-0 top-0 inline-flex items-center gap-1.5 h-9 px-4 rounded-full
-                          text-sm font-semibold bg-primary text-white whitespace-nowrap pointer-events-none
+                        className="absolute left-0 top-0 inline-flex items-center gap-1.5 h-8 px-4 rounded-full
+                          text-[13px] font-semibold bg-primary text-white whitespace-nowrap pointer-events-none
                           opacity-0 scale-90
                           group-hover/btn:opacity-100 group-hover/btn:scale-100
                           transition-all duration-200"
@@ -239,7 +253,7 @@ export default function ServicesSection() {
                       </span>
                     </div>
 
-                    {/* Arrow circle — only on the Diagnostic card (showArrow: true) */}
+                    {/* Teal arrow circle — Diagnostic card only */}
                     {showArrow && (
                       <span className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
                         <ArrowRight className="w-4 h-4 text-white" />

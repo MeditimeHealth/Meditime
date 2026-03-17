@@ -2,43 +2,41 @@
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay, EffectFade } from "swiper/modules";
-import { Button } from "./ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
 const slides = [
   {
-    title: "Book a Doctor Appointment in Minutes",
-    subtitle: "20+ Departments, 1000+ Physicians",
-    description: "Handpicked list of most experienced doctors from top hospitals near Savar and surroundings. Schedule your appointment with a doctor in just a few simple steps.",
+    title: "Top Doctors in Savar and Surroundings",
+    description:
+      "Meditime has a broad range of medical information services from doctors' appointment booking to ambulance contact numbers.",
     image: "/slide.jpg",
-    ctaText: "Book Appointment",
-    ctaLink: "/doctor",
+    ctaText: "View All Services",
+    ctaLink: "/service",
   },
   {
     title: "Get Your Meditime Membership Card",
-    subtitle: "Save Up to 50% on Medical Bills",
-    description: "Enjoy on spot discounts in your medical bills using Meditime Health Discount Cards. Get delivered within 7 working days and enjoy amazing discounts.",
+    description:
+      "Enjoy on spot discounts in your medical bills using Meditime Health Discount Cards. Get delivered within 7 working days.",
     image: "/slide2.jpg",
     ctaText: "View Plans",
     ctaLink: "/membership",
   },
   {
     title: "Download the Medicare Mobile App",
-    subtitle: "Take Control of Your Health",
-    description: "Doctor's Appointment Booking, Diagnostic Test Price Comparison, Online Doctor Consultation, Ambulance Contact — all in your pocket.",
+    description:
+      "Doctor's Appointment Booking, Diagnostic Test Price Comparison, Online Doctor Consultation, Ambulance Contact — all in your pocket.",
     image: "/slide3.jpg",
     ctaText: "Download Now",
     ctaLink: "https://play.google.com/store",
   },
   {
-    title: "Find all the information about 100+ Diagnostic Test in one Place",
-    subtitle: "Compare Prices & Save Up to 15%",
-    description: "Compare pricing of diagnostic tests and get up to 50% discount using our health discounts cards.",
+    title: "Find 100+ Diagnostic Tests in One Place",
+    description:
+      "Compare pricing of diagnostic tests and get up to 50% discount using our health discount cards.",
     image: "/slide.jpg",
     ctaText: "View Tests",
     ctaLink: "/diagnostic",
@@ -47,26 +45,50 @@ const slides = [
 
 export default function HeroSection() {
   return (
-    <div className="relative">
-      {/* ── MOBILE HERO — half viewport height ── */}
-      <div className="lg:hidden relative h-[50vh] min-h-[280px]">
+    <>
+      <style>{`
+        /* ── All dots are pill-shaped ────────────────────────────────────
+           Inactive: narrow pill, 16px wide, semi-transparent white
+           Active:   wider pill, 32px wide, solid white
+           Both are the same height (8px) and fully rounded
+        ─────────────────────────────────────────────────────────────── */
+        .hero-swiper .swiper-pagination {
+          bottom: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+        }
+        .hero-swiper .swiper-pagination-bullet {
+          width: 16px !important;
+          height: 8px !important;
+          border-radius: 999px !important;
+          background: rgba(255, 255, 255, 0.5) !important;
+          opacity: 1 !important;
+          margin: 0 !important;
+          transition: width 0.35s ease, background 0.35s ease;
+        }
+        .hero-swiper .swiper-pagination-bullet-active {
+          width: 32px !important;
+          background: #ffffff !important;
+        }
+      `}</style>
+
+      {/* ── MOBILE ──────────────────────────────────────────────────────── */}
+      <div className="lg:hidden w-full h-[55vh] min-h-[300px] relative">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}
           slidesPerView={1}
-          pagination={{
-            clickable: true,
-            bulletClass: "swiper-pagination-bullet-custom",
-            bulletActiveClass: "swiper-pagination-bullet-active-custom",
-          }}
+          pagination={{ clickable: true }}
           autoplay={{ delay: 6000, disableOnInteraction: false }}
           loop={true}
           effect="fade"
           fadeEffect={{ crossFade: true }}
-          className="h-full w-full"
+          className="hero-swiper !h-full w-full"
         >
           {slides.map((slide, index) => (
-            <SwiperSlide key={index}>
+            <SwiperSlide key={index} className="!h-full">
               <div className="relative h-full w-full">
                 <Image
                   src={slide.image}
@@ -75,22 +97,24 @@ export default function HeroSection() {
                   className="object-cover object-center"
                   priority={index === 0}
                 />
-                <div className="absolute inset-0 bg-black/45" />
-                <div className="absolute inset-0 flex flex-col justify-center px-6">
-                  <div className="max-w-xs">
-                    <h1 className="text-xl sm:text-2xl font-bold leading-snug text-white mb-3">
-                      {slide.title}
-                    </h1>
-                    <Link
-                      href={slide.ctaLink}
-                      target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
-                    >
-                      <Button className="bg-white hover:bg-white/90 text-gray-900 font-semibold text-xs h-9 px-5 rounded-full shadow-md transition-all inline-flex items-center gap-1.5">
-                        {slide.ctaText}
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </Button>
-                    </Link>
-                  </div>
+                <div className="absolute inset-0 bg-black/40" />
+
+                {/* ── Text: vertically & horizontally centered ── */}
+                <div className="absolute inset-0 flex flex-col items-start justify-center px-6 pb-10">
+                  <h1 className="text-xl font-bold leading-snug text-white mb-3 max-w-[280px]">
+                    {slide.title}
+                  </h1>
+                  <p className="text-[13px] text-white/80 leading-relaxed mb-4 max-w-[260px]">
+                    {slide.description}
+                  </p>
+                  <Link
+                    href={slide.ctaLink}
+                    target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
+                  >
+                    <button className="bg-white text-slate-900 font-medium text-sm px-5 py-2 rounded-full hover:opacity-90 transition-opacity">
+                      {slide.ctaText}
+                    </button>
+                  </Link>
                 </div>
               </div>
             </SwiperSlide>
@@ -98,53 +122,56 @@ export default function HeroSection() {
         </Swiper>
       </div>
 
-      {/* ── DESKTOP HERO — full viewport height ── */}
-      <div className="hidden lg:block relative h-screen min-h-[700px]">
+      {/* ── DESKTOP ─────────────────────────────────────────────────────── */}
+      <div className="hidden lg:block w-full h-screen min-h-[700px] relative">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}
           slidesPerView={1}
-          pagination={{
-            clickable: true,
-            bulletClass: "swiper-pagination-bullet-custom",
-            bulletActiveClass: "swiper-pagination-bullet-active-custom",
-          }}
+          pagination={{ clickable: true }}
           autoplay={{ delay: 6000, disableOnInteraction: false }}
           loop={true}
           effect="fade"
           fadeEffect={{ crossFade: true }}
-          className="h-full w-full"
+          className="hero-swiper !h-full w-full"
         >
           {slides.map((slide, index) => (
-            <SwiperSlide key={index}>
+            <SwiperSlide key={index} className="!h-full">
               <div className="relative h-full w-full">
                 <Image
                   src={slide.image}
                   alt={slide.title}
                   fill
-                  className="object-cover"
+                  className="object-cover object-center"
                   priority={index === 0}
                 />
-                <div className="absolute inset-0 bg-black/35" />
-                <div className="absolute inset-0 flex items-center">
+                <div className="absolute inset-0 bg-black/40" />
+
+                {/* ── Text block: vertically centered in the slide ── */}
+                <div className="absolute inset-0 flex flex-col justify-center">
                   <div className="container mx-auto px-8 lg:px-16">
-                    <div className="flex flex-col gap-5 max-w-[732px] min-h-[280px] justify-center">
-                      <h1 className="text-[52px] lg:text-[64px] font-bold leading-[1.1] text-white">
+                    <div className="max-w-[500px]">
+
+                      {/* Title */}
+                      <h1 className="text-[38px] lg:text-[42px] font-bold leading-[1.15] text-white mb-4">
                         {slide.title}
                       </h1>
-                      <p className="text-[20px] font-medium text-white/90 leading-[1.5] tracking-[0.16px] max-w-[578px]">
+
+                      {/* Description */}
+                      <p className="text-[14px] leading-relaxed text-white/85 mb-6 max-w-[420px]">
                         {slide.description}
                       </p>
-                      <div>
-                        <Link
-                          href={slide.ctaLink}
-                          target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
-                        >
-                          <Button className="bg-white hover:bg-white/90 text-[#212121] font-medium text-[16px] h-auto pl-5 pr-7 py-[15px] rounded-[40px] shadow-none transition-all">
-                            {slide.ctaText}
-                          </Button>
-                        </Link>
-                      </div>
+
+                      {/* CTA */}
+                      <Link
+                        href={slide.ctaLink}
+                        target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
+                      >
+                        <button className="bg-white text-slate-900 font-medium text-[15px] px-7 py-3 rounded-full hover:opacity-90 transition-opacity">
+                          {slide.ctaText}
+                        </button>
+                      </Link>
+
                     </div>
                   </div>
                 </div>
@@ -153,6 +180,6 @@ export default function HeroSection() {
           ))}
         </Swiper>
       </div>
-    </div>
+    </>
   );
 }
