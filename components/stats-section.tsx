@@ -1,51 +1,135 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Users, Building2, Stethoscope, HeadphonesIcon } from "lucide-react";
+
+/* ════════════════════════════════════════════════════════════════════════════
+   SVG icons — teal outline, matched to Figma
+════════════════════════════════════════════════════════════════════════════ */
+
+const IconPatients = () => (
+  <svg viewBox="0 0 28 28" fill="none" className="w-6 h-6" stroke="#0d9488" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="8" r="3.5"/>
+    <path d="M5 22 Q5 16 11 16 Q17 16 17 22"/>
+    <circle cx="19" cy="7" r="3" strokeWidth="1.5"/>
+    <path d="M16 22 Q16 16 19 15.5 Q23 15 23 19" strokeWidth="1.5"/>
+  </svg>
+);
+
+const IconHospital = () => (
+  <svg viewBox="0 0 28 28" fill="none" className="w-6 h-6" stroke="#0d9488" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="4" y="8" width="20" height="17" rx="1.5"/>
+    <path d="M2 10 L14 3 L26 10"/>
+    <rect x="11" y="18" width="6" height="7" rx="0.5"/>
+    <line x1="14" y1="10.5" x2="14" y2="15.5"/>
+    <line x1="11.5" y1="13" x2="16.5" y2="13"/>
+  </svg>
+);
+
+const IconDoctors = () => (
+  <svg viewBox="0 0 28 28" fill="none" className="w-6 h-6" stroke="#0d9488" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="14" cy="7.5" r="4"/>
+    <path d="M8 27 L8 20 Q8 15 14 15 Q20 15 20 20 L20 27"/>
+    <path d="M10 16 Q8 16 8 19"/>
+    <path d="M18 16 Q20 16 20 19"/>
+    <path d="M8 19 Q8 23 11 23 Q14 23 14 20" strokeWidth="1.4"/>
+    <circle cx="14" cy="19.5" r="1.5" strokeWidth="1.4"/>
+  </svg>
+);
+
+const IconSupport = () => (
+  <svg viewBox="0 0 28 28" fill="none" className="w-6 h-6" stroke="#0d9488" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 15 Q5 7 14 7 Q23 7 23 15"/>
+    <rect x="3" y="14" width="4" height="7" rx="2"/>
+    <rect x="21" y="14" width="4" height="7" rx="2"/>
+    <path d="M21 20 Q21 24 18 24 L16 24" strokeWidth="1.5"/>
+    <circle cx="15.5" cy="24" r="1" fill="#0d9488" stroke="none"/>
+  </svg>
+);
+
+/* ════════════════════════════════════════════════════════════════════════════
+   Stats data
+════════════════════════════════════════════════════════════════════════════ */
+
+const stats = [
+  { number: "1000+", label: "Happy Patients", Icon: IconPatients },
+  { number: "40+",   label: "Hospitals",       Icon: IconHospital },
+  { number: "1000+", label: "Doctors",          Icon: IconDoctors  },
+  { number: "24/7",  label: "Support",          Icon: IconSupport  },
+];
+
+/* ════════════════════════════════════════════════════════════════════════════
+   Component
+════════════════════════════════════════════════════════════════════════════ */
 
 export default function StatsSection() {
-  const stats = [
-    { number: "1000+", label: "Happy Patients", icon: Users },
-    { number: "40+",   label: "Hospitals",      icon: Building2 },
-    { number: "1000+", label: "Doctors",         icon: Stethoscope },
-    { number: "24/7",  label: "Support",         icon: HeadphonesIcon },
-  ];
-
   return (
-    /* Solid teal background — matches Figma exactly */
-    <div className="w-full bg-primary py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {stats.map((stat, index) => {
-            const IconComponent = stat.icon;
-            return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.08 }}
+    /*
+      ── Section background: teal radial gradient ──────────────────────────
+      Figma shows a lighter teal center bleeding to deeper teal at edges —
+      achieved with a radial gradient layered over a solid base teal.
+      Two overlapping radial blobs give the organic glow seen in Figma.
+    */
+    <div
+      className="w-full py-14 sm:py-16 relative overflow-hidden"
+      style={{
+        background:
+          "radial-gradient(ellipse 80% 60% at 50% 50%, #16c5b5 0%, #0d9488 45%, #0a7268 100%)",
+      }}
+    >
+      {/* Decorative radial glows — match the lighter patches in Figma */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 50% 70% at 20% 30%, rgba(255,255,255,0.08) 0%, transparent 70%), " +
+            "radial-gradient(ellipse 40% 50% at 80% 70%, rgba(255,255,255,0.06) 0%, transparent 70%)",
+        }}
+      />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+          {stats.map(({ number, label, Icon }, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.08 }}
+            >
+              {/*
+                ── Glass card ────────────────────────────────────────────────
+                Figma card: frosted glass — semi-transparent white bg,
+                backdrop-blur, soft white border, rounded-2xl
+                bg: rgba(255,255,255,0.12)
+                border: rgba(255,255,255,0.25)
+                backdrop-filter: blur(12px)
+              */}
+              <div
+                className="flex flex-col items-center text-center px-4 py-8 rounded-2xl transition-transform duration-300 hover:-translate-y-1"
+                style={{
+                  background: "rgba(255, 255, 255, 0.12)",
+                  border: "1px solid rgba(255, 255, 255, 0.25)",
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                }}
               >
-                {/* Slightly lighter teal card */}
-                <div className="flex flex-col items-center text-center p-6 lg:p-8 rounded-2xl bg-white/10 border border-white/10">
-                  {/* White circle icon */}
-                  <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-5 shrink-0">
-                    <IconComponent className="w-6 h-6 text-primary" strokeWidth={1.5} />
-                  </div>
-
-                  {/* Number */}
-                  <div className="text-4xl md:text-5xl font-extrabold text-white mb-2 leading-none">
-                    {stat.number}
-                  </div>
-
-                  {/* Label */}
-                  <div className="text-sm md:text-base text-white/80 font-medium">
-                    {stat.label}
-                  </div>
+                {/* White circle — teal SVG icon inside */}
+                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-5 shrink-0 shadow-sm">
+                  <Icon />
                 </div>
-              </motion.div>
-            );
-          })}
+
+                {/* Stat number */}
+                <div className="text-4xl md:text-[44px] font-bold text-white mb-1.5 leading-none">
+                  {number}
+                </div>
+
+                {/* Label */}
+                <div className="text-[13px] md:text-sm text-white/80 font-normal">
+                  {label}
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </div>
