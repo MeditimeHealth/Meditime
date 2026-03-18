@@ -9,11 +9,11 @@ export default function Footer() {
   const [email, setEmail] = useState("");
 
   const services = [
-    { href: "/doctor",      label: "Doctor Appointment" },
-    { href: "/service",     label: "Video Consultation" },
-    { href: "/hospital",    label: "Hospital List" },
-    { href: "/diagnostic",  label: "Diagnostic Test" },
-    { href: "/ambulance",   label: "Ambulance Directory" },
+    { href: "/doctor",     label: "Doctor Appointment" },
+    { href: "/service",    label: "Video Consultation" },
+    { href: "/hospital",   label: "Hospital List" },
+    { href: "/diagnostic", label: "Diagnostic Test" },
+    { href: "/ambulance",  label: "Ambulance Directory" },
   ];
 
   const resources = [
@@ -25,70 +25,111 @@ export default function Footer() {
   ];
 
   const socialLinks = [
-    { icon: MessageCircle, href: "https://wa.me/8801610385555", label: "WhatsApp",  teal: false },
-    { icon: Facebook,      href: "https://www.facebook.com/meditime.health", label: "Facebook", teal: true },
-    { icon: Instagram,     href: "#", label: "Instagram", teal: false },
-    { icon: Linkedin,      href: "#", label: "LinkedIn",  teal: false },
-    { icon: Youtube,       href: "#", label: "YouTube",   teal: false },
+    { icon: MessageCircle, href: "https://wa.me/8801610385555",             label: "WhatsApp",  active: false },
+    { icon: Facebook,      href: "https://www.facebook.com/meditime.health", label: "Facebook",  active: true  },
+    { icon: Instagram,     href: "#", label: "Instagram", active: false },
+    { icon: Linkedin,      href: "#", label: "LinkedIn",  active: false },
+    { icon: Youtube,       href: "#", label: "YouTube",   active: false },
   ];
 
-  return (
-    <footer className="bg-slate-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  // Figma exact values
+  // bg: #111827  |  teal: #3DB5A0  |  divider: rgba(255,255,255,0.08)
+  // body-text: #9CA3AF  |  input-bg: #1F2937
 
-        {/* ── TOP ROW: logo | CTA | email ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center border-b border-slate-700 py-10">
+  return (
+    <footer className="w-full" style={{ backgroundColor: "#111827", color: "#9CA3AF" }}>
+      <div className="max-w-[1280px] mx-auto px-6 lg:px-14">
+
+        {/* ── TOP ROW ─────────────────────────────────────────────────── */}
+        <div
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10 items-center py-12"
+      
+        >
           {/* Logo + tagline */}
           <div className="flex flex-col gap-2">
-            <Image src="/logo.png" alt="Meditime Logo" width={150} height={40} className="h-9 w-auto brightness-200" />
-            <p className="text-sm text-gray-400">Meditime- Right Care On Time</p>
+            <Image
+              src="/logo.png"
+              alt="Meditime"
+              width={200}
+              height={36}
+              className="h-9 "
+              style={{ filter: "brightness(10)" }}
+            />
+            <p className="text-sm" style={{ color: "#6B7280" }}>
+              Meditime- Right Care On Time
+            </p>
           </div>
 
-          {/* CTA text */}
+          {/* CTA */}
           <div>
-            <h3 className="text-2xl font-bold text-white leading-snug">
-              Get Started &amp; Book Your Appointment
+            <h3
+              className="text-2xl leading-snug "
+              style={{ color: "#FFFFFF" }}
+            >
+              Get Started &amp; Book Your<br />Appointment
             </h3>
           </div>
 
-          {/* Email input + button */}
-          <div className="flex items-center bg-slate-800 rounded-full overflow-hidden pr-1.5 border border-slate-700 focus-within:border-primary transition-all">
+          {/* Email pill */}
+          <div
+            className="flex items-center overflow-hidden"
+            style={{
+              backgroundColor: "white",
+              borderRadius: "9999px",
+              border: "1px solid rgba(255,255,255,0.08)",
+              paddingRight: "4px",
+            }}
+          >
             <input
               type="email"
               placeholder="Enter E- Mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 bg-transparent px-5 py-3 text-sm text-gray-200 placeholder:text-gray-500 outline-none"
+              className="flex-1 bg-transparent outline-none text-sm px-5 py-3"
+              style={{ color: "black" }}
             />
-            <button className="shrink-0 bg-primary hover:bg-primary/90 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all whitespace-nowrap">
+            <button
+              className="shrink-0 text-sm font-semibold text-white px-5 py-2.5 rounded-full whitespace-nowrap"
+              style={{ backgroundColor: "#3DB5A0", border: "none" }}
+            >
               Send Email
             </button>
           </div>
         </div>
 
-        {/* ── BOTTOM SECTION ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 py-10">
+        {/* ── 4-COLUMN BOTTOM SECTION ─────────────────────────────────── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 py-12">
 
-          {/* Get In Touch + socials */}
-          <div className="flex flex-col gap-4">
-            <h4 className="text-base font-bold text-white">Get In Touch</h4>
+          {/* Get In Touch */}
+          <div className="flex flex-col gap-5">
+            <h4 className="text-base font-bold" style={{ color: "#FFFFFF" }}>
+              Get In Touch
+            </h4>
             <div className="flex items-center gap-2.5">
-              {socialLinks.map((social, i) => {
-                const Icon = social.icon;
+              {socialLinks.map((s, i) => {
+                const Icon = s.icon;
                 return (
                   <a
                     key={i}
-                    href={social.href}
+                    href={s.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={social.label}
-                    className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all hover:scale-110 ${
-                      social.teal
-                        ? "bg-primary border-primary text-white"
-                        : "border-gray-600 text-gray-400 hover:border-primary hover:text-primary"
-                    }`}
+                    aria-label={s.label}
+                    className="flex items-center justify-center transition-all hover:scale-110"
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "50%",
+                      border: s.active
+                        ? "1px solid #3DB5A0"
+                        : "1px solid rgba(255,255,255,0.2)",
+                      backgroundColor: s.active ? "#3DB5A0" : "transparent",
+                      color: s.active ? "#FFFFFF" : "#9CA3AF",
+                      textDecoration: "none",
+                      flexShrink: 0,
+                    }}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon size={14} />
                   </a>
                 );
               })}
@@ -97,11 +138,20 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <h4 className="text-base font-bold text-white mb-4">Services</h4>
-            <ul className="space-y-2.5">
+            <h4
+              className="text-base font-bold mb-5"
+              style={{ color: "#FFFFFF" }}
+            >
+              Services
+            </h4>
+            <ul className="flex flex-col gap-3">
               {services.map((s, i) => (
                 <li key={i}>
-                  <Link href={s.href} className="text-sm text-gray-400 hover:text-primary transition-colors">
+                  <Link
+                    href={s.href}
+                    className="text-sm transition-colors hover:text-[#3DB5A0]"
+                    style={{ color: "#9CA3AF", textDecoration: "none" }}
+                  >
                     {s.label}
                   </Link>
                 </li>
@@ -111,11 +161,20 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <h4 className="text-base font-bold text-white mb-4">Resources</h4>
-            <ul className="space-y-2.5">
+            <h4
+              className="text-base font-bold mb-5"
+              style={{ color: "#FFFFFF" }}
+            >
+              Resources
+            </h4>
+            <ul className="flex flex-col gap-3">
               {resources.map((r, i) => (
                 <li key={i}>
-                  <Link href={r.href} className="text-sm text-gray-400 hover:text-primary transition-colors">
+                  <Link
+                    href={r.href}
+                    className="text-sm transition-colors hover:text-[#3DB5A0]"
+                    style={{ color: "#9CA3AF", textDecoration: "none" }}
+                  >
                     {r.label}
                   </Link>
                 </li>
@@ -125,18 +184,40 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-base font-bold text-white mb-4">Contact</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li className="text-white font-semibold">Medi Time</li>
-              <li>Health Care IT Services</li>
-              <li>Address: Domna, Savar, Dhaka 1349</li>
+            <h4
+              className="text-base font-bold mb-5"
+              style={{ color: "#FFFFFF" }}
+            >
+              Contact
+            </h4>
+            <ul className="flex flex-col gap-2.5">
+              <li
+                className="text-sm font-semibold"
+                style={{ color: "#FFFFFF" }}
+              >
+                Medi Time
+              </li>
+              <li className="text-sm" style={{ color: "#9CA3AF" }}>
+                Health Care IT Services
+              </li>
+              <li className="text-sm" style={{ color: "#9CA3AF" }}>
+                Address: Domna, Savar, Dhaka 1349
+              </li>
               <li>
-                <a href="mailto:support@meditime.com.bd" className="hover:text-primary transition-colors">
+                <a
+                  href="mailto:support@meditime.com.bd"
+                  className="text-sm transition-colors hover:text-[#3DB5A0]"
+                  style={{ color: "#9CA3AF", textDecoration: "none" }}
+                >
                   support@meditime.com.bd
                 </a>
               </li>
               <li>
-                <a href="tel:+8801610384444" className="hover:text-primary transition-colors">
+                <a
+                  href="tel:+8801610384444"
+                  className="text-sm transition-colors hover:text-[#3DB5A0]"
+                  style={{ color: "#9CA3AF", textDecoration: "none" }}
+                >
                   +880- 1610 38 4444
                 </a>
               </li>
@@ -144,15 +225,28 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* ── COPYRIGHT BAR ── */}
-        <div className="border-t border-slate-700 py-6 flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-sm text-gray-500">
+        {/* ── COPYRIGHT BAR ────────────────────────────────────────────── */}
+        <div
+          className="flex flex-col md:flex-row items-center justify-between gap-3 py-6"
+        >
+          <p className="text-sm" style={{ color: "#6B7280" }}>
             © 2026 All Rights Reserved By Meditime.
           </p>
-          <div className="flex items-center gap-6 text-sm text-gray-400">
-            <Link href="/about"   className="hover:text-primary transition-colors">About Us</Link>
-            <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
-            <Link href="/terms"   className="hover:text-primary transition-colors">Terms and Conditions</Link>
+          <div className="flex items-center gap-8">
+            {[
+              { href: "/about",   label: "About Us" },
+              { href: "/privacy", label: "Privacy Policy" },
+              { href: "/terms",   label: "Terms and Conditions" },
+            ].map((link, i) => (
+              <Link
+                key={i}
+                href={link.href}
+                className="text-sm transition-colors hover:text-[#3DB5A0]"
+                style={{ color: "#9CA3AF", textDecoration: "none" }}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
 
