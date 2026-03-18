@@ -24,22 +24,21 @@ export default function PopupModal() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathname?.startsWith("/admin")) return;
+    // Only show popup on the home page
+    if (pathname !== "/") return;
+
+    // Only show once per browser session
+    const hasSeen = sessionStorage.getItem("hasSeenPopup");
+    if (hasSeen) return;
 
     const fetchPopup = async () => {
       try {
         const response = await fetch("/api/popup");
         const data = await response.json();
-        
+
         if (data.success && data.popup && data.popup.isActive) {
-          // Check if already seen in this session (optional, removing for now to ensure visibility per user request "popup option like this")
-          // If the user wants standard behavior (once per session), uncomment below:
-          // const hasSeen = sessionStorage.getItem("hasSeenPopup");
-          // if (!hasSeen) {
-            setPopupData(data.popup);
-            // Delay opening slightly for better UX
-            setTimeout(() => setIsOpen(true), 1500);
-          // }
+          setPopupData(data.popup);
+          setTimeout(() => setIsOpen(true), 1500);
         }
       } catch (error) {
         console.error("Error fetching popup:", error);
@@ -47,7 +46,8 @@ export default function PopupModal() {
     };
 
     fetchPopup();
-  }, [pathname]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // empty array: runs once on mount only, not on every route change
 
   const handleClose = () => {
     setIsOpen(false);
