@@ -689,10 +689,6 @@ function DoctorListPageContent() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center"
-            style={{
-              fontFamily:
-                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
           >
             <motion.div
               animate={{ rotate: 360 }}
@@ -797,10 +793,6 @@ function DoctorListPageContent() {
                     }
                   }}
                   className="w-full pl-12 md:pl-14 pr-4 py-2.5 md:py-7 text-sm md:text-lg border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent placeholder:text-gray-400"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 />
                 <Button className="hidden md:flex bg-primary hover:bg-primary-dark text-white items-center gap-2 rounded-xl px-8 py-6 text-lg font-medium transition-all shadow-lg hover:shadow-primary/30">
                   <Search className="h-5 w-5" />
@@ -843,20 +835,12 @@ function DoctorListPageContent() {
                           <div className="flex-1">
                             <div
                               className="font-bold text-gray-800 text-base"
-                              style={{
-                                fontFamily:
-                                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                              }}
                             >
                               {suggestion.value}
                             </div>
                             {suggestion.doctor && (
                               <div
                                 className="text-sm text-gray-500 mt-1 flex items-center gap-2"
-                                style={{
-                                  fontFamily:
-                                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                                }}
                               >
                                 <span className="text-primary font-medium">
                                   {suggestion.doctor.specialty}
@@ -872,10 +856,6 @@ function DoctorListPageContent() {
                             {suggestion.hospital && (
                               <div
                                 className="text-sm text-gray-500 mt-1 font-medium text-primary"
-                                style={{
-                                  fontFamily:
-                                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                                }}
                               >
                                 এই হাসপাতালের ডাক্তার দেখতে ক্লিক করুন
                               </div>
@@ -889,10 +869,6 @@ function DoctorListPageContent() {
                                   ? "bg-purple-100 text-purple-700"
                                   : "bg-green-100 text-green-700"
                             }`}
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
                           >
                             {suggestion.type}
                           </span>
@@ -975,7 +951,7 @@ function DoctorListPageContent() {
                       }}
                       className={`flex flex-col items-center justify-center gap-2 p-5 rounded-lg w-full h-[180px] transition-all duration-300 ${
                         selectedDept === dept.name
-                          ? "bg-primary-dark text-white shadow-md"
+                          ? "bg-[#3DB5A0] text-white shadow-md"
                           : "bg-white text-gray-700 border border-gray-200"
                       }`}
                     >
@@ -1041,12 +1017,8 @@ function DoctorListPageContent() {
             <div className="mb-8 border-b border-gray-100 pb-4">
               <h2
                 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-3"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
               >
-                <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+                <div className="p-2.5 bg-[#3DB5A0]/10 text-[#3DB5A0] rounded-xl">
                   <MapPin className="h-6 w-6" />
                 </div>
                 {banglaLabels.findByLocation}
@@ -1058,10 +1030,6 @@ function DoctorListPageContent() {
                 <Label
                   htmlFor="filter-division"
                   className="mb-3 block text-base font-semibold text-gray-700"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   ১. {banglaLabels.division}
                 </Label>
@@ -1071,10 +1039,6 @@ function DoctorListPageContent() {
                   value={selectedDivision}
                   onChange={(e) => handleDivisionSelect(e.target.value)}
                   className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   <option value="">{banglaLabels.selectDivision}</option>
                   {divisions.map((div) => (
@@ -1093,10 +1057,6 @@ function DoctorListPageContent() {
                 <Label
                   htmlFor="filter-district"
                   className="mb-3 block text-base font-semibold text-gray-700"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   ২. {banglaLabels.district}
                 </Label>
@@ -1107,10 +1067,6 @@ function DoctorListPageContent() {
                   onChange={(e) => handleDistrictSelect(e.target.value)}
                   disabled={!selectedDivision}
                   className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   <option value="">
                     {selectedDivision
@@ -1133,10 +1089,6 @@ function DoctorListPageContent() {
                 <Label
                   htmlFor="filter-thana"
                   className="mb-3 block text-base font-semibold text-gray-700"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   ৩. {banglaLabels.thana}
                 </Label>
@@ -1147,10 +1099,6 @@ function DoctorListPageContent() {
                   onChange={(e) => handleThanaSelect(e.target.value)}
                   disabled={!selectedDistrict || !selectedDivision}
                   className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   <option value="">
                     {selectedDivision && selectedDistrict
@@ -1173,10 +1121,6 @@ function DoctorListPageContent() {
                 <Label
                   htmlFor="filter-hospital-hierarchical"
                   className="mb-3 block text-base font-semibold text-gray-700"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   ৪. {banglaLabels.hospital}
                 </Label>
@@ -1186,10 +1130,6 @@ function DoctorListPageContent() {
                   value={selectedHospital}
                   onChange={(e) => handleHospitalSelect(e.target.value)}
                   className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   <option value="">{banglaLabels.allHospitals}</option>
                   {hospitalNames.map((hosp) => (
@@ -1208,10 +1148,6 @@ function DoctorListPageContent() {
                 <Label
                   htmlFor="filter-department-hierarchical"
                   className="mb-3 block text-base font-semibold text-gray-700"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   ৫. {banglaLabels.department}
                 </Label>
@@ -1221,10 +1157,6 @@ function DoctorListPageContent() {
                   value={selectedDepartment}
                   onChange={(e) => handleDepartmentSelect(e.target.value)}
                   className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   <option value="">{banglaLabels.allDepartments}</option>
                   {departmentNames.map((dept) => (
@@ -1259,10 +1191,6 @@ function DoctorListPageContent() {
                     setSelectedHospital("");
                   }}
                   className="flex items-center gap-2 px-5 py-2.5"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   <X className="h-5 w-5" />
                   {banglaLabels.reset}
@@ -1288,19 +1216,11 @@ function DoctorListPageContent() {
                 <div className="mb-6 pb-4 border-b border-gray-100">
                   <h3
                     className="text-xl md:text-2xl font-bold text-gray-900"
-                    style={{
-                      fontFamily:
-                        "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
                   >
                     ফিল্টার করুন
                   </h3>
                   <p
                     className="text-sm text-gray-600 mt-1"
-                    style={{
-                      fontFamily:
-                        "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
                   >
                     আপনার প্রয়োজন অনুযায়ী ডাক্তার খুঁজুন
                   </p>
@@ -1311,10 +1231,6 @@ function DoctorListPageContent() {
                     <Label
                       htmlFor="specialty"
                       className="mb-3 block text-base font-semibold text-gray-700"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
                     >
                       {banglaLabels.specialtyFilter}
                     </Label>
@@ -1323,10 +1239,6 @@ function DoctorListPageContent() {
                       value={selectedSpecialty}
                       onChange={(e) => setSelectedSpecialty(e.target.value)}
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
                     >
                       <option value="">{banglaLabels.allSpecialties}</option>
                       {specialties.map((spec) => (
@@ -1342,10 +1254,6 @@ function DoctorListPageContent() {
                     <Label
                       htmlFor="hospital"
                       className="mb-3 block text-base font-semibold text-gray-700"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
                     >
                       {banglaLabels.hospitalFilter}
                     </Label>
@@ -1354,10 +1262,6 @@ function DoctorListPageContent() {
                       value={selectedHospital}
                       onChange={(e) => setSelectedHospital(e.target.value)}
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
                     >
                       <option value="">{banglaLabels.allHospitals}</option>
                       {hospitalNames.map((hosp) => (
@@ -1373,10 +1277,6 @@ function DoctorListPageContent() {
                     <Label
                       htmlFor="qualification"
                       className="mb-3 block text-base font-semibold text-gray-700"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
                     >
                       {banglaLabels.qualificationFilter}
                     </Label>
@@ -1385,10 +1285,6 @@ function DoctorListPageContent() {
                       value={selectedQualification}
                       onChange={(e) => setSelectedQualification(e.target.value)}
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
                     >
                       <option value="">{banglaLabels.allQualifications}</option>
                       {qualifications.map((qual) => (
@@ -1405,10 +1301,6 @@ function DoctorListPageContent() {
                   <div>
                     <Label
                       className="mb-3 block text-base font-semibold text-gray-700"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
                     >
                       {banglaLabels.consultationFee}
                     </Label>
@@ -1419,10 +1311,6 @@ function DoctorListPageContent() {
                         value={minFee}
                         onChange={(e) => setMinFee(e.target.value)}
                         className="w-full px-4 py-3 border-2 rounded-xl shadow-sm hover:shadow-md transition-all"
-                        style={{
-                          fontFamily:
-                            "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
                       />
                       <Input
                         type="number"
@@ -1430,10 +1318,6 @@ function DoctorListPageContent() {
                         value={maxFee}
                         onChange={(e) => setMaxFee(e.target.value)}
                         className="w-full px-4 py-3 border-2 rounded-xl shadow-sm hover:shadow-md transition-all"
-                        style={{
-                          fontFamily:
-                            "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
                       />
                     </div>
                   </div>
@@ -1443,10 +1327,6 @@ function DoctorListPageContent() {
                     <Label
                       htmlFor="rating"
                       className="mb-3 block text-base font-semibold text-gray-700"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
                     >
                       {banglaLabels.minimumRating}
                     </Label>
@@ -1455,10 +1335,6 @@ function DoctorListPageContent() {
                       value={minRating}
                       onChange={(e) => setMinRating(e.target.value)}
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
                     >
                       <option value="">{banglaLabels.anyRating}</option>
                       <option value="4">৪+ ⭐</option>
@@ -1472,10 +1348,6 @@ function DoctorListPageContent() {
                   <div className="md:col-span-2 lg:col-span-3">
                     <Label
                       className="mb-3 block text-base font-semibold text-gray-700"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
                     >
                       {banglaLabels.availableDays}
                     </Label>
@@ -1489,13 +1361,9 @@ function DoctorListPageContent() {
                           whileTap={{ scale: 0.95 }}
                           className={`px-5 py-2.5 rounded-xl text-base font-semibold transition-all shadow-md hover:shadow-lg ${
                             selectedDays.includes(day)
-                              ? "bg-gradient-to-r from-primary to-primary-dark text-white"
+                              ? "bg-[#3DB5A0] text-white"
                               : "bg-white text-gray-700 hover:bg-gray-100 border-2 border-gray-300"
                           }`}
-                          style={{
-                            fontFamily:
-                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
                         >
                           {banglaDays[index]}
                         </motion.button>
@@ -1515,14 +1383,10 @@ function DoctorListPageContent() {
           transition={{ duration: 0.3 }}
           className="mb-8"
         >
-          <Card className="p-5 bg-white border-2 border-primary/10 shadow-lg">
+          <Card className="p-5 bg-white border border-gray-100 shadow-sm rounded-2xl">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div
                 className="text-base font-semibold text-gray-700"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
               >
                 {searchQuery ? (
                   <span>
@@ -1557,10 +1421,6 @@ function DoctorListPageContent() {
                     size="sm"
                     onClick={() => setSearchQuery("")}
                     className="flex items-center gap-2 px-4 py-2.5 border-2 shadow-md hover:shadow-lg"
-                    style={{
-                      fontFamily:
-                        "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
                   >
                     <X className="h-5 w-5" />
                     {banglaLabels.clearSearch}
@@ -1584,10 +1444,6 @@ function DoctorListPageContent() {
                 <Stethoscope className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <p
                   className="text-xl font-semibold text-gray-600 mb-4"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
                 >
                   {banglaLabels.noDoctors}
                 </p>
@@ -1601,10 +1457,6 @@ function DoctorListPageContent() {
                     onClick={clearFilters}
                     variant="outline"
                     className="px-6 py-3 border-2 shadow-md hover:shadow-lg"
-                    style={{
-                      fontFamily:
-                        "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
                   >
                     {banglaLabels.clearFilters}
                   </Button>
@@ -1613,7 +1465,7 @@ function DoctorListPageContent() {
             </Card>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {filteredAndSortedDoctors.map((doctor, index) => {
               const matchedHospital = hospitals.find(h => h.name === doctor.hospital);
               const doctorWithBnHospital = {

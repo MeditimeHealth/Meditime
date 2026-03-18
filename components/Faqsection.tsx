@@ -35,16 +35,7 @@ const faqs = [
     answer:
       "Open the Ambulance section on our website or mobile app. You'll find a curated directory of ambulance services with direct contact numbers. In an emergency, you can call them directly or request through the platform.",
   },
-  {
-    question: "Which hospitals and clinics are partnered with Meditime?",
-    answer:
-      "Meditime partners with 40+ hospitals and diagnostic centers in Savar, Ashulia, and surrounding areas. You can browse the full list under the Hospital section, including contact details, available specialties, and directions.",
-  },
-  {
-    question: "How do I get the Meditime mobile app?",
-    answer:
-      "The Meditime app is available for Android on the Google Play Store. Search for 'Meditime' and install it for free. The app includes appointment booking, diagnostic price comparison, ambulance contact, and your discount card — all in one place.",
-  },
+  
 ];
 
 export default function FaqSection() {
