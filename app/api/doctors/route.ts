@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Use newPatientFee as consultationFee if consultationFee is not provided
-    const finalConsultationFee = consultationFee || newPatientFee;
+    const finalConsultationFee = consultationFee !== undefined ? consultationFee : newPatientFee;
 
     // Ensure availability is an array and validate structure
     const availabilityArray = Array.isArray(availability) ? availability : [availability];
@@ -106,30 +106,30 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Prepare doctor data, only including defined fields
+    // Prepare doctor data
     const doctorData: any = {
       name: name || "",
-      specialty,
-      qualification,
-      designation,
-
+      specialty: specialty || "",
+      qualification: qualification || "",
+      designation: designation || "",
       consultationFee: finalConsultationFee,
       availability: availabilityArray,
     };
 
-    // Add optional fields only if they have values
-
+    // Add optional fields
     if (email) doctorData.email = email;
     if (phoneNumber) doctorData.phoneNumber = phoneNumber;
     if (hospital) doctorData.hospital = hospital;
     if (division) doctorData.division = division;
     if (district) doctorData.district = district;
     if (thana) doctorData.thana = thana;
-
     if (department) doctorData.department = department;
-    if (oldPatientFee) doctorData.oldPatientFee = oldPatientFee;
-    if (newPatientFee) doctorData.newPatientFee = newPatientFee;
-    if (diseases && Array.isArray(diseases) && diseases.length > 0) doctorData.diseases = diseases;
+
+    // Handle fees - allow 0
+    if (oldPatientFee !== undefined) doctorData.oldPatientFee = oldPatientFee;
+    if (newPatientFee !== undefined) doctorData.newPatientFee = newPatientFee;
+
+    if (diseases && Array.isArray(diseases)) doctorData.diseases = diseases;
     if (bio) doctorData.bio = bio;
     if (image) doctorData.image = image;
 

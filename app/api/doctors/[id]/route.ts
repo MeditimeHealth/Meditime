@@ -65,10 +65,13 @@ export async function PUT(
       image,
     } = body;
 
-    // Validate required fields - consultationFee or newPatientFee is required
-    if (!name || !qualification || !availability) {
+    // Validate required fields - allow either English or Bangla versions
+    const hasName = name || body.nameBn;
+    const hasQualification = qualification || body.qualificationBn;
+
+    if (!hasName || !hasQualification || !availability) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "Missing required fields: Name (English or Bangla), Qualification (English or Bangla), and Availability are required." },
         { status: 400 }
       );
     }
@@ -97,18 +100,15 @@ export async function PUT(
       }
     }
 
-    // Prepare doctor data, only including defined fields
+    // Prepare doctor data
     const doctorData: any = {
-      name,
-      qualification,
-
+      name: name || "",
+      qualification: qualification || "",
       consultationFee: finalConsultationFee,
       availability: availabilityArray,
     };
 
-    // Add optional fields only if they have values
-
-
+    // Add optional fields
     if (specialty) doctorData.specialty = specialty;
     if (designation) doctorData.designation = designation;
     if (email) doctorData.email = email;
@@ -117,13 +117,22 @@ export async function PUT(
     if (division) doctorData.division = division;
     if (district) doctorData.district = district;
     if (thana) doctorData.thana = thana;
-
     if (department) doctorData.department = department;
-    if (oldPatientFee) doctorData.oldPatientFee = oldPatientFee;
-    if (newPatientFee) doctorData.newPatientFee = newPatientFee;
-    if (diseases && Array.isArray(diseases) && diseases.length > 0) doctorData.diseases = diseases;
+    
+    // Handle fees - allow 0
+    if (oldPatientFee !== undefined) doctorData.oldPatientFee = oldPatientFee;
+    if (newPatientFee !== undefined) doctorData.newPatientFee = newPatientFee;
+    
+    if (diseases && Array.isArray(diseases)) doctorData.diseases = diseases;
     if (bio) doctorData.bio = bio;
     if (image) doctorData.image = image;
+
+    // Bangla Fields
+    if (body.nameBn) doctorData.nameBn = body.nameBn;
+    if (body.specialtyBn) doctorData.specialtyBn = body.specialtyBn;
+    if (body.qualificationBn) doctorData.qualificationBn = body.qualificationBn;
+    if (body.designationBn) doctorData.designationBn = body.designationBn;
+    if (body.bioBn) doctorData.bioBn = body.bioBn;
 
     const doctor = await Doctor.findByIdAndUpdate(
       id,
