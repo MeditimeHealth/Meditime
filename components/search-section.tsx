@@ -172,7 +172,7 @@ export default function SearchSection() {
               className="shrink-0 bg-primary hover:bg-primary/90 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-all whitespace-nowrap shadow-sm"
               style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
             >
-              Doctor/Hostpital Search
+              Search
             </button>
           </div>
 

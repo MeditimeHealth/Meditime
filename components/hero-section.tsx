@@ -75,7 +75,7 @@ export default function HeroSection() {
       `}</style>
 
       {/* ── MOBILE ──────────────────────────────────────────────────────── */}
-      <div className="lg:hidden w-full h-[55vh] min-h-[300px] relative">
+      <div className="lg:hidden w-full h-[55vh] min-h-[300px] relative mt-[80px]">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}
@@ -85,10 +85,10 @@ export default function HeroSection() {
           loop={true}
           effect="fade"
           fadeEffect={{ crossFade: true }}
-          className="hero-swiper !h-full w-full"
+          className="hero-swiper h-full! w-full"
         >
           {slides.map((slide, index) => (
-            <SwiperSlide key={index} className="!h-full">
+            <SwiperSlide key={index} className="h-full!">
               <div className="relative h-full w-full">
                 <Image
                   src={slide.image}
@@ -123,7 +123,7 @@ export default function HeroSection() {
       </div>
 
       {/* ── DESKTOP ─────────────────────────────────────────────────────── */}
-      <div className="hidden lg:block w-full h-screen min-h-[700px] relative">
+      <div className="hidden lg:block w-full h-[855px] relative mt-[64px]">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}
@@ -133,10 +133,10 @@ export default function HeroSection() {
           loop={true}
           effect="fade"
           fadeEffect={{ crossFade: true }}
-          className="hero-swiper !h-full w-full"
+          className="hero-swiper h-full! w-full"
         >
           {slides.map((slide, index) => (
-            <SwiperSlide key={index} className="!h-full">
+            <SwiperSlide key={index} className="h-full!">
               <div className="relative h-full w-full">
                 <Image
                   src={slide.image}
@@ -147,32 +147,22 @@ export default function HeroSection() {
                 />
                 <div className="absolute inset-0 bg-black/40" />
 
-                {/* ── Text block: vertically centered in the slide ── */}
-                <div className="absolute inset-0 flex flex-col justify-center">
-                  <div className="container mx-auto px-8 lg:px-16">
-                    <div className="max-w-[500px]">
-
-                      {/* Title */}
-                      <h1 className="text-[38px] lg:text-[42px] font-bold leading-[1.15] text-white mb-4">
-                        {slide.title}
-                      </h1>
-
-                      {/* Description */}
-                      <p className="text-[14px] leading-relaxed text-white/85 mb-6 max-w-[420px]">
-                        {slide.description}
-                      </p>
-
-                      {/* CTA */}
-                      <Link
-                        href={slide.ctaLink}
-                        target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
-                      >
-                        <button className="bg-white text-slate-900 font-medium text-[15px] px-7 py-3 rounded-full hover:opacity-90 transition-opacity">
-                          {slide.ctaText}
-                        </button>
-                      </Link>
-
-                    </div>
+                <div className="absolute inset-0 flex flex-col justify-center pl-[80px] pr-8">
+                  <div className="max-w-[480px]">
+                    <h1 className="text-[42px] font-bold leading-[1.15] text-white mb-4">
+                      {slide.title}
+                    </h1>
+                    <p className="text-[14px] leading-relaxed text-white/85 mb-6 max-w-[420px]">
+                      {slide.description}
+                    </p>
+                    <Link
+                      href={slide.ctaLink}
+                      target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
+                    >
+                      <button className="bg-white text-slate-900 font-medium text-[15px] px-7 py-3 rounded-full hover:opacity-90 transition-opacity">
+                        {slide.ctaText}
+                      </button>
+                    </Link>
                   </div>
                 </div>
               </div>
