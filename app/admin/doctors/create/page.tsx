@@ -153,7 +153,7 @@ export default function CreateDoctorPage() {
       setFilteredDiseases(diseases);
     } else {
       const filtered = diseases.filter(d => {
-        const deptId = typeof d.department === 'object' ? d.department._id : d.department;
+        const deptId = d.department?._id || d.department;
         const dept = departments.find(dep => dep.name === selectedDepartment);
         return deptId === dept?._id;
       });

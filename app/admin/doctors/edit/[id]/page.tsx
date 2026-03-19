@@ -226,7 +226,7 @@ export default function EditDoctorPage() {
         // Filter diseases by department
         const filtered = diseases.filter(disease => {
           if (!disease.department) return false;
-          const deptId = typeof disease.department === 'object' ? disease.department._id : disease.department;
+          const deptId = typeof disease.department === 'object' ? (disease.department as any)._id : disease.department;
           return deptId === dept._id;
         });
         setFilteredDiseases(filtered);
