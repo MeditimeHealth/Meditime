@@ -70,7 +70,7 @@ export default function StatsSection() {
       Two overlapping radial blobs give the organic glow seen in Figma.
     */
     <div
-      className="w-full mx-auto py-14 sm:py-16 relative overflow-hidden"
+      className="w-full mx-auto py-10 sm:py-16 relative overflow-hidden"
       style={{
         background:
           "linear-gradient(90deg, rgba(5, 69, 66, 0.75) 0%, rgba(3, 86, 83, 0.765) 25%, rgba(0, 103, 99, 0.78) 50%, #0F7E7A 100%)",
@@ -87,7 +87,7 @@ export default function StatsSection() {
       />
 
       <div className="relative z-10 max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
           {stats.map(({ number, label, Icon }, index) => (
             <motion.div
               key={index}
@@ -105,7 +105,7 @@ export default function StatsSection() {
                 backdrop-filter: blur(12px)
               */}
               <div
-                className="flex flex-col items-center text-center p-8 sm:p-12 gap-6 rounded-[20px] transition-transform duration-300 hover:-translate-y-1 w-full lg:max-w-[422px] lg:h-[298px] flex-grow justify-center"
+                className="flex flex-col items-center text-center p-4 sm:p-8 sm:p-12 gap-3 sm:gap-6 rounded-[16px] sm:rounded-[20px] transition-transform duration-300 hover:-translate-y-1 w-full lg:max-w-[422px] lg:h-[298px] flex-grow justify-center"
                 style={{
                   background: "rgba(240, 240, 240, 0.19)",
                   border: "1px solid rgba(255, 255, 255, 0.2)",
@@ -114,17 +114,17 @@ export default function StatsSection() {
                 }}
               >
                 {/* White circle — teal SVG icon inside */}
-                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-5 shrink-0 shadow-sm">
+                <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-white flex items-center justify-center mb-2 sm:mb-5 shrink-0 shadow-sm">
                   <Icon />
                 </div>
 
                 {/* Stat number */}
-                <div className="text-4xl md:text-[52px] font-bold text-white mb-1.5 leading-none">
+                <div className="text-2xl sm:text-4xl md:text-[52px] font-bold text-white mb-1 sm:mb-1.5 leading-none">
                   {number}
                 </div>
 
                 {/* Label */}
-                <div className="text-[13px] md:text-sm text-white/80 font-normal">
+                <div className="text-[11px] sm:text-[13px] md:text-sm text-white/80 font-normal">
                   {label}
                 </div>
               </div>

@@ -300,7 +300,7 @@ export default function DepartmentSection() {
   }
 
   return (
-    <div className="w-full py-12 sm:py-16 bg-white">
+    <div className="w-full py-8 sm:py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Header ── */}
@@ -311,10 +311,10 @@ export default function DepartmentSection() {
           transition={{ duration: 0.5 }}
           className="mb-10 text-center"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-slate-800 tracking-tight leading-snug">
+          <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-3 text-slate-800 tracking-tight leading-snug">
             Doctor List<br />by Department
           </h2>
-          <p className="text-[13px] text-slate-500 max-w-xs mx-auto leading-relaxed">
+          <p className="text-[11px] sm:text-[13px] text-slate-500 max-w-xs mx-auto leading-relaxed">
             Simply click on the department name and you will see an extended list of doctors with specialty.
           </p>
         </motion.div>
@@ -379,23 +379,35 @@ export default function DepartmentSection() {
           </Swiper>
         </div>
 
-        {/* ── Mobile Grid ── */}
-        <div className="md:hidden grid grid-cols-3 gap-3">
-          {departments.slice(0, 6).map((dept) => {
-            const Icon = getIconForDepartment(dept.name);
-            const slug = dept.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-            return (
-              <Link href={`/departments/${encodeURIComponent(slug)}`} key={dept._id}>
-                <div className="relative bg-white rounded-xl shadow-sm border border-slate-100 p-4 flex flex-col overflow-hidden h-[120px]">
-                  <WatermarkCurve />
-                  <div className="relative z-10 mb-2"><Icon /></div>
-                  <h3 className="relative z-10 text-[12px] font-bold text-slate-800 leading-snug line-clamp-2">
-                    {getLocalizedValue(dept.name, dept.nameBn, language)}
-                  </h3>
-                </div>
-              </Link>
-            );
-          })}
+        {/* ── Mobile Swiper — single large card per slide ── */}
+        <div className="md:hidden">
+          <Swiper
+            modules={[Autoplay]}
+            spaceBetween={16}
+            slidesPerView={1}
+            loop={departments.length > 1}
+            autoplay={{ delay: 3500, disableOnInteraction: false }}
+          >
+            {departments.map((dept) => {
+              const Icon = getIconForDepartment(dept.name);
+              const slug = dept.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+              return (
+                <SwiperSlide key={dept._id}>
+                  <Link href={`/departments/${encodeURIComponent(slug)}`} className="block">
+                    <div className="relative bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col overflow-hidden min-h-[180px] justify-between">
+                      <WatermarkCurve />
+                      <div className="relative z-10 mb-4">
+                        <div className="w-12 h-12"><Icon /></div>
+                      </div>
+                      <h3 className="relative z-10 text-[20px] font-bold text-slate-800 leading-snug">
+                        {getLocalizedValue(dept.name, dept.nameBn, language)}
+                      </h3>
+                    </div>
+                  </Link>
+                </SwiperSlide>
+              );
+            })}
+          </Swiper>
         </div>
 
         {/* ── "Other Departments" button with ServicesSection hover-swap ──

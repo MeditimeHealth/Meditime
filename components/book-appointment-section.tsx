@@ -27,7 +27,7 @@ export default function BookAppointmentSection() {
   };
 
   return (
-    <div className="relative w-full overflow-hidden rounded-[24px] mx-auto max-w-[1760px] my-12">
+    <div className="relative w-full overflow-hidden rounded-[16px] sm:rounded-[24px] mx-auto max-w-[1760px] my-6 sm:my-12">
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -37,7 +37,7 @@ export default function BookAppointmentSection() {
       <div className="absolute inset-0 bg-slate-900/40" />
 
       {/* Content */}
-      <div className="relative z-10 py-16 lg:py-20">
+      <div className="relative z-10 py-10 sm:py-16 lg:py-20">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -47,10 +47,10 @@ export default function BookAppointmentSection() {
         >
           {/* White card */}
           <div 
-            className="rounded-[32px] p-8 lg:p-14 shadow-2xl w-full lg:w-[717px] lg:min-h-[594px] flex flex-col justify-center"
+            className="rounded-[20px] sm:rounded-[32px] p-5 sm:p-8 lg:p-14 shadow-2xl w-full lg:w-[717px] lg:min-h-[594px] flex flex-col justify-center"
             style={{ background: "var(--color-white-solid, #FFFFFF)" }}
           >
-            <h2 className="text-3xl lg:text-[42px] font-bold text-slate-900 mb-10 text-center lg:text-left leading-tight">
+            <h2 className="text-xl sm:text-3xl lg:text-[42px] font-bold text-slate-900 mb-6 sm:mb-10 text-center lg:text-left leading-tight">
               Book An Appointment
             </h2>
 

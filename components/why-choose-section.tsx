@@ -84,7 +84,7 @@ const features = [
 
 export default function WhyChooseSection() {
   return (
-    <div className="bg-[#ECECEE] py-10 max-w-[1920px] w-full mx-auto sm:py-14">
+    <div className="bg-[#ECECEE] py-8 max-w-[1920px] w-full mx-auto sm:py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Header ──
@@ -98,10 +98,10 @@ export default function WhyChooseSection() {
           transition={{ duration: 0.5 }}
           className="mb-10 text-center"
         >
-          <h2 className="text-3xl sm:text-[42px] font-bold mb-3 text-slate-800 tracking-tight max-w-[804px] mx-auto leading-[1.15]">
+          <h2 className="text-[22px] sm:text-[42px] font-bold mb-2 sm:mb-3 text-slate-800 tracking-tight max-w-[804px] mx-auto leading-[1.15]">
             Choose Meditime for <br className="hidden sm:block" /> Simplified Medical Services in Time
           </h2>
-          <p className="text-sm sm:text-[14px] text-slate-500 max-w-[650px] mx-auto leading-relaxed">
+          <p className="text-[13px] sm:text-[14px] text-slate-500 max-w-[650px] mx-auto leading-relaxed">
             Choosing Meditime helps you bring speed in your doctor <br className="hidden sm:block" />
             appointment booking process which significantly reduces <br className="hidden sm:block" />
             the risk of being late to receive quality medical services
@@ -113,7 +113,7 @@ export default function WhyChooseSection() {
             forces all 4 cards to the same height regardless of content length.
             `flex flex-col` on Card + `flex-grow` on description fills the space.
         ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 items-stretch">
           {features.map(({ Icon, title, description, highlight }, index) => (
             <motion.div
               key={index}
@@ -124,23 +124,23 @@ export default function WhyChooseSection() {
               className="h-full" /* ← makes motion.div fill the grid row height */
             >
               <Card
-                className="p-5 border h-full flex flex-col items-center text-center rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md bg-white border-slate-200 group hover:bg-[#FFCC53] hover:border-[#FFCC53]"
+                className="p-6 sm:p-5 border h-full flex flex-col items-center text-center rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md bg-white border-slate-200 group hover:bg-[#FFCC53] hover:border-[#FFCC53]"
               >
                 {/* Icon */}
                 <div className="mb-4 shrink-0">
-                  <div className="w-14 h-14 rounded-xl bg-primary flex items-center justify-center">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-primary flex items-center justify-center">
                     <Icon />
                   </div>
                 </div>
 
                 {/* Title */}
-                <h3 className="text-[15px] font-bold mb-2 leading-snug shrink-0 text-slate-800 group-hover:text-slate-900">
+                <h3 className="text-[16px] sm:text-[15px] font-bold mb-2 leading-snug shrink-0 text-slate-800 group-hover:text-slate-900">
                   {title}
                 </h3>
 
                 {/* Description — flex-grow pushes it to fill remaining space
                     so all cards have the same total height */}
-                <p className="text-[13px] leading-relaxed flex-grow text-slate-500 group-hover:text-slate-700">
+                <p className="text-[14px] sm:text-[13px] leading-relaxed flex-grow text-slate-500 group-hover:text-slate-700">
                   {description}
                 </p>
               </Card>

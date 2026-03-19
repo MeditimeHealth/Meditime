@@ -9,7 +9,7 @@ export default function MembershipSection() {
   const [playing, setPlaying] = useState(false);
 
   return (
-    <div className="w-full py-16 bg-[#F5F6F8]">
+    <div className="w-full py-10 sm:py-16 bg-[#F5F6F8]">
       <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -18,10 +18,10 @@ export default function MembershipSection() {
           transition={{ duration: 0.5 }}
           className="bg-white rounded-[16px] shadow-sm overflow-hidden"
         >
-          <div className="grid grid-cols-1 lg:grid-cols-2 p-6 gap-[10px]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 p-4 sm:p-6 gap-[10px]">
 
             {/* LEFT — Video/Image with play button overlay */}
-            <div className="relative h-64 sm:h-80 lg:h-[544px] rounded-[16px] overflow-hidden order-2 lg:order-1">
+            <div className="relative h-52 sm:h-80 lg:h-[544px] rounded-[12px] sm:rounded-[16px] overflow-hidden order-2 lg:order-1">
               {!playing ? (
                 <>
                   {/* Thumbnail image */}
@@ -69,18 +69,18 @@ export default function MembershipSection() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="p-8 lg:pl-16 lg:pr-12 flex flex-col justify-center order-1 lg:order-2"
+              className="p-4 sm:p-8 lg:pl-16 lg:pr-12 flex flex-col justify-center items-center lg:items-start text-center lg:text-left order-1 lg:order-2"
             >
-              <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 leading-tight mb-5">
+              <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight mb-3 sm:mb-5">
                 Meditime Health Discount Cards
               </h2>
 
-              <p className="text-slate-500 text-base leading-relaxed mb-10">
+              <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-6 sm:mb-10">
                 Enjoy discounts in 100+ medical services in 40+ hospitals near
                 Savar and save up to 15% on medical bills.
               </p>
 
-              <Link href="/membership" className="w-fit">
+              <Link href="/membership" className="w-fit mx-auto lg:mx-0">
                 <button className="bg-primary hover:bg-primary/90 text-white font-semibold text-sm py-3 px-7 rounded-full shadow-sm transition-all inline-flex items-center gap-2">
                   Get Your Card
                 </button>

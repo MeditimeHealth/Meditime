@@ -125,14 +125,14 @@ export default function SearchSection() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
       <div
         id="search-section"
         className="sticky top-20 left-0 right-0 z-40 transition-all duration-300 mt-4 mb-4 md:mb-6"
       >
         <div className="relative">
           {/* Pill container — matches Figma exactly */}
-          <div className="flex items-center bg-white border border-gray-200 rounded-full shadow-md px-5 py-2 gap-3 focus-within:border-primary focus-within:shadow-lg transition-all">
+          <div className="flex items-center bg-white border border-gray-200 rounded-full shadow-md px-3 sm:px-5 py-2 gap-2 sm:gap-3 focus-within:border-primary focus-within:shadow-lg transition-all">
             <Search className="text-gray-400 h-5 w-5 shrink-0" />
             <Input
               type="text"
@@ -169,7 +169,7 @@ export default function SearchSection() {
             {/* Teal embedded button */}
             <button
               onClick={handleSearch}
-              className="shrink-0 bg-primary hover:bg-primary/90 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-all whitespace-nowrap shadow-sm"
+              className="shrink-0 bg-primary hover:bg-primary/90 text-white text-xs sm:text-sm font-semibold px-4 sm:px-6 py-2 sm:py-2.5 rounded-full transition-all whitespace-nowrap shadow-sm"
               style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
             >
               Search

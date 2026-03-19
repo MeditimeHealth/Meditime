@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function AppDownloadSection() {
   return (
-    <div className="w-full bg-yellow-300 py-12 overflow-hidden">
+    <div className="w-full bg-yellow-300 py-8 sm:py-12 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
 
@@ -16,10 +16,10 @@ export default function AppDownloadSection() {
             transition={{ duration: 0.5 }}
             className="flex flex-col gap-5"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight">
+            <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-slate-900 leading-tight">
               Download Meditime Mobile App Today
             </h2>
-            <p className="text-sm text-slate-800 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-800 leading-relaxed">
               Meditime Mobile App is your expert medical service assistant.
               Book Doctor Appointment, See test price, Hosital Location within
               one place.

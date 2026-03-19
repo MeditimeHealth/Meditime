@@ -68,12 +68,12 @@ export default function BlogSection() {
   if (posts.length === 0) return null;
 
   return (
-    <div className="w-full py-16 bg-white">
+    <div className="w-full py-10 sm:py-16 bg-white">
       <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header — two columns */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
-          <h2 className="text-[32px] lg:text-[42px] font-bold text-slate-900 leading-[1.2] lg:max-w-xl">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
+          <h2 className="text-[24px] sm:text-[32px] lg:text-[42px] font-bold text-slate-900 leading-[1.2] lg:max-w-xl">
             Stay Informed With <br className="hidden lg:block" /> Medical Blogs
           </h2>
           <div className="flex flex-col items-start gap-5 lg:max-w-md text-left">
@@ -150,13 +150,13 @@ export default function BlogSection() {
           {/* Nav arrows */}
           <button
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute -left-4 top-[30%] -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"
+            className="absolute -left-4 top-[30%] -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white shadow-md border border-slate-200 items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute -right-4 top-[30%] -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"
+            className="absolute -right-4 top-[30%] -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white shadow-md border border-slate-200 items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

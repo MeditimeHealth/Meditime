@@ -75,7 +75,7 @@ export default function HeroSection() {
       `}</style>
 
       {/* ── MOBILE ──────────────────────────────────────────────────────── */}
-      <div className="lg:hidden w-full h-[55vh] min-h-[300px] relative mt-[80px]">
+      <div className="lg:hidden w-full h-[65vh] min-h-[500px] relative mt-[72px]">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}
@@ -97,21 +97,21 @@ export default function HeroSection() {
                   className="object-cover object-center"
                   priority={index === 0}
                 />
-                <div className="absolute inset-0 bg-black/40" />
+                <div className="absolute inset-0 bg-black/45" />
 
                 {/* ── Text: vertically & horizontally centered ── */}
-                <div className="absolute inset-0 flex flex-col items-start justify-center px-6 pb-10">
-                  <h1 className="text-xl font-bold leading-snug text-white mb-3 max-w-[280px]">
+                <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+                  <h1 className="text-4xl sm:text-5xl font-bold leading-tight text-white mb-6 max-w-[320px] tracking-tight">
                     {slide.title}
                   </h1>
-                  <p className="text-[13px] text-white/80 leading-relaxed mb-4 max-w-[260px]">
+                  <p className="text-[15px] sm:text-base text-white/90 leading-relaxed mb-10 max-w-[300px]">
                     {slide.description}
                   </p>
                   <Link
                     href={slide.ctaLink}
                     target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
                   >
-                    <button className="bg-white text-slate-900 font-medium text-sm px-5 py-2 rounded-full hover:opacity-90 transition-opacity">
+                    <button className="bg-white text-slate-900 font-bold text-[16px] px-10 py-4 rounded-full shadow-lg active:scale-95 transition-all">
                       {slide.ctaText}
                     </button>
                   </Link>

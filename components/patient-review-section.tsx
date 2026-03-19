@@ -83,7 +83,7 @@ const reviews = [
 
 export default function PatientReviewSection() {
   return (
-    <div className="relative w-full mx-auto min-h-[520px] overflow-hidden">
+    <div className="relative w-full mx-auto min-h-[420px] sm:min-h-[520px] overflow-hidden">
       {/* Background image with dark overlay */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -92,13 +92,13 @@ export default function PatientReviewSection() {
       <div className="absolute inset-0 bg-black/55" />
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
 
           {/* LEFT — Review card slider */}
           <div className="relative flex lg:justify-end lg:pr-10">
             {/* Outer frame (light border) */}
-            <div className="rounded-[32px] border border-white/30 p-5 sm:p-8 bg-white/10 backdrop-blur-md shadow-2xl w-full max-w-[480px]">
+            <div className="rounded-[20px] sm:rounded-[32px] border border-white/30 p-4 sm:p-8 bg-white/10 backdrop-blur-md shadow-2xl w-full max-w-[480px]">
               <Swiper
                 modules={[Autoplay, Pagination]}
                 slidesPerView={1}
@@ -114,7 +114,7 @@ export default function PatientReviewSection() {
                 {reviews.map((review) => (
                   <SwiperSlide key={review.id}>
                     {/* Teal card */}
-                    <div className="bg-[#129B90] rounded-[24px] p-8 flex flex-col min-h-[340px]">
+                    <div className="bg-[#129B90] rounded-[16px] sm:rounded-[24px] p-5 sm:p-8 flex flex-col min-h-[280px] sm:min-h-[340px]">
                       {/* Stars */}
                       <div className="flex items-center gap-1 mb-8">
                         {[...Array(5)].map((_, i) => (
@@ -123,7 +123,7 @@ export default function PatientReviewSection() {
                       </div>
 
                       {/* Review text */}
-                      <p className="text-white text-[15px] leading-[1.8] flex-grow mb-8">
+                      <p className="text-white text-[13px] sm:text-[15px] leading-[1.8] flex-grow mb-6 sm:mb-8">
                         "{review.review}"
                       </p>
 
@@ -150,47 +150,48 @@ export default function PatientReviewSection() {
               </Swiper>
 
               {/* Pagination dots */}
-              <div className="review-pagination flex justify-start gap-2 mt-6 pl-4 pb-2" />
+              <div className="review-pagination flex justify-center lg:justify-start gap-2 mt-6 lg:pl-4 pb-2" />
             </div>
 
           </div>
 
           {/* RIGHT — Title + stats */}
-          <div className="flex flex-col lg:pl-16">
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left lg:pl-16 order-first lg:order-last">
             {/* Pill label */}
-            <div className="inline-flex w-fit items-center gap-3 px-5 py-2 rounded-full border border-white/40 text-white/90 text-xs font-semibold tracking-[0.15em] mb-2 uppercase backdrop-blur-sm">
+            <div className="inline-flex w-fit items-center gap-3 px-5 py-2 rounded-full border border-white/40 text-white/90 text-xs font-semibold tracking-[0.15em] mb-2 uppercase backdrop-blur-sm mx-auto lg:mx-0">
               <span className="w-2 h-2 bg-white shrink-0 shadow-[0_0_8px_white]" />
               // CLIENT'S FEEDBACK //
             </div>
 
             {/* Title */}
-            <h2 className="text-4xl md:text-[46px] font-bold text-white leading-tight mb-16 tracking-tight">
+            <h2 className="text-2xl sm:text-4xl md:text-[46px] font-bold text-white leading-tight mb-8 sm:mb-16 tracking-tight">
               Patient Reviews
             </h2>
 
             {/* Stats box */}
             <div 
-              className="rounded-[24px] border border-white lg:w-[531px] lg:h-[253px] lg:max-w-[545px] p-[16px] lg:p-[40px] flex items-center justify-center w-full shadow-2xl"
+              className="rounded-[16px] sm:rounded-[24px] border border-white lg:w-[531px] lg:h-[253px] lg:max-w-[545px] p-[12px] sm:p-[16px] lg:p-[40px] flex items-center justify-center w-full shadow-2xl"
               style={{
                 backdropFilter: "blur(12px)",
                 WebkitBackdropFilter: "blur(12px)",
                 boxShadow: "inset 0px 0px 22px 0px rgba(242, 242, 242, 0.5), inset 0px 0px 0px 1px #999999, inset -2px -2px 1px -2px #B3B3B3, inset 2px 2px 1px -2px #B3B3B3, inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5)"
               }}
             >
-              <div className="bg-[#129B90] rounded-[16px] w-full h-full px-6 py-6 lg:px-10 lg:py-8 flex items-center">
+              <div className="bg-[#129B90] rounded-[12px] sm:rounded-[16px] w-full h-full px-4 sm:px-6 lg:px-10 py-4 sm:py-6 lg:py-8 flex flex-col sm:flex-row items-center">
                 {/* Rating */}
-                <div className="flex flex-col text-left flex-1 items-start">
-                  <p className="text-white text-[42px] font-bold leading-none mb-3">4.9</p>
-                  <p className="text-white/90 text-[13px] font-medium tracking-wide">Over All Rating</p>
+                <div className="flex flex-col text-center sm:text-left flex-1 items-center sm:items-start">
+                  <p className="text-white text-[28px] sm:text-[42px] font-bold leading-none mb-2 sm:mb-3">4.9</p>
+                  <p className="text-white/90 text-[11px] sm:text-[13px] font-medium tracking-wide">Over All Rating</p>
                 </div>
 
-                {/* Divider */}
-                <div className="w-px h-[48px] bg-white/40 mx-4 shrink-0" />
+                {/* Divider — horizontal on mobile, vertical on sm+ */}
+                <div className="hidden sm:block w-px h-[48px] bg-white/40 mx-4 shrink-0" />
+                <div className="sm:hidden w-full h-px bg-white/40 my-3 shrink-0" />
 
                 {/* Clients */}
-                <div className="flex flex-col text-left flex-1 items-start pl-6">
-                  <p className="text-white text-[42px] font-bold leading-none mb-3">1.5k+</p>
-                  <p className="text-white/90 text-[13px] font-medium tracking-wide">Clients Served</p>
+                <div className="flex flex-col text-center sm:text-left flex-1 items-center sm:items-start sm:pl-6">
+                  <p className="text-white text-[28px] sm:text-[42px] font-bold leading-none mb-2 sm:mb-3">1.5k+</p>
+                  <p className="text-white/90 text-[11px] sm:text-[13px] font-medium tracking-wide">Clients Served</p>
                 </div>
               </div>
             </div>

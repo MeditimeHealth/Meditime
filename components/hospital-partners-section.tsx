@@ -4,8 +4,9 @@ import { useRef, useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import { Autoplay, Navigation } from "swiper/modules";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import "swiper/css";
 
 interface Hospital {
@@ -49,15 +50,15 @@ export default function HospitalPartnersSection() {
   }
 
   return (
-    <div className="w-full py-14 bg-white">
+    <div className="w-full py-10 sm:py-14 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header — plain black, centered */}
         <div className="text-center mb-10">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2 sm:mb-3">
             Partner Hospitals
           </h2>
-          <p className="text-base text-slate-500 max-w-md mx-auto">
+          <p className="text-sm sm:text-base text-slate-500 max-w-md mx-auto">
             Our partnership with leading hospitals across Savar and surrounding areas
           </p>
         </div>
@@ -79,7 +80,7 @@ export default function HospitalPartnersSection() {
             {hospitals.map((hospital) => (
               <SwiperSlide key={hospital._id}>
                 {/* Photo card — tall aspect ratio */}
-                <div className="relative rounded-2xl overflow-hidden aspect-[3/4] w-full group cursor-pointer">
+                <div className="relative rounded-2xl overflow-hidden aspect-[3/4] sm:aspect-[3/4] w-full group cursor-pointer">
                   {/* Hospital photo or placeholder */}
                   {hospital.photo ? (
                     <Image
@@ -121,18 +122,33 @@ export default function HospitalPartnersSection() {
           {/* Nav arrows — outside left/right */}
           <button
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"
+            className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
             aria-label="Previous"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"
+            className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
             aria-label="Next"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* "See All" button */}
+        <div className="mt-8 flex justify-center">
+          <Link href="/hospitals">
+            <div className="group/btn relative h-11 flex items-center">
+              <span className="inline-flex items-center h-11 px-8 rounded-full text-[14px] font-medium bg-primary text-white transition-all duration-200 group-hover/btn:opacity-0 group-hover/btn:scale-90 whitespace-nowrap">
+                See All
+              </span>
+              <span className="absolute left-0 top-0 inline-flex items-center gap-2 h-11 px-8 rounded-full text-[14px] font-semibold bg-primary-dark text-white whitespace-nowrap pointer-events-none opacity-0 scale-90 group-hover/btn:opacity-100 group-hover/btn:scale-100 transition-all duration-200">
+                View All
+                <ArrowUpRight className="w-4 h-4" />
+              </span>
+            </div>
+          </Link>
         </div>
       </div>
     </div>

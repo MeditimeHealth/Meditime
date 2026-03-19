@@ -113,7 +113,7 @@ const services = [
     description:
       "Diagnostic tests account for a significant portion of healthcare costs, potentially over 10% of total medical",
     highlight: false,
-    showArrow: true,
+    showArrow: false,
   },
   {
     Icon: IconBloodDonor,
@@ -140,7 +140,7 @@ const services = [
 
 export default function ServicesSection() {
   return (
-    <div className="bg-gray-50 py-10 sm:py-14">
+    <div className="bg-gray-50 py-8 sm:py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Header
@@ -154,18 +154,18 @@ export default function ServicesSection() {
           className="mb-10 text-center"
         >
           {/* Figma title is ~36–40px — text-4xl matches, NOT text-5xl */}
-          <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-slate-800 tracking-tight">
+          <h2 className="text-[22px] sm:text-4xl font-bold mb-2 sm:mb-3 text-slate-800 tracking-tight">
             Meditime Services
           </h2>
           {/* Figma subtitle wraps to 3 short lines — keep max-w tight */}
-          <p className="text-sm sm:text-[15px] text-slate-500 max-w-[498px] mx-auto leading-relaxed">
+          <p className="text-[13px] sm:text-[15px] text-slate-500 max-w-[498px] mx-auto leading-relaxed">
             Meditime has a broad range of medical information services from
             doctors&apos; appointment booking to ambulance contact numbers.
           </p>
         </motion.div>
 
         {/* ── Service Cards ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {services.map(({ Icon, title, cta, href, description, highlight, showArrow }, index) => (
             <motion.div
               key={index}
@@ -183,7 +183,7 @@ export default function ServicesSection() {
                         Figma: ~56px circle, icon is ~28px — w-14 h-14 is correct
                         mb-3 tighter than mb-4 to compress card height
                   ── */}
-                  <div className="mb-3">
+                  <div className="mb-5 sm:mb-3">
                     <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shrink-0">
                       <Icon />
                     </div>
@@ -193,7 +193,7 @@ export default function ServicesSection() {
                         Figma: ~15-16px bold, tight leading
                         mb-2 gap to description
                   ── */}
-                  <h3 className="text-[15px] font-bold mb-2 leading-snug text-slate-800 group-hover:text-slate-900">
+                  <h3 className="text-[16px] sm:text-[15px] font-bold mb-2 leading-snug text-slate-800 group-hover:text-slate-900">
                     {title}
                   </h3>
 
@@ -202,7 +202,7 @@ export default function ServicesSection() {
                         text-[13px] to match Figma's smaller body text
                         flex-grow pushes the button to the bottom
                   ── */}
-                  <p className="text-[13px] leading-relaxed flex-grow mb-4 line-clamp-2 text-slate-500 group-hover:text-slate-700">
+                  <p className="text-[14px] sm:text-[13px] leading-relaxed flex-grow mb-4 text-slate-500 group-hover:text-slate-700">
                     {description}
                   </p>
 
@@ -216,8 +216,8 @@ export default function ServicesSection() {
 
                       {/* Default label — fades & shrinks out on button hover */}
                       <span
-                        className="inline-flex items-center h-8 px-4 rounded-full text-[13px] font-medium border
-                          transition-all duration-200 bg-white border-slate-300 text-slate-700
+                        className="inline-flex items-center h-10 sm:h-8 px-6 sm:px-4 rounded-full text-[14px] sm:text-[13px] font-medium
+                          transition-all duration-200 bg-slate-100 sm:bg-white sm:border border-slate-300 text-slate-700
                           group-hover/btn:opacity-0 group-hover/btn:scale-90"
                       >
                         {cta}

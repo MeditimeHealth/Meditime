@@ -25,11 +25,11 @@ export default function Footer() {
   ];
 
   const socialLinks = [
-    { icon: MessageCircle, href: "https://wa.me/8801610385555",             label: "WhatsApp",  active: false },
-    { icon: Facebook,      href: "https://www.facebook.com/meditime.health", label: "Facebook",  active: true  },
-    { icon: Instagram,     href: "#", label: "Instagram", active: false },
-    { icon: Linkedin,      href: "#", label: "LinkedIn",  active: false },
-    { icon: Youtube,       href: "#", label: "YouTube",   active: false },
+    { icon: MessageCircle, href: "https://wa.me/8801610385555",             label: "WhatsApp"  },
+    { icon: Facebook,      href: "https://www.facebook.com/meditime.health", label: "Facebook"  },
+    { icon: Instagram,     href: "#", label: "Instagram" },
+    { icon: Linkedin,      href: "#", label: "LinkedIn"  },
+    { icon: Youtube,       href: "#", label: "YouTube"   },
   ];
 
   // Figma exact values
@@ -38,11 +38,11 @@ export default function Footer() {
 
   return (
     <footer className="w-full" style={{ backgroundColor: "#111827", color: "#9CA3AF" }}>
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-14">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-14">
 
         {/* ── TOP ROW ─────────────────────────────────────────────────── */}
         <div
-          className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10 items-center py-12"
+          className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 items-center py-8 sm:py-12"
       
         >
           {/* Logo + tagline */}
@@ -63,7 +63,7 @@ export default function Footer() {
           {/* CTA */}
           <div>
             <h3
-              className="text-2xl leading-snug "
+              className="text-lg sm:text-2xl leading-snug "
               style={{ color: "#FFFFFF" }}
             >
               Get Started &amp; Book Your<br />Appointment
@@ -98,7 +98,7 @@ export default function Footer() {
         </div>
 
         {/* ── 4-COLUMN BOTTOM SECTION ─────────────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 py-8 sm:py-12">
 
           {/* Get In Touch */}
           <div className="flex flex-col gap-5">
@@ -115,19 +115,7 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={s.label}
-                    className="flex items-center justify-center transition-all hover:scale-110"
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "50%",
-                      border: s.active
-                        ? "1px solid #3DB5A0"
-                        : "1px solid rgba(255,255,255,0.2)",
-                      backgroundColor: s.active ? "#3DB5A0" : "transparent",
-                      color: s.active ? "#FFFFFF" : "#9CA3AF",
-                      textDecoration: "none",
-                      flexShrink: 0,
-                    }}
+                    className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 hover:scale-110 bg-transparent border border-white/20 text-[#9CA3AF] hover:bg-[#3DB5A0] hover:border-[#3DB5A0] hover:text-white"
                   >
                     <Icon size={14} />
                   </a>
@@ -232,7 +220,7 @@ export default function Footer() {
           <p className="text-sm" style={{ color: "#6B7280" }}>
             © 2026 All Rights Reserved By Meditime.
           </p>
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-4 sm:gap-8 flex-wrap">
             {[
               { href: "/about",   label: "About Us" },
               { href: "/privacy", label: "Privacy Policy" },
