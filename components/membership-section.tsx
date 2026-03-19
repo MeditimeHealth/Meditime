@@ -9,24 +9,24 @@ export default function MembershipSection() {
   const [playing, setPlaying] = useState(false);
 
   return (
-    <div className="w-full py-16 bg-[#EBF8F8]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="w-full py-16 bg-[#F5F6F8]">
+      <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="bg-white rounded-2xl shadow-sm overflow-hidden"
+          className="bg-white rounded-[16px] shadow-sm overflow-hidden"
         >
-          <div className="grid grid-cols-1 lg:grid-cols-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2 p-6 gap-[10px]">
 
             {/* LEFT — Video/Image with play button overlay */}
-            <div className="relative h-64 sm:h-80 lg:h-full min-h-[340px] overflow-hidden order-2 lg:order-1">
+            <div className="relative h-64 sm:h-80 lg:h-[544px] rounded-[16px] overflow-hidden order-2 lg:order-1">
               {!playing ? (
                 <>
                   {/* Thumbnail image */}
                   <img
-                    src="/membership-thumb.jpg"
+                    src="https://img.youtube.com/vi/45XDv8gH5x4/maxresdefault.jpg"
                     alt="Meditime Health Discount Card"
                     onError={(e) => {
                       // fallback to a solid bg if image missing
@@ -69,7 +69,7 @@ export default function MembershipSection() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="p-10 lg:p-16 flex flex-col justify-center order-1 lg:order-2"
+              className="p-8 lg:pl-16 lg:pr-12 flex flex-col justify-center order-1 lg:order-2"
             >
               <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 leading-tight mb-5">
                 Meditime Health Discount Cards

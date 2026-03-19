@@ -83,7 +83,7 @@ const reviews = [
 
 export default function PatientReviewSection() {
   return (
-    <div className="relative w-full min-h-[520px] overflow-hidden">
+    <div className="relative w-full mx-auto min-h-[520px] overflow-hidden">
       {/* Background image with dark overlay */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -96,9 +96,9 @@ export default function PatientReviewSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
           {/* LEFT — Review card slider */}
-          <div className="relative">
+          <div className="relative flex lg:justify-end lg:pr-10">
             {/* Outer frame (light border) */}
-            <div className="rounded-3xl border border-white/20 p-3 bg-white/5 backdrop-blur-sm">
+            <div className="rounded-[32px] border border-white/30 p-5 sm:p-8 bg-white/10 backdrop-blur-md shadow-2xl w-full max-w-[480px]">
               <Swiper
                 modules={[Autoplay, Pagination]}
                 slidesPerView={1}
@@ -114,24 +114,24 @@ export default function PatientReviewSection() {
                 {reviews.map((review) => (
                   <SwiperSlide key={review.id}>
                     {/* Teal card */}
-                    <div className="bg-primary rounded-2xl p-7 flex flex-col min-h-[280px]">
+                    <div className="bg-[#129B90] rounded-[24px] p-8 flex flex-col min-h-[340px]">
                       {/* Stars */}
-                      <div className="flex items-center gap-1 mb-5">
+                      <div className="flex items-center gap-1 mb-8">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" strokeWidth={0} />
+                          <Star key={i} className="w-4 h-4 fill-[#FFCC53] text-[#FFCC53]" strokeWidth={0} />
                         ))}
                       </div>
 
                       {/* Review text */}
-                      <p className="text-white text-base leading-relaxed flex-grow mb-6">
+                      <p className="text-white text-[15px] leading-[1.8] flex-grow mb-8">
                         "{review.review}"
                       </p>
 
                       {/* Divider */}
-                      <div className="border-t border-white/20 pt-5">
-                        <div className="flex items-center gap-3">
+                      <div className="border-t border-dashed border-white/30 pt-6">
+                        <div className="flex items-center gap-4">
                           {/* Avatar */}
-                          <div className="w-11 h-11 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center text-white font-bold text-base shrink-0 overflow-hidden">
+                          <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-base shrink-0 overflow-hidden">
                             {review.avatar ? (
                               <img src={review.avatar} alt={review.name} className="w-full h-full object-cover" />
                             ) : (
@@ -139,8 +139,8 @@ export default function PatientReviewSection() {
                             )}
                           </div>
                           <div>
-                            <p className="text-white font-semibold text-sm">{review.name}</p>
-                            <p className="text-white/70 text-xs mt-0.5">{review.location}</p>
+                            <p className="text-white font-medium text-[15px]">{review.name}</p>
+                            <p className="text-white/80 text-[13px] mt-0.5">{review.location}</p>
                           </div>
                         </div>
                       </div>
@@ -150,39 +150,47 @@ export default function PatientReviewSection() {
               </Swiper>
 
               {/* Pagination dots */}
-              <div className="review-pagination flex justify-center gap-1.5 mt-4 pb-1" />
+              <div className="review-pagination flex justify-start gap-2 mt-6 pl-4 pb-2" />
             </div>
 
           </div>
 
           {/* RIGHT — Title + stats */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col lg:pl-16">
             {/* Pill label */}
-            <div className="inline-flex w-fit items-center px-4 py-1.5 rounded-full border border-white/40 text-white/80 text-xs font-semibold tracking-widest">
-              - CLIENT'S FEEDBACK -
+            <div className="inline-flex w-fit items-center gap-3 px-5 py-2 rounded-full border border-white/40 text-white/90 text-xs font-semibold tracking-[0.15em] mb-2 uppercase backdrop-blur-sm">
+              <span className="w-2 h-2 bg-white shrink-0 shadow-[0_0_8px_white]" />
+              // CLIENT'S FEEDBACK //
             </div>
 
             {/* Title */}
-            <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+            <h2 className="text-4xl md:text-[46px] font-bold text-white leading-tight mb-16 tracking-tight">
               Patient Reviews
             </h2>
 
             {/* Stats box */}
-            <div className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm p-2">
-              <div className="bg-primary rounded-xl px-8 py-6 flex items-center gap-0">
+            <div 
+              className="rounded-[24px] border border-white lg:w-[531px] lg:h-[253px] lg:max-w-[545px] p-[16px] lg:p-[40px] flex items-center justify-center w-full shadow-2xl"
+              style={{
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                boxShadow: "inset 0px 0px 22px 0px rgba(242, 242, 242, 0.5), inset 0px 0px 0px 1px #999999, inset -2px -2px 1px -2px #B3B3B3, inset 2px 2px 1px -2px #B3B3B3, inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5)"
+              }}
+            >
+              <div className="bg-[#129B90] rounded-[16px] w-full h-full px-6 py-6 lg:px-10 lg:py-8 flex items-center">
                 {/* Rating */}
-                <div className="flex-1 text-center">
-                  <p className="text-white text-4xl font-bold leading-none mb-1">4.9</p>
-                  <p className="text-white/80 text-sm">Over All Rating</p>
+                <div className="flex flex-col text-left flex-1 items-start">
+                  <p className="text-white text-[42px] font-bold leading-none mb-3">4.9</p>
+                  <p className="text-white/90 text-[13px] font-medium tracking-wide">Over All Rating</p>
                 </div>
 
                 {/* Divider */}
-                <div className="w-px h-12 bg-white/30 mx-4 shrink-0" />
+                <div className="w-px h-[48px] bg-white/40 mx-4 shrink-0" />
 
                 {/* Clients */}
-                <div className="flex-1 text-center">
-                  <p className="text-white text-4xl font-bold leading-none mb-1">1.5k+</p>
-                  <p className="text-white/80 text-sm">Clients Served</p>
+                <div className="flex flex-col text-left flex-1 items-start pl-6">
+                  <p className="text-white text-[42px] font-bold leading-none mb-3">1.5k+</p>
+                  <p className="text-white/90 text-[13px] font-medium tracking-wide">Clients Served</p>
                 </div>
               </div>
             </div>
@@ -195,16 +203,16 @@ export default function PatientReviewSection() {
       <style jsx global>{`
         .review-bullet {
           display: inline-block;
-          width: 8px;
-          height: 8px;
-          border-radius: 9999px;
-          background: rgba(255,255,255,0.35);
+          width: 32px;
+          height: 6px;
+          border-radius: 4px;
+          background: rgba(255,255,255,0.2);
           cursor: pointer;
           transition: all 0.3s;
         }
         .review-bullet-active {
           background: white;
-          width: 20px;
+          box-shadow: 0 0 10px rgba(255,255,255,0.8);
         }
       `}</style>
     </div>

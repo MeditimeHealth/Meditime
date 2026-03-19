@@ -63,7 +63,6 @@ const features = [
     title: "No Advance Payments of Fees",
     description:
       "To enjoy any of our services like finding doctor information, booking a consultation, access to an extended list of blood donors and ambulance contacts are completely free.",
-    highlight: true,
   },
   {
     Icon: IconClock247,
@@ -85,7 +84,7 @@ const features = [
 
 export default function WhyChooseSection() {
   return (
-    <div className="bg-gray-50 py-10 sm:py-14">
+    <div className="bg-[#ECECEE] py-10 max-w-[1920px] w-full mx-auto sm:py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Header ──
@@ -99,13 +98,13 @@ export default function WhyChooseSection() {
           transition={{ duration: 0.5 }}
           className="mb-10 text-center"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-slate-800 tracking-tight max-w-[560px] mx-auto leading-snug">
-            Choose Meditime for Simplified Medical Services in Time
+          <h2 className="text-3xl sm:text-[42px] font-bold mb-3 text-slate-800 tracking-tight max-w-[804px] mx-auto leading-[1.15]">
+            Choose Meditime for <br className="hidden sm:block" /> Simplified Medical Services in Time
           </h2>
-          <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-            Choosing Meditime helps you bring speed in your doctor appointment
-            booking process which significantly reduces the risk of being late
-            to receive quality medical services
+          <p className="text-sm sm:text-[14px] text-slate-500 max-w-[650px] mx-auto leading-relaxed">
+            Choosing Meditime helps you bring speed in your doctor <br className="hidden sm:block" />
+            appointment booking process which significantly reduces <br className="hidden sm:block" />
+            the risk of being late to receive quality medical services
           </p>
         </motion.div>
 
@@ -125,11 +124,7 @@ export default function WhyChooseSection() {
               className="h-full" /* ← makes motion.div fill the grid row height */
             >
               <Card
-                className={`p-5 border h-full flex flex-col items-center text-center rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md ${
-                  highlight
-                    ? "bg-yellow-300 border-yellow-300"
-                    : "bg-white border-slate-200"
-                }`}
+                className="p-5 border h-full flex flex-col items-center text-center rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md bg-white border-slate-200 group hover:bg-[#FFCC53] hover:border-[#FFCC53]"
               >
                 {/* Icon */}
                 <div className="mb-4 shrink-0">
@@ -139,21 +134,13 @@ export default function WhyChooseSection() {
                 </div>
 
                 {/* Title */}
-                <h3
-                  className={`text-[15px] font-bold mb-2 leading-snug shrink-0 ${
-                    highlight ? "text-slate-900" : "text-slate-800"
-                  }`}
-                >
+                <h3 className="text-[15px] font-bold mb-2 leading-snug shrink-0 text-slate-800 group-hover:text-slate-900">
                   {title}
                 </h3>
 
                 {/* Description — flex-grow pushes it to fill remaining space
                     so all cards have the same total height */}
-                <p
-                  className={`text-[13px] leading-relaxed flex-grow ${
-                    highlight ? "text-slate-800" : "text-slate-500"
-                  }`}
-                >
+                <p className="text-[13px] leading-relaxed flex-grow text-slate-500 group-hover:text-slate-700">
                   {description}
                 </p>
               </Card>

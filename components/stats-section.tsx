@@ -70,10 +70,10 @@ export default function StatsSection() {
       Two overlapping radial blobs give the organic glow seen in Figma.
     */
     <div
-      className="w-full py-14 sm:py-16 relative overflow-hidden"
+      className="w-full mx-auto py-14 sm:py-16 relative overflow-hidden"
       style={{
         background:
-          "radial-gradient(ellipse 80% 60% at 50% 50%, #16c5b5 0%, #0d9488 45%, #0a7268 100%)",
+          "linear-gradient(90deg, rgba(5, 69, 66, 0.75) 0%, rgba(3, 86, 83, 0.765) 25%, rgba(0, 103, 99, 0.78) 50%, #0F7E7A 100%)",
       }}
     >
       {/* Decorative radial glows — match the lighter patches in Figma */}
@@ -86,8 +86,8 @@ export default function StatsSection() {
         }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+      <div className="relative z-10 max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {stats.map(({ number, label, Icon }, index) => (
             <motion.div
               key={index}
@@ -105,12 +105,12 @@ export default function StatsSection() {
                 backdrop-filter: blur(12px)
               */}
               <div
-                className="flex flex-col items-center text-center px-4 py-8 rounded-2xl transition-transform duration-300 hover:-translate-y-1"
+                className="flex flex-col items-center text-center p-8 sm:p-12 gap-6 rounded-[20px] transition-transform duration-300 hover:-translate-y-1 w-full lg:max-w-[422px] lg:h-[298px] flex-grow justify-center"
                 style={{
-                  background: "rgba(255, 255, 255, 0.12)",
-                  border: "1px solid rgba(255, 255, 255, 0.25)",
-                  backdropFilter: "blur(12px)",
-                  WebkitBackdropFilter: "blur(12px)",
+                  background: "rgba(240, 240, 240, 0.19)",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
                 }}
               >
                 {/* White circle — teal SVG icon inside */}
@@ -119,7 +119,7 @@ export default function StatsSection() {
                 </div>
 
                 {/* Stat number */}
-                <div className="text-4xl md:text-[44px] font-bold text-white mb-1.5 leading-none">
+                <div className="text-4xl md:text-[52px] font-bold text-white mb-1.5 leading-none">
                   {number}
                 </div>
 

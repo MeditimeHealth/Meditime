@@ -68,22 +68,22 @@ export default function BlogSection() {
   if (posts.length === 0) return null;
 
   return (
-    <div className="w-full py-12 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="w-full py-16 bg-white">
+      <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header — two columns */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight max-w-[220px]">
-            Stay Informed With Medical Blogs
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
+          <h2 className="text-[32px] lg:text-[42px] font-bold text-slate-900 leading-[1.2] lg:max-w-xl">
+            Stay Informed With <br className="hidden lg:block" /> Medical Blogs
           </h2>
-          <div className="flex flex-col items-start sm:items-end gap-3 sm:max-w-[260px] sm:text-right">
-            <p className="text-sm text-slate-500 leading-relaxed">
-              Explore expert-written articles offering trusted health tips,
+          <div className="flex flex-col items-start gap-5 lg:max-w-md text-left">
+            <p className="text-[15px] text-slate-500 leading-relaxed font-normal">
+              Explore expert-written articles offering trusted health tips, <br className="hidden lg:block" />
               medical insights, &amp; wellness guidance daily.
             </p>
             <Link
               href="/blog"
-              className="inline-flex items-center px-5 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-full transition-all"
+              className="inline-flex items-center px-8 py-3 bg-primary hover:bg-primary/95 text-white text-[15px] font-bold rounded-full transition-all shadow-md hover:shadow-primary/20"
             >
               View More
             </Link>

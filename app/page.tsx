@@ -28,9 +28,9 @@ export default function Home() {
       <StatsSection />
       <PatientReviewSection />
       <HospitalPartnersSection />
-      <BlogSection />
       <BookAppointmentSection />
-      <FaqSection />
+      <BlogSection />
+      {/* <FaqSection /> */}
       <AppDownloadSection />
       <Footer />
     </div>

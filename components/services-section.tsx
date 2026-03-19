@@ -132,7 +132,6 @@ const services = [
     href: "/ambulance",
     description:
       "We have a comprehensive list of ambulance contact numbers in Savar and nearby areas.",
-    highlight: true,
     showArrow: false,
   },
 ];
@@ -159,7 +158,7 @@ export default function ServicesSection() {
             Meditime Services
           </h2>
           {/* Figma subtitle wraps to 3 short lines — keep max-w tight */}
-          <p className="text-[13px] text-slate-500 max-w-[240px] mx-auto leading-relaxed">
+          <p className="text-sm sm:text-[15px] text-slate-500 max-w-[498px] mx-auto leading-relaxed">
             Meditime has a broad range of medical information services from
             doctors&apos; appointment booking to ambulance contact numbers.
           </p>
@@ -178,11 +177,7 @@ export default function ServicesSection() {
             >
               <Link href={href} className="block h-full group">
                 <Card
-                  className={`p-6 border h-full flex flex-col rounded-2xl transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg ${
-                    highlight
-                      ? "bg-yellow-300 border-yellow-300 shadow-md"
-                      : "bg-white border-slate-200 shadow-sm"
-                  }`}
+                  className="p-6 border h-full flex flex-col rounded-2xl transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg bg-white border-slate-200 shadow-sm group-hover:bg-[#FFCC53] group-hover:border-[#FFCC53]"
                 >
                   {/* ── Teal circle icon
                         Figma: ~56px circle, icon is ~28px — w-14 h-14 is correct
@@ -198,11 +193,7 @@ export default function ServicesSection() {
                         Figma: ~15-16px bold, tight leading
                         mb-2 gap to description
                   ── */}
-                  <h3
-                    className={`text-[15px] font-bold mb-2 leading-snug ${
-                      highlight ? "text-slate-900" : "text-slate-800"
-                    }`}
-                  >
+                  <h3 className="text-[15px] font-bold mb-2 leading-snug text-slate-800 group-hover:text-slate-900">
                     {title}
                   </h3>
 
@@ -211,11 +202,7 @@ export default function ServicesSection() {
                         text-[13px] to match Figma's smaller body text
                         flex-grow pushes the button to the bottom
                   ── */}
-                  <p
-                    className={`text-[13px] leading-relaxed flex-grow mb-4 line-clamp-2 ${
-                      highlight ? "text-slate-800" : "text-slate-500"
-                    }`}
-                  >
+                  <p className="text-[13px] leading-relaxed flex-grow mb-4 line-clamp-2 text-slate-500 group-hover:text-slate-700">
                     {description}
                   </p>
 
@@ -229,13 +216,9 @@ export default function ServicesSection() {
 
                       {/* Default label — fades & shrinks out on button hover */}
                       <span
-                        className={`inline-flex items-center h-8 px-4 rounded-full text-[13px] font-medium border
-                          transition-all duration-200
-                          group-hover/btn:opacity-0 group-hover/btn:scale-90 ${
-                          highlight
-                            ? "bg-white border-white text-slate-800"
-                            : "bg-white border-slate-300 text-slate-700"
-                        }`}
+                        className="inline-flex items-center h-8 px-4 rounded-full text-[13px] font-medium border
+                          transition-all duration-200 bg-white border-slate-300 text-slate-700
+                          group-hover/btn:opacity-0 group-hover/btn:scale-90"
                       >
                         {cta}
                       </span>
