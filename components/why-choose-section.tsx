@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 /* ─── SVG icons ──────────────────────────────────────────────────────────── */
 
@@ -48,41 +50,38 @@ const IconHeadphones = () => (
   </svg>
 );
 
-/* ─── Feature data ───────────────────────────────────────────────────────── */
-
-const features = [
-  {
-    Icon: IconStethoscope,
-    title: "Anytime Doctor - From Anywhere",
-    description:
-      "Meditime website and mobile app are designed to help you find doctors, schedule appointments, compare the prices of diagnostic tests in different hospitals, and many more in just one place.",
-    highlight: false,
-  },
-  {
-    Icon: IconCreditCard,
-    title: "No Advance Payments of Fees",
-    description:
-      "To enjoy any of our services like finding doctor information, booking a consultation, access to an extended list of blood donors and ambulance contacts are completely free.",
-  },
-  {
-    Icon: IconClock247,
-    title: "Available 24/7",
-    description:
-      "You can book doctor appointments anytime that is convenient for you, seven days a week, every hour of the day. Use the Doctor Search to find the best doctors.",
-    highlight: false,
-  },
-  {
-    Icon: IconHeadphones,
-    title: "Expert Help",
-    description:
-      "The Meditime Customer Support team is always ready to help you with any difficulties you may encounter while using our platform.",
-    highlight: false,
-  },
-];
-
 /* ─── Component ──────────────────────────────────────────────────────────── */
 
 export default function WhyChooseSection() {
+  const { language } = useLanguage();
+  const t = homepageTranslations[language].whyChoose;
+
+  const features = [
+    {
+      Icon: IconStethoscope,
+      title: t.anytimeDoctorTitle,
+      description: t.anytimeDoctorDesc,
+      highlight: false,
+    },
+    {
+      Icon: IconCreditCard,
+      title: t.noAdvanceTitle,
+      description: t.noAdvanceDesc,
+    },
+    {
+      Icon: IconClock247,
+      title: t.available247Title,
+      description: t.available247Desc,
+      highlight: false,
+    },
+    {
+      Icon: IconHeadphones,
+      title: t.expertHelpTitle,
+      description: t.expertHelpDesc,
+      highlight: false,
+    },
+  ];
+
   return (
     <div className="bg-[#ECECEE] py-8 max-w-[1920px] w-full mx-auto sm:py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -99,12 +98,10 @@ export default function WhyChooseSection() {
           className="mb-10 text-center"
         >
           <h2 className="text-[22px] sm:text-[42px] font-bold mb-2 sm:mb-3 text-slate-800 tracking-tight max-w-[804px] mx-auto leading-[1.15]">
-            Choose Meditime for <br className="hidden sm:block" /> Simplified Medical Services in Time
+            {t.title}
           </h2>
           <p className="text-[13px] sm:text-[14px] text-slate-500 max-w-[650px] mx-auto leading-relaxed">
-            Choosing Meditime helps you bring speed in your doctor <br className="hidden sm:block" />
-            appointment booking process which significantly reduces <br className="hidden sm:block" />
-            the risk of being late to receive quality medical services
+            {t.subtitle}
           </p>
         </motion.div>
 

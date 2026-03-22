@@ -14,6 +14,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 interface User {
   id: string;
@@ -31,6 +32,7 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const { language, toggleLanguage } = useLanguage();
+  const t = homepageTranslations[language].nav;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -100,12 +102,12 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { href: "/doctor", label: "Doctors" },
-    { href: "/hospital", label: "Hospitals" },
-    { href: "/service", label: "Services" },
-    { href: "/diagnostic", label: "Diagnostic Tests" },
-    { href: "/membership", label: "Discount Cards" },
-    { href: "/contact", label: "Contact" },
+    { href: "/doctor", label: t.doctors },
+    { href: "/hospital", label: t.hospitals },
+    { href: "/service", label: t.services },
+    { href: "/diagnostic", label: t.diagnostic },
+    { href: "/membership", label: t.membership },
+    { href: "/contact", label: t.contact },
   ];
 
   useEffect(() => {
@@ -204,7 +206,7 @@ export default function Navbar() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleLanguage}
-                className="flex items-center justify-center w-14 py-1 rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-all text-xs font-medium shrink-0"
+                className="flex items-center justify-center w-[75px] h-[54px] p-[16px] gap-[4px] rounded-[8px] bg-[#019A981A] text-primary hover:bg-primary/20 transition-all text-xs font-medium shrink-0"
                 title={language === 'en' ? 'Switch to Bangla' : 'Switch to English'}
               >
                 {language === 'en' ? 'বাংলা' : 'English'}
@@ -325,7 +327,7 @@ export default function Navbar() {
                       href="/login"
                       className="text-sm font-semibold text-gray-700 hover:text-primary transition-colors duration-300 px-3 py-2 rounded-lg hover:bg-primary/5"
                     >
-                      Log In
+                       {t.login}
                     </Link>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -333,7 +335,7 @@ export default function Navbar() {
                       href="/signup"
                       className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-white text-sm font-semibold transition-all duration-300"
                     >
-                      Sign Up
+                       {t.signup}
                     </Link>
                   </motion.div>
                 </>
@@ -480,14 +482,14 @@ export default function Navbar() {
                         onClick={() => setMobileMenuOpen(false)}
                         className="block w-full px-4 py-3 text-center text-base font-semibold text-gray-700 hover:text-primary transition-colors duration-300 rounded-lg hover:bg-primary/5 border-2 border-gray-200"
                       >
-                        Log In
+                        {t.login}
                       </Link>
                       <Link
                         href="/signup"
                         onClick={() => setMobileMenuOpen(false)}
                         className="block w-full px-4 py-3 rounded-full bg-primary hover:bg-primary/90 text-white text-base font-semibold transition-all duration-300 shadow-lg text-center"
                       >
-                        Sign Up
+                        {t.signup}
                       </Link>
                     </>
                   )}

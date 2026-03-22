@@ -9,6 +9,7 @@ import { Search, X, ShoppingCart, MapPin, Percent, FileText, Download } from "lu
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 interface DiagnosticTest {
   _id: string;
@@ -44,14 +45,16 @@ interface CartItem extends DiagnosticTest {
   quantity: number;
 }
 
-const categories = [
-  { id: "Blood Tests", name: "Blood Tests", icon: "🩸" },
-  { id: "Cardiology", name: "Cardiology", icon: "❤️" },
-  { id: "Imaging", name: "Imaging", icon: "📷" },
-  { id: "Pathology", name: "Pathology", icon: "🔬" },
-];
-
 export default function DiagnosticPage() {
+  const { language } = useLanguage() as { language: 'en' | 'bn' };
+  const t = homepageTranslations[language].diagnosticPage;
+
+  const categories = useMemo(() => [
+    { id: "Blood Tests", name: t.categories.blood, icon: "🩸" },
+    { id: "Cardiology", name: t.categories.cardio, icon: "❤️" },
+    { id: "Imaging", name: t.categories.imaging, icon: "📷" },
+    { id: "Pathology", name: t.categories.pathology, icon: "🔬" },
+  ], [t]);
   const [tests, setTests] = useState<DiagnosticTest[]>([]);
   const [centers, setCenters] = useState<DiagnosticCenter[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,7 +71,6 @@ export default function DiagnosticPage() {
   const [selectedDivision, setSelectedDivision] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedThana, setSelectedThana] = useState("");
-  const { language } = useLanguage();
 
   const fetchTests = useCallback(async () => {
     try {
@@ -329,16 +331,16 @@ Thank you for choosing Medi Time!
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
                   <div className="mx-auto max-w-3xl text-center text-white">
                     <h1 className="mb-6 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-                      Find the Most Affordable Diagnostic Options
+                      {t.heroTitle}
                     </h1>
                     <p className="mb-8 text-base leading-relaxed sm:text-lg lg:text-xl">
-                      Save up to 15% Using our membership cards in all types of Diagnostic Tests.
+                      {t.heroSubtitle}
                     </p>
                     <a 
                       href="/membership"
                       className="inline-flex items-center bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all font-semibold"
                     >
-                      Order Membership Card
+                      {t.heroCTA}
                       <svg
                         className="ml-2 h-5 w-5"
                         fill="none"
@@ -368,7 +370,7 @@ Thank you for choosing Medi Time!
             <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
             <Input
               type="text"
-              placeholder="Search tests..."
+              placeholder={t.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-14 pr-4 py-6 text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all"
@@ -382,14 +384,14 @@ Thank you for choosing Medi Time!
           {/* Tests List */}
           <div className="lg:col-span-2">
             <div className="mb-4 text-sm text-gray-600">
-              Showing {filteredTests.length} of {tests.length} tests
+              {t.showing} {filteredTests.length} {t.of} {tests.length} {t.tests}
             </div>
 
             {loading ? (
-              <div className="text-center py-12 text-gray-500">Loading tests...</div>
+              <div className="text-center py-12 text-gray-500">{t.loading}</div>
             ) : filteredTests.length === 0 ? (
               <Card className="p-12 text-center">
-                <p className="text-gray-500">No tests found</p>
+                <p className="text-gray-500">{t.noTests}</p>
               </Card>
             ) : (
               <div className="space-y-4">
@@ -411,7 +413,7 @@ Thank you for choosing Medi Time!
                         )}
                         {test.fastingRequired && (
                           <div className="absolute top-2 left-2 bg-orange-500/90 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
-                            Fasting Required
+                            {t.fastingRequired}
                           </div>
                         )}
                       </div>
@@ -468,7 +470,7 @@ Thank you for choosing Medi Time!
                             className="bg-gray-900 hover:bg-primary text-white transition-colors rounded-full px-6"
                           >
                             <ShoppingCart className="h-4 w-4 mr-2" />
-                            Add to Cart
+                            {t.addToCart}
                           </Button>
                         </div>
                       </div>
@@ -485,7 +487,7 @@ Thank you for choosing Medi Time!
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold flex items-center gap-2">
                   <ShoppingCart className="h-5 w-5" />
-                  Cart ({cart.reduce((sum, item) => sum + item.quantity, 0)})
+                  {t.cart} ({cart.reduce((sum, item) => sum + item.quantity, 0)})
                 </h2>
                 {cart.length > 0 && (
                   <Button
@@ -493,7 +495,7 @@ Thank you for choosing Medi Time!
                     size="sm"
                     onClick={() => setCart([])}
                   >
-                    Clear
+                    {t.clear}
                   </Button>
                 )}
               </div>
@@ -501,7 +503,7 @@ Thank you for choosing Medi Time!
               {cart.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <ShoppingCart className="h-12 w-12 mx-auto mb-2 opacity-30" />
-                  <p>Your cart is empty</p>
+                  <p>{t.emptyCart}</p>
                 </div>
               ) : (
                 <>
@@ -561,11 +563,11 @@ Thank you for choosing Medi Time!
                       <div className="flex items-center gap-2 text-green-700 mb-1">
                         <Percent className="h-4 w-4" />
                         <span className="font-semibold">
-                          {cartDiscount}% Discount Applied!
+                          {cartDiscount}% {t.discountApplied}
                         </span>
                       </div>
                       <p className="text-xs text-green-600">
-                        {cart.reduce((sum, item) => sum + item.quantity, 0)} tests selected
+                        {cart.reduce((sum, item) => sum + item.quantity, 0)} {t.tests} {t.showing.toLowerCase() === 'showing' ? 'selected' : 'নির্বাচন করা হয়েছে'}
                       </p>
                     </div>
                   )}
@@ -573,20 +575,20 @@ Thank you for choosing Medi Time!
                   {/* Select Diagnostic Center */}
                   {centers.length > 0 && (
                     <div className="mb-4">
-                      <Label className="mb-2 block">Select Diagnostic Center</Label>
+                      <Label className="mb-2 block">{t.selectCenter}</Label>
                       <select
                         value={selectedCenter}
                         onChange={(e) => setSelectedCenter(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md"
                       >
-                        <option value="">Choose a center</option>
+                        <option value="">{t.chooseCenter}</option>
                         {centers.map((center) => (
                           <option key={center._id} value={center._id}>
                             {getLocalizedValue(center.name, center.nameBn, language)}
                             {center.packageDiscount && center.minTestsForPackage && (
                               <span>
                                 {" "}
-                                - {center.packageDiscount}% off on {center.minTestsForPackage}+ tests
+                                - {center.packageDiscount}% {t.offOn} {center.minTestsForPackage}+ {t.testsPlus}
                               </span>
                             )}
                           </option>
@@ -598,17 +600,17 @@ Thank you for choosing Medi Time!
                   {/* Price Summary */}
                   <div className="border-t border-gray-200 pt-4 space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>Subtotal:</span>
+                      <span>{t.subtotal}:</span>
                       <span>{cartTotal}৳</span>
                     </div>
                     {cartDiscount > 0 && (
                       <div className="flex justify-between text-sm text-green-600">
-                        <span>Discount ({cartDiscount}%):</span>
+                        <span>{t.discountApplied} ({cartDiscount}%):</span>
                         <span>-{(cartTotal * cartDiscount) / 100}৳</span>
                       </div>
                     )}
                     <div className="flex justify-between font-bold text-lg border-t border-gray-200 pt-2">
-                      <span>Total:</span>
+                      <span>{t.total}:</span>
                       <span className="text-primary">{discountedTotal}৳</span>
                     </div>
                   </div>
@@ -620,7 +622,7 @@ Thank you for choosing Medi Time!
                       onClick={generatePaymentSlip}
                     >
                       <FileText className="h-4 w-4 mr-2" />
-                      Generate Payment Slip
+                      {t.generateSlip}
                     </Button>
                   </div>
                 </>
@@ -634,7 +636,7 @@ Thank you for choosing Medi Time!
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <Card className="max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">Payment Slip</h2>
+                <h2 className="text-2xl font-bold">{t.paymentSlip}</h2>
                 <Button
                   variant="outline"
                   size="sm"
@@ -653,7 +655,7 @@ Thank you for choosing Medi Time!
                 </div>
 
                 <div>
-                  <h4 className="font-bold mb-2">SELECTED TESTS</h4>
+                  <h4 className="font-bold mb-2">{t.selectedTests}</h4>
                   {cart.map((item) => (
                     <div key={item._id} className="flex justify-between py-1">
                       <span>
@@ -666,17 +668,17 @@ Thank you for choosing Medi Time!
 
                 <div className="border-t border-gray-200 pt-4">
                   <div className="flex justify-between mb-2">
-                    <span>Subtotal:</span>
+                    <span>{t.subtotal}:</span>
                     <span>{cartTotal}৳</span>
                   </div>
                   {cartDiscount > 0 && (
                     <div className="flex justify-between text-green-600 mb-2">
-                      <span>Discount ({cartDiscount}%):</span>
+                      <span>{t.discountApplied} ({cartDiscount}%):</span>
                       <span>-{(cartTotal * cartDiscount) / 100}৳</span>
                     </div>
                   )}
                   <div className="flex justify-between font-bold text-lg border-t border-gray-200 pt-2">
-                    <span>TOTAL:</span>
+                    <span>{t.total}:</span>
                     <span className="text-primary">{discountedTotal}৳</span>
                   </div>
                 </div>
@@ -684,11 +686,11 @@ Thank you for choosing Medi Time!
                 {selectedCenter && (
                   <div className="border-t border-gray-200 pt-4">
                     <p>
-                      <strong>Diagnostic Center:</strong>{" "}
-                      {centers.find((c) => c._id === selectedCenter)?.name || "N/A"}
+                      <strong>{t.selectCenter}:</strong>{" "}
+                      {getLocalizedValue(centers.find((c) => c._id === selectedCenter)?.name || "", centers.find((c) => c._id === selectedCenter)?.nameBn || "", language) || "N/A"}
                     </p>
                     <p>
-                      <strong>Total Tests:</strong>{" "}
+                      <strong>{t.total} {t.tests}:</strong>{" "}
                       {cart.reduce((sum, item) => sum + item.quantity, 0)}
                     </p>
                   </div>
@@ -705,14 +707,14 @@ Thank you for choosing Medi Time!
                   onClick={downloadPaymentSlip}
                 >
                   <Download className="h-4 w-4 mr-2" />
-                  Download Slip
+                  {t.downloadSlip}
                 </Button>
                 <Button
                   variant="outline"
                   className="flex-1"
                   onClick={() => setShowPaymentSlip(false)}
                 >
-                  Close
+                  {t.close}
                 </Button>
               </div>
             </Card>

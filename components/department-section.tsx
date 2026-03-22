@@ -9,6 +9,7 @@ import { Navigation, Autoplay } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 interface Department {
   _id: string;
@@ -275,6 +276,7 @@ export default function DepartmentSection() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const { language } = useLanguage();
+  const t = homepageTranslations[language].departments;
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -312,10 +314,10 @@ export default function DepartmentSection() {
           className="mb-10 text-center"
         >
           <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-3 text-slate-800 tracking-tight leading-snug">
-            Doctor List<br />by Department
+            {t.title}
           </h2>
-          <p className="text-[11px] sm:text-[13px] text-slate-500 max-w-xs mx-auto leading-relaxed">
-            Simply click on the department name and you will see an extended list of doctors with specialty.
+          <p className="text-[11px] sm:text-[13px] text-slate-500 max-w-sm mx-auto leading-relaxed">
+            {t.subtitle}
           </p>
         </motion.div>
 
@@ -427,12 +429,12 @@ export default function DepartmentSection() {
 
               {/* Default state — filled teal pill */}
               <span className="inline-flex items-center h-11 px-8 rounded-full text-[14px] font-medium bg-primary text-white transition-all duration-200 group-hover/btn:opacity-0 group-hover/btn:scale-90 whitespace-nowrap">
-                Other Departments
+                {t.otherDepts}
               </span>
 
               {/* Hover state — darker teal + "View All" + arrow */}
               <span className="absolute left-0 top-0 inline-flex items-center gap-2 h-11 px-8 rounded-full text-[14px] font-semibold bg-primary-dark text-white whitespace-nowrap pointer-events-none opacity-0 scale-90 group-hover/btn:opacity-100 group-hover/btn:scale-100 transition-all duration-200">
-                View All
+                {t.viewAll}
                 <ArrowUpRight className="w-4 h-4" />
               </span>
 

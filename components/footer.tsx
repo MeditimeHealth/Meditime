@@ -4,24 +4,28 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { Facebook, Instagram, Youtube, Linkedin, MessageCircle } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 export default function Footer() {
+  const { language } = useLanguage();
+  const t = homepageTranslations[language].footer;
   const [email, setEmail] = useState("");
 
   const services = [
-    { href: "/doctor",     label: "Doctor Appointment" },
-    { href: "/service",    label: "Video Consultation" },
-    { href: "/hospital",   label: "Hospital List" },
-    { href: "/diagnostic", label: "Diagnostic Test" },
-    { href: "/ambulance",  label: "Ambulance Directory" },
+    { href: "/doctor",     label: t.links.doctor },
+    { href: "/service",    label: t.links.video },
+    { href: "/hospital",   label: t.links.hospital },
+    { href: "/diagnostic", label: t.links.diagnostic },
+    { href: "/ambulance",  label: t.links.ambulance },
   ];
 
   const resources = [
-    { href: "/membership",        label: "Discount Cards" },
-    { href: "/blog",              label: "Health Tips" },
-    { href: "/offer",             label: "Offer" },
-    { href: "/affiliate-program", label: "Affiliate Programme" },
-    { href: "/blood-donors",      label: "Blood Donors" },
+    { href: "/membership",        label: t.links.membership },
+    { href: "/blog",              label: t.links.blog },
+    { href: "/offer",             label: t.links.offer },
+    { href: "/affiliate-program", label: t.links.affiliate },
+    { href: "/blood-donor",       label: t.links.blood },
   ];
 
   const socialLinks = [
@@ -56,7 +60,7 @@ export default function Footer() {
               style={{ filter: "brightness(10)" }}
             />
             <p className="text-sm" style={{ color: "#6B7280" }}>
-              Meditime- Right Care On Time
+              {t.tagline}
             </p>
           </div>
 
@@ -66,7 +70,7 @@ export default function Footer() {
               className="text-lg sm:text-2xl leading-snug "
               style={{ color: "#FFFFFF" }}
             >
-              Get Started &amp; Book Your<br />Appointment
+              {t.getStarted}
             </h3>
           </div>
 
@@ -82,7 +86,7 @@ export default function Footer() {
           >
             <input
               type="email"
-              placeholder="Enter E- Mail"
+              placeholder={t.emailPlaceholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="flex-1 bg-transparent outline-none text-sm px-5 py-3"
@@ -92,7 +96,7 @@ export default function Footer() {
               className="shrink-0 text-sm font-semibold text-white px-5 py-2.5 rounded-full whitespace-nowrap"
               style={{ backgroundColor: "#3DB5A0", border: "none" }}
             >
-              Send Email
+              {t.sendEmail}
             </button>
           </div>
         </div>
@@ -103,7 +107,7 @@ export default function Footer() {
           {/* Get In Touch */}
           <div className="flex flex-col gap-5">
             <h4 className="text-base font-bold" style={{ color: "#FFFFFF" }}>
-              Get In Touch
+              {t.getInTouch}
             </h4>
             <div className="flex items-center gap-2.5">
               {socialLinks.map((s, i) => {
@@ -130,7 +134,7 @@ export default function Footer() {
               className="text-base font-bold mb-5"
               style={{ color: "#FFFFFF" }}
             >
-              Services
+              {t.services}
             </h4>
             <ul className="flex flex-col gap-3">
               {services.map((s, i) => (
@@ -153,7 +157,7 @@ export default function Footer() {
               className="text-base font-bold mb-5"
               style={{ color: "#FFFFFF" }}
             >
-              Resources
+              {t.resources}
             </h4>
             <ul className="flex flex-col gap-3">
               {resources.map((r, i) => (
@@ -176,7 +180,7 @@ export default function Footer() {
               className="text-base font-bold mb-5"
               style={{ color: "#FFFFFF" }}
             >
-              Contact
+              {t.contact}
             </h4>
             <ul className="flex flex-col gap-2.5">
               <li
@@ -189,7 +193,7 @@ export default function Footer() {
                 Health Care IT Services
               </li>
               <li className="text-sm" style={{ color: "#9CA3AF" }}>
-                Address: Domna, Savar, Dhaka 1349
+                {t.addressLabel}
               </li>
               <li>
                 <a
@@ -218,13 +222,13 @@ export default function Footer() {
           className="flex flex-col md:flex-row items-center justify-between gap-3 py-6"
         >
           <p className="text-sm" style={{ color: "#6B7280" }}>
-            © 2026 All Rights Reserved By Meditime.
+            {t.copyRight}
           </p>
           <div className="flex items-center gap-4 sm:gap-8 flex-wrap">
             {[
-              { href: "/about",   label: "About Us" },
-              { href: "/privacy", label: "Privacy Policy" },
-              { href: "/terms",   label: "Terms and Conditions" },
+              { href: "/about",   label: t.aboutUs },
+              { href: "/privacy", label: t.privacyPolicy },
+              { href: "/terms",   label: t.termsConditions },
             ].map((link, i) => (
               <Link
                 key={i}

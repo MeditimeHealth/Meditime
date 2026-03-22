@@ -43,7 +43,13 @@ const signupSchema = z
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
+
 export default function SignupPage() {
+  const { language } = useLanguage() as { language: 'en' | 'bn' };
+  const t = homepageTranslations[language].authPage;
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -88,20 +94,20 @@ export default function SignupPage() {
         const userType = data.userType;
         if (userType === 'bloodDonor') {
           router.push("/blood-donor/profile");
-          showToast.success("Account created successfully! Please complete your profile.");
+          showToast.success(language === 'en' ? "Account created successfully! Please complete your profile." : "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! আপনার প্রোফাইল সম্পূর্ণ করুন।");
         } else if (userType === 'ambulance') {
           router.push("/ambulance/profile");
-          showToast.success("Account created successfully! Please complete your profile.");
+          showToast.success(language === 'en' ? "Account created successfully! Please complete your profile." : "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! আপনার প্রোফাইল সম্পূর্ণ করুন।");
         } else {
           router.push("/");
-          showToast.success("Account created successfully! You are now logged in.");
+          showToast.success(language === 'en' ? "Account created successfully! You are now logged in." : "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! আপনি এখন লগ ইন করেছেন।");
         }
         router.refresh();
       } else {
-        showToast.error(result.error || "Signup failed");
+        showToast.error(result.error || (language === 'en' ? "Signup failed" : "সাইনআপ ব্যর্থ হয়েছে"));
       }
     } catch (error) {
-      showToast.error("An error occurred. Please try again.");
+      showToast.error(language === 'en' ? "An error occurred. Please try again." : "একটি সমস্যা দেখা দিয়েছে। আবার চেষ্টা করুন।");
     } finally {
       setIsLoading(false);
     }
@@ -132,15 +138,17 @@ export default function SignupPage() {
                     <h1 className="text-2xl lg:text-3xl font-bold">MEDI TIME</h1>
                   </div>
                   <h2 className="text-3xl lg:text-5xl font-bold leading-tight">
-                    Start Your Health
-                    <br />
-                    Journey Today
+                    {language === 'en' ? (
+                      <>Start Your Health<br />Journey Today</>
+                    ) : (
+                      <>আজই আপনার স্বাস্থ্য<br />যাত্রা শুরু করুন</>
+                    )}
                   </h2>
                   <p className="text-base lg:text-lg text-white/90 leading-relaxed">
-                    Join thousands of users managing their health with our comprehensive platform.
+                    {t.signupSubtitle}
                   </p>
                   <p className="text-sm lg:text-base text-white/80">
-                    Your health companion for a better tomorrow.
+                    {t.signupSubtitle2}
                   </p>
                 </div>
               </div>
@@ -148,23 +156,23 @@ export default function SignupPage() {
               {/* Right Section - Signup Form */}
               <div className="md:col-span-3 lg:col-span-3 bg-white/95 backdrop-blur-sm p-4 sm:p-6 lg:p-8 overflow-y-auto max-h-[95vh] sm:max-h-[90vh]">
                 <div className="max-w-md mx-auto">
-                  <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Create Account</h3>
-                  <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Fill in your details to get started</p>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{t.createAccountTitle}</h3>
+                  <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">{t.createAccountSubtitle}</p>
 
                   <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-3 sm:space-y-4">
                     <div>
                       <Label htmlFor="userType" className="text-sm sm:text-base">
-                        Sign up as <span className="text-red-500">*</span>
+                        {t.signUpAs} <span className="text-red-500">*</span>
                       </Label>
                       <select
                         id="userType"
                         {...register("userType")}
                         className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm sm:text-base ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
                       >
-                        <option value="">Select user type</option>
-                        <option value="user">User</option>
-                        <option value="bloodDonor">Blood Donor</option>
-                        <option value="ambulance">Ambulance</option>
+                        <option value="">{t.userTypePlaceholder}</option>
+                        <option value="user">{t.user}</option>
+                        <option value="bloodDonor">{t.bloodDonor}</option>
+                        <option value="ambulance">{t.ambulance}</option>
                       </select>
                       {errors.userType && (
                         <p className="text-xs sm:text-sm text-red-500 mt-1">{errors.userType.message}</p>
@@ -173,12 +181,12 @@ export default function SignupPage() {
 
                     <div>
                       <Label htmlFor="fullName" className="text-sm sm:text-base">
-                        Full Name <span className="text-red-500">*</span>
+                        {t.fullName} <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="fullName"
                         type="text"
-                        placeholder="Enter your full name"
+                        placeholder={t.fullNamePlaceholder}
                         {...register("fullName")}
                         className="mt-1 text-sm sm:text-base"
                       />
@@ -188,12 +196,12 @@ export default function SignupPage() {
                     </div>
                     <div>
                       <Label htmlFor="phoneNumber" className="text-sm sm:text-base">
-                        Phone Number <span className="text-red-500">*</span>
+                        {t.phoneNumber} <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="phoneNumber"
                         type="tel"
-                        placeholder="Enter your phone number"
+                        placeholder={t.phoneNumberPlaceholder}
                         {...register("phoneNumber")}
                         className="mt-1 text-sm sm:text-base"
                       />
@@ -203,11 +211,11 @@ export default function SignupPage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="email" className="text-sm sm:text-base">Email (Optional)</Label>
+                      <Label htmlFor="email" className="text-sm sm:text-base">{t.emailOptional}</Label>
                       <Input
                         id="email"
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder={t.emailPlaceholder}
                         {...register("email")}
                         className="mt-1 text-sm sm:text-base"
                       />
@@ -219,13 +227,13 @@ export default function SignupPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="gender" className="text-sm sm:text-base">
-                          Gender <span className="text-red-500">*</span>
+                          {t.gender} <span className="text-red-500">*</span>
                         </Label>
                         <Select id="gender" {...register("gender")} className="mt-1 text-sm sm:text-base">
-                          <option value="">Select gender</option>
-                          <option value="male">Male</option>
-                          <option value="female">Female</option>
-                          <option value="other">Other</option>
+                          <option value="">{t.genderPlaceholder}</option>
+                          <option value="male">{t.male}</option>
+                          <option value="female">{t.female}</option>
+                          <option value="other">{t.other}</option>
                         </Select>
                         {errors.gender && (
                           <p className="text-xs sm:text-sm text-red-500 mt-1">{errors.gender.message}</p>
@@ -234,12 +242,12 @@ export default function SignupPage() {
 
                       <div>
                         <Label htmlFor="age" className="text-sm sm:text-base">
-                          Age <span className="text-red-500">*</span>
+                          {t.age} <span className="text-red-500">*</span>
                         </Label>
                         <Input
                           id="age"
                           type="number"
-                          placeholder="Enter your age"
+                          placeholder={t.agePlaceholder}
                           {...register("age")}
                           className="mt-1 text-sm sm:text-base"
                         />
@@ -255,13 +263,13 @@ export default function SignupPage() {
 
                     <div>
                       <Label htmlFor="password" className="text-sm sm:text-base">
-                        Password <span className="text-red-500">*</span>
+                        {t.password} <span className="text-red-500">*</span>
                       </Label>
                       <div className="relative mt-1">
                         <Input
                           id="password"
                           type={showPassword ? "text" : "password"}
-                          placeholder="Enter your password"
+                          placeholder={t.passwordPlaceholder}
                           {...register("password")}
                           className="text-sm sm:text-base pr-10"
                         />
@@ -280,13 +288,13 @@ export default function SignupPage() {
 
                     <div>
                       <Label htmlFor="confirmPassword" className="text-sm sm:text-base">
-                        Confirm Password <span className="text-red-500">*</span>
+                        {t.confirmPassword} <span className="text-red-500">*</span>
                       </Label>
                       <div className="relative mt-1">
                         <Input
                           id="confirmPassword"
                           type={showConfirmPassword ? "text" : "password"}
-                          placeholder="Confirm your password"
+                          placeholder={t.confirmPasswordPlaceholder}
                           {...register("confirmPassword")}
                           className="text-sm sm:text-base pr-10"
                         />
@@ -311,9 +319,9 @@ export default function SignupPage() {
                         className="mt-1"
                       />
                       <Label htmlFor="agreeToTerms" className="text-xs sm:text-sm font-normal cursor-pointer leading-relaxed">
-                        I agree to the{" "}
+                        {t.agreeTerms}{" "}
                         <Link href="/terms" className="text-primary hover:underline">
-                          terms and conditions
+                          {t.termsAndConditions}
                         </Link>
                       </Label>
                     </div>
@@ -326,14 +334,14 @@ export default function SignupPage() {
                       className="w-full bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-sm sm:text-base py-2 sm:py-3"
                       disabled={isLoading}
                     >
-                      {isLoading ? "Creating Account..." : "SIGN UP"}
+                      {isLoading ? t.creatingAccountBtn : t.signUpBtn}
                     </Button>
                   </form>
 
                   <p className="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-gray-600">
-                    Already have an account?{" "}
+                    {t.alreadyHaveAccount}{" "}
                     <Link href="/login" className="text-primary font-medium hover:underline">
-                      Sign In
+                      {t.signInLink}
                     </Link>
                   </p>
                 </div>

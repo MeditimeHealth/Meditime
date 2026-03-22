@@ -35,6 +35,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import DoctorCard from "@/components/doctor-card";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 interface Department {
   _id: string;
@@ -42,58 +43,6 @@ interface Department {
   image?: string;
 }
 
-const banglaLabels = {
-  findDoctor: "Top Doctors in Savar and Surroundings",
-  searchPlaceholder:
-    "Search by name, specialty, hospital, qualification or bio...",
-  findByLocation: "Find The Best Doctor Near You",
-  division: "বিভাগ",
-  district: "জেলা",
-  thana: "থানা/উপজেলা",
-  hospital: "হাসপাতাল",
-  department: "ডিপার্টমেন্ট",
-  selectDivision: "বিভাগ নির্বাচন করুন",
-  selectDistrict: "জেলা নির্বাচন করুন",
-  selectThana: "থানা/উপজেলা নির্বাচন করুন",
-  selectDivisionFirst: "প্রথমে বিভাগ নির্বাচন করুন",
-  selectDistrictFirst: "প্রথমে জেলা নির্বাচন করুন",
-  allHospitals: "সব হাসপাতাল",
-  allDepartments: "সব ডিপার্টমেন্ট",
-  reset: "রিসেট",
-  showFilters: "ফিল্টার দেখুন",
-  hideFilters: "ফিল্টার লুকান",
-  active: "সক্রিয়",
-  clearFilters: "ফিল্টার সাফ করুন",
-  sortBy: "সাজান",
-  name: "নাম",
-  consultationFee: "কনসালটেশন ফি",
-  rating: "রেটিং",
-  specialty: "বিশেষতা",
-  found: "খুঁজে পাওয়া গেছে",
-
-  doctors: "জন ডাক্তার",
-  matching: "ম্যাচিং",
-  showing: "দেখানো হচ্ছে",
-  of: "এর মধ্যে",
-  totalDoctors: "জন ডাক্তার",
-  noDoctors: "আপনার শর্ত অনুযায়ী কোন ডাক্তার পাওয়া যায়নি",
-  clearSearch: "সার্চ সাফ করুন",
-  bookAppointment: "বুক অ্যাপয়েন্টমেন্ট",
-  bookNow: "এখনই বুক করুন",
-  availability: "সময়সূচী",
-  loading: "ডাক্তার লোড হচ্ছে...",
-  specialtyFilter: "বিশেষতা",
-  hospitalFilter: "হাসপাতাল",
-  qualificationFilter: "যোগ্যতা",
-  allSpecialties: "সব বিশেষতা",
-  allQualifications: "সব যোগ্যতা",
-  min: "ন্যূনতম",
-  max: "সর্বোচ্চ",
-  minimumRating: "ন্যূনতম রেটিং",
-  anyRating: "যেকোনো রেটিং",
-  availableDays: "উপলব্ধ দিন",
-  matched: "ম্যাচ",
-};
 
 interface Doctor {
   _id: string;
@@ -202,28 +151,13 @@ function DoctorListPageContent() {
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const { language } = useLanguage();
+  const t = homepageTranslations[language].doctorsPage;
 
   // Carousel ref
   const carouselRef = useRef<HTMLDivElement>(null);
 
-  const daysOfWeek = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
-  const banglaDays = [
-    "সোমবার",
-    "মঙ্গলবার",
-    "বুধবার",
-    "বৃহস্পতিবার",
-    "শুক্রবার",
-    "শনিবার",
-    "রবিবার",
-  ];
+  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const currentDays = t.days;
 
 
 
@@ -696,7 +630,7 @@ function DoctorListPageContent() {
               className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"
             />
             <p className="text-xl font-semibold text-gray-700">
-              {banglaLabels.loading}
+              {t.loading}
             </p>
           </motion.div>
         </div>
@@ -733,7 +667,7 @@ function DoctorListPageContent() {
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
-                {banglaLabels.findDoctor}
+                {t.heroTitle}
               </h1>
               <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8 font-light">
                 Connect with the best healthcare professionals in your area for
@@ -759,7 +693,7 @@ function DoctorListPageContent() {
                 <Search className="absolute left-4 md:left-6 top-1/2 transform -translate-y-1/2 text-primary h-5 w-5 md:h-6 md:w-6 z-10" />
                 <Input
                   type="text"
-                  placeholder={banglaLabels.searchPlaceholder}
+                  placeholder={t.searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -1021,7 +955,7 @@ function DoctorListPageContent() {
                 <div className="p-2.5 bg-[#3DB5A0]/10 text-[#3DB5A0] rounded-xl">
                   <MapPin className="h-6 w-6" />
                 </div>
-                {banglaLabels.findByLocation}
+                {t.findByLocation}
               </h2>
             </div>
 
@@ -1031,7 +965,7 @@ function DoctorListPageContent() {
                   htmlFor="filter-division"
                   className="mb-3 block text-base font-semibold text-gray-700"
                 >
-                  ১. {banglaLabels.division}
+                  ১. {t.division}
                 </Label>
                 <div className="relative">
                 <select
@@ -1040,7 +974,7 @@ function DoctorListPageContent() {
                   onChange={(e) => handleDivisionSelect(e.target.value)}
                   className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
                 >
-                  <option value="">{banglaLabels.selectDivision}</option>
+                  <option value="">{t.selectDivision}</option>
                   {divisions.map((div) => (
                     <option key={div._id} value={div.name}>
                       {div.name}
@@ -1058,7 +992,7 @@ function DoctorListPageContent() {
                   htmlFor="filter-district"
                   className="mb-3 block text-base font-semibold text-gray-700"
                 >
-                  ২. {banglaLabels.district}
+                  ২. {t.district}
                 </Label>
                 <div className="relative">
                 <select
@@ -1070,8 +1004,8 @@ function DoctorListPageContent() {
                 >
                   <option value="">
                     {selectedDivision
-                      ? banglaLabels.selectDistrict
-                      : banglaLabels.selectDivisionFirst}
+                      ? t.selectDistrict
+                      : t.selectDivisionFirst}
                   </option>
                   {districts.map((dist) => (
                     <option key={dist._id} value={dist.name}>
@@ -1090,7 +1024,7 @@ function DoctorListPageContent() {
                   htmlFor="filter-thana"
                   className="mb-3 block text-base font-semibold text-gray-700"
                 >
-                  ৩. {banglaLabels.thana}
+                  ৩. {t.thana}
                 </Label>
                 <div className="relative">
                 <select
@@ -1102,8 +1036,8 @@ function DoctorListPageContent() {
                 >
                   <option value="">
                     {selectedDivision && selectedDistrict
-                      ? banglaLabels.selectThana
-                      : banglaLabels.selectDistrictFirst}
+                      ? t.selectThana
+                      : t.selectDistrictFirst}
                   </option>
                   {thanas.map((thana) => (
                     <option key={thana._id} value={thana.name}>
@@ -1122,7 +1056,7 @@ function DoctorListPageContent() {
                   htmlFor="filter-hospital-hierarchical"
                   className="mb-3 block text-base font-semibold text-gray-700"
                 >
-                  ৪. {banglaLabels.hospital}
+                  ৪. {t.hospital}
                 </Label>
                 <div className="relative">
                 <select
@@ -1131,7 +1065,7 @@ function DoctorListPageContent() {
                   onChange={(e) => handleHospitalSelect(e.target.value)}
                   className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
                 >
-                  <option value="">{banglaLabels.allHospitals}</option>
+                  <option value="">{t.allHospitals}</option>
                   {hospitalNames.map((hosp) => (
                     <option key={hosp} value={hosp}>
                       {hosp}
@@ -1149,7 +1083,7 @@ function DoctorListPageContent() {
                   htmlFor="filter-department-hierarchical"
                   className="mb-3 block text-base font-semibold text-gray-700"
                 >
-                  ৫. {banglaLabels.department}
+                  ৫. {t.department}
                 </Label>
                 <div className="relative">
                 <select
@@ -1158,7 +1092,7 @@ function DoctorListPageContent() {
                   onChange={(e) => handleDepartmentSelect(e.target.value)}
                   className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
                 >
-                  <option value="">{banglaLabels.allDepartments}</option>
+                  <option value="">{t.allDepartments}</option>
                   {departmentNames.map((dept) => (
                     <option key={dept} value={dept}>
                       {dept}
@@ -1193,7 +1127,7 @@ function DoctorListPageContent() {
                   className="flex items-center gap-2 px-5 py-2.5"
                 >
                   <X className="h-5 w-5" />
-                  {banglaLabels.reset}
+                  {t.reset}
                 </Button>
               </motion.div>
             )}
@@ -1232,7 +1166,7 @@ function DoctorListPageContent() {
                       htmlFor="specialty"
                       className="mb-3 block text-base font-semibold text-gray-700"
                     >
-                      {banglaLabels.specialtyFilter}
+                      {t.specialtyFilter}
                     </Label>
                     <select
                       id="specialty"
@@ -1240,7 +1174,7 @@ function DoctorListPageContent() {
                       onChange={(e) => setSelectedSpecialty(e.target.value)}
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
                     >
-                      <option value="">{banglaLabels.allSpecialties}</option>
+                      <option value="">{t.allSpecialties}</option>
                       {specialties.map((spec) => (
                         <option key={spec} value={spec}>
                           {spec}
@@ -1255,7 +1189,7 @@ function DoctorListPageContent() {
                       htmlFor="hospital"
                       className="mb-3 block text-base font-semibold text-gray-700"
                     >
-                      {banglaLabels.hospitalFilter}
+                      {t.hospitalFilter}
                     </Label>
                     <select
                       id="hospital"
@@ -1263,7 +1197,7 @@ function DoctorListPageContent() {
                       onChange={(e) => setSelectedHospital(e.target.value)}
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
                     >
-                      <option value="">{banglaLabels.allHospitals}</option>
+                      <option value="">{t.allHospitals}</option>
                       {hospitalNames.map((hosp) => (
                         <option key={hosp} value={hosp}>
                           {hosp}
@@ -1278,7 +1212,7 @@ function DoctorListPageContent() {
                       htmlFor="qualification"
                       className="mb-3 block text-base font-semibold text-gray-700"
                     >
-                      {banglaLabels.qualificationFilter}
+                      {t.qualificationFilter}
                     </Label>
                     <select
                       id="qualification"
@@ -1286,7 +1220,7 @@ function DoctorListPageContent() {
                       onChange={(e) => setSelectedQualification(e.target.value)}
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
                     >
-                      <option value="">{banglaLabels.allQualifications}</option>
+                      <option value="">{t.allQualifications}</option>
                       {qualifications.map((qual) => (
                         <option key={qual} value={qual}>
                           {qual}
@@ -1302,19 +1236,19 @@ function DoctorListPageContent() {
                     <Label
                       className="mb-3 block text-base font-semibold text-gray-700"
                     >
-                      {banglaLabels.consultationFee}
+                      {t.consultationFee}
                     </Label>
                     <div className="flex gap-3">
                       <Input
                         type="number"
-                        placeholder={`${banglaLabels.min} ৳`}
+                        placeholder={`${t.min} ৳`}
                         value={minFee}
                         onChange={(e) => setMinFee(e.target.value)}
                         className="w-full px-4 py-3 border-2 rounded-xl shadow-sm hover:shadow-md transition-all"
                       />
                       <Input
                         type="number"
-                        placeholder={`${banglaLabels.max} ৳`}
+                        placeholder={`${t.max} ৳`}
                         value={maxFee}
                         onChange={(e) => setMaxFee(e.target.value)}
                         className="w-full px-4 py-3 border-2 rounded-xl shadow-sm hover:shadow-md transition-all"
@@ -1328,7 +1262,7 @@ function DoctorListPageContent() {
                       htmlFor="rating"
                       className="mb-3 block text-base font-semibold text-gray-700"
                     >
-                      {banglaLabels.minimumRating}
+                      {t.minimumRating}
                     </Label>
                     <select
                       id="rating"
@@ -1336,7 +1270,7 @@ function DoctorListPageContent() {
                       onChange={(e) => setMinRating(e.target.value)}
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
                     >
-                      <option value="">{banglaLabels.anyRating}</option>
+                      <option value="">{t.anyRating}</option>
                       <option value="4">৪+ ⭐</option>
                       <option value="3">৩+ ⭐</option>
                       <option value="2">২+ ⭐</option>
@@ -1349,7 +1283,7 @@ function DoctorListPageContent() {
                     <Label
                       className="mb-3 block text-base font-semibold text-gray-700"
                     >
-                      {banglaLabels.availableDays}
+                      {t.availableDays}
                     </Label>
                     <div className="flex flex-wrap gap-3">
                       {daysOfWeek.map((day, index) => (
@@ -1365,7 +1299,7 @@ function DoctorListPageContent() {
                               : "bg-white text-gray-700 hover:bg-gray-100 border-2 border-gray-300"
                           }`}
                         >
-                          {banglaDays[index]}
+                          {currentDays[index]}
                         </motion.button>
                       ))}
                     </div>
@@ -1390,24 +1324,24 @@ function DoctorListPageContent() {
               >
                 {searchQuery ? (
                   <span>
-                    {banglaLabels.found}{" "}
+                    {t.found}{" "}
                     <span className="text-primary font-bold text-lg">
                       {filteredAndSortedDoctors.length}
                     </span>{" "}
-                    {banglaLabels.doctors} {banglaLabels.matching} &quot;
+                    {t.doctors} {t.matching} &quot;
                     {searchQuery}&quot;
                   </span>
                 ) : (
                   <span>
-                    {banglaLabels.showing}{" "}
+                    {t.showing}{" "}
                     <span className="text-primary font-bold text-lg">
                       {filteredAndSortedDoctors.length}
                     </span>{" "}
-                    {banglaLabels.of}{" "}
+                    {t.of}{" "}
                     <span className="text-primary font-bold text-lg">
                       {doctors.length}
                     </span>{" "}
-                    {banglaLabels.totalDoctors}
+                    {t.totalDoctors}
                   </span>
                 )}
               </div>
@@ -1423,7 +1357,7 @@ function DoctorListPageContent() {
                     className="flex items-center gap-2 px-4 py-2.5 border-2 shadow-md hover:shadow-lg"
                   >
                     <X className="h-5 w-5" />
-                    {banglaLabels.clearSearch}
+                    {t.clearSearch}
                   </Button>
                 </motion.div>
               )}
@@ -1445,7 +1379,7 @@ function DoctorListPageContent() {
                 <p
                   className="text-xl font-semibold text-gray-600 mb-4"
                 >
-                  {banglaLabels.noDoctors}
+                  {t.noDoctors}
                 </p>
               </div>
               {hasActiveFilters && (
@@ -1458,7 +1392,7 @@ function DoctorListPageContent() {
                     variant="outline"
                     className="px-6 py-3 border-2 shadow-md hover:shadow-lg"
                   >
-                    {banglaLabels.clearFilters}
+                    {t.clearFilters}
                   </Button>
                 </motion.div>
               )}
@@ -1489,7 +1423,7 @@ export default function DoctorListPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          <div className="text-gray-500">লোড হচ্ছে...</div>
+          <div className="text-gray-500">Loading... / লোড হচ্ছে...</div>
         </div>
       }
     >

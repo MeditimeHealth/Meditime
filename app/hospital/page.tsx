@@ -11,6 +11,8 @@ import Navbar from "@/components/navbar";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
+import { homepageTranslations } from "@/lib/homepage-translations";
+
 interface Hospital {
   _id: string;
   name: string;
@@ -53,41 +55,6 @@ interface Thana {
   district: District;
 }
 
-const banglaLabels = {
-  findHospitals: "Top Hospitals in Savar and Surroundings",
-  searchPlaceholder: "Search by name, address, location, phone or email...",
-  findByLocation: "Find Hospital By Location",
-  division: "বিভাগ",
-  district: "জেলা",
-  thana: "থানা/উপজেলা",
-  selectDivision: "বিভাগ নির্বাচন করুন",
-  selectDistrict: "জেলা নির্বাচন করুন",
-  selectThana: "থানা/উপজেলা নির্বাচন করুন",
-  selectDivisionFirst: "প্রথমে বিভাগ নির্বাচন করুন",
-  selectDistrictFirst: "প্রথমে জেলা নির্বাচন করুন",
-  reset: "রিসেট",
-  showFilters: "ফিল্টার দেখুন",
-  hideFilters: "ফিল্টার লুকান",
-  active: "সক্রিয়",
-  clearFilters: "ফিল্টার সাফ করুন",
-  sortBy: "সাজান",
-  name: "নাম",
-  location: "অবস্থান",
-  found: "খুঁজে পাওয়া গেছে",
-  hospitals: "টি হাসপাতাল",
-  matching: "ম্যাচিং",
-  showing: "দেখানো হচ্ছে",
-  of: "এর মধ্যে",
-  totalHospitals: "টি হাসপাতাল",
-  noHospitals: "আপনার শর্ত অনুযায়ী কোন হাসপাতাল পাওয়া যায়নি",
-  viewDoctors: "ডাক্তার দেখুন",
-  callNow: "এখনই কল করুন",
-  loading: "হাসপাতাল লোড হচ্ছে...",
-  address: "ঠিকানা",
-  phone: "ফোন",
-  email: "ইমেইল",
-};
-
 export default function HospitalListPage() {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [divisions, setDivisions] = useState<Division[]>([]);
@@ -105,6 +72,7 @@ export default function HospitalListPage() {
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const { language } = useLanguage();
+  const t = homepageTranslations[language].hospitalsPage;
 
   const fetchHospitals = useCallback(async () => {
     try {
@@ -349,7 +317,7 @@ export default function HospitalListPage() {
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"
             />
-            <p className="text-xl font-semibold text-gray-700">{banglaLabels.loading}</p>
+            <p className="text-xl font-semibold text-gray-700">{t.loading}</p>
           </motion.div>
         </div>
       </div>
@@ -387,7 +355,7 @@ export default function HospitalListPage() {
               <h1
                 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl"
               >
-                {banglaLabels.findHospitals}
+                {t.heroTitle}
               </h1>
               {/* <p
                 className="text-xl md:text-2xl text-white/95 mb-8 drop-shadow-lg"
@@ -431,12 +399,12 @@ export default function HospitalListPage() {
                 <h2
                   className="text-3xl md:text-4xl font-bold text-gray-900 mb-3"
                 >
-                  List of 40+ Hospitals Near Savar
+                  {t.listTitle}
                 </h2>
                 <p
                   className="text-lg text-gray-600 leading-relaxed"
                 >
-                  Select Your Location and See The Best Hospitals Near You.
+                  {t.selectLocation}
                 </p>
               </div>
             </div>
@@ -454,7 +422,7 @@ export default function HospitalListPage() {
             <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
             <Input
               type="text"
-              placeholder={banglaLabels.searchPlaceholder}
+              placeholder={t.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -565,7 +533,7 @@ export default function HospitalListPage() {
                 <div className="p-2 bg-primary/20 rounded-lg">
                   <MapPin className="h-6 w-6 text-primary" />
                 </div>
-                {banglaLabels.findByLocation}
+                {t.findByLocation}
               </h2>
             </div>
 
@@ -576,7 +544,7 @@ export default function HospitalListPage() {
                   className="mb-3 block text-base font-semibold text-gray-700"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
-                  ১. {banglaLabels.division}
+                  ১. {t.division}
                 </Label>
                 <select
                   id="filter-division"
@@ -585,7 +553,7 @@ export default function HospitalListPage() {
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
-                  <option value="">{banglaLabels.selectDivision}</option>
+                  <option value="">{t.selectDivision}</option>
                   {divisions.map((div) => (
                     <option key={div._id} value={div.name}>
                       {div.name}
@@ -600,7 +568,7 @@ export default function HospitalListPage() {
                   className="mb-3 block text-base font-semibold text-gray-700"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
-                  ২. {banglaLabels.district}
+                  ২. {t.district}
                 </Label>
                 <select
                   id="filter-district"
@@ -610,7 +578,7 @@ export default function HospitalListPage() {
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-base bg-white shadow-sm hover:shadow-md transition-all"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
-                  <option value="">{selectedDivision ? banglaLabels.selectDistrict : banglaLabels.selectDivisionFirst}</option>
+                  <option value="">{selectedDivision ? t.selectDistrict : t.selectDivisionFirst}</option>
                   {districts.map((dist) => (
                     <option key={dist._id} value={dist.name}>
                       {dist.name}
@@ -625,7 +593,7 @@ export default function HospitalListPage() {
                   className="mb-3 block text-base font-semibold text-gray-700"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
-                  ৩. {banglaLabels.thana}
+                  ৩. {t.thana}
                 </Label>
                 <select
                   id="filter-thana"
@@ -635,7 +603,7 @@ export default function HospitalListPage() {
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-base bg-white shadow-sm hover:shadow-md transition-all"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
-                  <option value="">{selectedDivision && selectedDistrict ? banglaLabels.selectThana : banglaLabels.selectDistrictFirst}</option>
+                  <option value="">{selectedDivision && selectedDistrict ? t.selectThana : t.selectDistrictFirst}</option>
                   {thanas.map((thana) => (
                     <option key={thana._id} value={thana.name}>
                       {thana.name}
@@ -662,7 +630,7 @@ export default function HospitalListPage() {
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
                   <X className="h-5 w-5" />
-                  {banglaLabels.reset}
+                  {t.reset}
                 </Button>
               </motion.div>
             )}
@@ -687,7 +655,7 @@ export default function HospitalListPage() {
                   className="text-2xl font-semibold text-gray-600 mb-4"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
-                  {banglaLabels.noHospitals}
+                  {t.noHospitals}
                 </p>
                 {hasActiveFilters && (
                   <Button 
@@ -696,7 +664,7 @@ export default function HospitalListPage() {
                     className="mt-4"
                     style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                   >
-                    {banglaLabels.clearFilters}
+                    {t.clearFilters}
                   </Button>
                 )}
               </Card>
@@ -747,7 +715,7 @@ export default function HospitalListPage() {
                         <div className="pt-4 border-t border-gray-100 mt-auto flex items-center justify-center text-sm font-medium">
                             <span className="text-primary flex items-center gap-2 group-hover:translate-x-1 transition-transform">
                               {/* 3. Button icon changed to ArrowRight */}
-                              {banglaLabels.viewDoctors} <ArrowRight className="w-4 h-4" />
+                              {t.viewDoctors} <ArrowRight className="w-4 h-4" />
                             </span>
                         </div>
                       </div>

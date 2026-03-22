@@ -3,42 +3,14 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, X } from "lucide-react";
-
-const faqs = [
-  {
-    question: "How do I book a doctor appointment on Meditime?",
-    answer:
-      "Search for your preferred doctor or department using the search bar on our homepage. Select your doctor, choose an available time slot, and confirm with your phone number. You'll receive a confirmation SMS instantly — no registration required.",
-  },
-  {
-    question: "What is the Meditime Health Discount Card?",
-    answer:
-      "The Meditime Health Discount Card gives you instant discounts on 100+ medical services across 40+ partner hospitals near Savar and surroundings. A single card covers you, your spouse, and up to 2 children — delivered within 7 working days.",
-  },
-  {
-    question: "Is the appointment booking service free?",
-    answer:
-      "Yes, booking through Meditime is completely free. You only pay the doctor's consultation fee at the chamber — no hidden platform charges or commissions are added to your bill.",
-  },
-  {
-    question: "How can I compare diagnostic test prices?",
-    answer:
-      "Go to the Diagnostic section and search for your required test by name. Meditime shows real-time pricing from multiple partner labs so you can choose the most affordable and convenient option near you.",
-  },
-  {
-    question: "Does Meditime support online or video consultation?",
-    answer:
-      "Yes. Select a doctor who offers video consultation, book a time slot, and join the call at your scheduled time from any smartphone or computer. This is ideal for follow-ups, prescription renewals, and non-emergency health queries.",
-  },
-  {
-    question: "How do I contact an ambulance through Meditime?",
-    answer:
-      "Open the Ambulance section on our website or mobile app. You'll find a curated directory of ambulance services with direct contact numbers. In an emergency, you can call them directly or request through the platform.",
-  },
-  
-];
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 export default function FaqSection() {
+  const { language } = useLanguage();
+  const t = homepageTranslations[language].faq;
+  const faqs = t.questions;
+
   // Track which FAQ index is currently open (-1 means all closed)
   const [openIndex, setOpenIndex] = useState<number>(-1);
 
@@ -64,19 +36,17 @@ export default function FaqSection() {
             className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 sm:mb-5 leading-tight"
             style={{ color: "#14b8a6" }}
           >
-            Frequently Asked Questions
+            {t.title}
           </h2>
           {/* Subtitle in muted white */}
           <p className="text-sm sm:text-base leading-relaxed max-w-2xl mx-auto" style={{ color: "#94a3b8" }}>
-            Find answers to the most common questions about booking appointments,
-            our Health Discount Cards, diagnostic tests, and how Meditime works.
-            Still have questions?{" "}
+            {t.subtitle}{" "}
             <a
               href="tel:+8801610385555"
               className="font-semibold underline underline-offset-2 transition-opacity hover:opacity-80"
               style={{ color: "#14b8a6" }}
             >
-              Call us at +880 1610 38 5555
+              {t.callUsPrefix} {t.callUsNumber}
             </a>
             .
           </p>
@@ -173,7 +143,7 @@ export default function FaqSection() {
           className="mt-10 sm:mt-14 text-center"
         >
           <p className="text-sm sm:text-base mb-4" style={{ color: "#64748b" }}>
-            Can&apos;t find the answer you&apos;re looking for?
+            {t.noAnswerFound}
           </p>
           <a
             href="/contact"
@@ -183,7 +153,7 @@ export default function FaqSection() {
               color: "#ffffff",
             }}
           >
-            Contact Our Support Team
+            {t.contactSupport}
           </a>
         </motion.div>
 

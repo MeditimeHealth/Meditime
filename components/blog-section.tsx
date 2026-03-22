@@ -8,6 +8,8 @@ import { Calendar, ArrowUpRight, ChevronLeft, ChevronRight, Loader2 } from "luci
 import Link from "next/link";
 import Image from "next/image";
 import "swiper/css";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 interface WordPressPost {
   id: number;
@@ -28,6 +30,8 @@ export default function BlogSection() {
   const [posts, setPosts] = useState<WordPressPost[]>([]);
   const [loading, setLoading] = useState(true);
   const swiperRef = useRef<SwiperType | null>(null);
+  const { language } = useLanguage();
+  const t = homepageTranslations[language].blog;
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -74,18 +78,17 @@ export default function BlogSection() {
         {/* Header — two columns */}
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
           <h2 className="text-[24px] sm:text-[32px] lg:text-[42px] font-bold text-slate-900 leading-[1.2] lg:max-w-xl">
-            Stay Informed With <br className="hidden lg:block" /> Medical Blogs
+            {t.title}
           </h2>
           <div className="flex flex-col items-start gap-5 lg:max-w-md text-left">
             <p className="text-[15px] text-slate-500 leading-relaxed font-normal">
-              Explore expert-written articles offering trusted health tips, <br className="hidden lg:block" />
-              medical insights, &amp; wellness guidance daily.
+              {t.subtitle}
             </p>
             <Link
               href="/blog"
               className="inline-flex items-center px-8 py-3 bg-primary hover:bg-primary/95 text-white text-[15px] font-bold rounded-full transition-all shadow-md hover:shadow-primary/20"
             >
-              View More
+              {t.viewMore}
             </Link>
           </div>
         </div>
@@ -139,7 +142,7 @@ export default function BlogSection() {
                   </p>
                   {/* Read More */}
                   <div className="inline-flex items-center gap-1 text-primary text-sm font-semibold">
-                    Read More
+                    {t.readMore}
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </div>
                 </Link>

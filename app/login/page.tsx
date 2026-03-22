@@ -24,7 +24,13 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
+
 export default function LoginPage() {
+  const { language } = useLanguage() as { language: 'en' | 'bn' };
+  const t = homepageTranslations[language].authPage;
+
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -65,10 +71,10 @@ export default function LoginPage() {
         }
         router.refresh();
       } else {
-        showToast.error(result.error || "Login failed");
+        showToast.error(result.error || (language === 'en' ? "Login failed" : "লগইন ব্যর্থ হয়েছে"));
       }
     } catch (error) {
-      showToast.error("An error occurred. Please try again.");
+      showToast.error(language === 'en' ? "An error occurred. Please try again." : "একটি সমস্যা দেখা দিয়েছে। আবার চেষ্টা করুন।");
     } finally {
       setIsLoading(false);
     }
@@ -97,15 +103,19 @@ export default function LoginPage() {
                     <h1 className="text-3xl font-bold">MEDI TIME</h1>
                   </div>
                   <h2 className="text-5xl font-bold leading-tight">
-                    Your Health,
-                    <br />
-                    Our Priority
+                    {language === 'en' ? (
+                      <>Your Health,<br />Our Priority</>
+                    ) : (
+                      <>আপনার স্বাস্থ্য,<br />আমাদের অগ্রাধিকার</>
+                    )}
                   </h2>
                   <p className="text-lg text-white/90 leading-relaxed">
-                    Access your medical records, book appointments, and manage your health journey with ease.
+                    {language === 'en' 
+                      ? 'Access your medical records, book appointments, and manage your health journey with ease.'
+                      : 'সহজেই আপনার মেডিকেল রেকর্ড অ্যাক্সেস করুন, অ্যাপয়েন্টমেন্ট বুক করুন এবং আপনার স্বাস্থ্য যাত্রা পরিচালনা করুন।'}
                   </p>
                   <p className="text-base text-white/80">
-                    Where your health becomes our mission.
+                    {language === 'en' ? 'Where your health becomes our mission.' : 'যেখানে আপনার স্বাস্থ্য আমাদের লক্ষ্য হয়ে ওঠে।'}
                   </p>
                 </div>
               </div>
@@ -113,21 +123,21 @@ export default function LoginPage() {
               {/* Right Section - Login Form */}
               <div className="md:col-span-3 bg-white/95 backdrop-blur-sm p-12">
                 <div className="max-w-md mx-auto">
-                  <h3 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h3>
-                  <p className="text-gray-600 mb-8">Sign in to your account</p>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-2">{t.loginTitle}</h3>
+                  <p className="text-gray-600 mb-8">{t.loginSubtitle}</p>
 
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <div>
-                      <Label htmlFor="userType">Sign in as <span className="text-red-500">*</span></Label>
+                      <Label htmlFor="userType">{t.signInAs} <span className="text-red-500">*</span></Label>
                       <select
                         id="userType"
                         {...register("userType")}
                         className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
                       >
-                        <option value="">Select user type</option>
-                        <option value="user">User</option>
-                        <option value="bloodDonor">Blood Donor</option>
-                        <option value="ambulance">Ambulance</option>
+                        <option value="">{t.userTypePlaceholder}</option>
+                        <option value="user">{t.user}</option>
+                        <option value="bloodDonor">{t.bloodDonor}</option>
+                        <option value="ambulance">{t.ambulance}</option>
                       </select>
                       {errors.userType && (
                         <p className="text-sm text-red-500 mt-1">{errors.userType.message}</p>
@@ -135,11 +145,11 @@ export default function LoginPage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="phoneOrEmail">Phone Number or Email</Label>
+                      <Label htmlFor="phoneOrEmail">{t.phoneOrEmail}</Label>
                       <Input
                         id="phoneOrEmail"
                         type="text"
-                        placeholder="Enter your phone or email"
+                        placeholder={t.phoneOrEmailPlaceholder}
                         {...register("phoneOrEmail")}
                         className="mt-1"
                       />
@@ -149,12 +159,12 @@ export default function LoginPage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="password">Password</Label>
+                      <Label htmlFor="password">{t.password}</Label>
                       <div className="relative mt-1">
                         <Input
                           id="password"
                           type={showPassword ? "text" : "password"}
-                          placeholder="Enter your password"
+                          placeholder={t.passwordPlaceholder}
                           {...register("password")}
                         />
                         <button
@@ -172,7 +182,7 @@ export default function LoginPage() {
 
                     <div className="flex justify-end">
                       <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-                        Forgot password?
+                        {t.forgotPassword}
                       </Link>
                     </div>
 
@@ -181,7 +191,7 @@ export default function LoginPage() {
                       className="w-full bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white"
                       disabled={isLoading}
                     >
-                      {isLoading ? "Signing in..." : "SIGN IN"}
+                      {isLoading ? t.signingInBtn : t.signInBtn}
                     </Button>
                   </form>
 
@@ -191,7 +201,7 @@ export default function LoginPage() {
                         <div className="w-full border-t border-gray-300"></div>
                       </div>
                       <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-white/95 text-gray-500">or</span>
+                        <span className="px-2 bg-white/95 text-gray-500">{language === 'en' ? 'or' : 'অথবা'}</span>
                       </div>
                     </div>
 
@@ -206,14 +216,14 @@ export default function LoginPage() {
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                       </svg>
-                      Sign in with Google
+                      {t.signInGoogle}
                     </Button>
                   </div>
 
                   <p className="mt-6 text-center text-sm text-gray-600">
-                    Are you new?{" "}
+                    {t.newHere}{" "}
                     <Link href="/signup" className="text-primary font-medium hover:underline">
-                      Create an Account
+                      {t.createAccount}
                     </Link>
                   </p>
                 </div>

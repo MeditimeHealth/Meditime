@@ -9,67 +9,73 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Footer from "@/components/footer";
 
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
+
 export default function ServicePage() {
+  const { language } = useLanguage() as { language: 'en' | 'bn' };
+  const t = homepageTranslations[language].servicesPage;
+
   const services = [
     {
       id: 1,
-      title: "Doctor Appointment Booking",
-      description: "Find the Most Experienced Physician from 20+ Specialities and Departments. Easy booking, guaranteed visit, with no advance payment. Pay only when you visit the hospital.",
+      title: t.doctorTitle,
+      description: t.doctorDesc,
       icon: Stethoscope,
       iconBg: "bg-green-100 group-hover:bg-green-200",
       iconColor: "text-green-600",
       href: "/doctor",
-      buttonText: "Book Appointment",
+      buttonText: t.doctorBtn,
     },
     {
       id: 2,
-      title: "Find the Best Hospitals Near You",
-      description: "Find Specialized and General Hospitals Near You in the Dhaka Surroundings. From semi-government hospitals to private clinics, our network covers it all, keeping your needs and preferences in mind. We have compiled 30+ hospitals, bringing all the information you need at a glance.",
+      title: t.hospitalTitle,
+      description: t.hospitalDesc,
       icon: Building2,
       iconBg: "bg-blue-100 group-hover:bg-blue-200",
       iconColor: "text-blue-600",
       href: "/hospital",
-      buttonText: "Find Hospitals",
+      buttonText: t.hospitalBtn,
     },
     {
       id: 3,
-      title: "Video Call with Doctor",
-      description: "Known as Online Doctor Appointment, this service lets you talk directly with a doctor from your home. It is ideal for seniors, pregnant women, and people with disabilities. By booking an online consultation, you can speak to the doctor live using your smartphone from anywhere you feel comfortable. For convenience, download the Medicare App to access in-app video streaming, making what could be a journey of 10,000 steps easy with just a few clicks. You can also use this service directly from this website.",
+      title: t.videoTitle,
+      description: t.videoDesc,
       icon: Video,
       iconBg: "bg-purple-100 group-hover:bg-purple-200",
       iconColor: "text-purple-600",
       href: "/",
-      buttonText: "Start Video Call",
+      buttonText: t.videoBtn,
     },
     {
       id: 4,
-      title: "Most Affordable Diagnostic Tests Options",
-      description: "Diagnostic tests account for a significant portion of healthcare costs, potentially over 10% of total medical spending. Meditime is designed to help you find the most affordable options for medical tests such as blood tests, urine tests, CBC tests, CMP, and more in renowned hospitals. Compare prices and book diagnostic tests in Savar and surrounding areas using the Meditime app to save your money and time. This process also saves your money from overspending on expensive options.",
+      title: t.diagnosticTitle,
+      description: t.diagnosticDesc,
       icon: FlaskConical,
       iconBg: "bg-orange-100 group-hover:bg-orange-200",
       iconColor: "text-orange-600",
       href: "/diagnostic",
-      buttonText: "Compare Prices",
+      buttonText: t.diagnosticBtn,
     },
     {
       id: 5,
-      title: "Blood Donor Contact",
-      description: "31% of all maternal deaths happen due to haemorrhage (severe blood loss). Timely blood transfusion could save half of these lives. Just like the Bangla classics in real life, collecting blood for patients has become a major challenge in Bangladesh. Considering this situation, we have created a list of blood donors in Savar and nearby areas to help users access fresh and up-to-date contact information of blood donors.",
+      title: t.bloodTitle,
+      description: t.bloodDesc,
       icon: Droplet,
       iconBg: "bg-red-100 group-hover:bg-red-200",
       iconColor: "text-red-600",
       href: "/service/blood-donors",
-      buttonText: "Find Blood Donors",
+      buttonText: t.bloodBtn,
     },
     {
       id: 6,
-      title: "Ambulance Contact",
-      description: "We have a comprehensive list of ambulance contact numbers in Savar and nearby areas. In emergency situations, when every second matters, you can access ambulance services easily.",
+      title: t.ambulanceTitle,
+      description: t.ambulanceDesc,
       icon: Car,
       iconBg: "bg-primary/10 group-hover:bg-primary/20",
       iconColor: "text-primary",
       href: "/service/ambulance-services",
-      buttonText: "Find Ambulance",
+      buttonText: t.ambulanceBtn,
     },
   ];
 
@@ -103,12 +109,12 @@ export default function ServicePage() {
               <h1
                 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-2xl"
               >
-                Our Services
+                {t.heroTitle}
               </h1>
               <p
                 className="text-lg md:text-xl text-white/95 max-w-3xl mx-auto leading-relaxed drop-shadow-lg"
               >
-                Meditime has a broad range of medical information services from doctors&apos; appointment booking to ambulance contact numbers.
+                {t.heroDesc}
               </p>
             </motion.div>
           </div>

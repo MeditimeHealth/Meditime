@@ -8,6 +8,8 @@ import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import "swiper/css";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 interface Hospital {
   _id: string;
@@ -21,6 +23,8 @@ export default function HospitalPartnersSection() {
   const swiperRef = useRef<SwiperType | null>(null);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
+  const t = homepageTranslations[language].partners;
 
   useEffect(() => {
     const fetchHospitals = async () => {
@@ -56,10 +60,10 @@ export default function HospitalPartnersSection() {
         {/* Header — plain black, centered */}
         <div className="text-center mb-10">
           <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2 sm:mb-3">
-            Partner Hospitals
+            {t.title}
           </h2>
-          <p className="text-sm sm:text-base text-slate-500 max-w-md mx-auto">
-            Our partnership with leading hospitals across Savar and surrounding areas
+          <p className="text-sm sm:text-base text-slate-500 max-w-[500px] mx-auto">
+            {t.subtitle}
           </p>
         </div>
 
@@ -141,10 +145,10 @@ export default function HospitalPartnersSection() {
           <Link href="/hospitals">
             <div className="group/btn relative h-11 flex items-center">
               <span className="inline-flex items-center h-11 px-8 rounded-full text-[14px] font-medium bg-primary text-white transition-all duration-200 group-hover/btn:opacity-0 group-hover/btn:scale-90 whitespace-nowrap">
-                See All
+                {t.seeAll}
               </span>
               <span className="absolute left-0 top-0 inline-flex items-center gap-2 h-11 px-8 rounded-full text-[14px] font-semibold bg-primary-dark text-white whitespace-nowrap pointer-events-none opacity-0 scale-90 group-hover/btn:opacity-100 group-hover/btn:scale-100 transition-all duration-200">
-                View All
+                {t.viewAll}
                 <ArrowUpRight className="w-4 h-4" />
               </span>
             </div>

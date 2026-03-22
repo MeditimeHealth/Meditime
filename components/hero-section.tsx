@@ -8,42 +8,44 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
-const slides = [
-  {
-    title: "Top Doctors in Savar and Surroundings",
-    description:
-      "Meditime has a broad range of medical information services from doctors' appointment booking to ambulance contact numbers.",
-    image: "/slide.jpg",
-    ctaText: "View All Services",
-    ctaLink: "/service",
-  },
-  {
-    title: "Get Your Meditime Membership Card",
-    description:
-      "Enjoy on spot discounts in your medical bills using Meditime Health Discount Cards. Get delivered within 7 working days.",
-    image: "/slide2.jpg",
-    ctaText: "View Plans",
-    ctaLink: "/membership",
-  },
-  {
-    title: "Download the Medicare Mobile App",
-    description:
-      "Doctor's Appointment Booking, Diagnostic Test Price Comparison, Online Doctor Consultation, Ambulance Contact — all in your pocket.",
-    image: "/slide3.jpg",
-    ctaText: "Download Now",
-    ctaLink: "https://play.google.com/store",
-  },
-  {
-    title: "Find 100+ Diagnostic Tests in One Place",
-    description:
-      "Compare pricing of diagnostic tests and get up to 50% discount using our health discount cards.",
-    image: "/slide.jpg",
-    ctaText: "View Tests",
-    ctaLink: "/diagnostic",
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 export default function HeroSection() {
+  const { language } = useLanguage();
+  const t = homepageTranslations[language].hero;
+
+  const slides = [
+    {
+      title: t.slide1.title,
+      description: t.slide1.description,
+      image: "/slide.jpg",
+      ctaText: t.slide1.cta,
+      ctaLink: "/service",
+    },
+    {
+      title: t.slide2.title,
+      description: t.slide2.description,
+      image: "/slide2.jpg",
+      ctaText: t.slide2.cta,
+      ctaLink: "/membership",
+    },
+    {
+      title: t.slide3.title,
+      description: t.slide3.description,
+      image: "/slide3.jpg",
+      ctaText: t.slide3.cta,
+      ctaLink: "https://play.google.com/store",
+    },
+    {
+      title: t.slide4.title,
+      description: t.slide4.description,
+      image: "/slide.jpg",
+      ctaText: t.slide4.cta,
+      ctaLink: "/diagnostic",
+    },
+  ];
+
   return (
     <>
       <style>{`

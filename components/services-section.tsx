@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 /* ─── Inline SVG icons — matched to Figma vectors ───────────────────────── */
 
@@ -72,73 +74,68 @@ const IconAmbulance = () => (
   </svg>
 );
 
-/* ─── Service data ───────────────────────────────────────────────────────── */
-
-const services = [
-  {
-    Icon: IconDoctorAppointment,
-    title: "Doctor Appointment Booking",
-    cta: "Book Appointment",
-    href: "/doctor",
-    description:
-      "Find the Most Experienced Physician from 20+ Specialities and Departments. Easy booking, guaranteed visit",
-    highlight: false,
-    showArrow: false,
-  },
-  {
-    Icon: IconHospital,
-    title: "Find the Best Hospitals Near You",
-    cta: "Hospital List",
-    href: "/hospital",
-    description:
-      "Find Specialized and General Hospitals Near You in the Dhaka Surroundings.",
-    highlight: false,
-    showArrow: false,
-  },
-  {
-    Icon: IconVideoCall,
-    title: "Video Call with Doctor",
-    cta: "Book Consultation",
-    href: "/video-consultation",
-    description:
-      "Known as Online Doctor Appointment, this service lets you talk directly with a doctor from your home.",
-    highlight: false,
-    showArrow: false,
-  },
-  {
-    Icon: IconDiagnostic,
-    title: "Most Affordable Diagnostic Tests Options",
-    cta: "Compare Prices",
-    href: "/diagnostic",
-    description:
-      "Diagnostic tests account for a significant portion of healthcare costs, potentially over 10% of total medical",
-    highlight: false,
-    showArrow: false,
-  },
-  {
-    Icon: IconBloodDonor,
-    title: "Blood Donor Contact",
-    cta: "Find Donors",
-    href: "/blood-donors",
-    description:
-      "31% of all maternal deaths happen due to haemorrhage (severe blood loss). Timely blood transfusion could save",
-    highlight: false,
-    showArrow: false,
-  },
-  {
-    Icon: IconAmbulance,
-    title: "Ambulance Contact",
-    cta: "Book Consultation",
-    href: "/ambulance",
-    description:
-      "We have a comprehensive list of ambulance contact numbers in Savar and nearby areas.",
-    showArrow: false,
-  },
-];
-
 /* ─── Component ──────────────────────────────────────────────────────────── */
 
 export default function ServicesSection() {
+  const { language } = useLanguage();
+  const t = homepageTranslations[language].services;
+
+  const services = [
+    {
+      Icon: IconDoctorAppointment,
+      title: t.doctorAppointmentTitle,
+      cta: t.bookAppointmentBtn,
+      href: "/doctor",
+      description: t.doctorAppointmentDesc,
+      highlight: false,
+      showArrow: false,
+    },
+    {
+      Icon: IconHospital,
+      title: t.hospitalsTitle,
+      cta: t.hospitalListBtn,
+      href: "/hospital",
+      description: t.hospitalsDesc,
+      highlight: false,
+      showArrow: false,
+    },
+    {
+      Icon: IconVideoCall,
+      title: t.videoConsultTitle,
+      cta: t.bookConsultationBtn,
+      href: "/video-consultation",
+      description: t.videoConsultDesc,
+      highlight: false,
+      showArrow: false,
+    },
+    {
+      Icon: IconDiagnostic,
+      title: t.diagnosticTitle,
+      cta: t.comparePriceBtn,
+      href: "/diagnostic",
+      description: t.diagnosticDesc,
+      highlight: false,
+      showArrow: false,
+    },
+    {
+      Icon: IconBloodDonor,
+      title: t.bloodDonorTitle,
+      cta: t.findDonorBtn,
+      href: "/blood-donors",
+      description: t.bloodDonorDesc,
+      highlight: false,
+      showArrow: false,
+    },
+    {
+      Icon: IconAmbulance,
+      title: t.ambulanceTitle,
+      cta: t.callNowBtn,
+      href: "/ambulance",
+      description: t.ambulanceDesc,
+      showArrow: false,
+    },
+  ];
+
   return (
     <div className="bg-gray-50 py-8 sm:py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -155,12 +152,11 @@ export default function ServicesSection() {
         >
           {/* Figma title is ~36–40px — text-4xl matches, NOT text-5xl */}
           <h2 className="text-[22px] sm:text-4xl font-bold mb-2 sm:mb-3 text-slate-800 tracking-tight">
-            Meditime Services
+            {t.title}
           </h2>
           {/* Figma subtitle wraps to 3 short lines — keep max-w tight */}
           <p className="text-[13px] sm:text-[15px] text-slate-500 max-w-[498px] mx-auto leading-relaxed">
-            Meditime has a broad range of medical information services from
-            doctors&apos; appointment booking to ambulance contact numbers.
+            {t.subtitle}
           </p>
         </motion.div>
 

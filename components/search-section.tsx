@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 interface Doctor {
   _id: string;
@@ -19,6 +21,8 @@ interface Hospital {
 }
 
 export default function SearchSection() {
+  const { language } = useLanguage();
+  const t = homepageTranslations[language].search;
   const router = useRouter();
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
@@ -136,7 +140,7 @@ export default function SearchSection() {
             <Search className="text-gray-400 h-5 w-5 shrink-0" />
             <Input
               type="text"
-              placeholder="Search Doctor , Department, Hospital , Bio...."
+              placeholder={t.placeholder}
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -172,7 +176,7 @@ export default function SearchSection() {
               className="shrink-0 bg-primary hover:bg-primary/90 text-white text-xs sm:text-sm font-semibold px-4 sm:px-6 py-2 sm:py-2.5 rounded-full transition-all whitespace-nowrap shadow-sm"
               style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
             >
-              Search
+              {t.button}
             </button>
           </div>
 
@@ -209,7 +213,7 @@ export default function SearchSection() {
                             className="text-sm text-gray-500 mt-1"
                             style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                           >
-                            এই হাসপাতালের ডাক্তার দেখতে ক্লিক করুন
+                            {t.hospitalSubtitle}
                           </div>
                         )}
                       </div>
@@ -218,11 +222,11 @@ export default function SearchSection() {
                         style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                       >
                         {suggestion.type === "Doctor"
-                          ? "ডাক্তার"
+                          ? t.doctorTag
                           : suggestion.type === "Specialty"
-                          ? "বিশেষতা"
+                          ? t.specialtyTag
                           : suggestion.type === "Hospital"
-                          ? "হাসপাতাল"
+                          ? t.hospitalTag
                           : suggestion.type}
                       </span>
                     </div>

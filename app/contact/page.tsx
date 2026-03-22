@@ -23,7 +23,13 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
+
 export default function ContactPage() {
+  const { language } = useLanguage() as { language: 'en' | 'bn' };
+  const t = homepageTranslations[language].contactPage;
+
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -53,10 +59,10 @@ export default function ContactPage() {
         reset();
         setTimeout(() => setIsSuccess(false), 5000);
       } else {
-        showToast.error(result.error || "Failed to send message. Please try again.");
+        showToast.error(result.error || (language === 'en' ? "Failed to send message. Please try again." : "মেসেজ পাঠাতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।"));
       }
     } catch (error) {
-      showToast.error("An error occurred. Please try again.");
+      showToast.error(language === 'en' ? "An error occurred. Please try again." : "একটি সমস্যা দেখা দিয়েছে। আবার চেষ্টা করুন।");
     } finally {
       setIsLoading(false);
     }
@@ -68,9 +74,9 @@ export default function ContactPage() {
       
       <div className="container mx-auto px-4 py-16 mt-20">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-primary mb-4">Contact Us</h1>
+          <h1 className="text-4xl font-bold text-primary mb-4">{t.title}</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Have a question or need assistance? We're here to help!
+            {t.subtitle}
           </p>
         </div>
 
@@ -78,7 +84,7 @@ export default function ContactPage() {
           <div className="lg:col-span-1 space-y-6">
             {/* Emergency Hotline */}
             <Card className="p-6 border-2 border-[#ff5e29]">
-              <h2 className="text-2xl font-bold text-primary mb-4">Emergency Hotline</h2>
+              <h2 className="text-2xl font-bold text-primary mb-4">{t.emergencyTitle}</h2>
               <a 
                 href="tel:+8801610384444" 
                 className="flex items-center justify-center gap-3 px-6 py-4 rounded-lg text-white font-bold airport-light transition-all hover:scale-105 shadow-lg text-lg"
@@ -87,19 +93,19 @@ export default function ContactPage() {
                 <span>+880 1610-384444</span>
               </a>
               <p className="text-sm text-gray-600 mt-3 text-center">
-                Available 24/7 for medical emergencies
+                {t.emergencyStatus}
               </p>
             </Card>
 
             <Card className="p-6">
-              <h2 className="text-2xl font-bold text-primary mb-6">Get in Touch</h2>
+              <h2 className="text-2xl font-bold text-primary mb-6">{t.touchTitle}</h2>
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Mail className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
+                    <h3 className="font-semibold text-gray-900 mb-1">{t.email}</h3>
                     <p className="text-gray-600">info@meditime.com</p>
                   </div>
                 </div>
@@ -109,8 +115,8 @@ export default function ContactPage() {
                     <Phone className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
-                    <p className="text-gray-600">+1 (555) 123-4567</p>
+                    <h3 className="font-semibold text-gray-900 mb-1">{t.phone}</h3>
+                    <p className="text-gray-600">+880 1610-384444</p>
                   </div>
                 </div>
 
@@ -119,10 +125,9 @@ export default function ContactPage() {
                     <MapPin className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Address</h3>
+                    <h3 className="font-semibold text-gray-900 mb-1">{t.address}</h3>
                     <p className="text-gray-600">
-                      123 Medical Center Drive<br />
-                      Health City, HC 12345
+                      {language === 'en' ? 'Savar, Dhaka' : 'সাভার, ঢাকা'}
                     </p>
                   </div>
                 </div>
@@ -132,23 +137,23 @@ export default function ContactPage() {
 
           <div className="lg:col-span-2">
             <Card className="p-8">
-              <h2 className="text-2xl font-bold text-primary mb-6">Send us a Message</h2>
+              <h2 className="text-2xl font-bold text-primary mb-6">{t.messageTitle}</h2>
               
               {isSuccess && (
                 <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md flex items-center gap-3">
                   <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <p className="text-green-800">Thank you! Your message has been sent successfully.</p>
+                  <p className="text-green-800">{t.successMsg}</p>
                 </div>
               )}
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="name">Full Name *</Label>
+                    <Label htmlFor="name">{t.nameLabel}</Label>
                     <Input
                       id="name"
                       type="text"
-                      placeholder="John Doe"
+                      placeholder={t.namePlaceholder}
                       {...register("name")}
                       className="mt-1"
                     />
@@ -158,11 +163,11 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="email">Email Address *</Label>
+                    <Label htmlFor="email">{t.emailLabel}</Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder="john.doe@example.com"
+                      placeholder={t.emailPlaceholder}
                       {...register("email")}
                       className="mt-1"
                     />
@@ -173,11 +178,11 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="phone">Phone Number *</Label>
+                  <Label htmlFor="phone">{t.phoneLabel}</Label>
                   <Input
                     id="phone"
                     type="tel"
-                    placeholder="+1 (555) 123-4567"
+                    placeholder={t.phonePlaceholder}
                     {...register("phone")}
                     className="mt-1"
                   />
@@ -187,11 +192,11 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="subject">Subject *</Label>
+                  <Label htmlFor="subject">{t.subjectLabel}</Label>
                   <Input
                     id="subject"
                     type="text"
-                    placeholder="How can we help you?"
+                    placeholder={t.subjectPlaceholder}
                     {...register("subject")}
                     className="mt-1"
                   />
@@ -201,10 +206,10 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="message">Message *</Label>
+                  <Label htmlFor="message">{t.messageLabel}</Label>
                   <Textarea
                     id="message"
-                    placeholder="Tell us more about your inquiry..."
+                    placeholder={t.messagePlaceholder}
                     rows={6}
                     {...register("message")}
                     className="mt-1"
@@ -220,11 +225,11 @@ export default function ContactPage() {
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    "Sending..."
+                    t.sendingBtn
                   ) : (
                     <>
                       <Send className="h-4 w-4 mr-2" />
-                      Send Message
+                      {t.sendBtn}
                     </>
                   )}
                 </Button>

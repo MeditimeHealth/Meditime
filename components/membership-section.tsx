@@ -4,9 +4,13 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, PlayCircle } from "lucide-react";
 import { useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 export default function MembershipSection() {
   const [playing, setPlaying] = useState(false);
+  const { language } = useLanguage();
+  const t = homepageTranslations[language].membership;
 
   return (
     <div className="w-full py-10 sm:py-16 bg-[#F5F6F8]">
@@ -72,17 +76,16 @@ export default function MembershipSection() {
               className="p-4 sm:p-8 lg:pl-16 lg:pr-12 flex flex-col justify-center items-center lg:items-start text-center lg:text-left order-1 lg:order-2"
             >
               <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight mb-3 sm:mb-5">
-                Meditime Health Discount Cards
+                {t.title}
               </h2>
 
               <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-6 sm:mb-10">
-                Enjoy discounts in 100+ medical services in 40+ hospitals near
-                Savar and save up to 15% on medical bills.
+                {t.desc}
               </p>
 
               <Link href="/membership" className="w-fit mx-auto lg:mx-0">
                 <button className="bg-primary hover:bg-primary/90 text-white font-semibold text-sm py-3 px-7 rounded-full shadow-sm transition-all inline-flex items-center gap-2">
-                  Get Your Card
+                  {t.availBtn}
                 </button>
               </Link>
             </motion.div>
