@@ -40,6 +40,7 @@ import { homepageTranslations } from "@/lib/homepage-translations";
 interface Department {
   _id: string;
   name: string;
+  nameBn?: string;
   image?: string;
 }
 
@@ -729,7 +730,7 @@ function DoctorListPageContent() {
                 />
                 <Button className="hidden md:flex bg-primary hover:bg-primary-dark text-white items-center gap-2 rounded-xl px-8 py-6 text-lg font-medium transition-all shadow-lg hover:shadow-primary/30">
                   <Search className="h-5 w-5" />
-                  Search
+                  {t.searchButton}
                 </Button>
               </div>
             </div>
@@ -790,7 +791,7 @@ function DoctorListPageContent() {
                               <div
                                 className="text-sm text-gray-500 mt-1 font-medium text-primary"
                               >
-                                এই হাসপাতালের ডাক্তার দেখতে ক্লিক করুন
+                                {t.clickToViewDoctors}
                               </div>
                             )}
                           </div>
@@ -838,9 +839,9 @@ function DoctorListPageContent() {
             <div className="mb-6 md:mb-8 flex items-end justify-between gap-4">
               <div>
                 <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-                  Search Doctor By Department
+                  {t.departmentTitle}
                 </h2>
-                <p className="text-gray-500 mt-1 text-sm md:text-base">Explore specialists by department</p>
+                <p className="text-gray-500 mt-1 text-sm md:text-base">{t.departmentSubtitle}</p>
               </div>
             </div>
             <div className="relative px-4">
@@ -914,7 +915,7 @@ function DoctorListPageContent() {
                             : "text-gray-900"
                         }`}
                       >
-                        {dept.name}
+                        {getLocalizedValue(dept.name, dept.nameBn, language)}
                       </p>
                     </motion.button>
                   </SwiperSlide>
@@ -933,7 +934,7 @@ function DoctorListPageContent() {
             {/* View All Button - Bottom for All Screens */}
             <div className="mt-6 flex justify-center">
               <Link href="/departments" className="text-primary font-medium hover:underline flex items-center gap-1">
-                View All <ChevronRight className="w-4 h-4" />
+                {t.viewAll} <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
@@ -1094,7 +1095,7 @@ function DoctorListPageContent() {
                   <option value="">{t.allDepartments}</option>
                   {departmentNames.map((dept) => (
                     <option key={dept} value={dept}>
-                      {dept}
+                      {language === 'en' ? dept : (departments.find(d => d.name === dept)?.nameBn || dept)}
                     </option>
                   ))}
                 </select>
@@ -1150,12 +1151,12 @@ function DoctorListPageContent() {
                   <h3
                     className="text-xl md:text-2xl font-bold text-gray-900"
                   >
-                    ফিল্টার করুন
+                    {t.filterTitle}
                   </h3>
                   <p
                     className="text-sm text-gray-600 mt-1"
                   >
-                    আপনার প্রয়োজন অনুযায়ী ডাক্তার খুঁজুন
+                    {t.filterSubtitle}
                   </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
