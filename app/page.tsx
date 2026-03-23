@@ -30,7 +30,7 @@ export default function Home() {
       <HospitalPartnersSection />
       <BookAppointmentSection />
       <BlogSection />
-      {/* <FaqSection /> */}
+      <FaqSection />
       <AppDownloadSection />
       <Footer />
     </div>
