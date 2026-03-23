@@ -670,8 +670,7 @@ function DoctorListPageContent() {
                 {t.heroTitle}
               </h1>
               <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8 font-light">
-                Connect with the best healthcare professionals in your area for
-                expert medical advice and treatment.
+                {t.heroDesc}
               </p>
             </motion.div>
           </div>

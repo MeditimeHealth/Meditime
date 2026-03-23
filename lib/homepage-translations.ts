@@ -194,7 +194,7 @@ export const homepageTranslations = {
     doctorsPage: {
       heroTitle: "Top Doctors in Savar and Surroundings",
       heroSubtitle: "Get Expert Medical Care:",
-      heroDesc: "Top Doctors Near Savar? Browse Experts Across All Departments and book your appointment today.",
+      heroDesc: "Find experienced, caring doctors close to home. Book an appointment in minutes and get the right advice for you and your family.",
       searchPlaceholder: "Search by name, specialty, hospital, qualification or bio...",
       findByLocation: "Find The Best Doctor Near You",
       division: "Division",
@@ -601,7 +601,7 @@ export const homepageTranslations = {
     doctorsPage: {
       heroTitle: "সাভার ও পার্শ্ববর্তী এলাকার সেরা বিশেষজ্ঞ ডাক্তারগণ",
       heroSubtitle: "বিশেষজ্ঞ স্বাস্থ্যসেবা নিন:",
-      heroDesc: "সাভার এলাকার সেরা বিশেষজ্ঞ ডাক্তার খুঁজছেন? আজই সকল বিভাগের বিশেষজ্ঞদের তালিকা দেখুন এবং আপনার অ্যাপয়েন্টমেন্ট বুক করুন।",
+      heroDesc: "আপনার এবং আপনার পরিবারের সুস্বাস্থ্যের জন্য ঘরের কাছেই আছেন অভিজ্ঞ ও যত্নশীল সব ডাক্তার। অভিজ্ঞ ডাক্তার খুঁজুন,  কয়েক মিনিটেই সিরিয়াল নিশ্চিত করুন এবং সঠিক পরামর্শ নিন",
       searchPlaceholder: "নাম, বিশেষত্ব, হাসপাতাল বা যোগ্যতা দিয়ে খুঁজুন...",
       findByLocation: "আপনার নিকটস্থ সেরা ডাক্তার খুঁজে নিন",
       division: "বিভাগ",
