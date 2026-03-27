@@ -62,6 +62,12 @@ const menuItems = [
     href: "/admin/video-consultations",
   },
   {
+    title: "Live Consultants",
+    titleBn: "লাইভ কনসালটেন্ট",
+    icon: Video,
+    href: "/admin/live-consultants",
+  },
+  {
     title: "Create Doctor",
     titleBn: "ডাক্তার যোগ করুন",
     icon: UserPlus,
