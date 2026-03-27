@@ -9,7 +9,7 @@ export default function AppDownloadSection() {
   const t = homepageTranslations[language].mobileApp;
 
   return (
-    <div className="w-full bg-yellow-300 py-8 sm:py-12 overflow-hidden">
+    <div className="w-full bg-[#00B7B5] py-8 sm:py-12 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
 

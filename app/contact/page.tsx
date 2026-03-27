@@ -106,7 +106,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">{t.email}</h3>
-                    <p className="text-gray-600">info@meditime.com</p>
+                    <p className="text-gray-600">support@meditime.com.bd</p>
                   </div>
                 </div>
 
@@ -127,7 +127,9 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">{t.address}</h3>
                     <p className="text-gray-600">
-                      {language === 'en' ? 'Savar, Dhaka' : 'সাভার, ঢাকা'}
+                      {language === 'en' 
+                        ? 'House #10, Road #3, Savar DOHS, Dhaka, Bangladesh, 1349' 
+                        : 'বাসা নং-১০, রোড নং-০৩, সাভার ডিওএইচএস, ঢাকা, বাংলাদেশ, ১৩৪৯।'}
                     </p>
                   </div>
                 </div>

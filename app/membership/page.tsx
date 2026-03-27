@@ -52,31 +52,27 @@ const membershipPlans = [
 ];
 
 const howToGetSteps = [
-  "Choose a membership package from the cards below.",
-  "Check the discount percentage and how many family members can use the card.",
-  "After choosing the package, check the price and click \"Order Now.\"",
-  "Read the medical benefits of the package you have selected carefully and make sure you agree.",
-  "Fill out the Meditime Health Discount Card Request Form to confirm your order.",
-  "After the card is delivered to you, start using it at hospitals in our network.",
-  "With this card, you can enjoy up to 15% discount on covered medical services. The card can be used anytime during the year.",
+  "Fill out the request form with your accurate details to apply for your Meditime Health Discount Card.",
+  "Our representative will contact you to confirm your order and deliver the card to your address within 7 working days.",
+  "Once you receive your card, you can start enjoying instant discounts at all our partner hospitals for one full year.",
 ];
 
 const faqs = [
   {
-    question: "What is a Health Discount Card?",
-    answer: "A health discount card is a medical service privilege card. If you have an authorized one, you will be eligible for discounts on medical service bills at hospitals within the provider's network. For example, by using the Meditime Health Discount Card, a user can enjoy up to 15% discount on different medical services at a network of 30+ hospitals near Savar and surrounding areas.",
+    question: "What is the Meditime Health Discount Card?",
+    answer: "The Meditime Health Discount Card is a medical privilege pass that offers instant discounts on 100+ medical services, including doctor appointments and diagnostic tests, at 40+ partner hospitals near Savar.",
   },
   {
-    question: "Why Do You Need a Health Discount Card?",
-    answer: "You need a health discount card to save money on medical expenses. It helps you get discounts on hospital services, tests, and treatments at network hospitals, making healthcare more affordable for you and your family.",
+    question: "How long does it take to get the card?",
+    answer: "After you submit your application, our representative will contact you, and the card will be delivered to your address within 7 working days.",
   },
   {
-    question: "Can I Use the Meditime Health Card in All Hospitals in Savar?",
-    answer: "Yes, almost every renowned hospital in Savar, Ashulia, Kaliyakoir, and Dhamarai is in the Meditime network.",
+    question: "How much discount can I get with the card?",
+    answer: "You can enjoy up to 30% discount on various medical services, diagnostic tests, and doctor consultation fees at our network hospitals.",
   },
   {
-    question: "How Many Hospitals Are in the Network?",
-    answer: "More than 40 hospitals are already in the network and the number is always increasing with our expanding customer base.",
+    question: "Who can use the Meditime Health Discount Card?",
+    answer: "Depending on your plan, a single card can cover you, your spouse, and up to 4 children, making it a complete healthcare savings solution for your family.",
   },
 ];
 
