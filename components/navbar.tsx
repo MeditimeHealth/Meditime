@@ -299,6 +299,16 @@ export default function Navbar() {
                           </button>
                         )}
                         
+                        {user?.role === 'doctor' && (
+                          <button
+                            onClick={() => { router.push('/doctor/dashboard'); }}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-primary/10 rounded-lg transition-colors text-primary"
+                          >
+                            <UserCircle className="h-5 w-5" />
+                            <span className="font-medium">Doctor Dashboard</span>
+                          </button>
+                        )}
+                        
                         <div className="border-t my-2"></div>
                         
                         <button
@@ -463,6 +473,15 @@ export default function Navbar() {
                           className="block w-full px-4 py-3 bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base font-semibold rounded-lg transition-all duration-300 shadow-lg text-center"
                         >
                           Dashboard
+                        </Link>
+                      )}
+                      {user.role === 'doctor' && (
+                        <Link
+                          href="/doctor/dashboard"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="block w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-base font-semibold rounded-lg transition-all duration-300 shadow-lg text-center"
+                        >
+                          Doctor Dashboard
                         </Link>
                       )}
                       <button

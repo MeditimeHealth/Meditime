@@ -4,8 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
 import Link from "next/link";
+import Image from "next/image";
 import { Video, Clock, Users, DollarSign, Phone, Search, Wifi, WifiOff } from "lucide-react";
 import toast from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface Doctor {
   _id: string;
@@ -32,6 +38,7 @@ interface LiveConsultant {
   queueFull: boolean;
   roomId: string;
   specialization?: string;
+  specializationBn?: string;
 }
 
 export default function LiveConsultationPage() {
@@ -96,101 +103,153 @@ export default function LiveConsultationPage() {
   const filteredConsultants = consultants.filter((c) => {
     const doctorName = (language === "bn" && c.doctorId?.nameBn) ? c.doctorId.nameBn : c.doctorId?.name || "";
     const specialty = (language === "bn" && c.doctorId?.specialtyBn) ? c.doctorId.specialtyBn : c.doctorId?.specialty || "";
-    const q = search.toLowerCase();
-    return doctorName.toLowerCase().includes(q) || specialty.toLowerCase().includes(q);
+    const specialization = (language === "bn" && c.specializationBn) ? c.specializationBn : c.specialization || "";
+    const qualification = (language === "bn" && c.doctorId?.qualificationBn) ? c.doctorId.qualificationBn : c.doctorId?.qualification || "";
+    
+    const q = search.toLowerCase().trim();
+    if (!q) return true;
+
+    return (
+      doctorName.toLowerCase().includes(q) || 
+      specialty.toLowerCase().includes(q) || 
+      specialization.toLowerCase().includes(q) ||
+      qualification.toLowerCase().includes(q)
+    );
   });
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#f0fdfa" }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+      <Navbar />
+
       {/* Hero Section */}
-      <section className="relative py-16 sm:py-20 overflow-hidden" style={{ background: "linear-gradient(135deg, #0d9488 0%, #115e59 100%)" }}>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/20 blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-white/10 blur-3xl" />
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
-              </span>
-              <span className="text-white/90 text-sm font-medium">
-                {language === "bn" ? "লাইভ কনসালটেশন চালু আছে" : "Live Consultations Available"}
-              </span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4">
-              {language === "bn" ? "এখনই ডাক্তারের সাথে কথা বলুন" : "Talk to a Doctor Right Now"}
-            </h1>
-            <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">
-              {language === "bn"
-                ? "অপেক্ষার ঝামেলা নেই — সরাসরি ভিডিও কলে বিশেষজ্ঞ ডাক্তারের পরামর্শ নিন। কিউতে যোগ দিন এবং আপনার পালা এলে সরাসরি কথা বলুন।"
-                : "No waiting hassles — get expert advice via a live video call. Join the queue and talk directly when it's your turn."}
-            </p>
-            {/* Search */}
-            <div className="max-w-md mx-auto relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder={language === "bn" ? "ডাক্তার বা বিভাগ খুঁজুন..." : "Search doctor or specialty..."}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-full bg-white shadow-lg text-gray-800 focus:ring-2 focus:ring-teal-300 focus:outline-none"
-              />
-            </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative mt-20 h-[450px] md:h-[550px] w-full overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0d9488]/90 via-[#115e59]/80 to-teal-600/60 z-10" />
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage:
+              "url('/live-consultation-hero.png')",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+          }}
+        />
+        <div className="relative z-20 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pb-20">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-full px-4 py-2 mb-6 border border-white/30">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
+                </span>
+                <span className="text-white text-xs font-bold uppercase tracking-wider">
+                  {language === "bn" ? "লাইভ কনসালটেশন চালু আছে" : "Live Consultations Available"}
+                </span>
+              </div>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
+                {language === "bn" ? "এখনই ডাক্তারের সাথে কথা বলুন" : "Talk to a Doctor Right Now"}
+              </h1>
+              <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8 font-light italic">
+                {language === "bn"
+                  ? "অপেক্ষার ঝামেলা নেই — সরাসরি ভিডিও কলে বিশেষজ্ঞ ডাক্তারের পরামর্শ নিন।"
+                  : "No waiting hassles — get expert advice via a live video call instantly."}
+              </p>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.div>
 
-      {/* Doctors Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 -mt-32 relative z-30">
+        {/* Search Section - Floating */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mb-16"
+        >
+          <div className="relative max-w-3xl mx-auto">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+              <div className="relative bg-white rounded-2xl shadow-xl flex items-center p-2 border border-teal-50">
+                <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-teal-600 h-6 w-6 z-10" />
+                <Input
+                  id="live-search-input"
+                  type="text"
+                  placeholder={language === "bn" ? "ডাক্তার বা বিভাগ খুঁজুন..." : "Search doctor or specialty..."}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-14 pr-4 py-7 text-lg border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent placeholder:text-gray-400 font-medium"
+                />
+                <Button 
+                  onClick={() => document.getElementById('live-search-input')?.focus()}
+                  className="hidden md:flex bg-teal-600 hover:bg-teal-700 text-white items-center gap-2 rounded-xl px-8 py-6 text-lg font-bold transition-all shadow-lg hover:shadow-teal-200 active:scale-95"
+                >
+                  <Search className="h-5 w-5" />
+                  {language === "bn" ? "খুঁজুন" : "Search"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Main Content Area */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-16">
         {loading ? (
           <div className="flex justify-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500" />
           </div>
         ) : filteredConsultants.length === 0 ? (
-          <div className="text-center py-20">
-            <WifiOff className="h-20 w-20 mx-auto text-gray-300 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600">
-              {language === "bn" ? "এই মুহূর্তে কোনো ডাক্তার লাইভে নেই" : "No Doctors Are Live Right Now"}
+          <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-teal-50">
+            <WifiOff className="h-20 w-20 mx-auto text-teal-100 mb-6 animate-pulse" />
+            <h3 className="text-2xl font-bold text-gray-800">
+              {search 
+                ? (language === "bn" ? "ভোক্তার পছন্দের ডাক্তার পাওয়া যায়নি" : "No matching doctors found")
+                : (language === "bn" ? "এই মুহূর্তে কোনো ডাক্তার লাইভে নেই" : "No Doctors Are Live Right Now")}
             </h3>
-            <p className="text-gray-400 mt-2">{language === "bn" ? "পরে আবার চেষ্টা করুন" : "Please check back later"}</p>
+            <p className="text-gray-500 mt-3 text-lg">
+              {search 
+                ? (language === "bn" ? "অন্য কিছু লিখে চেষ্টা করুন" : "Try searching for something else")
+                : (language === "bn" ? "পরে আবার চেষ্টা করুন" : "Please check back later")}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredConsultants.map((c) => (
               <div
                 key={c._id}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 group"
+                className="bg-white rounded-2xl shadow-md border border-teal-50 overflow-hidden hover:shadow-xl transition-all duration-500 group transform hover:-translate-y-1"
               >
                 {/* Card Header */}
                 <div className="relative p-6 pb-4">
                   <div className="flex items-start gap-4">
                     <div className="relative flex-shrink-0">
-                      {c.doctorId?.image ? (
-                        <img
-                          src={c.doctorId.image}
-                          alt={c.doctorId.name}
-                          className="w-20 h-20 rounded-2xl object-cover shadow-sm"
-                        />
-                      ) : (
-                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white font-bold text-2xl shadow-sm">
-                          {c.doctorId?.name?.charAt(0) || "D"}
-                        </div>
-                      )}
+                      <img
+                        src={c.doctorId?.image || "https://img.freepik.com/free-vector/doctor-character-background_1270-84.jpg"}
+                        alt={c.doctorId?.name || "Doctor"}
+                        className="w-20 h-20 rounded-2xl object-cover shadow-sm border border-teal-100"
+                      />
                       <span className="absolute -top-1 -right-1 flex h-5 w-5">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
                         <span className="relative inline-flex rounded-full h-5 w-5 bg-green-500 border-2 border-white" />
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-gray-900 text-lg leading-tight truncate">
+                      <h3 className="font-bold text-gray-900 text-lg leading-tight truncate hover:text-teal-600 transition-colors">
                         {language === "bn" && c.doctorId?.nameBn ? c.doctorId.nameBn : c.doctorId?.name}
                       </h3>
-                      <p className="text-teal-600 text-sm font-medium mt-0.5">
-                        {language === "bn" && c.doctorId?.specialtyBn ? c.doctorId.specialtyBn : c.doctorId?.specialty}
+                      <p className="text-teal-600 text-sm font-semibold mt-1">
+                        {language === "bn" ? (c.specializationBn || c.doctorId?.specialtyBn) : (c.specialization || c.doctorId?.specialty)}
                       </p>
-                      <p className="text-gray-400 text-xs mt-0.5 truncate">
+                      <p className="text-gray-500 text-xs mt-1 truncate font-medium">
                         {language === "bn" && c.doctorId?.qualificationBn ? c.doctorId.qualificationBn : c.doctorId?.qualification}
                       </p>
                     </div>
@@ -244,7 +303,8 @@ export default function LiveConsultationPage() {
             ))}
           </div>
         )}
-      </section>
+      </main>
+      <Footer />
 
       {/* Join Modal */}
       {showJoinModal && selectedConsultant && (

@@ -103,7 +103,7 @@ export default function ServicesSection() {
       Icon: IconVideoCall,
       title: t.videoConsultTitle,
       cta: t.bookConsultationBtn,
-      href: "/video-consultation",
+      href: "/live-consultation",
       description: t.videoConsultDesc,
       highlight: false,
       showArrow: false,

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import LiveConsultant from '@/models/LiveConsultant';
 import Doctor from '@/models/Doctor';
+import User from '@/models/User';
+import bcrypt from 'bcryptjs';
 import { v4 } from 'crypto';
 
 function generateRoomId(): string {
@@ -31,7 +33,7 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { doctorId, consultationFee, estimatedWaitTime, maxQueueSize, specialization, specializationBn, language } = body;
+    const { doctorId, consultationFee, estimatedWaitTime, maxQueueSize, specialization, specializationBn, language, email, password } = body;
 
     if (!doctorId || consultationFee === undefined) {
       return NextResponse.json({ error: 'doctorId and consultationFee are required' }, { status: 400 });
@@ -47,6 +49,34 @@ export async function POST(request: NextRequest) {
     const existing = await LiveConsultant.findOne({ doctorId });
     if (existing) {
       return NextResponse.json({ error: 'This doctor is already a live consultant' }, { status: 409 });
+    }
+
+    // Optionally create user account if email and password are provided
+    if (email && password) {
+      const existingUser = await User.findOne({ email: email.toLowerCase() });
+      if (existingUser) {
+        return NextResponse.json({ error: 'A user with this email already exists' }, { status: 409 });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const userObj: any = {
+        fullName: doctor.name,
+        email: email.toLowerCase(),
+        password: hashedPassword,
+        role: 'doctor',
+        userType: 'doctor',
+        doctorId: doctor._id,
+        isActive: true,
+      };
+      if (doctor.phoneNumber) userObj.phoneNumber = doctor.phoneNumber;
+      
+      await User.create(userObj);
+      
+      // Update doctor record with email if it was missing
+      if (!doctor.email) {
+        doctor.email = email.toLowerCase();
+        await doctor.save();
+      }
     }
 
     const roomId = generateRoomId();

@@ -11,7 +11,8 @@ export interface IUser extends Document {
   password: string;
   photo?: string;
   role?: 'admin' | 'user' | 'doctor' | 'bloodDonor' | 'ambulance' | 'affiliate';
-  userType?: 'user' | 'bloodDonor' | 'ambulance' | 'affiliate';
+  userType?: 'user' | 'doctor' | 'bloodDonor' | 'ambulance' | 'affiliate';
+  doctorId?: mongoose.Types.ObjectId;
   // Affiliate-specific fields
   affiliateCode?: string;
   isActive?: boolean;
@@ -36,16 +37,14 @@ const UserSchema: Schema = new Schema(
     },
     phoneNumber: {
       type: String,
-      required: [true, 'Phone number is required'],
-      unique: true,
       trim: true,
+      index: true,
     },
     username: {
       type: String,
-      unique: true,
-      sparse: true,
       trim: true,
       lowercase: true,
+      index: true,
     },
     fullName: {
       type: String,
@@ -77,8 +76,12 @@ const UserSchema: Schema = new Schema(
     },
     userType: {
       type: String,
-      enum: ['user', 'bloodDonor', 'ambulance', 'affiliate'],
+      enum: ['user', 'doctor', 'bloodDonor', 'ambulance', 'affiliate'],
       default: 'user',
+    },
+    doctorId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Doctor',
     },
     photo: {
       type: String,
@@ -87,9 +90,8 @@ const UserSchema: Schema = new Schema(
     // Affiliate-specific fields
     affiliateCode: {
       type: String,
-      unique: true,
-      sparse: true,
       trim: true,
+      index: true,
     },
     isActive: {
       type: Boolean,
@@ -137,6 +139,22 @@ const UserSchema: Schema = new Schema(
   {
     timestamps: true,
   }
+);
+
+// Add partial unique indexes to allow multiple null/empty values
+UserSchema.index(
+  { phoneNumber: 1 }, 
+  { unique: true, partialFilterExpression: { phoneNumber: { $type: "string", $gt: "" } } }
+);
+
+UserSchema.index(
+  { username: 1 }, 
+  { unique: true, partialFilterExpression: { username: { $type: "string", $gt: "" } } }
+);
+
+UserSchema.index(
+  { affiliateCode: 1 }, 
+  { unique: true, partialFilterExpression: { affiliateCode: { $type: "string", $gt: "" } } }
 );
 
 // Delete existing model to force recompilation with updated schema

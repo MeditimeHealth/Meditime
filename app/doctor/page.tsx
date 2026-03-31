@@ -373,15 +373,11 @@ function DoctorListPageContent() {
   const filteredAndSortedDoctors = useMemo(() => {
     let filtered = [...doctors];
 
-    // Language-based filter: Only show doctors with content in the selected language
+    // Language-based filter: Ensure doctor has at least one name
     filtered = filtered.filter((doctor) => {
-      if (language === 'en') {
-        // For English, show only doctors that have English name
-        return doctor.name && doctor.name.trim() !== '';
-      } else {
-        // For Bangla, show only doctors that have Bangla name
-        return doctor.nameBn && doctor.nameBn.trim() !== '';
-      }
+      const nameEn = doctor.name && doctor.name.trim() !== '';
+      const nameBn = doctor.nameBn && doctor.nameBn.trim() !== '';
+      return nameEn || nameBn;
     });
 
     // Search filter (searches across name, specialty, hospital, qualification, bio)

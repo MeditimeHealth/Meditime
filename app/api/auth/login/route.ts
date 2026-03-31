@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
         'bloodDonor': 'Blood Donor',
         'ambulance': 'Ambulance',
         'affiliate': 'Affiliate',
+        'doctor': 'Doctor',
         'user': 'User'
       };
       return NextResponse.json(
@@ -78,6 +79,7 @@ export async function POST(request: NextRequest) {
       photo: user.photo,
       role: user.role || 'user',
       userType: user.userType || 'user',
+      doctorId: user.doctorId,
     };
 
     // Add affiliate-specific data if user is an affiliate

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Video, Plus, Trash2, ToggleLeft, ToggleRight, Users, Clock, DollarSign, UserCheck, PhoneOff, RefreshCw } from "lucide-react";
+import { Video, Plus, Trash2, ToggleLeft, ToggleRight, Users, Clock, DollarSign, UserCheck, RefreshCw, Edit2, Search } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface Doctor {
@@ -33,6 +33,7 @@ interface LiveConsultant {
   currentQueue: QueueEntry[];
   roomId: string;
   specialization?: string;
+  language?: string;
 }
 
 export default function AdminLiveConsultantsPage() {
@@ -46,7 +47,34 @@ export default function AdminLiveConsultantsPage() {
     consultationFee: 500,
     estimatedWaitTime: 15,
     maxQueueSize: 10,
+    language: "Bengali",
+    email: "",
+    password: "",
   });
+
+  const [showCreateDoctorForm, setShowCreateDoctorForm] = useState(false);
+  const [newDoctorData, setNewDoctorData] = useState({
+    name: "",
+    nameBn: "",
+    email: "",
+    phone: "",
+    password: "",
+    specialty: "",
+    specialtyBn: "",
+    language: "Bengali",
+    consultationFee: 500,
+    autoLiveConsultant: true,
+  });
+
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingConsultant, setEditingConsultant] = useState<LiveConsultant | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    consultationFee: 0,
+    estimatedWaitTime: 0,
+    maxQueueSize: 0,
+    language: "Bengali",
+  });
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchConsultants = useCallback(async () => {
     try {
@@ -96,13 +124,41 @@ export default function AdminLiveConsultantsPage() {
       if (res.ok) {
         toast.success("Live consultant added!");
         setShowAddForm(false);
-        setFormData({ doctorId: "", consultationFee: 500, estimatedWaitTime: 15, maxQueueSize: 10 });
+        setFormData({ doctorId: "", consultationFee: 500, estimatedWaitTime: 15, maxQueueSize: 10, language: "Bengali", email: "", password: "" });
         fetchConsultants();
       } else {
         toast.error(data.error || "Failed to add");
       }
     } catch (err) {
       toast.error("Failed to add consultant");
+    }
+  };
+
+  const handleCreateDoctor = async () => {
+    if (!newDoctorData.name || !newDoctorData.email || !newDoctorData.password) {
+      toast.error("Please fill in all required fields (Name, Email, Password)");
+      return;
+    }
+    try {
+      const res = await fetch("/api/admin/doctors/create-with-account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newDoctorData),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Doctor account created successfully!");
+        setShowCreateDoctorForm(false);
+        setNewDoctorData({ name: "", nameBn: "", email: "", phone: "", password: "", specialty: "", specialtyBn: "", language: "Bengali", consultationFee: 500, autoLiveConsultant: true });
+        fetchDoctors();
+        if (newDoctorData.autoLiveConsultant) {
+          fetchConsultants();
+        }
+      } else {
+        toast.error(data.error || "Failed to create doctor");
+      }
+    } catch (err) {
+      toast.error("An error occurred while creating doctor account.");
     }
   };
 
@@ -122,41 +178,6 @@ export default function AdminLiveConsultantsPage() {
     }
   };
 
-  const handleAcceptNext = async (id: string) => {
-    try {
-      const res = await fetch(`/api/admin/live-consultants/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "acceptNext" }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        toast.success("Patient accepted!");
-        fetchConsultants();
-      } else {
-        toast.error(data.error || "No waiting patients");
-      }
-    } catch (err) {
-      toast.error("Failed");
-    }
-  };
-
-  const handleCompleteCall = async (id: string) => {
-    try {
-      const res = await fetch(`/api/admin/live-consultants/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "completeCall" }),
-      });
-      if (res.ok) {
-        toast.success("Call completed!");
-        fetchConsultants();
-      }
-    } catch (err) {
-      toast.error("Failed");
-    }
-  };
-
   const handleDelete = async (id: string) => {
     if (!confirm("Remove this live consultant?")) return;
     try {
@@ -170,8 +191,25 @@ export default function AdminLiveConsultantsPage() {
     }
   };
 
-  const handleJoinMeeting = (roomId: string) => {
-    window.open(`https://meet.jit.si/${roomId}`, "_blank");
+  const handleUpdate = async () => {
+    if (!editingConsultant) return;
+    try {
+      const res = await fetch(`/api/admin/live-consultants/${editingConsultant._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editFormData),
+      });
+      if (res.ok) {
+        toast.success("Consultant updated!");
+        setShowEditModal(false);
+        fetchConsultants();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Failed to update");
+      }
+    } catch (err) {
+      toast.error("Failed to update consultant");
+    }
   };
 
   if (loading) {
@@ -194,18 +232,33 @@ export default function AdminLiveConsultantsPage() {
             {language === "bn" ? "ডাক্তারদের লাইভ কনসালটেশনের জন্য পরিচালনা করুন" : "Manage doctors for live video consultations"}
           </p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={fetchConsultants} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center gap-2">
-            <RefreshCw className="h-4 w-4" /> {language === "bn" ? "রিফ্রেশ" : "Refresh"}
-          </button>
-          <button onClick={() => setShowAddForm(!showAddForm)} className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition flex items-center gap-2">
-            <Plus className="h-4 w-4" /> {language === "bn" ? "ডাক্তার যোগ করুন" : "Add Doctor"}
-          </button>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input 
+              type="text"
+              placeholder={language === "bn" ? "ডাক্তার বা বিশেষজ্ঞ খুঁজুন..." : "Search doctor or specialty..."}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 bg-white"
+            />
+          </div>
+          <div className="flex gap-2">
+            <button onClick={fetchConsultants} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center gap-2">
+              <RefreshCw className="h-4 w-4" /> {language === "bn" ? "রিফ্রেশ" : "Refresh"}
+            </button>
+            <button onClick={() => { setShowCreateDoctorForm(true); setShowAddForm(false); }} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition flex items-center gap-2">
+              <Plus className="h-4 w-4" /> {language === "bn" ? "নতুন ডাক্তার" : "Create"}
+            </button>
+            <button onClick={() => { setShowAddForm(true); setShowCreateDoctorForm(false); }} className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition flex items-center gap-2">
+              <UserCheck className="h-4 w-4" /> {language === "bn" ? "যোগ করুন" : "Add"}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Add Form */}
-      {showAddForm && (
+      {showAddForm && !showCreateDoctorForm && (
         <div className="bg-white rounded-xl shadow-sm border p-6 space-y-4">
           <h3 className="font-semibold text-lg">{language === "bn" ? "নতুন লাইভ কনসালটেন্ট যোগ করুন" : "Add New Live Consultant"}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -251,12 +304,142 @@ export default function AdminLiveConsultantsPage() {
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "ভাষা" : "Language"}</label>
+              <select
+                value={formData.language}
+                onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500"
+              >
+                <option value="Bengali">Bengali</option>
+                <option value="English">English</option>
+              </select>
+            </div>
           </div>
           <div className="flex gap-2">
             <button onClick={handleAdd} className="px-6 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">
               {language === "bn" ? "যোগ করুন" : "Add"}
             </button>
             <button onClick={() => setShowAddForm(false)} className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+              {language === "bn" ? "বাতিল" : "Cancel"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Create Doctor Form */}
+      {showCreateDoctorForm && !showAddForm && (
+        <div className="bg-white rounded-xl shadow-sm border p-6 space-y-4">
+          <h3 className="font-semibold text-lg">{language === "bn" ? "নতুন ডাক্তার তৈরি করুন" : "Create New Doctor Account"}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "ডাক্তারের নাম" : "Doctor Name"} *</label>
+              <input
+                type="text"
+                placeholder="Dr. John Doe"
+                value={newDoctorData.name}
+                onChange={(e) => setNewDoctorData({ ...newDoctorData, name: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "নাম (বাংলা)" : "Name (BN)"}</label>
+              <input
+                type="text"
+                placeholder="ডাঃ জন ডো"
+                value={newDoctorData.nameBn}
+                onChange={(e) => setNewDoctorData({ ...newDoctorData, nameBn: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "ইমেইল" : "Email"} *</label>
+              <input
+                type="email"
+                placeholder="doctor@example.com"
+                value={newDoctorData.email}
+                onChange={(e) => setNewDoctorData({ ...newDoctorData, email: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "ফোন নম্বর (ঐচ্ছিক)" : "Phone Number (Optional)"}</label>
+              <input
+                type="tel"
+                placeholder="+8801XXXXXXXXX"
+                value={newDoctorData.phone}
+                onChange={(e) => setNewDoctorData({ ...newDoctorData, phone: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "পাসওয়ার্ড" : "Password"} *</label>
+              <input
+                type="text"
+                placeholder="Password"
+                value={newDoctorData.password}
+                onChange={(e) => setNewDoctorData({ ...newDoctorData, password: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "বিশেষজ্ঞ" : "Specialty"}</label>
+              <input
+                type="text"
+                placeholder="Medicine"
+                value={newDoctorData.specialty}
+                onChange={(e) => setNewDoctorData({ ...newDoctorData, specialty: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "বিশেষজ্ঞ (বাংলা)" : "Specialty (BN)"}</label>
+              <input
+                type="text"
+                placeholder="মেডিসিন"
+                value={newDoctorData.specialtyBn}
+                onChange={(e) => setNewDoctorData({ ...newDoctorData, specialtyBn: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "ভাষা" : "Language"}</label>
+              <select
+                value={newDoctorData.language}
+                onChange={(e) => setNewDoctorData({ ...newDoctorData, language: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="Bengali">Bengali</option>
+                <option value="English">English</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "ফি (৳)" : "Fee (৳)"}</label>
+              <input
+                type="number"
+                value={newDoctorData.consultationFee}
+                onChange={(e) => setNewDoctorData({ ...newDoctorData, consultationFee: Number(e.target.value) })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mt-4">
+            <input 
+              type="checkbox" 
+              id="autoLive" 
+              checked={newDoctorData.autoLiveConsultant}
+              onChange={(e) => setNewDoctorData({ ...newDoctorData, autoLiveConsultant: e.target.checked })}
+              className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" 
+            />
+            <label htmlFor="autoLive" className="text-sm text-gray-700 font-medium">
+              {language === "bn" ? "সাথে সাথে লাইভ কনসালটেন্ট প্রোফাইল তৈরি করুন" : "Automatically create Live Consultant profile"}
+            </label>
+          </div>
+          <div className="flex gap-2 mt-4">
+            <button onClick={handleCreateDoctor} className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+              {language === "bn" ? "তৈরি করুন" : "Create Account"}
+            </button>
+            <button onClick={() => setShowCreateDoctorForm(false)} className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
               {language === "bn" ? "বাতিল" : "Cancel"}
             </button>
           </div>
@@ -272,9 +455,18 @@ export default function AdminLiveConsultantsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {consultants.map((c) => {
+          {consultants
+            .filter(c => {
+              const query = searchQuery.toLowerCase();
+              return (
+                c.doctorId?.name?.toLowerCase().includes(query) ||
+                c.doctorId?.nameBn?.toLowerCase().includes(query) ||
+                c.doctorId?.specialty?.toLowerCase().includes(query) ||
+                c.doctorId?.specialtyBn?.toLowerCase().includes(query)
+              );
+            })
+            .map((c) => {
             const waitingCount = c.currentQueue.filter((e) => e.status === "waiting").length;
-            const inCallPatient = c.currentQueue.find((e) => e.status === "in-call");
 
             return (
               <div key={c._id} className="bg-white rounded-xl shadow-sm border overflow-hidden">
@@ -328,53 +520,92 @@ export default function AdminLiveConsultantsPage() {
                   </div>
                 </div>
 
-                {/* Current Call */}
-                {inCallPatient && (
-                  <div className="p-3 bg-blue-50 border-b border-blue-100 flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-semibold text-blue-600">{language === "bn" ? "বর্তমান কলে:" : "Currently in Call:"}</p>
-                      <p className="text-sm font-medium text-blue-900">{inCallPatient.patientName} ({inCallPatient.patientPhone})</p>
-                    </div>
-                    <button onClick={() => handleCompleteCall(c._id)} className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs hover:bg-red-600 flex items-center gap-1">
-                      <PhoneOff className="h-3 w-3" /> {language === "bn" ? "শেষ" : "End"}
-                    </button>
-                  </div>
-                )}
-
-                {/* Queue List */}
-                {waitingCount > 0 && (
-                  <div className="p-3 border-b">
-                    <p className="text-xs font-medium text-gray-500 mb-2">{language === "bn" ? "অপেক্ষমাণ রোগীরা:" : "Waiting Patients:"}</p>
-                    <div className="space-y-1">
-                      {c.currentQueue.filter(e => e.status === 'waiting').map((entry, idx) => (
-                        <div key={entry._id} className="flex justify-between items-center text-sm bg-yellow-50 rounded px-3 py-1.5">
-                          <span>#{idx + 1} {entry.patientName}</span>
-                          <span className="text-gray-500">{entry.patientPhone}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {/* Actions */}
                 <div className="p-3 flex gap-2 flex-wrap">
-                  {c.isLive && (
-                    <>
-                      <button onClick={() => handleAcceptNext(c._id)} className="px-3 py-1.5 bg-teal-500 text-white rounded-lg text-sm hover:bg-teal-600 flex items-center gap-1">
-                        <UserCheck className="h-4 w-4" /> {language === "bn" ? "পরবর্তী গ্রহণ" : "Accept Next"}
-                      </button>
-                      <button onClick={() => handleJoinMeeting(c.roomId)} className="px-3 py-1.5 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 flex items-center gap-1">
-                        <Video className="h-4 w-4" /> {language === "bn" ? "মিটিং যোগ দিন" : "Join Meeting"}
-                      </button>
-                    </>
-                  )}
-                  <button onClick={() => handleDelete(c._id)} className="px-3 py-1.5 bg-red-100 text-red-600 rounded-lg text-sm hover:bg-red-200 flex items-center gap-1 ml-auto">
+                  <button 
+                    onClick={() => {
+                      setEditingConsultant(c);
+                      setEditFormData({
+                        consultationFee: c.consultationFee,
+                        estimatedWaitTime: c.estimatedWaitTime,
+                        maxQueueSize: c.maxQueueSize,
+                        language: c.language || "Bengali",
+                      });
+                      setShowEditModal(true);
+                    }} 
+                    className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-sm hover:bg-blue-100 flex items-center gap-1"
+                  >
+                    <Edit2 className="h-4 w-4" /> {language === "bn" ? "এডিট" : "Edit"}
+                  </button>
+                  <button onClick={() => handleDelete(c._id)} className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-sm hover:bg-red-100 flex items-center gap-1 ml-auto">
                     <Trash2 className="h-4 w-4" /> {language === "bn" ? "মুছুন" : "Delete"}
                   </button>
                 </div>
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && editingConsultant && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <h3 className="text-xl font-bold">{language === "bn" ? "কনসালটেন্ট এডিট করুন" : "Edit Consultant"}</h3>
+            <p className="text-sm text-gray-500">
+              {language === "bn" && editingConsultant.doctorId?.nameBn ? editingConsultant.doctorId.nameBn : editingConsultant.doctorId?.name}
+            </p>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "ফি (৳)" : "Fee (৳)"}</label>
+                <input
+                  type="number"
+                  value={editFormData.consultationFee}
+                  onChange={(e) => setEditFormData({ ...editFormData, consultationFee: Number(e.target.value) })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "আনুমানিক অপেক্ষা (মিনিট)" : "Est. Wait (min)"}</label>
+                <input
+                  type="number"
+                  value={editFormData.estimatedWaitTime}
+                  onChange={(e) => setEditFormData({ ...editFormData, estimatedWaitTime: Number(e.target.value) })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "সর্বোচ্চ কিউ সাইজ" : "Max Queue Size"}</label>
+                <input
+                  type="number"
+                  value={editFormData.maxQueueSize}
+                  onChange={(e) => setEditFormData({ ...editFormData, maxQueueSize: Number(e.target.value) })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "ভাষা" : "Language"}</label>
+                <select
+                  value={editFormData.language}
+                  onChange={(e) => setEditFormData({ ...editFormData, language: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500"
+                >
+                  <option value="Bengali">Bengali</option>
+                  <option value="English">English</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-4">
+              <button onClick={handleUpdate} className="flex-1 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 font-semibold">
+                {language === "bn" ? "আপডেট করুন" : "Update"}
+              </button>
+              <button onClick={() => setShowEditModal(false)} className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-semibold">
+                {language === "bn" ? "বাতিল" : "Cancel"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

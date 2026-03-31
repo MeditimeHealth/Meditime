@@ -15,7 +15,7 @@ import Footer from "@/components/footer";
 import { showToast } from "@/lib/toast";
 
 const loginSchema = z.object({
-  userType: z.enum(["user", "bloodDonor", "ambulance"], {
+  userType: z.enum(["user", "doctor", "bloodDonor", "ambulance"], {
     message: "Please select a user type",
   }),
   phoneOrEmail: z.string().min(1, "Phone number or email is required"),
@@ -66,6 +66,8 @@ export default function LoginPage() {
           router.push("/blood-donor/profile");
         } else if (userType === 'ambulance') {
           router.push("/ambulance/profile");
+        } else if (userType === 'doctor') {
+          router.push("/doctor/dashboard");
         } else {
           router.push("/");
         }
@@ -136,6 +138,7 @@ export default function LoginPage() {
                       >
                         <option value="">{t.userTypePlaceholder}</option>
                         <option value="user">{t.user}</option>
+                        <option value="doctor">{language === 'en' ? 'Doctor' : 'ডাক্তার'}</option>
                         <option value="bloodDonor">{t.bloodDonor}</option>
                         <option value="ambulance">{t.ambulance}</option>
                       </select>
