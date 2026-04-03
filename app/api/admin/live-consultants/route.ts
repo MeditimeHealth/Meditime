@@ -4,7 +4,6 @@ import LiveConsultant from '@/models/LiveConsultant';
 import Doctor from '@/models/Doctor';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
-import { v4 } from 'crypto';
 
 function generateRoomId(): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
