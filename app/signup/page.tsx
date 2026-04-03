@@ -138,11 +138,7 @@ export default function SignupPage() {
                     <h1 className="text-2xl lg:text-3xl font-bold">MEDI TIME</h1>
                   </div>
                   <h2 className="text-3xl lg:text-5xl font-bold leading-tight">
-                    {language === 'en' ? (
-                      <>Start Your Health<br />Journey Today</>
-                    ) : (
-                      <>আজই আপনার স্বাস্থ্য<br />যাত্রা শুরু করুন</>
-                    )}
+                    {t.signupTitle}
                   </h2>
                   <p className="text-base lg:text-lg text-white/90 leading-relaxed">
                     {t.signupSubtitle}

@@ -7,81 +7,13 @@ import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import { Star } from "lucide-react";
 import "swiper/css";
 import "swiper/css/pagination";
-
-const reviews = [
-  {
-    id: 1,
-    name: "Motiur Rahman",
-    location: "Ex Army Personnel, Home Owner in Gazipur",
-    rating: 5,
-    review:
-      "Found the best Diabetic Specialist in Savar I have ever met in the last 7 years. Recommended",
-    date: "2 weeks ago",
-    avatar: null,
-  },
-  {
-    id: 2,
-    name: "Asma Jannat Noyon",
-    location: "House Wife, Ashulia, Savar DOHS",
-    rating: 5,
-    review:
-      "Easily Booked doctor appointment in Ibn Sina for My 80 Year Old Mother Suffering from Kidney complications.",
-    date: "1 month ago",
-    avatar: null,
-  },
-  {
-    id: 3,
-    name: "SM Jahidul Islam",
-    location: "Merchandise Manager at ABA Group, Tongi",
-    rating: 5,
-    review:
-      "Tested My lipid panel found the platform useful, enjoyed a 15% discount using my corporate membership card.",
-    date: "3 weeks ago",
-    avatar: null,
-  },
-  {
-    id: 4,
-    name: "Rabeya Sultana",
-    location: "School Teacher, Dhaka",
-    rating: 5,
-    review:
-      "Very helpful service! Got appointment with a renowned cardiologist at Square Hospital within 2 days. The process was smooth and hassle-free.",
-    date: "1 week ago",
-    avatar: null,
-  },
-  {
-    id: 5,
-    name: "Kamrul Hasan",
-    location: "Business Owner, Savar",
-    rating: 5,
-    review:
-      "Excellent platform for finding qualified doctors. I found a great orthopedic specialist for my sports injury. Highly recommended!",
-    date: "2 weeks ago",
-    avatar: null,
-  },
-  {
-    id: 6,
-    name: "Nusrat Jahan",
-    location: "Software Engineer, Ashulia",
-    rating: 5,
-    review:
-      "The best medical service platform in Savar area. Booked gynecologist appointment for my sister and got 15% discount with the membership card.",
-    date: "3 weeks ago",
-    avatar: null,
-  },
-  {
-    id: 7,
-    name: "Rafiqul Islam",
-    location: "Retired Government Officer, Gazipur",
-    rating: 5,
-    review:
-      "Amazing service! Found experienced medicine specialist for regular checkup. The mobile app is very user-friendly and convenient.",
-    date: "4 weeks ago",
-    avatar: null,
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 export default function PatientReviewSection() {
+  const { language } = useLanguage();
+  const t = homepageTranslations[language].reviews;
+
   return (
     <div className="relative w-full mx-auto min-h-[420px] sm:min-h-[520px] overflow-hidden">
       {/* Background image with dark overlay */}
@@ -111,8 +43,8 @@ export default function PatientReviewSection() {
                   bulletActiveClass: "review-bullet-active",
                 }}
               >
-                {reviews.map((review) => (
-                  <SwiperSlide key={review.id}>
+                {t.items.map((review, idx) => (
+                  <SwiperSlide key={idx}>
                     {/* Teal card */}
                     <div className="bg-[#129B90] rounded-[16px] sm:rounded-[24px] p-5 sm:p-8 flex flex-col min-h-[280px] sm:min-h-[340px]">
                       {/* Stars */}
@@ -124,7 +56,7 @@ export default function PatientReviewSection() {
 
                       {/* Review text */}
                       <p className="text-white text-[13px] sm:text-[15px] leading-[1.8] flex-grow mb-6 sm:mb-8">
-                        "{review.review}"
+                        "{review.text}"
                       </p>
 
                       {/* Divider */}
@@ -160,12 +92,12 @@ export default function PatientReviewSection() {
             {/* Pill label */}
             <div className="inline-flex w-fit items-center gap-3 px-5 py-2 rounded-full border border-white/40 text-white/90 text-xs font-semibold tracking-[0.15em] mb-2 uppercase backdrop-blur-sm mx-auto lg:mx-0">
               <span className="w-2 h-2 bg-white shrink-0 shadow-[0_0_8px_white]" />
-              // CLIENT'S FEEDBACK //
+              {t.title}
             </div>
 
             {/* Title */}
             <h2 className="text-2xl sm:text-4xl md:text-[46px] font-bold text-white leading-tight mb-8 sm:mb-16 tracking-tight">
-              Patient Reviews
+              {t.title}
             </h2>
 
             {/* Stats box */}
@@ -180,8 +112,8 @@ export default function PatientReviewSection() {
               <div className="bg-[#129B90] rounded-[12px] sm:rounded-[16px] w-full h-full px-4 sm:px-6 lg:px-10 py-4 sm:py-6 lg:py-8 flex flex-col sm:flex-row items-center">
                 {/* Rating */}
                 <div className="flex flex-col text-center sm:text-left flex-1 items-center sm:items-start">
-                  <p className="text-white text-[28px] sm:text-[42px] font-bold leading-none mb-2 sm:mb-3">4.9</p>
-                  <p className="text-white/90 text-[11px] sm:text-[13px] font-medium tracking-wide">Over All Rating</p>
+                  <p className="text-white text-[28px] sm:text-[42px] font-bold leading-none mb-2 sm:mb-3">{t.stats.rating}</p>
+                  <p className="text-white/90 text-[11px] sm:text-[13px] font-medium tracking-wide">{t.stats.ratingLabel}</p>
                 </div>
 
                 {/* Divider — horizontal on mobile, vertical on sm+ */}
@@ -190,8 +122,8 @@ export default function PatientReviewSection() {
 
                 {/* Clients */}
                 <div className="flex flex-col text-center sm:text-left flex-1 items-center sm:items-start sm:pl-6">
-                  <p className="text-white text-[28px] sm:text-[42px] font-bold leading-none mb-2 sm:mb-3">1.5k+</p>
-                  <p className="text-white/90 text-[11px] sm:text-[13px] font-medium tracking-wide">Clients Served</p>
+                  <p className="text-white text-[28px] sm:text-[42px] font-bold leading-none mb-2 sm:mb-3">{t.stats.clients}</p>
+                  <p className="text-white/90 text-[11px] sm:text-[13px] font-medium tracking-wide">{t.stats.clientsLabel}</p>
                 </div>
               </div>
             </div>

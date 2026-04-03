@@ -11,8 +11,9 @@ import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 interface BloodDonor {
   _id: string;
@@ -71,6 +72,7 @@ export default function ServiceDetailPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params.slug as string;
+  const { language } = useLanguage() as { language: 'en' | 'bn' };
 
   const [serviceSection, setServiceSection] = useState<ServiceSection | null>(null);
   const [bloodDonors, setBloodDonors] = useState<BloodDonor[]>([]);
@@ -96,19 +98,21 @@ export default function ServiceDetailPage() {
     // Determine service type and section info based on slug
     if (slug === "blood-donors" || slug.includes("blood") || slug.includes("donor")) {
       setServiceType("blood-donor");
+      const t = homepageTranslations[language].bloodDonor;
       setServiceSection({
         _id: "blood-donors",
-        title: "Blood Donors",
-        description: "Find blood donors in your area quickly and easily. Our platform connects you with verified blood donors across different blood groups and locations.",
+        title: t.title,
+        description: t.subtitle,
         slug: "blood-donors",
         order: 1,
       });
     } else if (slug === "ambulance-services" || slug.includes("ambulance")) {
       setServiceType("ambulance");
+      const t = homepageTranslations[language].ambulance;
       setServiceSection({
         _id: "ambulance-services",
-        title: "Ambulance Services",
-        description: "Access emergency ambulance services when every second counts. Browse through our network of verified ambulance services.",
+        title: t.title,
+        description: t.subtitle,
         slug: "ambulance-services",
         order: 2,
       });
@@ -298,38 +302,23 @@ export default function ServiceDetailPage() {
         <div className="flex w-full">
           {/* Left Sidebar - Sort Options */}
           <div className="w-80 bg-white border-r border-gray-200 p-6 h-[calc(100vh-200px)] sticky top-20 overflow-y-auto">
-            <h2 className="text-lg font-semibold text-[#009A98] mb-4">Sort & Filter</h2>
+            <h2 className="text-lg font-semibold text-[#009A98] mb-4">
+              {language === 'bn' ? 'সর্ট এবং ফিল্টার' : 'Sort & Filter'}
+            </h2>
             
-            {/* Sort Options */}
-            {/* <div className="mb-6">
-              <Label className="text-sm font-medium text-gray-700 mb-2 block">Sort By</Label>
-              <div className="space-y-2">
-                {(["name", "location", "status", "date"] as SortOption[]).map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => setSortBy(option)}
-                    className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                      sortBy === option
-                        ? "bg-primary text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    {option.charAt(0).toUpperCase() + option.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div> */}
   {/* Service-specific filters */}
   {serviceType === "blood-donor" && (
               <div className="mb-6">
-                <Label htmlFor="bloodGroup" className="text-sm font-medium text-gray-700 mb-2 block">Blood Group</Label>
+                <Label htmlFor="bloodGroup" className="text-sm font-medium text-gray-700 mb-2 block">
+                  {language === 'bn' ? 'রক্তের গ্রুপ' : 'Blood Group'}
+                </Label>
                 <select
                   id="bloodGroup"
                   value={bloodGroupFilter}
                   onChange={(e) => setBloodGroupFilter(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                 >
-                  <option value="">All Blood Groups</option>
+                  <option value="">{language === 'bn' ? 'সব রক্তের গ্রুপ' : 'All Blood Groups'}</option>
                   <option value="A+">A+</option>
                   <option value="A-">A-</option>
                   <option value="B+">B+</option>
@@ -344,14 +333,16 @@ export default function ServiceDetailPage() {
             {/* Location Filters */}
             <div className="space-y-4 mb-6">
               <div>
-                <Label htmlFor="division" className="text-sm font-medium text-gray-700 mb-2 block">Division</Label>
+                <Label htmlFor="division" className="text-sm font-medium text-gray-700 mb-2 block">
+                  {homepageTranslations[language].hospitalsPage.division}
+                </Label>
                 <select
                   id="division"
                   value={selectedDivision}
                   onChange={(e) => setSelectedDivision(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                 >
-                  <option value="">All Divisions</option>
+                  <option value="">{homepageTranslations[language].hospitalsPage.selectDivision}</option>
                   {divisions.map((div) => (
                     <option key={div._id} value={div.name}>
                       {div.name}
@@ -361,7 +352,9 @@ export default function ServiceDetailPage() {
               </div>
 
               <div>
-                <Label htmlFor="district" className="text-sm font-medium text-gray-700 mb-2 block">District</Label>
+                <Label htmlFor="district" className="text-sm font-medium text-gray-700 mb-2 block">
+                  {homepageTranslations[language].hospitalsPage.district}
+                </Label>
                 <select
                   id="district"
                   value={selectedDistrict}
@@ -369,7 +362,7 @@ export default function ServiceDetailPage() {
                   disabled={!selectedDivision}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
-                  <option value="">All Districts</option>
+                  <option value="">{homepageTranslations[language].hospitalsPage.selectDistrict}</option>
                   {districts.map((dist) => (
                     <option key={dist._id} value={dist.name}>
                       {dist.name}
@@ -379,7 +372,9 @@ export default function ServiceDetailPage() {
               </div>
 
               <div>
-                <Label htmlFor="thana" className="text-sm font-medium text-gray-700 mb-2 block">Thana/Upazila</Label>
+                <Label htmlFor="thana" className="text-sm font-medium text-gray-700 mb-2 block">
+                  {homepageTranslations[language].hospitalsPage.thana}
+                </Label>
                 <select
                   id="thana"
                   value={selectedThana}
@@ -387,7 +382,7 @@ export default function ServiceDetailPage() {
                   disabled={!selectedDistrict}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
-                  <option value="">All Thanas</option>
+                  <option value="">{homepageTranslations[language].hospitalsPage.selectThana}</option>
                   {thanas.map((thana) => (
                     <option key={thana._id} value={thana.name}>
                       {thana.name}
@@ -402,32 +397,36 @@ export default function ServiceDetailPage() {
             {serviceType === "ambulance" && (
               <>
                 <div className="mb-4">
-                  <Label htmlFor="availabilityStatus" className="text-sm font-medium text-gray-700 mb-2 block">Status</Label>
+                  <Label htmlFor="availabilityStatus" className="text-sm font-medium text-gray-700 mb-2 block">
+                    {language === 'bn' ? 'অবস্থা' : 'Status'}
+                  </Label>
                   <select
                     id="availabilityStatus"
                     value={availabilityStatusFilter}
                     onChange={(e) => setAvailabilityStatusFilter(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                   >
-                    <option value="">All Status</option>
-                    <option value="Available">Available</option>
-                    <option value="Unavailable">Unavailable</option>
-                    <option value="On Call">On Call</option>
+                    <option value="">{language === 'bn' ? 'সব অবস্থা' : 'All Status'}</option>
+                    <option value="Available">{language === 'bn' ? 'উপলব্ধ' : 'Available'}</option>
+                    <option value="Unavailable">{language === 'bn' ? 'অনুপলব্ধ' : 'Unavailable'}</option>
+                    <option value="On Call">{language === 'bn' ? 'কলে আছে' : 'On Call'}</option>
                   </select>
                 </div>
                 <div>
-                  <Label htmlFor="vehicleType" className="text-sm font-medium text-gray-700 mb-2 block">Vehicle Type</Label>
+                  <Label htmlFor="vehicleType" className="text-sm font-medium text-gray-700 mb-2 block">
+                    {language === 'bn' ? 'গাড়ির ধরন' : 'Vehicle Type'}
+                  </Label>
                   <select
                     id="vehicleType"
                     value={vehicleTypeFilter}
                     onChange={(e) => setVehicleTypeFilter(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                   >
-                    <option value="">All Types</option>
-                    <option value="Basic Life Support">Basic Life Support</option>
-                    <option value="Advanced Life Support">Advanced Life Support</option>
-                    <option value="Critical Care">Critical Care</option>
-                    <option value="Air Ambulance">Air Ambulance</option>
+                    <option value="">{language === 'bn' ? 'সব ধরন' : 'All Types'}</option>
+                    <option value="Basic Life Support">{language === 'bn' ? 'বেসিক লাইফ সাপোর্ট' : 'Basic Life Support'}</option>
+                    <option value="Advanced Life Support">{language === 'bn' ? 'অ্যাডভান্সড লাইফ সাপোর্ট' : 'Advanced Life Support'}</option>
+                    <option value="Critical Care">{language === 'bn' ? 'ক্রিটিক্যাল কেয়ার' : 'Critical Care'}</option>
+                    <option value="Air Ambulance">{language === 'bn' ? 'এয়ার অ্যাম্বুলেন্স' : 'Air Ambulance'}</option>
                   </select>
                 </div>
               </>

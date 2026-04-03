@@ -105,19 +105,13 @@ export default function LoginPage() {
                     <h1 className="text-3xl font-bold">MEDI TIME</h1>
                   </div>
                   <h2 className="text-5xl font-bold leading-tight">
-                    {language === 'en' ? (
-                      <>Your Health,<br />Our Priority</>
-                    ) : (
-                      <>আপনার স্বাস্থ্য,<br />আমাদের অগ্রাধিকার</>
-                    )}
+                    {t.loginHeroTitle}
                   </h2>
                   <p className="text-lg text-white/90 leading-relaxed">
-                    {language === 'en' 
-                      ? 'Access your medical records, book appointments, and manage your health journey with ease.'
-                      : 'সহজেই আপনার মেডিকেল রেকর্ড অ্যাক্সেস করুন, অ্যাপয়েন্টমেন্ট বুক করুন এবং আপনার স্বাস্থ্য যাত্রা পরিচালনা করুন।'}
+                    {t.loginHeroSubtitle}
                   </p>
                   <p className="text-base text-white/80">
-                    {language === 'en' ? 'Where your health becomes our mission.' : 'যেখানে আপনার স্বাস্থ্য আমাদের লক্ষ্য হয়ে ওঠে।'}
+                    {t.loginHeroMission}
                   </p>
                 </div>
               </div>
@@ -138,7 +132,7 @@ export default function LoginPage() {
                       >
                         <option value="">{t.userTypePlaceholder}</option>
                         <option value="user">{t.user}</option>
-                        <option value="doctor">{language === 'en' ? 'Doctor' : 'ডাক্তার'}</option>
+                        <option value="doctor">{t.doctor}</option>
                         <option value="bloodDonor">{t.bloodDonor}</option>
                         <option value="ambulance">{t.ambulance}</option>
                       </select>
@@ -204,7 +198,7 @@ export default function LoginPage() {
                         <div className="w-full border-t border-gray-300"></div>
                       </div>
                       <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-white/95 text-gray-500">{language === 'en' ? 'or' : 'অথবা'}</span>
+                        <span className="px-2 bg-white/95 text-gray-500">{t.or}</span>
                       </div>
                     </div>
 

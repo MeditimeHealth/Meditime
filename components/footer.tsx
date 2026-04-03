@@ -62,6 +62,9 @@ export default function Footer() {
             <p className="text-sm" style={{ color: "#6B7280" }}>
               {t.tagline}
             </p>
+            <p className="text-xs mt-2 leading-relaxed max-w-[280px]" style={{ color: "#6B7280" }}>
+              {t.slogan}
+            </p>
           </div>
 
           {/* CTA */}

@@ -9,7 +9,7 @@ import { MapPin, Phone, Car, Loader2, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { Input } from "@/components/ui/input";
-import { t } from "@/lib/translations";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 interface Ambulance {
   _id: string;
@@ -59,7 +59,8 @@ export default function AmbulancePage() {
   const [availabilityStatusFilter, setAvailabilityStatusFilter] = useState("");
   const [vehicleTypeFilter, setVehicleTypeFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const { language } = useLanguage();
+  const { language } = useLanguage() as { language: 'en' | 'bn' };
+  const tH = homepageTranslations[language].ambulance;
 
   const fetchDivisions = async () => {
     try {
@@ -207,10 +208,10 @@ export default function AmbulancePage() {
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
-                Quick Access to Ambulance Service in Dhaka and Nearby - Find an Ambulance Near You
+                {tH.title}
               </h1>
               <p className="text-lg md:text-xl text-white/95 mb-8 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
-                Whether the case involves a massive heart attack (ambulance ICU) or maternity care, quick access to emergency medical assistance increases the chances of a faster recovery. You can find more than 50 ambulance numbers from our list. If you are looking for a freezing ambulance please contact the driver about the availability and pricing.
+                {tH.subtitle}
               </p>
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -236,12 +237,12 @@ export default function AmbulancePage() {
           {/* Filters */}
           <Card className="p-6 mb-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-              <h2 className="text-xl font-bold text-[#009A98]">{language === 'bn' ? 'অ্যাম্বুলেন্স খুঁজুন' : 'Filter Ambulances'}</h2>
+              <h2 className="text-xl font-bold text-[#009A98]">{tH.findByLocation}</h2>
               <div className="relative w-full md:max-w-md">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   type="text"
-                  placeholder={t("searchByNameAddressOrPhone", language)}
+                  placeholder={homepageTranslations[language].hospitalsPage.searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -250,14 +251,14 @@ export default function AmbulancePage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
               <div>
-                <Label htmlFor="division" className="text-sm font-medium text-gray-700 mb-2 block">Division</Label>
+                <Label htmlFor="division" className="text-sm font-medium text-gray-700 mb-2 block">{homepageTranslations[language].hospitalsPage.division}</Label>
                 <select
                   id="division"
                   value={selectedDivision}
                   onChange={(e) => setSelectedDivision(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                 >
-                  <option value="">All Divisions</option>
+                  <option value="">{homepageTranslations[language].hospitalsPage.selectDivision}</option>
                   {divisions.map((div) => (
                     <option key={div._id} value={div.name}>
                       {div.name}
@@ -267,7 +268,7 @@ export default function AmbulancePage() {
               </div>
 
               <div>
-                <Label htmlFor="district" className="text-sm font-medium text-gray-700 mb-2 block">District</Label>
+                <Label htmlFor="district" className="text-sm font-medium text-gray-700 mb-2 block">{homepageTranslations[language].hospitalsPage.district}</Label>
                 <select
                   id="district"
                   value={selectedDistrict}
@@ -275,7 +276,7 @@ export default function AmbulancePage() {
                   disabled={!selectedDivision}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
-                  <option value="">All Districts</option>
+                  <option value="">{homepageTranslations[language].hospitalsPage.selectDistrict}</option>
                   {districts.map((dist) => (
                     <option key={dist._id} value={dist.name}>
                       {dist.name}
@@ -285,7 +286,7 @@ export default function AmbulancePage() {
               </div>
 
               <div>
-                <Label htmlFor="thana" className="text-sm font-medium text-gray-700 mb-2 block">Thana/Upazila</Label>
+                <Label htmlFor="thana" className="text-sm font-medium text-gray-700 mb-2 block">{homepageTranslations[language].hospitalsPage.thana}</Label>
                 <select
                   id="thana"
                   value={selectedThana}
@@ -293,7 +294,7 @@ export default function AmbulancePage() {
                   disabled={!selectedDistrict}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
-                  <option value="">All Thanas</option>
+                  <option value="">{homepageTranslations[language].hospitalsPage.selectThana}</option>
                   {thanas.map((thana) => (
                     <option key={thana._id} value={thana.name}>
                       {thana.name}
@@ -303,33 +304,33 @@ export default function AmbulancePage() {
               </div>
 
               <div>
-                <Label htmlFor="availabilityStatus" className="text-sm font-medium text-gray-700 mb-2 block">Status</Label>
+                <Label htmlFor="availabilityStatus" className="text-sm font-medium text-gray-700 mb-2 block">{language === 'bn' ? 'অবস্থা' : 'Status'}</Label>
                 <select
                   id="availabilityStatus"
                   value={availabilityStatusFilter}
                   onChange={(e) => setAvailabilityStatusFilter(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                 >
-                  <option value="">All Status</option>
-                  <option value="Available">Available</option>
-                  <option value="Unavailable">Unavailable</option>
-                  <option value="On Call">On Call</option>
+                  <option value="">{language === 'bn' ? 'সব অবস্থা' : 'All Status'}</option>
+                  <option value="Available">{language === 'bn' ? 'উপলব্ধ' : 'Available'}</option>
+                  <option value="Unavailable">{language === 'bn' ? 'অনুপলব্ধ' : 'Unavailable'}</option>
+                  <option value="On Call">{language === 'bn' ? 'কলে আছে' : 'On Call'}</option>
                 </select>
               </div>
 
               <div>
-                <Label htmlFor="vehicleType" className="text-sm font-medium text-gray-700 mb-2 block">Vehicle Type</Label>
+                <Label htmlFor="vehicleType" className="text-sm font-medium text-gray-700 mb-2 block">{language === 'bn' ? 'গাড়ির ধরন' : 'Vehicle Type'}</Label>
                 <select
                   id="vehicleType"
                   value={vehicleTypeFilter}
                   onChange={(e) => setVehicleTypeFilter(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                 >
-                  <option value="">All Types</option>
-                  <option value="Basic Life Support">Basic Life Support</option>
-                  <option value="Advanced Life Support">Advanced Life Support</option>
-                  <option value="Critical Care">Critical Care</option>
-                  <option value="Air Ambulance">Air Ambulance</option>
+                  <option value="">{language === 'bn' ? 'সব ধরন' : 'All Types'}</option>
+                  <option value="Basic Life Support">{language === 'bn' ? 'বেসিক লাইফ সাপোর্ট' : 'Basic Life Support'}</option>
+                  <option value="Advanced Life Support">{language === 'bn' ? 'অ্যাডভান্সড লাইফ সাপোর্ট' : 'Advanced Life Support'}</option>
+                  <option value="Critical Care">{language === 'bn' ? 'ক্রিটিক্যাল কেয়ার' : 'Critical Care'}</option>
+                  <option value="Air Ambulance">{language === 'bn' ? 'এয়ার অ্যাম্বুলেন্স' : 'Air Ambulance'}</option>
                 </select>
               </div>
             </div>

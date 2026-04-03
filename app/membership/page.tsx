@@ -6,80 +6,70 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-const membershipPlans = [
-  {
-    id: "silver",
-    title: "Silver",
-    icon: Star,
-    color: "#9CA3AF",
-    gradient: "from-gray-300 to-gray-500",
-    price: "৳ 1,000",
-    period: "/year",
-    description: "You and 1 other member of your family can use this card and enjoy 15% discounts on medical bills.",
-  },
-  {
-    id: "gold",
-    title: "Gold",
-    icon: Sparkles,
-    color: "#F59E0B",
-    gradient: "from-yellow-300 to-yellow-600",
-    price: "৳ 2,500",
-    period: "/year",
-    popular: true,
-    description: "You and 2 other members of your family can use this card and enjoy 15% discounts on medical bills.",
-  },
-  {
-    id: "platinum",
-    title: "Platinum",
-    icon: Crown,
-    color: "#9333EA",
-    gradient: "from-purple-300 to-purple-600",
-    price: "৳ 5,000",
-    period: "/year",
-    description: "You and 4 other members of your family can use this card and enjoy 15% discounts on medical bills.",
-  },
-  {
-    id: "corporate",
-    title: "Corporate",
-    icon: Building2,
-    color: "#3B82F6",
-    gradient: "from-blue-400 to-blue-700",
-    price: "Custom",
-    period: "",
-    description: "Only You can use this card and enjoy 20% discounts on medical bills.",
-  },
-];
-
-const howToGetSteps = [
-  "Fill out the request form with your accurate details to apply for your Meditime Health Discount Card.",
-  "Our representative will contact you to confirm your order and deliver the card to your address within 7 working days.",
-  "Once you receive your card, you can start enjoying instant discounts at all our partner hospitals for one full year.",
-];
-
-const faqs = [
-  {
-    question: "What is the Meditime Health Discount Card?",
-    answer: "The Meditime Health Discount Card is a medical privilege pass that offers instant discounts on 100+ medical services, including doctor appointments and diagnostic tests, at 40+ partner hospitals near Savar.",
-  },
-  {
-    question: "How long does it take to get the card?",
-    answer: "After you submit your application, our representative will contact you, and the card will be delivered to your address within 7 working days.",
-  },
-  {
-    question: "How much discount can I get with the card?",
-    answer: "You can enjoy up to 30% discount on various medical services, diagnostic tests, and doctor consultation fees at our network hospitals.",
-  },
-  {
-    question: "Who can use the Meditime Health Discount Card?",
-    answer: "Depending on your plan, a single card can cover you, your spouse, and up to 4 children, making it a complete healthcare savings solution for your family.",
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 export default function MembershipPage() {
   const router = useRouter();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  
+  const { language } = useLanguage();
+  const t = homepageTranslations[language].membershipPage;
+  const faqT = homepageTranslations[language].faqHealthCards;
+
+  const membershipPlans = [
+    {
+      id: "silver",
+      title: t.plans.silver.title,
+      icon: Star,
+      color: "#9CA3AF",
+      gradient: "from-gray-300 to-gray-500",
+      price: t.plans.silver.price,
+      period: "",
+      description: t.plans.silver.desc,
+    },
+    {
+      id: "gold",
+      title: t.plans.gold.title,
+      icon: Sparkles,
+      color: "#F59E0B",
+      gradient: "from-yellow-300 to-yellow-600",
+      price: t.plans.gold.price,
+      period: "",
+      popular: true,
+      description: t.plans.gold.desc,
+    },
+    {
+      id: "platinum",
+      title: t.plans.platinum.title,
+      icon: Crown,
+      color: "#9333EA",
+      gradient: "from-purple-300 to-purple-600",
+      price: t.plans.platinum.price,
+      period: "",
+      description: t.plans.platinum.desc,
+    },
+    {
+      id: "corporate",
+      title: t.plans.corporate.title,
+      icon: Building2,
+      color: "#3B82F6",
+      gradient: "from-blue-400 to-blue-700",
+      price: t.plans.corporate.price,
+      period: "",
+      description: t.plans.corporate.desc,
+    },
+  ];
+
+  const howToGetSteps = [
+    t.step1,
+    t.step2,
+    t.step3,
+    t.step4,
+    t.step5,
+    t.step6,
+    t.step7,
+  ];
+
   const handleSelectPlan = (planId: string) => {
     router.push(`/membership/${planId}`);
   };
@@ -116,13 +106,10 @@ export default function MembershipPage() {
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 drop-shadow-2xl leading-tight">
-                Meditime Health Card
+                {t.headerTitle}
               </h1>
-              <p className="text-xl md:text-2xl text-white/95 mb-6 drop-shadow-lg font-semibold">
-                Your Pass to Affordable Medical Services
-              </p>
               <p className="text-lg md:text-xl text-white/90 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
-                Meditime health card is a one time payment medical privilege membership card. Frequently referred to as medical discount or health discount cards, Health cards from Meditime decreases your medical expenses up to 15%.
+                {t.desc}
               </p>
             </motion.div>
           </div>
@@ -139,7 +126,7 @@ export default function MembershipPage() {
           className="mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-[#009A98] mb-8 text-center">
-            How to Get Your Health Discount Card
+            {t.howToGetTitle}
           </h2>
           <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-8">
             <ol className="space-y-4">
@@ -177,7 +164,7 @@ export default function MembershipPage() {
               >
                 {'popular' in plan && plan.popular && (
                   <div className="absolute top-4 right-4 bg-gradient-to-r from-primary to-primary-dark text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg z-10">
-                    Most Popular
+                    {language === 'en' ? 'Most Popular' : 'জনপ্রিয়'}
                   </div>
                 )}
 
@@ -214,7 +201,7 @@ export default function MembershipPage() {
                       backgroundImage: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
                     }}
                   >
-                    Order Now
+                    {t.registerBtn}
                   </button>
                 </div>
               </motion.div>
@@ -230,10 +217,10 @@ export default function MembershipPage() {
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-[#009A98] mb-8 text-center">
-            FAQ about Health Discount Cards
+            {faqT.title}
           </h2>
           <div className="space-y-4 max-w-4xl mx-auto">
-            {faqs.map((faq, index) => (
+            {faqT.questions.map((faq, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 10 }}
