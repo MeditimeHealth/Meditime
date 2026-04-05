@@ -142,7 +142,7 @@ export default function HospitalPartnersSection() {
 
         {/* "See All" button */}
         <div className="mt-8 flex justify-center">
-          <Link href="/hospitals">
+          <Link href="/hospital">
             <div className="group/btn relative h-11 flex items-center">
               <span className="inline-flex items-center h-11 px-8 rounded-full text-[14px] font-medium bg-primary text-white transition-all duration-200 group-hover/btn:opacity-0 group-hover/btn:scale-90 whitespace-nowrap">
                 {t.seeAll}
