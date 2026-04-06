@@ -364,7 +364,7 @@ export default function BloodDonorPage() {
             <div className="order-2 lg:order-1 relative">
               <div className="aspect-[4/5] relative rounded-[3rem] overflow-hidden shadow-2xl">
                 <Image 
-                  src="/blood_donor_hero_v1_png_1775464399712.png" 
+                  src="/images/blood_donor_hero.png" 
                   alt="Blood Donation" 
                   fill 
                   className="object-cover" 

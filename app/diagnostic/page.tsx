@@ -181,7 +181,7 @@ export default function DiagnosticPage() {
                   </div>
                   <div className="aspect-[4/5] relative rounded-[2rem] overflow-hidden shadow-2xl">
                     <Image 
-                      src="/diagnostic_lab_hero_v1_png_1775464419872.png" 
+                      src="/images/diagnostic_lab_hero.png" 
                       alt="Diagnostic Lab" 
                       fill 
                       className="object-cover"
