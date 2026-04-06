@@ -21,7 +21,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
+import { useState, useEffect, useCallback } from "react";
 
 const diagnosticServices = [
   {
@@ -48,6 +49,40 @@ const diagnosticServices = [
 
 export default function DiagnosticPage() {
   const { language } = useLanguage();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [tests, setTests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchTests = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/diagnostic/tests");
+      const data = await res.json();
+      if (res.ok) setTests(data.tests);
+    } catch (error) {
+      console.error("Error fetching tests:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTests();
+  }, [fetchTests]);
+
+  const filteredTests = tests.filter(test => {
+    const name = getLocalizedValue(test.name, test.nameBn, language)?.toLowerCase() || "";
+    const description = getLocalizedValue(test.description, test.descriptionBn, language)?.toLowerCase() || "";
+    const query = searchQuery.toLowerCase();
+    return name.includes(query) || description.includes(query);
+  });
+
+  const popularTests = tests.slice(0, 6); // Just as an example
+  const [bookedTests, setBookedTests] = useState<string[]>([]);
+  
+  const handleBooking = (testId: string) => {
+    setBookedTests([...bookedTests, testId]);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50/50">
@@ -85,10 +120,14 @@ export default function DiagnosticPage() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <input 
                   type="text" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={language === 'en' ? "Search for tests (e.g. CBC, Diabetes)" : "টেস্টের নাম দিয়ে খুঁজুন (যেমন: CBC, ডায়াবেটিস)"}
                   className="w-full h-14 pl-12 pr-32 bg-white border-2 border-slate-200 rounded-2xl focus:border-[#00B7B5] focus:outline-none transition-all shadow-sm"
                 />
-                <Button className="absolute right-2 top-2 h-10 bg-[#00B7B5] hover:bg-[#00B7B5]/90 text-white rounded-xl font-bold px-6">
+                <Button 
+                  className="absolute right-2 top-2 h-10 bg-[#00B7B5] hover:bg-[#00B7B5]/90 text-white rounded-xl font-bold px-6"
+                >
                   {language === 'en' ? "Search" : "খুঁজুন"}
                 </Button>
               </div>
@@ -142,7 +181,7 @@ export default function DiagnosticPage() {
                   </div>
                   <div className="aspect-[4/5] relative rounded-[2rem] overflow-hidden shadow-2xl">
                     <Image 
-                      src="https://images.unsplash.com/photo-1579154235602-3c35bd791163?q=80&w=2070&auto=format&fit=crop" 
+                      src="/diagnostic_lab_hero_v1_png_1775464419872.png" 
                       alt="Diagnostic Lab" 
                       fill 
                       className="object-cover"
@@ -199,35 +238,44 @@ export default function DiagnosticPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { name: "Full Body Checkup", bn: "সম্পূর্ণ বডি চেকআপ", price: "2,500", discount: "20%" },
-              { name: "Diabetes Screening", bn: "ডায়াবেটিস স্ক্রিনিং", price: "500", discount: "15%" },
-              { name: "Thyroid Profile", bn: "থাইরয়েড প্রোফাইল", price: "800", discount: "10%" },
-              { name: "Lipid Profile", bn: "লিপিড প্রোফাইল", price: "1,200", discount: "10%" },
-              { name: "Vitamin D Deficiency", bn: "ভিটামিন ডি পরীক্ষা", price: "1,500", discount: "25%" },
-              { name: "liver Function Test", bn: "লিভার ফাংশন টেস্ট", price: "1,000", discount: "15%" }
-            ].map((test, i) => (
-              <Card key={i} className="p-6 rounded-3xl border border-slate-100 hover:shadow-xl transition-all group overflow-hidden">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h4 className="text-lg font-bold text-slate-900 group-hover:text-[#00B7B5] transition-colors">{language === 'en' ? test.name : test.bn}</h4>
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">NABL Accredited</p>
+            {filteredTests.length > 0 ? (
+              filteredTests.map((test, i) => (
+                <Card key={i} className="p-6 rounded-3xl border border-slate-100 hover:shadow-xl transition-all group overflow-hidden">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h4 className="text-lg font-bold text-slate-900 group-hover:text-[#00B7B5] transition-colors">
+                        {getLocalizedValue(test.name, test.nameBn, language)}
+                      </h4>
+                      <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">NABL Accredited</p>
+                    </div>
+                    <div className="bg-orange-500 text-white text-[10px] font-black px-2 py-1 rounded-lg uppercase">
+                      -{test.discount || '15'}% OFF
+                    </div>
                   </div>
-                  <div className="bg-orange-500 text-white text-[10px] font-black px-2 py-1 rounded-lg uppercase">
-                    {test.discount} OFF
+                  <div className="flex items-center justify-between mt-8">
+                    <div className="flex flex-col">
+                      <span className="text-slate-400 text-xs line-through">৳{Math.round(test.price * 1.2)}</span>
+                      <span className="text-2xl font-black text-slate-900">৳{test.price}</span>
+                    </div>
+                    <Button 
+                      onClick={() => handleBooking(test._id)}
+                      disabled={bookedTests.includes(test._id)}
+                      className={`${bookedTests.includes(test._id) ? 'bg-green-500 hover:bg-green-600' : 'bg-[#00B7B5] hover:bg-[#00B7B5]/90'} text-white font-bold rounded-xl px-4 py-2 transition-all`}
+                    >
+                      {bookedTests.includes(test._id) 
+                        ? (language === 'en' ? "Booked" : "বুক করা হয়েছে")
+                        : (language === 'en' ? "Book Now" : "বুক করুন")}
+                    </Button>
                   </div>
-                </div>
-                <div className="flex items-center justify-between mt-8">
-                  <div className="flex flex-col">
-                    <span className="text-slate-400 text-xs line-through">৳{Math.round(parseInt(test.price.replace(',','')) * 1.2)}</span>
-                    <span className="text-2xl font-black text-slate-900">৳{test.price}</span>
-                  </div>
-                  <Button className="bg-[#00B7B5] hover:bg-[#00B7B5]/90 text-white font-bold rounded-xl px-4 py-2">
-                    {language === 'en' ? "Book Now" : "বুক করুন"}
-                  </Button>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                <p className="text-slate-400 font-medium">
+                  {language === 'en' ? "No tests found matching your search." : "আপনার অনুসন্ধানের সাথে মিলছে এমন কোনো টেস্ট পাওয়া যায়নি।"}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
