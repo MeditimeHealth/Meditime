@@ -13,13 +13,28 @@ import { motion, useInView, animate, useMotionValue, useTransform } from "framer
 import { useEffect, useRef } from "react";
 
 function Counter({ value, duration = 2 }: { value: string; duration?: number }) {
-  const numericValue = parseFloat(value.replace(/[^0-9.]/g, ""));
-  const suffix = value.replace(/[0-9.]/g, "");
+  const bnToEn = (str: string) => str.replace(/[০-৯]/g, d => "০১২৩৪৫৬৭৮৯".indexOf(d).toString());
+  const enToBn = (str: string) => str.replace(/[0-9]/g, d => "০১২৩৪৫৬৭৮৯"[parseInt(d)]);
+
+  const isBengali = /[০-৯]/.test(value);
+  const normalizedValue = isBengali ? bnToEn(value) : value;
+
+  const numericValue = parseFloat(normalizedValue.replace(/[^0-9.]/g, "")) || 0;
+  const suffix = normalizedValue.replace(/[0-9.]/g, "");
+  
   const count = useMotionValue(0);
   const rounded = useTransform(count, (latest) => {
-    if (numericValue % 1 === 0) return Math.floor(latest) + suffix;
-    return latest.toFixed(1) + suffix;
+    let numStr = "";
+    if (numericValue % 1 === 0) {
+      numStr = Math.floor(latest).toString();
+    } else {
+      numStr = latest.toFixed(1);
+    }
+    
+    const result = numStr + suffix;
+    return isBengali ? enToBn(result) : result;
   });
+  
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
