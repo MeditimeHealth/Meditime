@@ -55,17 +55,17 @@ export default function Footer() {
 
           {/* Email pill */}
           <div
-            className="flex items-center bg-white rounded-full border border-white/10 p-1 w-full max-w-md lg:ml-auto"
+            className="flex items-center bg-white rounded-full border border-white/10 p-1 w-full max-w-md lg:ml-auto overflow-hidden"
           >
             <input
               type="email"
               placeholder={t.emailPlaceholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 bg-transparent outline-none text-sm px-5 py-2.5 text-slate-900"
+              className="flex-1 bg-transparent border-none focus:ring-0 outline-none text-sm px-4 py-2 text-slate-900 min-w-0"
             />
             <button
-              className="shrink-0 bg-[#3DB5A0] hover:bg-[#34a38f] text-sm font-bold text-white px-6 py-2.5 rounded-full transition-all"
+              className="shrink-0 bg-[#3DB5A0] hover:bg-[#34a38f] text-[12px] sm:text-sm font-bold text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full transition-all"
             >
               {t.sendEmail}
             </button>
@@ -77,25 +77,26 @@ export default function Footer() {
           
           {/* Column 1: Logo, Slogan, Get In Touch, Social Icons */}
           <div className="flex flex-col gap-6">
-            <Link href="/">
+            <Link href="/" className="inline-block">
               <Image
                 src="/logo.png"
                 alt="Meditime"
                 width={180}
-                height={32}
-                className="h-8 w-auto object-contain brightness-0 invert"
+                height={40}
+                priority
+                className="h-10 w-auto object-contain brightness-0 invert"
               />
             </Link>
             
-            <p className="text-sm leading-relaxed text-slate-400">
+            <p className="text-[13px] leading-relaxed text-slate-400">
               {t.slogan}
             </p>
 
             <div className="flex flex-col gap-4">
-              <h4 className="text-sm font-bold text-white uppercase tracking-wider">
+              <h4 className="text-[14px] font-bold text-white uppercase tracking-wider">
                 {t.getInTouch}
               </h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
+              <p className="text-[13px] text-slate-400 leading-relaxed">
                 {t.tagline}
               </p>
               <div className="flex items-center gap-3">
@@ -108,9 +109,9 @@ export default function Footer() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={s.label}
-                      className="w-9 h-9 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:bg-[#3DB5A0] hover:border-[#3DB5A0] hover:text-white transition-all"
+                      className="w-9 h-9 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:bg-[#3DB5A0] hover:border-[#3DB5A0] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#3DB5A0]"
                     >
-                      <Icon size={16} />
+                      <Icon size={18} />
                     </a>
                   );
                 })}

@@ -380,23 +380,26 @@ function DoctorListPageContent() {
       return nameEn || nameBn;
     });
 
-    // Search filter (searches across name, specialty, hospital, qualification, bio)
+    // Search filter (searches across name, specialty, hospital, qualification, bio, and location)
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((doctor) => {
-        // Search in both English and Bangla fields for better UX
-        const name = language === 'en' ? doctor.name : (doctor.nameBn || doctor.name);
-        const specialty = language === 'en' ? doctor.specialty : (doctor.specialtyBn || doctor.specialty);
-        const hospital = language === 'en' ? doctor.hospital : (doctor.hospitalBn || doctor.hospital);
-        const qualification = language === 'en' ? doctor.qualification : (doctor.qualificationBn || doctor.qualification);
-        const bio = language === 'en' ? doctor.bio : (doctor.bioBn || doctor.bio);
+        const name = getLocalizedValue(doctor.name, doctor.nameBn, language);
+        const specialty = getLocalizedValue(doctor.specialty, doctor.specialtyBn, language);
+        const hospital = getLocalizedValue(doctor.hospital, doctor.hospitalBn, language);
+        const qualification = getLocalizedValue(doctor.qualification, doctor.qualificationBn, language);
+        const bio = getLocalizedValue(doctor.bio, doctor.bioBn, language);
         
         return (
           name?.toLowerCase().includes(query) ||
           specialty?.toLowerCase().includes(query) ||
           hospital?.toLowerCase().includes(query) ||
           qualification?.toLowerCase().includes(query) ||
-          bio?.toLowerCase().includes(query)
+          bio?.toLowerCase().includes(query) ||
+          doctor.division?.toLowerCase().includes(query) ||
+          doctor.district?.toLowerCase().includes(query) ||
+          doctor.thana?.toLowerCase().includes(query) ||
+          doctor.department?.toLowerCase().includes(query)
         );
       });
     }
@@ -424,22 +427,25 @@ function DoctorListPageContent() {
 
     // Division filter
     if (selectedDivision) {
+      const divQuery = selectedDivision.toLowerCase().trim();
       filtered = filtered.filter(
-        (doctor) => doctor.division === selectedDivision
+        (doctor) => doctor.division?.toLowerCase().trim() === divQuery
       );
     }
 
     // District filter
     if (selectedDistrict) {
+      const distQuery = selectedDistrict.toLowerCase().trim();
       filtered = filtered.filter(
-        (doctor) => doctor.district === selectedDistrict
+        (doctor) => doctor.district?.toLowerCase().trim() === distQuery
       );
     }
 
     // Thana filter
     if (selectedThana) {
+      const thanaQuery = selectedThana.toLowerCase().trim();
       filtered = filtered.filter(
-        (doctor) => doctor.thana === selectedThana
+        (doctor) => doctor.thana?.toLowerCase().trim() === thanaQuery
       );
     }
 
@@ -492,7 +498,6 @@ function DoctorListPageContent() {
           aVal = a.name.toLowerCase();
           bVal = b.name.toLowerCase();
           break;
-
         case "consultationFee":
           aVal = a.consultationFee;
           bVal = b.consultationFee;
@@ -525,7 +530,6 @@ function DoctorListPageContent() {
     selectedSpecialty,
     selectedHospital,
     selectedQualification,
-
     minFee,
     maxFee,
     minRating,
@@ -534,6 +538,9 @@ function DoctorListPageContent() {
     sortBy,
     sortDirection,
     language,
+    selectedDivision,
+    selectedDistrict,
+    selectedThana
   ]);
 
   const clearFilters = () => {

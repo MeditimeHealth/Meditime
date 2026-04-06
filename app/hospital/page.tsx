@@ -20,12 +20,15 @@ interface Hospital {
   thana?: {
     _id: string;
     name: string;
+    nameBn?: string;
     district?: {
       _id: string;
       name: string;
+      nameBn?: string;
       division?: {
         _id: string;
         name: string;
+        nameBn?: string;
       };
     };
   };
@@ -184,15 +187,31 @@ export default function HospitalListPage() {
 
   const getHospitalLocationString = (hospital: Hospital): string => {
     const parts: string[] = [];
-    if (hospital.thana?.district?.division?.name) {
-      parts.push(hospital.thana.district.division.name);
-    }
-    if (hospital.thana?.district?.name) {
-      parts.push(hospital.thana.district.name);
-    }
-    if (hospital.thana?.name) {
-      parts.push(hospital.thana.name);
-    }
+    
+    // Division
+    const divisionName = getLocalizedValue(
+      hospital.thana?.district?.division?.name,
+      hospital.thana?.district?.division?.nameBn,
+      language
+    );
+    if (divisionName) parts.push(divisionName);
+
+    // District
+    const districtName = getLocalizedValue(
+      hospital.thana?.district?.name,
+      hospital.thana?.district?.nameBn,
+      language
+    );
+    if (districtName) parts.push(districtName);
+
+    // Thana
+    const thanaName = getLocalizedValue(
+      hospital.thana?.name,
+      hospital.thana?.nameBn,
+      language
+    );
+    if (thanaName) parts.push(thanaName);
+
     return parts.join(", ");
   };
 
@@ -213,14 +232,27 @@ export default function HospitalListPage() {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((hospital) => {
-        const name = language === 'en' ? hospital.name : (hospital.nameBn || hospital.name);
-        const address = language === 'en' ? hospital.address : (hospital.addressBn || hospital.address);
+        const name = getLocalizedValue(hospital.name, hospital.nameBn, language);
+        const address = getLocalizedValue(hospital.address, hospital.addressBn, language);
+        const locationStr = getHospitalLocationString(hospital);
+        
+        // Also check against raw names in case user searches for a location name directly
+        const rawLocationStr = [
+          hospital.thana?.district?.division?.name,
+          hospital.thana?.district?.division?.nameBn,
+          hospital.thana?.district?.name,
+          hospital.thana?.district?.nameBn,
+          hospital.thana?.name,
+          hospital.thana?.nameBn
+        ].filter(Boolean).join(" ").toLowerCase();
+
         return (
           name?.toLowerCase().includes(query) ||
           address?.toLowerCase().includes(query) ||
           hospital.phone?.toLowerCase().includes(query) ||
           hospital.email?.toLowerCase().includes(query) ||
-          getHospitalLocationString(hospital).toLowerCase().includes(query)
+          locationStr.toLowerCase().includes(query) ||
+          rawLocationStr.includes(query)
         );
       });
     }

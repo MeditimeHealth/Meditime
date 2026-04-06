@@ -176,10 +176,17 @@ export default function DoctorCard({
               </p>
             )}
 
-            {/* Qualification */}
+            {/* Qualification (Degree) */}
             {displayQualification && (
-              <p className="text-xs text-gray-500 font-medium line-clamp-2">
+              <p className="text-xs text-gray-500 font-medium line-clamp-1 mb-0.5">
                 {displayQualification}
+              </p>
+            )}
+
+            {/* Designation */}
+            {displayDesignation && (
+              <p className="text-[11px] text-slate-400 font-medium line-clamp-1">
+                {displayDesignation}
               </p>
             )}
           </div>

@@ -121,7 +121,7 @@ export default function ServicesSection() {
       Icon: IconBloodDonor,
       title: t.bloodDonorTitle,
       cta: t.findDonorBtn,
-      href: "/blood-donors",
+      href: "/blood-donor",
       description: t.bloodDonorDesc,
       highlight: false,
       showArrow: false,
@@ -222,7 +222,7 @@ export default function ServicesSection() {
                       {/* Hover state — fades & grows in on button hover */}
                       <span
                         className="absolute left-0 top-0 inline-flex items-center gap-1.5 h-8 px-4 rounded-full
-                          text-[13px] font-semibold bg-primary text-white whitespace-nowrap pointer-events-none
+                          text-[13px] font-semibold bg-[#00B7B5] text-white whitespace-nowrap pointer-events-none
                           opacity-0 scale-90
                           group-hover/btn:opacity-100 group-hover/btn:scale-100
                           transition-all duration-200"

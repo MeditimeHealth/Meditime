@@ -1,728 +1,261 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Search, X, ShoppingCart, MapPin, Percent, FileText, Download } from "lucide-react";
+import { motion } from "framer-motion";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
-import { homepageTranslations } from "@/lib/homepage-translations";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { 
+  Activity, 
+  Search, 
+  Home, 
+  ShieldCheck, 
+  Microscope, 
+  FileText,
+  BadgeCheck,
+  ChevronRight,
+  ClipboardList,
+  FlaskConical,
+  Syringe,
+  Timer
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-interface DiagnosticTest {
-  _id: string;
-  name: string;
-  nameBn?: string;
-  category: string;
-  description?: string;
-  descriptionBn?: string;
-  price: number;
-  originalPrice?: number;
-  duration?: string;
-  preparation?: string;
-  fastingRequired?: boolean;
-  image?: string;
-}
-
-interface DiagnosticCenter {
-  _id: string;
-  name: string;
-  nameBn?: string;
-  division?: string;
-  district?: string;
-  thana?: string;
-  address?: string;
-  addressBn?: string;
-  phone?: string;
-  email?: string;
-  packageDiscount?: number;
-  minTestsForPackage?: number;
-}
-
-interface CartItem extends DiagnosticTest {
-  quantity: number;
-}
+const diagnosticServices = [
+  {
+    icon: <Syringe className="w-8 h-8" />,
+    title: { en: "Home Collection", bn: "বাসায় স্যাম্পল সংগ্রহ" },
+    desc: { en: "Professional phlebotomists will collect your samples safely from your home.", bn: "পেশাদার চিকিৎসাকর্মীরা আপনার বাসা থেকেই নিরাপদে স্যাম্পল সংগ্রহ করবেন।" }
+  },
+  {
+    icon: <Microscope className="w-8 h-8" />,
+    title: { en: "Advanced Lab Tests", bn: "উন্নত ল্যাব টেস্ট" },
+    desc: { en: "State-of-the-art laboratory equipment for accurate and timely results.", bn: "সঠিক এবং সময়োপযোগী ফলাফলের জন্য অত্যাধুনিক ল্যাবরেটরি সরঞ্জাম।" }
+  },
+  {
+    icon: <FileText className="w-8 h-8" />,
+    title: { en: "Digital Reports", bn: "ডিজিটাল রিপোর্ট" },
+    desc: { en: "Get your diagnostic reports directly on your mobile within hours.", bn: "কয়েক ঘন্টার মধ্যেই আপনার মোবাইলে ডায়াগনস্টিক রিপোর্ট পান।" }
+  },
+  {
+    icon: <ClipboardList className="w-8 h-8" />,
+    title: { en: "Health Packages", bn: "হেলথ প্যাকেজ" },
+    desc: { en: "Comprehensive health check-up packages tailored for your family.", bn: "আপনার পরিবারের জন্য উপযোগী সমন্বিত স্বাস্থ্য পরীক্ষা প্যাকেজ।" }
+  }
+];
 
 export default function DiagnosticPage() {
-  const { language } = useLanguage() as { language: 'en' | 'bn' };
-  const t = homepageTranslations[language].diagnosticPage;
-
-  const categories = useMemo(() => [
-    { id: "Blood Tests", name: t.categories.blood, icon: "🩸" },
-    { id: "Cardiology", name: t.categories.cardio, icon: "❤️" },
-    { id: "Imaging", name: t.categories.imaging, icon: "📷" },
-    { id: "Pathology", name: t.categories.pathology, icon: "🔬" },
-  ], [t]);
-  const [tests, setTests] = useState<DiagnosticTest[]>([]);
-  const [centers, setCenters] = useState<DiagnosticCenter[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [selectedCenter, setSelectedCenter] = useState<string>("");
-  const [showPaymentSlip, setShowPaymentSlip] = useState(false);
-
-  // Location filters
-  const [divisions, setDivisions] = useState<Array<{_id: string; name: string}>>([]);
-  const [districts, setDistricts] = useState<Array<{_id: string; name: string}>>([]);
-  const [thanas, setThanas] = useState<Array<{_id: string; name: string}>>([]);
-  const [selectedDivision, setSelectedDivision] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [selectedThana, setSelectedThana] = useState("");
-
-  const fetchTests = useCallback(async () => {
-    try {
-      const url = selectedCategory
-        ? `/api/diagnostic/tests?category=${selectedCategory}`
-        : "/api/diagnostic/tests";
-      const response = await fetch(url);
-      const data = await response.json();
-      if (response.ok) {
-        setTests(data.tests);
-      }
-    } catch (error) {
-      console.error("Error fetching tests:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedCategory]);
-
-  const fetchCenters = useCallback(async () => {
-    try {
-      let url = "/api/diagnostic/centers";
-      const params = new URLSearchParams();
-      if (selectedDivision) params.append("division", selectedDivision);
-      if (selectedDistrict) params.append("district", selectedDistrict);
-      if (selectedThana) params.append("thana", selectedThana);
-      if (params.toString()) url += `?${params.toString()}`;
-
-      const response = await fetch(url);
-      const data = await response.json();
-      if (response.ok) {
-        setCenters(data.centers);
-      }
-    } catch (error) {
-      console.error("Error fetching centers:", error);
-    }
-  }, [selectedDivision, selectedDistrict, selectedThana]);
-
-  useEffect(() => {
-    fetchTests();
-    fetchCenters();
-    fetchDivisions();
-  }, [fetchTests, fetchCenters]);
-
-  useEffect(() => {
-    fetchCenters();
-  }, [selectedDivision, selectedDistrict, selectedThana, fetchCenters]);
-
-  useEffect(() => {
-    if (selectedDivision) {
-      const division = divisions.find(d => d.name === selectedDivision);
-      if (division) {
-        fetch(`/api/locations/districts?division=${division._id}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.districts) setDistricts(data.districts);
-          });
-      }
-    } else {
-      setDistricts([]);
-      setThanas([]);
-    }
-  }, [selectedDivision, divisions]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
-      const district = districts.find(d => d.name === selectedDistrict);
-      if (district) {
-        fetch(`/api/locations/thanas?district=${district._id}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.thanas) setThanas(data.thanas);
-          });
-      }
-    } else {
-      setThanas([]);
-    }
-  }, [selectedDistrict, districts]);
-
-  const fetchDivisions = async () => {
-    try {
-      const response = await fetch("/api/locations/divisions");
-      const data = await response.json();
-      if (response.ok) {
-        setDivisions(data.divisions);
-      }
-    } catch (error) {
-      console.error("Error fetching divisions:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchTests();
-  }, [fetchTests]);
-
-  // Filter tests
-  const filteredTests = useMemo(() => {
-    let filtered = [...tests];
-
-    // Language-based filter: Only show tests with content in the selected language
-    filtered = filtered.filter((test) => {
-      if (language === 'en') {
-        // For English, show only tests that have English name
-        return test.name && test.name.trim() !== '';
-      } else {
-        // For Bangla, show only tests that have Bangla name
-        return test.nameBn && test.nameBn.trim() !== '';
-      }
-    });
-
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((test) => {
-        const name = language === 'en' ? test.name : (test.nameBn || test.name);
-        const description = language === 'en' ? test.description : (test.descriptionBn || test.description);
-        return (
-          name?.toLowerCase().includes(query) ||
-          test.category.toLowerCase().includes(query) ||
-          description?.toLowerCase().includes(query)
-        );
-      });
-    }
-    return filtered;
-  }, [tests, searchQuery, language]);
-
-  // Cart calculations
-  const cartTotal = useMemo(() => {
-    return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  }, [cart]);
-
-  const cartDiscount = useMemo(() => {
-    const totalTests = cart.reduce((sum, item) => sum + item.quantity, 0);
-    let discount = 0;
-
-    // Discount tiers
-    if (totalTests >= 10) discount = 15; // 15% off for 10+ tests
-    else if (totalTests >= 5) discount = 10; // 10% off for 5+ tests
-    else if (totalTests >= 3) discount = 5; // 5% off for 3+ tests
-
-    // Additional center package discount
-    if (selectedCenter) {
-      const center = centers.find(c => c._id === selectedCenter);
-      if (center && totalTests >= (center.minTestsForPackage || 3)) {
-        discount += center.packageDiscount || 0;
-      }
-    }
-
-    return Math.min(discount, 30); // Max 30% discount
-  }, [cart, selectedCenter, centers]);
-
-  const discountedTotal = useMemo(() => {
-    const discountAmount = (cartTotal * cartDiscount) / 100;
-    return cartTotal - discountAmount;
-  }, [cartTotal, cartDiscount]);
-
-  const addToCart = (test: DiagnosticTest) => {
-    setCart(prev => {
-      const existing = prev.find(item => item._id === test._id);
-      if (existing) {
-        return prev.map(item =>
-          item._id === test._id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prev, { ...test, quantity: 1 }];
-    });
-  };
-
-  const removeFromCart = (testId: string) => {
-    setCart(prev => prev.filter(item => item._id !== testId));
-  };
-
-  const updateQuantity = (testId: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromCart(testId);
-      return;
-    }
-    setCart(prev =>
-      prev.map(item =>
-        item._id === testId ? { ...item, quantity } : item
-      )
-    );
-  };
-
-  const generatePaymentSlip = () => {
-    setShowPaymentSlip(true);
-  };
-
-  const downloadPaymentSlip = () => {
-    const slipContent = `
-═══════════════════════════════════════
-     MEDI TIME DIAGNOSTIC SERVICES
-═══════════════════════════════════════
-
-Payment Slip
-Date: ${new Date().toLocaleDateString()}
-Time: ${new Date().toLocaleTimeString()}
-
-───────────────────────────────────────
-SELECTED TESTS
-───────────────────────────────────────
-${cart.map(item => `${item.name} x${item.quantity} - ${item.price * item.quantity}৳`).join('\n')}
-
-───────────────────────────────────────
-PRICE SUMMARY
-───────────────────────────────────────
-Subtotal:              ${cartTotal}৳
-Discount (${cartDiscount}%):      -${(cartTotal * cartDiscount) / 100}৳
-───────────────────────────────────────
-TOTAL:                 ${discountedTotal}৳
-───────────────────────────────────────
-
-${selectedCenter ? `Diagnostic Center: ${centers.find(c => c._id === selectedCenter)?.name || 'N/A'}\n` : ''}
-Total Tests: ${cart.reduce((sum, item) => sum + item.quantity, 0)}
-
-Thank you for choosing Medi Time!
-═══════════════════════════════════════
-    `;
-
-    const blob = new Blob([slipContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `payment-slip-${Date.now()}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const categoryCounts = useMemo(() => {
-    return categories.map(cat => ({
-      ...cat,
-      count: tests.filter(t => t.category === cat.id).length,
-    }));
-  }, [tests]);
+  const { language } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50/50">
       <Navbar />
-      
-      {/* Hero Section - 70% of homepage height */}
-      <div className="relative mt-20 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto">
-          <div className="h-[350px] sm:h-[385px] lg:h-[420px] rounded-2xl overflow-hidden">
-            <div className="relative h-full w-full">
-              {/* Background Image */}
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url(/slide.jpg)`,
-                }}
+
+      {/* Hero Section */}
+      <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-white">
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-[#00B7B5]/5 skew-x-12 translate-x-20" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#00B7B5]/10 text-[#00B7B5] font-bold text-xs mb-6 uppercase tracking-widest border border-[#00B7B5]/20">
+                <FlaskConical className="w-4 h-4" />
+                Trusted Diagnostic Services
+              </div>
+              <h1 className="text-4xl md:text-6xl font-black text-slate-900 leading-tight mb-6">
+                {language === 'en' ? (
+                  <>Accurate Results for a <span className="text-[#00B7B5]">Healthier</span> Life</>
+                ) : (
+                  <>সুস্থ জীবনের জন্য <span className="text-[#00B7B5]">সঠিক</span> ডায়াগনস্টিক রিপোর্ট</>
+                )}
+              </h1>
+              <p className="text-lg text-slate-600 mb-8 max-w-xl">
+                {language === 'en' 
+                  ? "Book lab tests online and get home sample collection. We partner with the best diagnostic centers to ensure quality."
+                  : "অনলাইনে ল্যাব টেস্ট বুক করুন এবং বাসা থেকে স্যাম্পল সংগ্রহের সুবিধা নিন। গুণগত মান নিশ্চিতে আমরা সেরা ডায়াগনস্টিক সেন্টারের সাথে কাজ করি।"}
+              </p>
+              
+              <div className="relative max-w-lg mb-8">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+                <input 
+                  type="text" 
+                  placeholder={language === 'en' ? "Search for tests (e.g. CBC, Diabetes)" : "টেস্টের নাম দিয়ে খুঁজুন (যেমন: CBC, ডায়াবেটিস)"}
+                  className="w-full h-14 pl-12 pr-32 bg-white border-2 border-slate-200 rounded-2xl focus:border-[#00B7B5] focus:outline-none transition-all shadow-sm"
+                />
+                <Button className="absolute right-2 top-2 h-10 bg-[#00B7B5] hover:bg-[#00B7B5]/90 text-white rounded-xl font-bold px-6">
+                  {language === 'en' ? "Search" : "খুঁজুন"}
+                </Button>
+              </div>
+
+              <div className="flex flex-wrap gap-6 text-sm font-semibold text-slate-500">
+                <div className="flex items-center gap-2">
+                  <BadgeCheck className="w-5 h-5 text-[#00B7B5]" />
+                  NABL Certified
+                </div>
+                <div className="flex items-center gap-2">
+                  <Timer className="w-5 h-5 text-[#00B7B5]" />
+                  Reports in 24h
+                </div>
+                <div className="flex items-center gap-2">
+                  <Home className="w-5 h-5 text-[#00B7B5]" />
+                  Home Collection
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative hidden lg:block"
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4 pt-12">
+                   <div className="bg-white p-6 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col items-center text-center">
+                    <div className="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center mb-4">
+                      <FileText className="w-6 h-6" />
+                    </div>
+                    <p className="text-2xl font-black text-slate-900">5k+</p>
+                    <p className="text-xs font-bold text-slate-400 tracking-wider">Reports Ready</p>
+                  </div>
+                  <div className="bg-[#00B7B5] p-6 rounded-[2rem] shadow-xl shadow-[#00B7B5]/20 text-white flex flex-col items-center text-center">
+                    <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4 text-white">
+                      <Microscope className="w-6 h-6" />
+                    </div>
+                    <p className="text-2xl font-black">100+</p>
+                    <p className="text-xs font-bold opacity-80 tracking-wider text-white">Advanced Tests</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="bg-white p-6 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col items-center text-center">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
+                      <ShieldCheck className="w-6 h-6" />
+                    </div>
+                    <p className="text-2xl font-black text-slate-900">100%</p>
+                    <p className="text-xs font-bold text-slate-400 tracking-wider">Accurate Results</p>
+                  </div>
+                  <div className="aspect-[4/5] relative rounded-[2rem] overflow-hidden shadow-2xl">
+                    <Image 
+                      src="https://images.unsplash.com/photo-1579154235602-3c35bd791163?q=80&w=2070&auto=format&fit=crop" 
+                      alt="Diagnostic Lab" 
+                      fill 
+                      className="object-cover"
+                    />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4">{language === 'en' ? "Our Services" : "আমাদের সেবাসমূহ"}</h2>
+            <p className="text-slate-500 max-w-2xl mx-auto">{language === 'en' ? "Get professional diagnostic care with the convenience of your home." : "আপনার বাড়ির আরামদায়ক পরিবেশে পেশাদার ডায়াগনস্টিক কেয়ার পান।"}</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {diagnosticServices.map((service, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-[#00B7B5]/5 transition-all text-center group"
               >
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-black/50"></div>
-              </div>
+                <div className="w-20 h-20 rounded-3xl bg-[#00B7B5]/5 text-[#00B7B5] flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform">
+                  {service.icon}
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">{service.title[language as keyof typeof service.title]}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{service.desc[language as keyof typeof service.desc]}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-              {/* Content */}
-              <div className="relative z-10 flex h-full items-center justify-center">
-                <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
-                  <div className="mx-auto max-w-3xl text-center text-white">
-                    <h1 className="mb-6 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-                      {t.heroTitle}
-                    </h1>
-                    <p className="mb-8 text-base leading-relaxed sm:text-lg lg:text-xl">
-                      {t.heroSubtitle}
-                    </p>
-                    <a 
-                      href="/membership"
-                      className="inline-flex items-center bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all font-semibold"
-                    >
-                      {t.heroCTA}
-                      <svg
-                        className="ml-2 h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </a>
+      {/* Popular Tests Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+            <div>
+              <h2 className="text-3xl font-black text-slate-900 mb-2">{language === 'en' ? "Popular Lab Tests" : "জনপ্রিয় ল্যাব টেস্টসমূহ"}</h2>
+              <p className="text-slate-500 font-medium">{language === 'en' ? "Book our frequently requested tests at special rates." : "বিশেষ ছাড়ে আমাদের সবচেয়ে জনপ্রিয় টেস্টগুলো বুক করুন।"}</p>
+            </div>
+            <Button variant="outline" className="h-12 px-6 border-slate-200 rounded-xl font-bold text-[#00B7B5] hover:bg-[#00B7B5]/5">
+              {language === 'en' ? "View All Tests" : "সব টেস্ট দেখুন"}
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { name: "Full Body Checkup", bn: "সম্পূর্ণ বডি চেকআপ", price: "2,500", discount: "20%" },
+              { name: "Diabetes Screening", bn: "ডায়াবেটিস স্ক্রিনিং", price: "500", discount: "15%" },
+              { name: "Thyroid Profile", bn: "থাইরয়েড প্রোফাইল", price: "800", discount: "10%" },
+              { name: "Lipid Profile", bn: "লিপিড প্রোফাইল", price: "1,200", discount: "10%" },
+              { name: "Vitamin D Deficiency", bn: "ভিটামিন ডি পরীক্ষা", price: "1,500", discount: "25%" },
+              { name: "liver Function Test", bn: "লিভার ফাংশন টেস্ট", price: "1,000", discount: "15%" }
+            ].map((test, i) => (
+              <Card key={i} className="p-6 rounded-3xl border border-slate-100 hover:shadow-xl transition-all group overflow-hidden">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h4 className="text-lg font-bold text-slate-900 group-hover:text-[#00B7B5] transition-colors">{language === 'en' ? test.name : test.bn}</h4>
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">NABL Accredited</p>
+                  </div>
+                  <div className="bg-orange-500 text-white text-[10px] font-black px-2 py-1 rounded-lg uppercase">
+                    {test.discount} OFF
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mt-10 mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        {/* Search Bar */}
-        <div className="mb-8">
-          <div className="relative">
-            <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
-            <Input
-              type="text"
-              placeholder={t.searchPlaceholder}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-14 pr-4 py-6 text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all"
-            />
-          </div>
-        </div>
-
-  
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Tests List */}
-          <div className="lg:col-span-2">
-            <div className="mb-4 text-sm text-gray-600">
-              {t.showing} {filteredTests.length} {t.of} {tests.length} {t.tests}
-            </div>
-
-            {loading ? (
-              <div className="text-center py-12 text-gray-500">{t.loading}</div>
-            ) : filteredTests.length === 0 ? (
-              <Card className="p-12 text-center">
-                <p className="text-gray-500">{t.noTests}</p>
-              </Card>
-            ) : (
-              <div className="space-y-4">
-                {filteredTests.map((test) => (
-                  <Card key={test._id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-gray-100">
-                    <div className="flex flex-col sm:flex-row">
-                      {/* Image Section */}
-                      <div className="sm:w-48 h-48 sm:h-auto relative bg-gray-100 shrink-0">
-                        {test.image ? (
-                          <img
-                            src={test.image}
-                            alt={test.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-300">
-                            <FileText className="h-12 w-12" />
-                          </div>
-                        )}
-                        {test.fastingRequired && (
-                          <div className="absolute top-2 left-2 bg-orange-500/90 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
-                            {t.fastingRequired}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Content Section */}
-                      <div className="p-6 flex-1 flex flex-col justify-between">
-                        <div>
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <span className="text-xs font-medium text-primary bg-primary/5 px-2 py-1 rounded-full mb-2 inline-block">
-                                {test.category}
-                              </span>
-                              <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
-                                {getLocalizedValue(test.name, test.nameBn, language)}
-                              </h3>
-                            </div>
-                            <div className="text-right">
-                              {test.originalPrice && test.originalPrice > test.price && (
-                                <div className="text-sm text-gray-400 line-through mb-1">
-                                  {test.originalPrice}৳
-                                </div>
-                              )}
-                              <div className="text-2xl font-bold text-primary">
-                                {test.price}৳
-                              </div>
-                            </div>
-                          </div>
-
-                          {test.description && (
-                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                              {getLocalizedValue(test.description, test.descriptionBn, language)}
-                            </p>
-                          )}
-
-                          <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
-                            {test.duration && (
-                              <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded">
-                                <span className="text-xs">⏱️</span>
-                                <span>{test.duration}</span>
-                              </div>
-                            )}
-                            {test.preparation && (
-                              <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded">
-                                <span className="text-xs">📋</span>
-                                <span className="truncate max-w-[200px]">{test.preparation}</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-end pt-4 border-t border-gray-100">
-                          <Button 
-                            onClick={() => addToCart(test)} 
-                            className="bg-gray-900 hover:bg-primary text-white transition-colors rounded-full px-6"
-                          >
-                            <ShoppingCart className="h-4 w-4 mr-2" />
-                            {t.addToCart}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Cart Sidebar */}
-          <div className="lg:sticky lg:top-6 h-fit">
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold flex items-center gap-2">
-                  <ShoppingCart className="h-5 w-5" />
-                  {t.cart} ({cart.reduce((sum, item) => sum + item.quantity, 0)})
-                </h2>
-                {cart.length > 0 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCart([])}
-                  >
-                    {t.clear}
+                <div className="flex items-center justify-between mt-8">
+                  <div className="flex flex-col">
+                    <span className="text-slate-400 text-xs line-through">৳{Math.round(parseInt(test.price.replace(',','')) * 1.2)}</span>
+                    <span className="text-2xl font-black text-slate-900">৳{test.price}</span>
+                  </div>
+                  <Button className="bg-[#00B7B5] hover:bg-[#00B7B5]/90 text-white font-bold rounded-xl px-4 py-2">
+                    {language === 'en' ? "Book Now" : "বুক করুন"}
                   </Button>
-                )}
-              </div>
-
-              {cart.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <ShoppingCart className="h-12 w-12 mx-auto mb-2 opacity-30" />
-                  <p>{t.emptyCart}</p>
                 </div>
-              ) : (
-                <>
-                  <div className="space-y-3 mb-4 max-h-96 overflow-y-auto">
-                    {cart.map((item) => (
-                      <div
-                        key={item._id}
-                        className="p-3 border border-gray-200 rounded-lg"
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex-1">
-                            <div className="font-medium text-sm">{item.name}</div>
-                            <div className="text-xs text-gray-500">{item.category}</div>
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => removeFromCart(item._id)}
-                            className="p-1 h-6 w-6"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        <div className="flex items-center justify-between mt-2">
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                              className="h-6 w-6 p-0"
-                            >
-                              -
-                            </Button>
-                            <span className="text-sm font-medium w-8 text-center">
-                              {item.quantity}
-                            </span>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                              className="h-6 w-6 p-0"
-                            >
-                              +
-                            </Button>
-                          </div>
-                          <span className="font-semibold">
-                            {item.price * item.quantity}৳
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Discount Info */}
-                  {cartDiscount > 0 && (
-                    <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <div className="flex items-center gap-2 text-green-700 mb-1">
-                        <Percent className="h-4 w-4" />
-                        <span className="font-semibold">
-                          {cartDiscount}% {t.discountApplied}
-                        </span>
-                      </div>
-                      <p className="text-xs text-green-600">
-                        {cart.reduce((sum, item) => sum + item.quantity, 0)} {t.tests} {t.showing.toLowerCase() === 'showing' ? 'selected' : 'নির্বাচন করা হয়েছে'}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Select Diagnostic Center */}
-                  {centers.length > 0 && (
-                    <div className="mb-4">
-                      <Label className="mb-2 block">{t.selectCenter}</Label>
-                      <select
-                        value={selectedCenter}
-                        onChange={(e) => setSelectedCenter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      >
-                        <option value="">{t.chooseCenter}</option>
-                        {centers.map((center) => (
-                          <option key={center._id} value={center._id}>
-                            {getLocalizedValue(center.name, center.nameBn, language)}
-                            {center.packageDiscount && center.minTestsForPackage && (
-                              <span>
-                                {" "}
-                                - {center.packageDiscount}% {t.offOn} {center.minTestsForPackage}+ {t.testsPlus}
-                              </span>
-                            )}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
-                  {/* Price Summary */}
-                  <div className="border-t border-gray-200 pt-4 space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>{t.subtotal}:</span>
-                      <span>{cartTotal}৳</span>
-                    </div>
-                    {cartDiscount > 0 && (
-                      <div className="flex justify-between text-sm text-green-600">
-                        <span>{t.discountApplied} ({cartDiscount}%):</span>
-                        <span>-{(cartTotal * cartDiscount) / 100}৳</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between font-bold text-lg border-t border-gray-200 pt-2">
-                      <span>{t.total}:</span>
-                      <span className="text-primary">{discountedTotal}৳</span>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="mt-6 space-y-2">
-                    <Button
-                      className="w-full"
-                      onClick={generatePaymentSlip}
-                    >
-                      <FileText className="h-4 w-4 mr-2" />
-                      {t.generateSlip}
-                    </Button>
-                  </div>
-                </>
-              )}
-            </Card>
+              </Card>
+            ))}
           </div>
         </div>
+      </section>
 
-        {/* Payment Slip Modal */}
-        {showPaymentSlip && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <Card className="max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">{t.paymentSlip}</h2>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowPaymentSlip(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-
-              <div className="space-y-4 font-mono text-sm">
-                <div className="text-center border-b border-gray-200 pb-4">
-                  <h3 className="text-xl font-bold">MEDI TIME DIAGNOSTIC SERVICES</h3>
-                  <p className="text-gray-600">
-                    {new Date().toLocaleDateString()} | {new Date().toLocaleTimeString()}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="font-bold mb-2">{t.selectedTests}</h4>
-                  {cart.map((item) => (
-                    <div key={item._id} className="flex justify-between py-1">
-                      <span>
-                        {item.name} x{item.quantity}
-                      </span>
-                      <span>{item.price * item.quantity}৳</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="border-t border-gray-200 pt-4">
-                  <div className="flex justify-between mb-2">
-                    <span>{t.subtotal}:</span>
-                    <span>{cartTotal}৳</span>
-                  </div>
-                  {cartDiscount > 0 && (
-                    <div className="flex justify-between text-green-600 mb-2">
-                      <span>{t.discountApplied} ({cartDiscount}%):</span>
-                      <span>-{(cartTotal * cartDiscount) / 100}৳</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between font-bold text-lg border-t border-gray-200 pt-2">
-                    <span>{t.total}:</span>
-                    <span className="text-primary">{discountedTotal}৳</span>
-                  </div>
-                </div>
-
-                {selectedCenter && (
-                  <div className="border-t border-gray-200 pt-4">
-                    <p>
-                      <strong>{t.selectCenter}:</strong>{" "}
-                      {getLocalizedValue(centers.find((c) => c._id === selectedCenter)?.name || "", centers.find((c) => c._id === selectedCenter)?.nameBn || "", language) || "N/A"}
-                    </p>
-                    <p>
-                      <strong>{t.total} {t.tests}:</strong>{" "}
-                      {cart.reduce((sum, item) => sum + item.quantity, 0)}
-                    </p>
-                  </div>
-                )}
-
-                <div className="text-center border-t border-gray-200 pt-4 text-gray-600">
-                  <p>Thank you for choosing Medi Time!</p>
-                </div>
-              </div>
-
-              <div className="mt-6 flex gap-2">
-                <Button
-                  className="flex-1"
-                  onClick={downloadPaymentSlip}
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  {t.downloadSlip}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => setShowPaymentSlip(false)}
-                >
-                  {t.close}
-                </Button>
-              </div>
-            </Card>
+      {/* CTA Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-slate-900 rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden">
+             <div className="absolute top-0 right-0 w-64 h-64 bg-[#00B7B5]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+             <div className="relative z-10">
+              <h2 className="text-3xl md:text-5xl font-black text-white mb-6">
+                {language === 'en' ? "Need Home Sample Collection?" : "বাসায় স্যাম্পল সংগ্রহ প্রয়োজন?"}
+              </h2>
+              <p className="text-slate-400 text-lg mb-10 max-w-2xl mx-auto">
+                {language === 'en' 
+                  ? "Schedule a phlebotomist visit at your preferred time. Quick, safe and painless sample collection."
+                  : "আপনার সুবিধাজনক সময়ে স্যাম্পল সংগ্রহের জন্য যোগাযোগ করুন। দ্রুত, নিরাপদ এবং যন্ত্রণামুক্ত স্যাম্পল সংগ্রহ।"
+                }
+              </p>
+              <Button className="h-16 px-12 bg-[#00B7B5] hover:bg-[#00B7B5]/90 text-white rounded-2xl font-black text-xl shadow-2xl shadow-[#00B7B5]/20">
+                {language === 'en' ? "Call for Home Visit" : "হোম ভিজিটের জন্য কল করুন"}
+              </Button>
+             </div>
           </div>
-        )}
-      </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
-    
   );
 }
