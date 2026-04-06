@@ -44,7 +44,7 @@ export default function ServicePage() {
       icon: Video,
       iconBg: "bg-purple-100 group-hover:bg-purple-200",
       iconColor: "text-purple-600",
-      href: "/",
+      href: "/live-consultation",
       buttonText: t.videoBtn,
     },
     {
@@ -64,7 +64,7 @@ export default function ServicePage() {
       icon: Droplet,
       iconBg: "bg-red-100 group-hover:bg-red-200",
       iconColor: "text-red-600",
-      href: "/service/blood-donors",
+      href: "/blood-donor",
       buttonText: t.bloodBtn,
     },
     {
@@ -74,7 +74,7 @@ export default function ServicePage() {
       icon: Car,
       iconBg: "bg-primary/10 group-hover:bg-primary/20",
       iconColor: "text-primary",
-      href: "/service/ambulance-services",
+      href: "/ambulance",
       buttonText: t.ambulanceBtn,
     },
   ];

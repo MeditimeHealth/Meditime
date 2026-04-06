@@ -17,7 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
-interface User {
+interface Doctor {
   id: string;
   fullName: string;
   email?: string;
@@ -25,7 +25,7 @@ interface User {
 }
 
 interface DoctorSidebarProps {
-  user: User | null;
+  user: Doctor | null;
   onLogout: () => void;
 }
 

@@ -173,7 +173,7 @@ export default function ServicesSection() {
             >
               <Link href={href} className="block h-full group">
                 <Card
-                  className="p-6 border h-full flex flex-col rounded-2xl transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg bg-white border-slate-200 shadow-sm group-hover:bg-[#FFCC53] group-hover:border-[#FFCC53]"
+                  className="p-6 border h-full flex flex-col rounded-2xl transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg bg-white border-slate-200 shadow-sm group-hover:bg-[#00B7B5] group-hover:border-[#00B7B5]"
                 >
                   {/* ── Teal circle icon
                         Figma: ~56px circle, icon is ~28px — w-14 h-14 is correct

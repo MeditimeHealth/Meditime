@@ -9,6 +9,28 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
+import { motion, useInView, animate, useMotionValue, useTransform } from "framer-motion";
+import { useEffect, useRef } from "react";
+
+function Counter({ value, duration = 2 }: { value: string; duration?: number }) {
+  const numericValue = parseFloat(value.replace(/[^0-9.]/g, ""));
+  const suffix = value.replace(/[0-9.]/g, "");
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (latest) => {
+    if (numericValue % 1 === 0) return Math.floor(latest) + suffix;
+    return latest.toFixed(1) + suffix;
+  });
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+
+  useEffect(() => {
+    if (isInView) {
+      animate(count, numericValue, { duration });
+    }
+  }, [isInView, numericValue, count, duration]);
+
+  return <motion.span ref={ref}>{rounded}</motion.span>;
+}
 
 export default function PatientReviewSection() {
   const { language } = useLanguage();
@@ -112,7 +134,9 @@ export default function PatientReviewSection() {
               <div className="bg-[#129B90] rounded-[12px] sm:rounded-[16px] w-full h-full px-4 sm:px-6 lg:px-10 py-4 sm:py-6 lg:py-8 flex flex-col sm:flex-row items-center">
                 {/* Rating */}
                 <div className="flex flex-col text-center sm:text-left flex-1 items-center sm:items-start">
-                  <p className="text-white text-[28px] sm:text-[42px] font-bold leading-none mb-2 sm:mb-3">{t.stats.rating}</p>
+                  <p className="text-white text-[28px] sm:text-[42px] font-bold leading-none mb-2 sm:mb-3">
+                    <Counter value={t.stats.rating} />
+                  </p>
                   <p className="text-white/90 text-[11px] sm:text-[13px] font-medium tracking-wide">{t.stats.ratingLabel}</p>
                 </div>
 
@@ -122,7 +146,9 @@ export default function PatientReviewSection() {
 
                 {/* Clients */}
                 <div className="flex flex-col text-center sm:text-left flex-1 items-center sm:items-start sm:pl-6">
-                  <p className="text-white text-[28px] sm:text-[42px] font-bold leading-none mb-2 sm:mb-3">{t.stats.clients}</p>
+                  <p className="text-white text-[28px] sm:text-[42px] font-bold leading-none mb-2 sm:mb-3">
+                    <Counter value={t.stats.clients} />
+                  </p>
                   <p className="text-white/90 text-[11px] sm:text-[13px] font-medium tracking-wide">{t.stats.clientsLabel}</p>
                 </div>
               </div>

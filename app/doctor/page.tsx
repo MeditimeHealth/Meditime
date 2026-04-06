@@ -422,6 +422,27 @@ function DoctorListPageContent() {
       );
     }
 
+    // Division filter
+    if (selectedDivision) {
+      filtered = filtered.filter(
+        (doctor) => doctor.division === selectedDivision
+      );
+    }
+
+    // District filter
+    if (selectedDistrict) {
+      filtered = filtered.filter(
+        (doctor) => doctor.district === selectedDistrict
+      );
+    }
+
+    // Thana filter
+    if (selectedThana) {
+      filtered = filtered.filter(
+        (doctor) => doctor.thana === selectedThana
+      );
+    }
+
     // Qualification filter
     if (selectedQualification) {
       filtered = filtered.filter(

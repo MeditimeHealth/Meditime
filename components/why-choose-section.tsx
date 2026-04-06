@@ -121,7 +121,7 @@ export default function WhyChooseSection() {
               className="h-full" /* ← makes motion.div fill the grid row height */
             >
               <Card
-                className="p-6 sm:p-5 border h-full flex flex-col items-center text-center rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md bg-white border-slate-200 group hover:bg-[#FFCC53] hover:border-[#FFCC53]"
+                className="p-6 sm:p-5 border h-full flex flex-col items-center text-center rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md bg-white border-slate-200 group hover:bg-[#00B7B5] hover:border-[#00B7B5]"
               >
                 {/* Icon */}
                 <div className="mb-4 shrink-0">

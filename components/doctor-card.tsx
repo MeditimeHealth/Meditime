@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
-import { Clock, MapPin } from "lucide-react";
+import { Clock, MapPin, Stethoscope, ChevronRight } from "lucide-react";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
 export interface Doctor {
@@ -139,140 +139,95 @@ export default function DoctorCard({
   const displayQualification = getLocalizedValue(doctor.qualification, doctor.qualificationBn, language);
   const displayDesignation = getLocalizedValue(doctor.designation, doctor.designationBn, language);
   const displayHospital = getLocalizedValue(doctor.hospital, doctor.hospitalBn, language);
+  const availabilityText = formatAvailability(doctor.availability, language);
 
   const CardContent = (
-    <Card className={`p-6 bg-white border border-gray-200 hover:border-gray-300 shadow-sm transition-all duration-300 h-full ${!disableLink ? 'hover:shadow-md cursor-pointer' : ''}`}>
+    <Card className={`p-5 bg-white border border-gray-100 hover:border-primary/30 shadow-sm transition-all duration-300 h-full flex flex-col justify-between ${!disableLink ? 'hover:shadow-xl cursor-pointer group' : ''}`}>
       <div className="space-y-4">
-        {/* Doctor Image */}
-        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-          {doctor.image ? (
-            <Image
-              src={doctor.image}
-              alt={doctor.name}
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <svg
-                className="w-12 h-12 text-gray-400"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="12"
-                  cy="8"
-                  r="4"
-                  fill="currentColor"
-                  fillOpacity="0.3"
-                />
-                <path
-                  d="M4 20c0-4 4-6 8-6s8 2 8 6"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  fill="currentColor"
-                  fillOpacity="0.1"
-                />
-                <path
-                  d="M15 3v2M15 7v2M13 5h4"
-                  stroke="#4A90A4"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-          )}
+        <div className="flex items-start gap-4">
+          {/* Doctor Image */}
+          <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-gray-50 border-2 border-gray-50 flex-shrink-0 group-hover:border-primary/20 transition-colors">
+            {doctor.image ? (
+              <Image
+                src={doctor.image}
+                alt={doctor.name}
+                fill
+                className="object-cover group-hover:scale-110 transition-transform duration-500"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-primary/5">
+                <Stethoscope className="w-10 h-10 text-primary/40" />
+              </div>
+            )}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            {/* Doctor Name */}
+            <h3
+              className="text-lg font-bold text-gray-900 leading-tight mb-1 group-hover:text-primary transition-colors line-clamp-1"
+            >
+              {displayName}
+            </h3>
+
+            {/* Specialty */}
+            {displaySpecialty && (
+              <p className="text-sm text-primary font-semibold line-clamp-1 mb-1">
+                {displaySpecialty}
+              </p>
+            )}
+
+            {/* Qualification */}
+            {displayQualification && (
+              <p className="text-xs text-gray-500 font-medium line-clamp-2">
+                {displayQualification}
+              </p>
+            )}
+          </div>
         </div>
 
-        {/* Doctor Name */}
-        <h3
-          className="text-xl font-bold text-[#2C5282]"
-          style={{
-            fontFamily:
-              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-          }}
-        >
-          {displayName}
-        </h3>
+        <div className="space-y-2.5">
+          {/* Hospital Name */}
+          {displayHospital && (
+            <div className="flex items-start gap-2 group/loc">
+              <MapPin className="w-4 h-4 text-gray-400 mt-0.5 group-hover/loc:text-primary transition-colors" />
+              <p className="text-sm font-medium text-gray-600 line-clamp-2">
+                {displayHospital}
+              </p>
+            </div>
+          )}
 
-        {/* Specialty */}
-        {displaySpecialty && (
-          <p
-            className="text-sm text-[#4A90A4] font-medium"
-            style={{
-              fontFamily:
-                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
-          >
-            {displaySpecialty}
-          </p>
-        )}
-
-        {/* Qualification */}
-        {displayQualification && (
-          <p
-            className="text-sm text-gray-600 leading-relaxed"
-            style={{
-              fontFamily:
-                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
-          >
-            {displayQualification}
-          </p>
-        )}
-
-        {/* Designation */}
-        {displayDesignation && (
-          <p
-            className="text-sm text-gray-600 leading-relaxed"
-            style={{
-              fontFamily:
-                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
-          >
-            {displayDesignation}
-          </p>
-        )}
-
-        {/* Red Divider Line */}
-        <div className="w-12 h-0.5 bg-[#8B4513] my-3"></div>
-
-        {/* Hospital Name */}
-        {displayHospital && (
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
-            <p
-              className="text-base font-semibold text-gray-700 leading-relaxed"
-              style={{
-                fontFamily:
-                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-              }}
-            >
-              {displayHospital}
-            </p>
+          {/* Time / Availability */}
+          <div className="bg-gray-50/80 rounded-xl p-3 border border-gray-100/50 group-hover:bg-primary/5 transition-colors">
+            <div className="flex items-start gap-2 text-xs text-gray-700">
+              <Clock className="w-4 h-4 mt-0.5 text-primary" />
+              <span className="font-semibold leading-relaxed">
+                 {availabilityText || (language === 'bn' ? 'সময়সূচী দেখুন' : 'View Schedule')}
+              </span>
+            </div>
           </div>
-        )}
-
-        {/* Time / Availability */}
-        <div className="mt-3 bg-gray-50 rounded-lg p-2.5 border border-gray-100">
-          <div className="flex items-start gap-2 text-sm text-gray-700">
-            <Clock className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
-            <span
-              className="font-medium"
-              style={{
-                fontFamily:
-                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-              }}
-            >
-               {formatAvailability(doctor.availability, language)}
+          
+          {/* Consultation Fee */}
+          <div className="flex items-center justify-between py-2 border-t border-dashed border-gray-200 mt-2">
+            <span className="text-sm text-gray-500 font-medium">
+              {language === 'bn' ? 'ভিজিট ফি' : 'Consultation Fee'}
+            </span>
+            <span className="text-lg font-bold text-primary">
+              {doctor.consultationFee}৳
             </span>
           </div>
         </div>
+      </div>
 
-        {/* Custom Actions Area */}
+      {/* Action Button */}
+      <div className="mt-4 pt-2">
+        {!disableLink && (
+          <div className="w-full py-2.5 bg-gray-900 group-hover:bg-primary text-white text-sm font-bold text-center rounded-xl transition-all shadow-md group-hover:shadow-primary/30 flex items-center justify-center gap-2">
+            {language === 'bn' ? 'অ্যাপয়েন্টমেন্ট নিন' : 'Book Appointment'}
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </div>
+        )}
         {actions && (
-          <div className="pt-4 mt-2 border-t border-gray-100 flex gap-2">
+          <div className="pt-2 flex gap-2">
             {actions}
           </div>
         )}
