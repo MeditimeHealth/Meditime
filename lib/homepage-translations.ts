@@ -273,10 +273,10 @@ export const homepageTranslations = {
       viewAll: "View All",
     },
     diagnosticPage: {
-      heroTitle: "Affordable Diagnostic Tests:",
-      heroSubtitle: "Save 30% on all tests with our membership card.",
+      heroTitle: "Diagnostic Tests & Lab Services",
+      heroSubtitle: "Book diagnostic tests from certified labs across Bangladesh with home sample collection and digital reports.",
       heroCTA: "Get Membership Card",
-      searchPlaceholder: "Search tests...",
+      searchPlaceholder: "Search for tests, packages, or health conditions...",
       showing: "Showing",
       of: "of",
       tests: "tests",
@@ -795,10 +795,10 @@ export const homepageTranslations = {
       viewAll: "সবগুলো দেখুন",
     },
     diagnosticPage: {
-      heroTitle: "সাশ্রয়ী মূল্যে সব ধরণের ডায়াগনস্টিক টেস্ট:",
-      heroSubtitle: "মেডিটাইম মেম্বারশিপ কার্ড ব্যবহার করে সব ধরনের ডায়াগনস্টিক টেস্টে ৩০% পর্যন্ত সাশ্রয় করুন।",
+      heroTitle: "ডায়াগনস্টিক টেস্ট এবং ল্যাব সার্ভিসেস",
+      heroSubtitle: "বাড়ি থেকে স্যাম্পল সংগ্রহ এবং ডিজিটাল রিপোর্ট সহ সারা বাংলাদেশের সার্টিফাইয়েড ল্যাব থেকে ডায়াগনস্টিক টেস্ট বুক করুন।",
       heroCTA: "মেম্বারশিপ কার্ডটি সংগ্রহ করুন",
-      searchPlaceholder: "টেস্ট খুঁজুন...",
+      searchPlaceholder: "টেস্ট, প্যাকেজ, বা স্বাস্থ্যগত অবস্থার জন্য অনুসন্ধান করুন...",
       showing: "দেখানো হচ্ছে",
       of: "এর মধ্যে",
       tests: "টি টেস্ট",
@@ -825,7 +825,7 @@ export const homepageTranslations = {
       categories: {
         blood: "রক্তের পরীক্ষা",
         cardio: "কার্ডিওলজি",
-        imaging: "イメイング",
+        imaging: "ইমেজিং",
         pathology: "প্যাথলজি",
       }
     },
