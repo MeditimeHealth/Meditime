@@ -16,7 +16,8 @@ import {
   Settings,
   ArrowRight,
   TrendingUp,
-  Loader2
+  Loader2,
+  ClipboardList
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
@@ -177,7 +178,7 @@ export default function DiagnosticPage() {
       </div>
 
       {/* Action Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <Card className="group relative overflow-hidden p-8 border-2 border-gray-100 hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 rounded-3xl flex flex-col justify-between">
           <div className="absolute top-[-20%] right-[-10%] opacity-5 group-hover:opacity-10 transition-all duration-500">
              <Layers className="h-64 w-64 text-primary" />
@@ -192,7 +193,7 @@ export default function DiagnosticPage() {
                 {language === 'bn' ? 'টেস্ট পরিচালনা করুন' : 'Manage Tests'}
               </h3>
               <p className="text-gray-500 font-medium text-lg leading-relaxed max-w-[90%]">
-                {language === 'bn' ? 'ডায়াগনস্টিক টেস্টের ক্যাটালগ তৈরি এবং আপডেট করুন সব ক্যাটাগরি জুড়ে।' : 'Create and manage diagnostic tests across all categories with full control.'}
+                {language === 'bn' ? 'ডায়াগনস্টিক টেস্টের ক্যাটালগ তৈরি এবং আপডেট করুন সব ক্যাটাগরি জুড়ে।' : 'Create and manage diagnostic tests across all categories with full control.'}
               </p>
             </div>
           </div>
@@ -230,6 +231,35 @@ export default function DiagnosticPage() {
             <Link href="/admin/diagnostic/centers" className="w-full">
               <Button className="w-full h-14 text-lg font-bold bg-gray-900 hover:bg-primary text-white shadow-xl shadow-gray-200/50 rounded-2xl group transition-all">
                 {language === 'bn' ? 'ম্যানেজ সেন্টার' : 'Manage Centers'}
+                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-2 transition-transform" />
+              </Button>
+            </Link>
+          </div>
+        </Card>
+
+        <Card className="group relative overflow-hidden p-8 border-2 border-orange-100 hover:border-orange-300 hover:shadow-2xl hover:shadow-orange-100 transition-all duration-500 rounded-3xl flex flex-col justify-between">
+          <div className="absolute top-[-20%] right-[-10%] opacity-5 group-hover:opacity-10 transition-all duration-500">
+             <ClipboardList className="h-64 w-64 text-orange-500" />
+          </div>
+          
+          <div className="relative z-10 space-y-4">
+            <div className="bg-orange-50 w-16 h-16 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <ClipboardList className="h-8 w-8 text-orange-500" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-black text-gray-900 group-hover:text-orange-500 transition-colors">
+                {language === 'bn' ? 'বুকিং পরিচালনা করুন' : 'Manage Bookings'}
+              </h3>
+              <p className="text-gray-500 font-medium text-lg leading-relaxed max-w-[90%]">
+                {language === 'bn' ? 'পেশেন্ট বুকিং দেখুন, স্ট্যাটাস আপডেট করুন এবং রেকর্ড পরিচালনা করুন।' : 'View patient bookings, update statuses, and manage diagnostic records.'}
+              </p>
+            </div>
+          </div>
+          
+          <div className="relative z-10 pt-8 mt-auto flex items-center justify-between">
+            <Link href="/admin/diagnostic/bookings" className="w-full">
+              <Button className="w-full h-14 text-lg font-bold bg-orange-500 hover:bg-orange-600 text-white shadow-xl shadow-orange-200/50 rounded-2xl group transition-all">
+                {language === 'bn' ? 'বুকিং ম্যানেজ করুন' : 'Manage Bookings'}
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-2 transition-transform" />
               </Button>
             </Link>

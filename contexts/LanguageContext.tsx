@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-type Language = 'en' | 'bn';
+export type Language = 'en' | 'bn';
 
 interface LanguageContextType {
   language: Language;
@@ -23,6 +23,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === 'en' || stored === 'bn') {
       setLanguageState(stored);
+      document.documentElement.setAttribute('data-language', stored);
+    } else {
+      document.documentElement.setAttribute('data-language', 'en');
     }
     setIsHydrated(true);
   }, []);
@@ -30,6 +33,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const setLanguage = (newLanguage: Language) => {
     setLanguageState(newLanguage);
     localStorage.setItem(STORAGE_KEY, newLanguage);
+    document.documentElement.setAttribute('data-language', newLanguage);
   };
 
   const toggleLanguage = () => {

@@ -1,36 +1,190 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Loader2, Image as ImageIcon, X } from "lucide-react";
+import { ArrowLeft, Loader2, Search, Check, ChevronDown, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { t } from "@/lib/translations";
+import { t, translations } from "@/lib/translations";
 import { showToast } from "@/lib/toast";
+import { motion, AnimatePresence } from "framer-motion";
+
+interface MultiSelectOption {
+  value: string;
+  en: string;
+  bn: string;
+}
+
+const DEPARTMENT_OPTIONS: MultiSelectOption[] = [
+  { value: "Blood", en: "Blood", bn: "রক্ত (Blood)" },
+  { value: "Cardiology", en: "Cardiology", bn: "কার্ডিওলজি (Cardiology)" },
+  { value: "Imaging", en: "Imaging", bn: "ইমেজিং (Imaging)" },
+  { value: "Pathology", en: "Pathology", bn: "প্যাথলজি (Pathology)" },
+];
+
+const RECOMMENDATION_OPTIONS: MultiSelectOption[] = [
+  { value: "Fasting Required", en: "Fasting Required", bn: "খালি পেটে থাকতে হবে (Fasting Required)" },
+  { value: "Drink plenty of water", en: "Drink plenty of water", bn: "প্রচুর পানি পান করুন (Drink plenty of water)" },
+  { value: "No smoking", en: "No smoking", bn: "ধূমপান করবেন না (No smoking)" },
+  { value: "Morning sample only", en: "Morning sample only", bn: "শুধুমাত্র সকালের স্যাম্পল (Morning sample only)" },
+  { value: "Consult doctor before test", en: "Consult doctor before test", bn: "টেস্টের আগে ডাক্তারের পরামর্শ নিন (Consult doctor)" },
+];
+
+interface MultiSelectProps {
+  label: string;
+  options: MultiSelectOption[];
+  selected: string[];
+  onChange: (value: string) => void;
+  placeholder: string;
+  language: 'en' | 'bn';
+}
+
+function SearchableMultiSelect({ label, options, selected, onChange, placeholder, language }: MultiSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredOptions = options.filter(opt => 
+    opt[language].toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-3" ref={containerRef}>
+      <Label className="text-base font-bold text-gray-700">
+        {label} <span className="text-red-500">*</span>
+      </Label>
+      
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        className={`min-h-[3rem] w-full rounded-xl border-2 bg-white px-4 py-2 cursor-pointer transition-all flex flex-wrap gap-2 items-center ${
+          isOpen ? 'border-primary shadow-sm' : 'border-gray-100 hover:border-primary/30'
+        }`}
+      >
+        {selected.length === 0 ? (
+          <span className="text-gray-400 font-medium">{placeholder}</span>
+        ) : (
+          selected.map(val => {
+            const option = options.find(o => o.value === val);
+            return (
+              <span 
+                key={val} 
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-lg border border-primary/20 hover:bg-primary/20 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChange(val);
+                }}
+              >
+                {option ? option[language] : val}
+                <X className="h-3 w-3 cursor-pointer" />
+              </span>
+            );
+          })
+        )}
+        <ChevronDown className={`ml-auto h-5 w-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </div>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="bg-white border-2 border-primary/5 rounded-2xl shadow-xl overflow-hidden mt-2"
+          >
+            <div className="p-3 border-b border-gray-50 bg-gray-50/30">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  autoFocus
+                  placeholder={language === 'bn' ? "খুঁজুন..." : "Search..."}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 h-10 border-gray-200 focus:ring-primary rounded-lg text-sm bg-white"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            </div>
+            <div className="max-h-60 overflow-y-auto p-2 space-y-1 custom-scrollbar">
+              {filteredOptions.length === 0 ? (
+                <div className="p-8 text-center text-gray-400 text-sm font-medium">
+                  {language === 'bn' ? "কোনো ফলাফল পাওয়া যায়নি" : "No options found"}
+                </div>
+              ) : (
+                filteredOptions.map(option => (
+                  <div
+                    key={option.value}
+                    onClick={() => onChange(option.value)}
+                    className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${
+                      selected.includes(option.value)
+                        ? 'bg-primary/5 text-primary'
+                        : 'hover:bg-gray-50 text-gray-600'
+                    }`}
+                  >
+                    <span className="text-sm font-bold">{option[language]}</span>
+                    {selected.includes(option.value) && <Check className="h-4 w-4 stroke-[3]" />}
+                  </div>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export default function CreateDiagnosticTestPage() {
   const router = useRouter();
   const { language } = useLanguage();
   const [formLanguage, setFormLanguage] = useState<'en' | 'bn'>(language);
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     nameBn: "",
     description: "",
     descriptionBn: "",
     price: "",
-    image: "",
+    serialNumber: "",
+    recommendations: [] as string[],
+    departments: [] as string[],
   });
+
+  const departmentOptions = DEPARTMENT_OPTIONS;
+  const recommendationOptions = RECOMMENDATION_OPTIONS;
+
+  const toggleSelection = (field: 'recommendations' | 'departments', value: string) => {
+    setFormData(prev => {
+      const current = prev[field];
+      const updated = current.includes(value)
+        ? current.filter(item => item !== value)
+        : [...current, value];
+      return { ...prev, [field]: updated };
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.image) {
-      showToast.error(language === 'bn' ? "দয়া করে টেস্টের জন্য একটি ছবি আপলোড করুন" : "Please upload an image for the test");
+    if (formData.recommendations.length === 0) {
+      showToast.error(language === 'bn' ? "দয়া করে অন্তত একটি সুপারিশ নির্বাচন করুন" : "Please select at least one recommendation");
+      return;
+    }
+
+    if (formData.departments.length === 0) {
+      showToast.error(language === 'bn' ? "দয়া করে অন্তত একটি বিভাগ নির্বাচন করুন" : "Please select at least one department");
       return;
     }
 
@@ -45,7 +199,9 @@ export default function CreateDiagnosticTestPage() {
           description: formData.description || undefined,
           descriptionBn: formData.descriptionBn || undefined,
           price: parseFloat(formData.price),
-          image: formData.image,
+          serialNumber: parseInt(formData.serialNumber) || 0,
+          recommendations: formData.recommendations,
+          departments: formData.departments,
         }),
       });
 
@@ -88,7 +244,7 @@ export default function CreateDiagnosticTestPage() {
         </div>
       </div>
 
-      <Card className="p-8 bg-white border-2 border-primary/10 shadow-xl rounded-2xl overflow-hidden transition-all animate-in fade-in slide-in-from-top-4">
+      <Card className="p-8 bg-white border-2 border-primary/10 shadow-xl rounded-2xl transition-all animate-in fade-in slide-in-from-top-4">
         <div className="flex justify-end mb-8">
           <div className="bg-gray-100/80 p-1.5 rounded-xl inline-flex shadow-inner">
             <button
@@ -117,74 +273,6 @@ export default function CreateDiagnosticTestPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Image Upload */}
-          <div className="space-y-4">
-            <Label className="text-base font-bold text-gray-700">{t("testImage", language)} <span className="text-red-500">*</span></Label>
-            <div className="flex flex-col md:flex-row items-start gap-6 bg-gray-50 p-6 rounded-2xl border-2 border-dashed border-gray-200">
-              {formData.image ? (
-                <div className="relative w-40 h-40 rounded-xl overflow-hidden shadow-lg border-2 border-white ring-1 ring-gray-200">
-                  <img
-                    src={formData.image}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, image: "" })}
-                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition-colors"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ) : (
-                <div className="w-40 h-40 bg-white rounded-xl border-2 border-gray-100 flex items-center justify-center text-gray-300">
-                   <ImageIcon className="h-16 w-16" />
-                </div>
-              )}
-              <div className="flex-1 w-full space-y-4">
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      setUploading(true);
-                      const data = new FormData();
-                      data.append("image", file);
-                      try {
-                        const res = await fetch("/api/upload/imgbb", {
-                          method: "POST",
-                          body: data,
-                        });
-                        const json = await res.json();
-                        if (json.url) {
-                          setFormData({ ...formData, image: json.url });
-                          showToast.success("Image uploaded successfully");
-                        } else {
-                          showToast.error("Failed to upload image");
-                        }
-                      } catch (err) {
-                        console.error("Upload error:", err);
-                        showToast.error("Failed to upload image");
-                      } finally {
-                        setUploading(false);
-                      }
-                    }
-                  }}
-                  disabled={uploading}
-                  className="h-12 file:bg-primary file:text-white file:border-0 file:px-4 file:h-full file:rounded-lg file:mr-4 file:cursor-pointer hover:file:bg-primary/90"
-                />
-                {uploading && (
-                  <div className="flex items-center text-primary font-bold">
-                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                     {t("uploading", language)}
-                  </div>
-                )}
-                <p className="text-xs text-gray-400 font-medium">Recommended: Square image, max 2MB (JPG, PNG)</p>
-              </div>
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
               <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
@@ -214,7 +302,8 @@ export default function CreateDiagnosticTestPage() {
                 />
               </div>
             </div>
-
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
               <Label htmlFor="price" className="text-base font-bold text-gray-700">
                 {t("price", language)} (৳) <span className="text-red-500">*</span>
@@ -227,9 +316,44 @@ export default function CreateDiagnosticTestPage() {
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 required
                 placeholder="500"
-                className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl"
+                className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl mt-3"
               />
             </div>
+
+            <div className="space-y-3">
+              <Label htmlFor="serialNumber" className="text-base font-bold text-gray-700">
+                {language === 'bn' ? "প্রায়োরিটি নম্বর (Priority)" : "Priority Number"}
+              </Label>
+              <Input
+                id="serialNumber"
+                type="number"
+                value={formData.serialNumber}
+                onChange={(e) => setFormData({ ...formData, serialNumber: e.target.value })}
+                placeholder="0"
+                className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl mt-3"
+              />
+            </div>
+          </div>
+
+          {/* New Searchable Multi-select Fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <SearchableMultiSelect
+              label={formLanguage === 'bn' ? "টেস্ট বিভাগ" : "Test Department"}
+              options={departmentOptions}
+              selected={formData.departments}
+              onChange={(val) => toggleSelection('departments', val)}
+              placeholder={formLanguage === 'bn' ? "বিভাগ নির্বাচন করুন" : "Select departments"}
+              language={formLanguage}
+            />
+
+            <SearchableMultiSelect
+              label={formLanguage === 'bn' ? "সুপারিশ" : "Recommendation"}
+              options={recommendationOptions}
+              selected={formData.recommendations}
+              onChange={(val) => toggleSelection('recommendations', val)}
+              placeholder={formLanguage === 'bn' ? "সুপারিশ নির্বাচন করুন" : "Select recommendations"}
+              language={formLanguage}
+            />
           </div>
 
           <div className="space-y-3">
@@ -261,7 +385,7 @@ export default function CreateDiagnosticTestPage() {
           <div className="flex gap-4 pt-8">
             <Button 
               type="submit" 
-              disabled={loading || uploading}
+              disabled={loading}
               className="flex-1 h-12 text-lg font-bold bg-primary hover:bg-primary/90 shadow-md rounded-xl transition-all active:scale-95"
             >
               {loading ? (

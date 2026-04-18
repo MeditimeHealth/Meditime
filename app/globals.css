@@ -71,13 +71,40 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
+:root[data-language="en"] {
+  --font-primary-heading: var(--font-heading-en);
+  --font-primary-body: var(--font-body-en);
+}
+
+:root[data-language="bn"] {
+  --font-primary-heading: var(--font-heading-bn);
+  --font-primary-body: var(--font-body-bn);
+}
+
+/* Fallback if data-language is not yet set */
+:root {
+  --font-primary-heading: var(--font-heading-en); 
+  --font-primary-body: var(--font-body-en);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-primary-body) !important;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure global typography override to supersede inline hardcoded kalpurush tags recursively */
+h1, h2, h3, h4, h5, h6, 
+.text-4xl, .text-5xl, .text-6xl, .text-3xl, .text-2xl, .text-xl, .text-lg,
+title, .heading, strong {
+  font-family: var(--font-primary-heading) !important;
+}
+
+p, span, div, a, li, input, button, select, textarea {
+  font-family: inherit;
 }
 
 /* Glassmorphism Utilities */

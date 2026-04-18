@@ -1,103 +1,299 @@
 "use client";
 
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { 
+  Activity, 
+  Search, 
+  Microscope, 
+  Heart, 
+  Eye, 
+  CheckCircle2, 
+  Timer,
+  MapPin,
+  ChevronRight,
+  AlertCircle
+} from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { 
-  Activity, 
-  Search, 
-  Microscope, 
-  BadgeCheck,
-  ChevronRight,
-  FlaskConical,
-  Timer,
-  Heart,
-  Eye,
-  AlertCircle,
-  Calendar,
-  MapPin,
-  Star,
-  CheckCircle2
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
-import { useState, useEffect, useCallback } from "react";
+
+import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
+import { getLocalizedValue } from "@/contexts/LanguageContext";
+
+// Local types and imports
+import { BookedTest, Hospital, Division, District, Thana } from "@/types/diagnostic";
+
+// Refactored modular components
+import DiagnosticCart from "@/components/diagnostic/DiagnosticCart";
+import DiagnosticTestList from "@/components/diagnostic/DiagnosticTestList";
+import DiagnosticLocationFilter from "@/components/diagnostic/DiagnosticLocationFilter";
+import DiagnosticHistoryModal from "@/components/diagnostic/DiagnosticHistoryModal";
 
 export default function DiagnosticPage() {
+  const router = useRouter();
   const { language } = useLanguage();
   const t = homepageTranslations[language].diagnosticPage;
+  
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [tests, setTests] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [bookedTests, setBookedTests] = useState<string[]>([]);
+  const [bookedTests, setBookedTests] = useState<BookedTest[]>([]);
+  const [selectedVenue, setSelectedVenue] = useState<Hospital | null>(null);
+  
+  const [showBookingsModal, setShowBookingsModal] = useState(false);
+  const [myBookingsHistory, setMyBookingsHistory] = useState<any[]>([]);
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalTests, setTotalTests] = useState(0);
+  const [stats, setStats] = useState<Record<string, number>>({});
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [divisions, setDivisions] = useState<Division[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [thanas, setThanas] = useState<Thana[]>([]);
+  const [selectedDivision, setSelectedDivision] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedThana, setSelectedThana] = useState("");
+  const [isLocationFilterExpanded, setIsLocationFilterExpanded] = useState(false);
+  
+  const observerTarget = useRef<HTMLDivElement>(null);
+  const isLoadingRef = useRef(false);
 
-  const fetchTests = useCallback(async () => {
+  // Load cart from LocalStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedTests = localStorage.getItem("diagnosticCart");
+      const savedVenue = localStorage.getItem("diagnosticVenue");
+      const savedBookings = localStorage.getItem("myDiagnosticBookings");
+      if (savedTests) setBookedTests(JSON.parse(savedTests));
+      if (savedVenue) setSelectedVenue(JSON.parse(savedVenue));
+      if (savedBookings) setMyBookingsHistory(JSON.parse(savedBookings));
+    }
+  }, []);
+
+  // Save cart to LocalStorage when mutated
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("diagnosticCart", JSON.stringify(bookedTests));
+    }
+  }, [bookedTests]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (selectedVenue) localStorage.setItem("diagnosticVenue", JSON.stringify(selectedVenue));
+      else localStorage.removeItem("diagnosticVenue");
+    }
+  }, [selectedVenue]);
+
+  const handleBooking = (test: any) => {
+    setBookedTests(prev => {
+      const exists = prev.find(t => t._id === test._id);
+      if (exists) {
+        return prev.filter(t => t._id !== test._id);
+      }
+      return [...prev, { _id: test._id, name: test.name, nameBn: test.nameBn, price: test.price, serialNumber: test.serialNumber, recommendations: test.recommendations || [] }];
+    });
+  };
+
+  // Fetch stats logic
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/diagnostic/stats");
+        const data = await res.json();
+        if (res.ok) setStats(data.stats);
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const fetchHospitals = async () => {
+    try {
+      const response = await fetch("/api/locations/hospitals");
+      if (response.ok) {
+        const data = await response.json();
+        setHospitals(data.hospitals || []);
+      }
+    } catch (error) {
+      console.error("Error fetching hospitals:", error);
+    }
+  };
+
+  const fetchDivisions = async () => {
+    try {
+      const response = await fetch("/api/locations/divisions");
+      if (response.ok) {
+        const data = await response.json();
+        setDivisions(data.divisions || []);
+      }
+    } catch (error) {
+      console.error("Error fetching divisions:", error);
+    }
+  };
+
+  const fetchDistricts = useCallback(async (divisionName: string) => {
+    try {
+      const division = divisions.find((d) => d.name === divisionName);
+      if (!division) return;
+      const response = await fetch(`/api/locations/districts?division=${division._id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setDistricts(data.districts || []);
+      }
+    } catch (error) {
+      console.error("Error fetching districts:", error);
+    }
+  }, [divisions]);
+
+  const fetchThanas = useCallback(async (districtName: string) => {
+    try {
+      const district = districts.find((d) => d.name === districtName);
+      if (!district) return;
+      const response = await fetch(`/api/locations/thanas?district=${district._id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setThanas(data.thanas || []);
+      }
+    } catch (error) {
+      console.error("Error fetching thanas:", error);
+    }
+  }, [districts]);
+
+  useEffect(() => {
+    fetchDivisions();
+    fetchHospitals();
+  }, []);
+
+  useEffect(() => {
+    if (selectedDivision) fetchDistricts(selectedDivision);
+  }, [selectedDivision, fetchDistricts]);
+
+  useEffect(() => {
+    if (selectedDistrict) fetchThanas(selectedDistrict);
+  }, [selectedDistrict, fetchThanas]);
+
+  const handleDivisionSelect = (division: string) => {
+    setSelectedDivision(division);
+    setSelectedDistrict("");
+    setSelectedThana("");
+  };
+
+  const handleDistrictSelect = (district: string) => {
+    setSelectedDistrict(district);
+    setSelectedThana("");
+  };
+
+  const handleThanaSelect = (thana: string) => {
+    setSelectedThana(thana);
+  };
+
+  const filteredHospitals = useMemo(() => {
+    return hospitals.filter((hospital) => {
+      const hospitalDivision = hospital.thana?.district?.division?.name;
+      const hospitalDistrict = hospital.thana?.district?.name;
+      const hospitalThana = hospital.thana?.name;
+      if (selectedDivision && hospitalDivision !== selectedDivision) return false;
+      if (selectedDistrict && hospitalDistrict !== selectedDistrict) return false;
+      if (selectedThana && hospitalThana !== selectedThana) return false;
+      return true;
+    });
+  }, [hospitals, selectedDivision, selectedDistrict, selectedThana]);
+
+  const fetchTests = useCallback(async (page: number, search: string, category: string | null, isNewSearch: boolean = false) => {
+    if (isLoadingRef.current) return;
+    isLoadingRef.current = true;
     setLoading(true);
     try {
-      const res = await fetch("/api/diagnostic/tests");
+      const url = new URL("/api/diagnostic/tests", window.location.origin);
+      url.searchParams.set("page", page.toString());
+      url.searchParams.set("limit", "10");
+      if (search) {
+        url.searchParams.set("search", search);
+      }
+      if (category) {
+        url.searchParams.set("category", category);
+      }
+      const res = await fetch(url.toString());
       const data = await res.json();
-      if (res.ok) setTests(data.tests);
+      if (res.ok) {
+        if (isNewSearch) {
+          setTests(data.tests);
+        } else {
+          setTests(prev => [...prev, ...data.tests]);
+        }
+        setHasMore(page < data.totalPages);
+        setTotalTests(data.totalTests || 0);
+      }
     } catch (error) {
       console.error("Error fetching tests:", error);
     } finally {
+      isLoadingRef.current = false;
       setLoading(false);
     }
   }, []);
 
+  // Debounce search
   useEffect(() => {
-    fetchTests();
-  }, [fetchTests]);
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-  const filteredTests = tests.filter(test => {
-    const name = getLocalizedValue(test.name, test.nameBn, language)?.toLowerCase() || "";
-    const description = getLocalizedValue(test.description, test.descriptionBn, language)?.toLowerCase() || "";
-    const category = getLocalizedValue(test.category, test.categoryBn, language)?.toLowerCase() || "";
-    const query = searchQuery.toLowerCase();
-    return name.includes(query) || description.includes(query) || category.includes(query);
-  });
+  // Initial fetch and fetch on search change or category change
+  useEffect(() => {
+    setCurrentPage(1);
+    fetchTests(1, debouncedSearch, selectedCategory, true);
+  }, [debouncedSearch, selectedCategory, fetchTests]);
 
-  const handleBooking = (testId: string) => {
-    setBookedTests([...bookedTests, testId]);
-  };
+  // Fetch more on page change
+  useEffect(() => {
+    if (currentPage > 1) {
+      fetchTests(currentPage, debouncedSearch, selectedCategory, false);
+    }
+  }, [currentPage, debouncedSearch, selectedCategory, fetchTests]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingRef.current) {
+          setCurrentPage(prev => prev + 1);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasMore]);
+
 
   const categories = [
-    { id: 'blood', icon: Activity, title: t.categories.blood, count: 45, color: "bg-[#0088FF]" },
-    { id: 'cardio', icon: Heart, title: t.categories.cardio, count: 12, color: "bg-[#00D084]" },
-    { id: 'imaging', icon: Eye, title: t.categories.imaging, count: 18, color: "bg-[#FF6B00]" },
-    { id: 'pathology', icon: Microscope, title: t.categories.pathology, count: 32, color: "bg-slate-200" },
+    { id: 'blood', backendId: 'Blood', icon: Activity, title: t.categories.blood, count: stats['Blood'] || 0, color: "bg-[#0088FF]" },
+    { id: 'cardio', backendId: 'Cardiology', icon: Heart, title: t.categories.cardio, count: stats['Cardiology'] || 0, color: "bg-[#00D084]" },
+    { id: 'imaging', backendId: 'Imaging', icon: Eye, title: t.categories.imaging, count: stats['Imaging'] || 0, color: "bg-[#FF6B00]" },
+    { id: 'pathology', backendId: 'Pathology', icon: Microscope, title: t.categories.pathology, count: stats['Pathology'] || 0, color: "bg-slate-200" },
   ];
 
-  const diagnosticCenters = [
-    {
-      name: "Popular Diagnostic Centre",
-      location: "Dhanmondi, Dhaka",
-      rating: 4.8,
-      reviews: 245,
-      distance: "2.5 km",
-      featured: true,
-    },
-    {
-      name: "Ibn Sina Diagnostic Center",
-      location: "Uttara, Dhaka",
-      rating: 4.7,
-      reviews: 189,
-      distance: "5.1 km",
-      featured: false,
-    },
-    {
-      name: "Square Diagnostic Center",
-      location: "Panthapath, Dhaka",
-      rating: 4.9,
-      reviews: 312,
-      distance: "3.2 km",
-      featured: true,
-    }
-  ];
-
+ 
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -109,6 +305,14 @@ export default function DiagnosticPage() {
           <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
             {t.heroSubtitle}
           </p>
+
+          <div className="flex justify-center mb-8">
+            <Button onClick={() => setShowBookingsModal(true)} variant="outline" className="gap-2 border-[#00B7B5] text-[#00B7B5] hover:bg-[#00B7B5] hover:text-white rounded-xl shadow-sm">
+              <Activity className="w-4 h-4" />
+              {language === 'en' ? 'My Booking History' : 'আমার বুকিং ইতিহাস'}
+              {myBookingsHistory.length > 0 && <span className="bg-[#00B7B5] text-white px-2 py-0.5 rounded-md text-xs ml-1 font-black">{myBookingsHistory.length}</span>}
+            </Button>
+          </div>
 
           <div className="relative max-w-3xl mx-auto mb-16">
             <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
@@ -125,8 +329,13 @@ export default function DiagnosticPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
              {categories.map((cat, idx) => {
                const Icon = cat.icon;
+               const isSelected = selectedCategory === cat.backendId;
                return (
-                 <Card key={idx} className="p-6 rounded-[2rem] border border-slate-100 hover:shadow-lg hover:border-slate-200 transition-all cursor-pointer flex flex-col items-center group">
+                 <Card 
+                   key={idx} 
+                   onClick={() => setSelectedCategory(isSelected ? null : cat.backendId)}
+                   className={`p-6 rounded-[2rem] border transition-all cursor-pointer flex flex-col items-center group ${isSelected ? 'border-[#00B7B5] ring-2 ring-[#00B7B5] bg-slate-50' : 'border-slate-100 hover:shadow-lg hover:border-slate-200'}`}
+                 >
                    <div className={`w-14 h-14 ${cat.id === 'pathology' ? 'bg-slate-100 text-slate-400' : `${cat.color} text-white`} rounded-2xl flex items-center justify-center mb-4 group-hover:-translate-y-1 transition-transform shadow-sm`}>
                      <Icon className="w-6 h-6" />
                    </div>
@@ -145,114 +354,81 @@ export default function DiagnosticPage() {
           <div className="flex flex-col lg:flex-row gap-8">
             
             {/* Left Column (Tests List) */}
-            <div className="flex-1 lg:w-3/4">
-               <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
-                 <h2 className="text-xl font-bold text-slate-900">{language === 'en' ? 'Popular Tests' : 'জনপ্রিয় টেস্টসমূহ'}</h2>
-                 <span className="text-sm font-medium text-[#00B7B5]">{filteredTests.length} {language === 'en' ? 'tests found' : 'টি টেস্ট পাওয়া গেছে'}</span>
-               </div>
-
-               <div className="space-y-4">
-                 {filteredTests.length > 0 ? (
-                   filteredTests.map((test, i) => (
-                     <Card key={i} className="p-6 rounded-2xl border border-slate-100 hover:shadow-md transition-all">
-                       <div className="flex flex-col md:flex-row justify-between md:items-center gap-6">
-                         <div className="flex-1">
-                           <div className="flex items-center gap-3 mb-2 flex-wrap">
-                             <h4 className="text-lg font-bold text-slate-900">{getLocalizedValue(test.name, test.nameBn, language)}</h4>
-                             <span className="px-2.5 py-1 bg-slate-50 text-slate-600 border border-slate-200 rounded-md text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">
-                               {getLocalizedValue(test.category, test.categoryBn, language) || t.categories.blood}
-                             </span>
-                           </div>
-                           <p className="text-sm text-slate-500 mb-4 line-clamp-2">
-                             {getLocalizedValue(test.description, test.descriptionBn, language) || `${getLocalizedValue(test.name, test.nameBn, language)} analysis and measurement`}
-                           </p>
-                           <div className="flex gap-4 text-xs font-semibold text-slate-500 items-center">
-                             <div className="flex items-center gap-1">
-                               <CheckCircle2 className="w-3.5 h-3.5 text-[#0088FF]" /> {t.categories.blood}
-                             </div>
-                             {(test.fastingRequired || i % 2 === 0) && (
-                               <div className="flex items-center gap-1">
-                                 <AlertCircle className="w-3.5 h-3.5 text-orange-500" /> {t.fastingRequired}
-                               </div>
-                             )}
-                           </div>
-                         </div>
-                         
-                         <div className="flex flex-col md:items-end justify-center gap-3 min-w-[160px] border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-6">
-                            <div className="text-left md:text-right">
-                              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest block mb-0.5">Starting price</span>
-                              <div className="flex items-start md:justify-end gap-1 text-slate-900 font-black text-3xl">
-                                <span className="text-lg text-green-500 mt-1">৳</span>{test.price}
-                              </div>
-                            </div>
-                            <Button 
-                              onClick={() => handleBooking(test._id)}
-                              disabled={bookedTests.includes(test._id)}
-                              className={`w-full ${bookedTests.includes(test._id) ? 'bg-green-500 hover:bg-green-600' : 'bg-[#0088FF] hover:bg-[#0088FF]/90'} text-white font-bold rounded-xl gap-2 h-11 transition-all`}
-                            >
-                              <Calendar className="w-4 h-4" />
-                              {bookedTests.includes(test._id) ? (language === 'en' ? "Booked" : "বুক করা হয়েছে") : (language === 'en' ? "Book Test" : "টেস্ট বুক করুন")}
-                            </Button>
-                         </div>
-                       </div>
-                     </Card>
-                   ))
-                 ) : (
-                   <div className="text-center py-20 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
-                     <p className="text-slate-500 font-medium text-lg">
-                       {t.noTests}
-                     </p>
-                   </div>
-                 )}
-               </div>
-            </div>
+            <DiagnosticTestList
+              ref={observerTarget}
+              language={language}
+              totalTests={totalTests}
+              tests={tests}
+              bookedTests={bookedTests}
+              handleBooking={handleBooking}
+              loading={loading}
+              t={t}
+            />
 
             {/* Right Column (Sidebar) */}
             <div className="lg:w-1/4 space-y-6">
-              
-              {/* Diagnostic Centers */}
-              <div className="bg-slate-50/50 rounded-3xl p-5 border border-slate-100">
-                <h3 className="text-lg font-bold text-slate-900 mb-5">{language === 'en' ? "Diagnostic Centers Near You" : "আপনার নিকটস্থ ডায়াগনস্টিক সেন্টার"}</h3>
-                <div className="space-y-4">
-                  {diagnosticCenters.map((center, idx) => (
-                    <Card key={idx} className="p-4 rounded-xl border-slate-200 shadow-sm relative overflow-hidden bg-white">
-                      {center.featured && (
-                         <div className="absolute top-3 right-3 bg-orange-500 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider">
-                           Featured
-                         </div>
-                      )}
-                      <h4 className="font-bold text-slate-900 text-sm mb-2 pr-14 leading-tight">{center.name}</h4>
-                      
-                      <div className="flex flex-col gap-1.5 text-xs text-slate-500 mb-3 font-medium">
-                         <div className="flex items-center gap-1.5 text-slate-400">
-                           <MapPin className="w-3.5 h-3.5" /> {center.location}
-                         </div>
-                         <div className="flex items-center gap-2">
-                           <div className="flex items-center gap-1 text-slate-700 font-bold">
-                             <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" /> {center.rating}
-                           </div>
-                           <span className="text-slate-300">•</span>
-                           <span>({center.reviews})</span>
-                           <span className="text-slate-300">•</span>
-                           <span>{center.distance}</span>
-                         </div>
-                      </div>
 
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
-                         <span className="text-[10px] font-bold text-slate-600 border border-slate-200 px-2 py-1 rounded">
-                           Home Collection
-                         </span>
-                         <span className="text-[11px] font-bold text-[#0088FF] cursor-pointer hover:underline">
-                           View Center
-                         </span>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-                <Button variant="outline" className="w-full mt-4 h-11 rounded-xl text-xs font-bold bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border-slate-200">
-                  {language === 'en' ? "View All Centers" : "সকল সেন্টার দেখুন"}
-                </Button>
-              </div>
+              {/* Shopping Cart UI */}
+              <DiagnosticCart 
+                bookedTests={bookedTests}
+                language={language}
+                handleBooking={handleBooking}
+              />
+              
+              {/* Location Filters */}
+              <DiagnosticLocationFilter
+                language={language}
+                isLocationFilterExpanded={isLocationFilterExpanded}
+                setIsLocationFilterExpanded={setIsLocationFilterExpanded}
+                selectedDivision={selectedDivision}
+                selectedDistrict={selectedDistrict}
+                selectedThana={selectedThana}
+                setSelectedDivision={setSelectedDivision}
+                setSelectedDistrict={setSelectedDistrict}
+                setSelectedThana={setSelectedThana}
+                handleDivisionSelect={handleDivisionSelect}
+                handleDistrictSelect={handleDistrictSelect}
+                handleThanaSelect={handleThanaSelect}
+                divisions={divisions}
+                districts={districts}
+                thanas={thanas}
+                filteredHospitals={filteredHospitals}
+                selectedVenue={selectedVenue}
+                setSelectedVenue={setSelectedVenue}
+              />
+
+              {/* Checkout Action */}
+              {bookedTests.length > 0 && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`${selectedVenue ? 'bg-[#00B7B5] border-[#00B7B5] shadow-[#00B7B5]/20' : 'bg-slate-50 border-slate-200 shadow-slate-200/50'} rounded-3xl p-5 shadow-lg border flex flex-col gap-3 transition-colors duration-300`}
+                >
+                  <div className={selectedVenue ? "text-white" : "text-slate-600"}>
+                    <p className="text-xs font-medium opacity-90">
+                      {selectedVenue 
+                        ? (language === 'en' ? "Ready for Booking" : "বুকিং এর জন্য প্রস্তুত") 
+                        : (language === 'en' ? "Hospital Selection Required" : "হাসপাতাল নির্বাচন আবশ্যক")}
+                    </p>
+                    {selectedVenue ? (
+                      <p className="text-sm font-bold truncate mt-1">{getLocalizedValue(selectedVenue.name, selectedVenue.nameBn, language)}</p>
+                    ) : (
+                      <p className="text-xs font-bold text-red-500 mt-1 flex items-center gap-1.5">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        {language === 'en' ? "Please select a hospital from above to proceed." : "এগিয়ে যেতে উপরের তালিকা থেকে একটি হাসপাতাল নির্বাচন করুন।"}
+                      </p>
+                    )}
+                  </div>
+                  <Button 
+                    onClick={() => router.push('/diagnostic/checkout')}
+                    disabled={!selectedVenue}
+                    className={`w-full font-bold rounded-xl h-11 border-none shadow-sm transition-all ${selectedVenue ? 'bg-white text-[#00B7B5] hover:bg-slate-50' : 'bg-slate-200 text-slate-400 opacity-70 cursor-not-allowed'}`}
+                  >
+                    {language === 'en' ? "Proceed to Checkout" : "চেকআউট করুন"}
+                    <ChevronRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </motion.div>
+              )}
 
               {/* Why Choose Us */}
               <div className="px-2 pt-4">
@@ -284,6 +460,15 @@ export default function DiagnosticPage() {
       </section>
 
       <Footer />
+
+      {/* Bookings Modal */}
+      <DiagnosticHistoryModal
+        language={language}
+        showBookingsModal={showBookingsModal}
+        setShowBookingsModal={setShowBookingsModal}
+        myBookingsHistory={myBookingsHistory}
+        setMyBookingsHistory={setMyBookingsHistory}
+      />
     </div>
   );
 }

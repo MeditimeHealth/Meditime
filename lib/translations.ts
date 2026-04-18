@@ -184,6 +184,18 @@ export const translations = {
     approving: "Approving...",
     rejecting: "Rejecting...",
     noPendingRequests: "No pending requests found",
+    
+    // Diagnostic Options
+    dept_blood: "Blood",
+    dept_cardiology: "Cardiology",
+    dept_imaging: "Imaging",
+    dept_pathology: "Pathology",
+    
+    rec_fasting: "Fasting Required",
+    rec_water: "Drink plenty of water",
+    rec_smoking: "No smoking",
+    rec_morning: "Morning sample only",
+    rec_doctor: "Consult doctor before test",
   },
   bn: {
     // Common Actions
@@ -368,6 +380,18 @@ export const translations = {
     approving: "অনুমোদন হচ্ছে...",
     rejecting: "প্রত্যাখ্যান হচ্ছে...",
     noPendingRequests: "কোনো পেন্ডিং অনুরোধ পাওয়া যায়নি",
+
+    // Diagnostic Options
+    dept_blood: "রক্ত (Blood)",
+    dept_cardiology: "কার্ডিওলজি (Cardiology)",
+    dept_imaging: "ইমেজিং (Imaging)",
+    dept_pathology: "প্যাথলজি (Pathology)",
+
+    rec_fasting: "খালি পেটে থাকতে হবে (Fasting Required)",
+    rec_water: "প্রচুর পানি পান করুন (Drink plenty of water)",
+    rec_smoking: "ধূমপান করবেন না (No smoking)",
+    rec_morning: "শুধুমাত্র সকালের স্যাম্পল (Morning sample only)",
+    rec_doctor: "টেস্টের আগে ডাক্তারের পরামর্শ নিন (Consult doctor)",
   }
 };
 

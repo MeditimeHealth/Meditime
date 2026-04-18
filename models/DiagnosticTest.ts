@@ -1,18 +1,32 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export type TestDepartment = 'Blood' | 'Cardiology' | 'Imaging' | 'Pathology';
+export type TestRecommendation = 
+  | 'Fasting Required' 
+  | 'Drink plenty of water' 
+  | 'No smoking' 
+  | 'Morning sample only' 
+  | 'Consult doctor before test';
+
 export interface IDiagnosticTest extends Document {
+  serialNumber: number;
   name: string;
   nameBn?: string;
   description?: string;
   descriptionBn?: string;
   price: number;
-  image?: string; // URL to image
+  recommendations: TestRecommendation[];
+  departments: TestDepartment[];
   createdAt: Date;
   updatedAt: Date;
 }
 
 const DiagnosticTestSchema: Schema = new Schema(
   {
+    serialNumber: {
+      type: Number,
+      default: 0,
+    },
     name: {
       type: String,
       trim: true,
@@ -34,9 +48,21 @@ const DiagnosticTestSchema: Schema = new Schema(
       required: [true, 'Price is required'],
       min: [0, 'Price must be positive'],
     },
-    image: {
-      type: String,
-      trim: true,
+    recommendations: {
+      type: [String],
+      enum: [
+        'Fasting Required',
+        'Drink plenty of water',
+        'No smoking',
+        'Morning sample only',
+        'Consult doctor before test'
+      ],
+      default: [],
+    },
+    departments: {
+      type: [String],
+      enum: ['Blood', 'Cardiology', 'Imaging', 'Pathology'],
+      default: [],
     },
   },
   {
