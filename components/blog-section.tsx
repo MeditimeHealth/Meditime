@@ -24,7 +24,8 @@ interface WordPressPost {
   };
 }
 
-const WORDPRESS_API = "https://wordpress.meditime.com.bd/wp-json/wp/v2";
+// Use proxy to avoid CORS
+// const WORDPRESS_API = "https://wordpress.meditime.com.bd/wp-json/wp/v2";
 
 export default function BlogSection() {
   const [posts, setPosts] = useState<WordPressPost[]>([]);
@@ -37,7 +38,7 @@ export default function BlogSection() {
     const fetchPosts = async () => {
       try {
         const response = await fetch(
-          `${WORDPRESS_API}/posts?per_page=8&_embed=true&orderby=date&order=desc`
+          `/api/blog/posts?per_page=8`
         );
         const data = await response.json();
         if (Array.isArray(data)) setPosts(data);

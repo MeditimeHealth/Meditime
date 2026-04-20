@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import DiagnosticBooking from "@/models/DiagnosticBooking";
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     await dbConnect();
     const body = await req.json();
     const booking = await DiagnosticBooking.findByIdAndUpdate(
-      params.id, 
+      id, 
       { status: body.status },
       { new: true }
     );
@@ -28,10 +29,11 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     await dbConnect();
-    const booking = await DiagnosticBooking.findByIdAndDelete(params.id);
+    const booking = await DiagnosticBooking.findByIdAndDelete(id);
     
     if (!booking) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });

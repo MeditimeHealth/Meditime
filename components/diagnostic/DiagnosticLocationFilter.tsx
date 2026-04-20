@@ -177,14 +177,7 @@ export default function DiagnosticLocationFilter({
                          </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                         <span className="text-[9px] font-bold text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded">
-                           Lab Testing
-                         </span>
-                         <span className="text-[10px] font-bold text-[#00B7B5] cursor-pointer hover:underline">
-                           View Details
-                         </span>
-                      </div>
+                      
                     </Card>
                   ))}
                   

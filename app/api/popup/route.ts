@@ -1,23 +1,10 @@
 import { NextResponse } from "next/server";
-import mongoose from "mongoose";
 import Popup from "@/models/Popup";
-
-// Helper to connect to DB
-const connectDB = async () => {
-    if (mongoose.connections[0].readyState) {
-        return;
-    }
-    try {
-        await mongoose.connect(process.env.MONGODB_URI!);
-    } catch (error) {
-        console.error("DB Connection Error:", error);
-        throw new Error("Failed to connect to database");
-    }
-};
+import dbConnect from "@/lib/mongodb";
 
 export async function GET() {
     try {
-        await connectDB();
+        await dbConnect();
         let popup = await Popup.findOne().sort({ updatedAt: -1 });
 
         if (!popup) {
@@ -36,7 +23,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        await connectDB();
+        await dbConnect();
         const data = await request.json();
 
         let popup = await Popup.findOne();

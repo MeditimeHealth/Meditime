@@ -148,6 +148,7 @@ export default function Navbar() {
                   width={120} 
                   height={120} 
                   className="h-8 sm:h-8 md:h-8 w-auto cursor-pointer" 
+                  style={{ width: "auto", height: "auto" }}
                   priority
                 />
               </Link>

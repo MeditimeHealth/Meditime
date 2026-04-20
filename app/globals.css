@@ -2,13 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-/* Google Sans Flex — loaded via @font-face as it's not in standard Google Fonts API */
-@font-face {
-  font-family: 'Google Sans Flex';
-  src: url('https://fonts.gstatic.com/s/googlesans/v58/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrwmIqzp.woff2') format('woff2');
-  font-weight: 100 900;
-  font-display: swap;
-}
+/* Google Sans Flex — removed due to 404 URL */
 
 :root {
   --background: #ffffff;
