@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import DiagnosticBooking from "@/models/DiagnosticBooking";
+import AbandonedCart from "@/models/AbandonedCart";
 
 export async function POST(req: Request) {
   try {
@@ -21,6 +22,14 @@ export async function POST(req: Request) {
     }); 
 
     await newBooking.save();
+
+    // Cleanup abandoned cart for this user
+    try {
+      await AbandonedCart.deleteMany({ phoneNumber: body.mobileNumber });
+    } catch (cleanupErr) {
+      console.error("Error cleaning up abandoned cart:", cleanupErr);
+      // Non-critical error, don't fail the booking
+    }
 
     return NextResponse.json(
       { 

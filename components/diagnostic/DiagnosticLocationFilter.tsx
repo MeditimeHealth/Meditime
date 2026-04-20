@@ -1,5 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, ChevronLeft, MapPin, X, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, MapPin, X, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Division, District, Thana, Hospital } from "@/types/diagnostic";
@@ -7,8 +6,7 @@ import { getLocalizedValue, Language } from "@/contexts/LanguageContext";
 
 interface DiagnosticLocationFilterProps {
   language: Language;
-  isLocationFilterExpanded: boolean;
-  setIsLocationFilterExpanded: (val: boolean) => void;
+
   selectedDivision: string;
   selectedDistrict: string;
   selectedThana: string;
@@ -28,8 +26,7 @@ interface DiagnosticLocationFilterProps {
 
 export default function DiagnosticLocationFilter({
   language,
-  isLocationFilterExpanded,
-  setIsLocationFilterExpanded,
+
   selectedDivision,
   selectedDistrict,
   selectedThana,
@@ -48,30 +45,17 @@ export default function DiagnosticLocationFilter({
 }: DiagnosticLocationFilterProps) {
   return (
     <div className="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm transition-all hover:shadow-md">
-      <div 
-        className="flex items-center justify-between cursor-pointer"
-        onClick={() => setIsLocationFilterExpanded(!isLocationFilterExpanded)}
-      >
+      <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
           <div className="p-1.5 bg-[#00B7B5]/10 text-[#00B7B5] rounded-lg">
             <MapPin className="h-4 w-4" />
           </div>
            {language === 'en' ? "Find Local Centers" : "স্থানীয় সেন্টার খুঁজুন"}
         </h3>
-        <div className={`p-1 bg-slate-50 text-slate-400 rounded-full transition-transform duration-300 ${isLocationFilterExpanded ? "rotate-180" : ""}`}>
-          <ChevronDown className="h-4 w-4" />
-        </div>
       </div>
       
-      <AnimatePresence>
-        {isLocationFilterExpanded && (
-          <motion.div
-            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-            animate={{ opacity: 1, height: "auto", marginTop: 20 }}
-            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-            className="overflow-hidden space-y-4"
-          >
-            <div>
+      <div className="space-y-4">
+        <div>
               <label htmlFor="filter-division" className="mb-2 block text-sm font-semibold text-gray-700">১. {language === 'en' ? "Division" : "বিভাগ"}</label>
               <div className="relative">
                 <select
@@ -190,9 +174,7 @@ export default function DiagnosticLocationFilter({
               </div>
             )}
 
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 }

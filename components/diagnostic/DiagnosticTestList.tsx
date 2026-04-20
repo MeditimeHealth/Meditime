@@ -18,7 +18,7 @@ interface DiagnosticTestListProps {
 const DiagnosticTestList = forwardRef<HTMLDivElement, DiagnosticTestListProps>(
   ({ language, totalTests, tests, bookedTests, handleBooking, loading, t }, ref) => {
     return (
-      <div className="flex-1 lg:w-3/4">
+      <div className="flex-1 lg:w-2/3">
         <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
           <h2 className="text-xl font-bold text-slate-900">{language === 'en' ? 'Popular Tests' : 'জনপ্রিয় টেস্টসমূহ'}</h2>
           <span className="text-sm font-medium text-[#00B7B5]">{totalTests} {language === 'en' ? 'tests found' : 'টি টেস্ট পাওয়া গেছে'}</span>
@@ -41,9 +41,7 @@ const DiagnosticTestList = forwardRef<HTMLDivElement, DiagnosticTestListProps>(
                         {getLocalizedValue(test.description, test.descriptionBn, language) || `${getLocalizedValue(test.name, test.nameBn, language)} analysis and measurement`}
                       </p>
                       <div className="flex gap-4 text-xs font-semibold text-slate-500 items-center">
-                        <div className="flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#0088FF]" /> {t.categories.blood}
-                        </div>
+                        
                         {(test.fastingRequired || i % 2 === 0) && (
                           <div className="flex items-center gap-1">
                             <AlertCircle className="w-3.5 h-3.5 text-orange-500" /> {t.fastingRequired}

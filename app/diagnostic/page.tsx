@@ -4,13 +4,13 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { 
-  Activity, 
-  Search, 
-  Microscope, 
-  Heart, 
-  Eye, 
-  CheckCircle2, 
+import {
+  Activity,
+  Search,
+  Microscope,
+  Heart,
+  Eye,
+  CheckCircle2,
   Timer,
   MapPin,
   ChevronRight,
@@ -39,23 +39,23 @@ export default function DiagnosticPage() {
   const router = useRouter();
   const { language } = useLanguage();
   const t = homepageTranslations[language].diagnosticPage;
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [tests, setTests] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [bookedTests, setBookedTests] = useState<BookedTest[]>([]);
   const [selectedVenue, setSelectedVenue] = useState<Hospital | null>(null);
-  
+
   const [showBookingsModal, setShowBookingsModal] = useState(false);
   const [myBookingsHistory, setMyBookingsHistory] = useState<any[]>([]);
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [totalTests, setTotalTests] = useState(0);
   const [stats, setStats] = useState<Record<string, number>>({});
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  
+
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [divisions, setDivisions] = useState<Division[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
@@ -63,20 +63,30 @@ export default function DiagnosticPage() {
   const [selectedDivision, setSelectedDivision] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedThana, setSelectedThana] = useState("");
-  const [isLocationFilterExpanded, setIsLocationFilterExpanded] = useState(false);
-  
+  const [user, setUser] = useState<any>(null);
+
+
   const observerTarget = useRef<HTMLDivElement>(null);
   const isLoadingRef = useRef(false);
 
-  // Load cart from LocalStorage
+  // Load cart and user from LocalStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedTests = localStorage.getItem("diagnosticCart");
       const savedVenue = localStorage.getItem("diagnosticVenue");
       const savedBookings = localStorage.getItem("myDiagnosticBookings");
+      const userData = localStorage.getItem("user");
+      
       if (savedTests) setBookedTests(JSON.parse(savedTests));
       if (savedVenue) setSelectedVenue(JSON.parse(savedVenue));
       if (savedBookings) setMyBookingsHistory(JSON.parse(savedBookings));
+      if (userData) {
+        try {
+          setUser(JSON.parse(userData));
+        } catch (e) {
+          console.error("Error parsing user data:", e);
+        }
+      }
     }
   }, []);
 
@@ -93,6 +103,33 @@ export default function DiagnosticPage() {
       else localStorage.removeItem("diagnosticVenue");
     }
   }, [selectedVenue]);
+
+  // Sync abandoned cart to server
+  useEffect(() => {
+    if (!user || bookedTests.length === 0) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        await fetch("/api/diagnostic/abandoned-cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id || user._id,
+            fullName: user.fullName || user.name,
+            phoneNumber: user.phoneNumber,
+            email: user.email,
+            tests: bookedTests,
+            venueId: selectedVenue?._id,
+            totalPrice: bookedTests.reduce((acc, curr) => acc + (curr.price || 0), 0)
+          })
+        });
+      } catch (err) {
+        console.error("Error syncing abandoned cart:", err);
+      }
+    }, 3000); // 3 second debounce to avoid excessive writes
+
+    return () => clearTimeout(timer);
+  }, [bookedTests, selectedVenue, user]);
 
   const handleBooking = (test: any) => {
     setBookedTests(prev => {
@@ -293,66 +330,98 @@ export default function DiagnosticPage() {
     { id: 'pathology', backendId: 'Pathology', icon: Microscope, title: t.categories.pathology, count: stats['Pathology'] || 0, color: "bg-slate-200" },
   ];
 
- 
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
 
-      {/* Header Section */}
-      <section className="pt-24 md:pt-32 pb-12 relative overflow-hidden">
+      {/* Cover Photo / Hero Section */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative mt-20 h-[450px] md:h-[550px] w-full overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-[#00B7B5]/90 via-[#0088FF]/80 to-[#2C5282]/70 z-10" />
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1920&q=80')",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+          }}
+        />
+        <div className="relative z-20 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pb-20">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
+                {t.heroTitle}
+              </h1>
+              <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8 font-light">
+                {t.heroSubtitle}
+              </p>
+
+              <div className="flex justify-center mb-8">
+                <Button onClick={() => setShowBookingsModal(true)} variant="outline" className="gap-2 border-white/30 text-white hover:bg-white hover:text-[#00B7B5] rounded-xl shadow-lg bg-white/10 backdrop-blur-md border-2 transition-all">
+                  <Activity className="w-5 h-5" />
+                  {language === 'en' ? 'My Booking History' : 'আমার বুকিং ইতিহাস'}
+                  {myBookingsHistory.length > 0 && <span className="bg-white text-[#00B7B5] px-2 py-0.5 rounded-md text-xs ml-1 font-black">{myBookingsHistory.length}</span>}
+                </Button>
+                </div>
+              </motion.div>
+
+
+
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Category Cards Section */}
+      <section className="pt-12 pb-12 relative overflow-hidden bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h1 className="text-3xl md:text-5xl font-black text-slate-900 mb-4">{t.heroTitle}</h1>
-          <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
-            {t.heroSubtitle}
-          </p>
-
-          <div className="flex justify-center mb-8">
-            <Button onClick={() => setShowBookingsModal(true)} variant="outline" className="gap-2 border-[#00B7B5] text-[#00B7B5] hover:bg-[#00B7B5] hover:text-white rounded-xl shadow-sm">
-              <Activity className="w-4 h-4" />
-              {language === 'en' ? 'My Booking History' : 'আমার বুকিং ইতিহাস'}
-              {myBookingsHistory.length > 0 && <span className="bg-[#00B7B5] text-white px-2 py-0.5 rounded-md text-xs ml-1 font-black">{myBookingsHistory.length}</span>}
-            </Button>
-          </div>
-
-          <div className="relative max-w-3xl mx-auto mb-16">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
-            <input 
-              type="text" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t.searchPlaceholder}
-              className="w-full h-16 pl-14 pr-4 bg-white border border-slate-200 rounded-2xl focus:border-[#00B7B5] focus:ring-4 focus:ring-[#00B7B5]/10 focus:outline-none transition-all shadow-sm text-lg"
-            />
-          </div>
-
-          {/* Category Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-             {categories.map((cat, idx) => {
-               const Icon = cat.icon;
-               const isSelected = selectedCategory === cat.backendId;
-               return (
-                 <Card 
-                   key={idx} 
-                   onClick={() => setSelectedCategory(isSelected ? null : cat.backendId)}
-                   className={`p-6 rounded-[2rem] border transition-all cursor-pointer flex flex-col items-center group ${isSelected ? 'border-[#00B7B5] ring-2 ring-[#00B7B5] bg-slate-50' : 'border-slate-100 hover:shadow-lg hover:border-slate-200'}`}
-                 >
-                   <div className={`w-14 h-14 ${cat.id === 'pathology' ? 'bg-slate-100 text-slate-400' : `${cat.color} text-white`} rounded-2xl flex items-center justify-center mb-4 group-hover:-translate-y-1 transition-transform shadow-sm`}>
-                     <Icon className="w-6 h-6" />
-                   </div>
-                   <h3 className="font-bold text-slate-900 mb-1 text-sm md:text-base">{cat.title}</h3>
-                   <p className="text-[10px] md:text-xs text-slate-500 font-medium">{cat.count} {t.testsPlus}</p>
-                 </Card>
-               );
-             })}
+          {categories.map((cat, idx) => {
+            const Icon = cat.icon;
+            const isSelected = selectedCategory === cat.backendId;
+            return (
+              <Card
+                key={idx}
+                onClick={() => setSelectedCategory(isSelected ? null : cat.backendId)}
+                  className={`p-6 rounded-[2rem] border transition-all cursor-pointer flex flex-col items-center group ${isSelected ? 'border-[#00B7B5] ring-2 ring-[#00B7B5] bg-slate-50' : 'border-slate-100 hover:shadow-lg hover:border-slate-200'}`}
+              >
+                  <div className={`w-14 h-14 ${cat.id === 'pathology' ? 'bg-slate-100 text-slate-400' : `${cat.color} text-white`} rounded-2xl flex items-center justify-center mb-4 group-hover:-translate-y-1 transition-transform shadow-sm`}>
+                  <Icon className="w-6 h-6" />
+                </div>
+                  <h3 className="font-bold text-slate-900 mb-1 text-sm md:text-base">{cat.title}</h3>
+                <p className="text-[10px] md:text-xs text-slate-500 font-medium">{cat.count} {t.testsPlus}</p>
+              </Card>
+            );
+          })}
           </div>
         </div>
       </section>
 
+
+      <div className="relative max-w-3xl mx-auto mb-16">
+        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={t.searchPlaceholder}
+          className="w-full h-16 pl-14 pr-4 bg-white border border-slate-200 rounded-2xl focus:border-[#00B7B5] focus:ring-4 focus:ring-[#00B7B5]/10 focus:outline-none transition-all shadow-sm text-lg"
+        />
+      </div>
       {/* Main Content Area */}
       <section className="pb-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-8">
-            
+
             {/* Left Column (Tests List) */}
             <DiagnosticTestList
               ref={observerTarget}
@@ -366,20 +435,19 @@ export default function DiagnosticPage() {
             />
 
             {/* Right Column (Sidebar) */}
-            <div className="lg:w-1/4 space-y-6">
+            <div className="lg:w-1/3 space-y-6">
 
               {/* Shopping Cart UI */}
-              <DiagnosticCart 
+              <DiagnosticCart
                 bookedTests={bookedTests}
                 language={language}
                 handleBooking={handleBooking}
               />
-              
+
               {/* Location Filters */}
               <DiagnosticLocationFilter
                 language={language}
-                isLocationFilterExpanded={isLocationFilterExpanded}
-                setIsLocationFilterExpanded={setIsLocationFilterExpanded}
+
                 selectedDivision={selectedDivision}
                 selectedDistrict={selectedDistrict}
                 selectedThana={selectedThana}
@@ -399,15 +467,15 @@ export default function DiagnosticPage() {
 
               {/* Checkout Action */}
               {bookedTests.length > 0 && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className={`${selectedVenue ? 'bg-[#00B7B5] border-[#00B7B5] shadow-[#00B7B5]/20' : 'bg-slate-50 border-slate-200 shadow-slate-200/50'} rounded-3xl p-5 shadow-lg border flex flex-col gap-3 transition-colors duration-300`}
                 >
                   <div className={selectedVenue ? "text-white" : "text-slate-600"}>
                     <p className="text-xs font-medium opacity-90">
-                      {selectedVenue 
-                        ? (language === 'en' ? "Ready for Booking" : "বুকিং এর জন্য প্রস্তুত") 
+                      {selectedVenue
+                        ? (language === 'en' ? "Ready for Booking" : "বুকিং এর জন্য প্রস্তুত")
                         : (language === 'en' ? "Hospital Selection Required" : "হাসপাতাল নির্বাচন আবশ্যক")}
                     </p>
                     {selectedVenue ? (
@@ -419,7 +487,7 @@ export default function DiagnosticPage() {
                       </p>
                     )}
                   </div>
-                  <Button 
+                  <Button
                     onClick={() => router.push('/diagnostic/checkout')}
                     disabled={!selectedVenue}
                     className={`w-full font-bold rounded-xl h-11 border-none shadow-sm transition-all ${selectedVenue ? 'bg-white text-[#00B7B5] hover:bg-slate-50' : 'bg-slate-200 text-slate-400 opacity-70 cursor-not-allowed'}`}
@@ -430,28 +498,7 @@ export default function DiagnosticPage() {
                 </motion.div>
               )}
 
-              {/* Why Choose Us */}
-              <div className="px-2 pt-4">
-                <h3 className="text-sm font-bold text-slate-900 text-center mb-5">{language === 'en' ? "Why Choose Our Lab Services?" : "কেন আমাদের ল্যাব সার্ভিস বেছে নেবেন?"}</h3>
-                <div className="space-y-3.5">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-[#0088FF] shrink-0" />
-                    <p className="text-xs text-slate-600 font-semibold">NABL certified laboratories</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Timer className="w-4 h-4 text-[#0088FF] shrink-0" />
-                    <p className="text-xs text-slate-600 font-semibold">Fast and accurate results</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <MapPin className="w-4 h-4 text-[#0088FF] shrink-0" />
-                    <p className="text-xs text-slate-600 font-semibold">Home sample collection</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Activity className="w-4 h-4 text-[#0088FF] shrink-0" />
-                    <p className="text-xs text-slate-600 font-semibold">Digital health reports</p>
-                  </div>
-                </div>
-              </div>
+
 
             </div>
 

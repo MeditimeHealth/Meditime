@@ -17,48 +17,33 @@ import {
   ArrowRight,
   TrendingUp,
   Loader2,
-  ClipboardList
+  ClipboardList,
+  Timer
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 
-interface DiagnosticTest {
-  _id: string;
-  name: string;
-  category: string;
-}
 
-interface DiagnosticCenter {
-  _id: string;
-}
 
 export default function DiagnosticPage() {
-  const [tests, setTests] = useState<DiagnosticTest[]>([]);
-  const [centers, setCenters] = useState<DiagnosticCenter[]>([]);
+  const [stats, setStats] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const { language } = useLanguage();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchStats = async () => {
       try {
-        const [testsRes, centersRes] = await Promise.all([
-          fetch("/api/diagnostic/tests"),
-          fetch("/api/diagnostic/centers"),
-        ]);
-        
-        const testsData = await testsRes.json();
-        const centersData = await centersRes.json();
-        
-        if (testsRes.ok) setTests(testsData.tests || []);
-        if (centersRes.ok) setCenters(centersData.centers || []);
+        const res = await fetch("/api/diagnostic/stats");
+        const data = await res.json();
+        if (res.ok) setStats(data.stats || {});
       } catch (error) {
-        console.error("Error fetching diagnostic data:", error);
+        console.error("Error fetching diagnostic stats:", error);
       } finally {
         setLoading(false);
       }
     };
     
-    fetchData();
+    fetchStats();
   }, []);
 
   if (loading) {
@@ -70,12 +55,12 @@ export default function DiagnosticPage() {
     );
   }
 
-  const categoryCounts = {
-    "Blood Tests": tests.filter((t) => t.category === "Blood Tests").length,
-    "Cardiology": tests.filter((t) => t.category === "Cardiology").length,
-    "Imaging": tests.filter((t) => t.category === "Imaging").length,
-    "Pathology": tests.filter((t) => t.category === "Pathology").length,
-  };
+  const categories = [
+    { id: 'blood', backendId: 'Blood', icon: Activity, title: language === 'bn' ? 'ব্লাড টেস্ট' : 'Blood Tests', count: stats['Blood'] || 0, color: "text-[#0088FF]", bg: "bg-[#0088FF]/10", border: "hover:border-[#0088FF]/30" },
+    { id: 'cardio', backendId: 'Cardiology', icon: HeartPulse, title: language === 'bn' ? 'কার্ডিওলজি' : 'Cardiology', count: stats['Cardiology'] || 0, color: "text-[#00D084]", bg: "bg-[#00D084]/10", border: "hover:border-[#00D084]/30" },
+    { id: 'imaging', backendId: 'Imaging', icon: RadioTower, title: language === 'bn' ? 'ইমেজিং' : 'Imaging', count: stats['Imaging'] || 0, color: "text-[#FF6B00]", bg: "bg-[#FF6B00]/10", border: "hover:border-[#FF6B00]/30" },
+    { id: 'pathology', backendId: 'Pathology', icon: Microscope, title: language === 'bn' ? 'প্যাথলজি' : 'Pathology', count: stats['Pathology'] || 0, color: "text-slate-600", bg: "bg-slate-100", border: "hover:border-slate-300" }
+  ];
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-10">
@@ -94,85 +79,26 @@ export default function DiagnosticPage() {
         </div>
       </div>
 
-      {/* Main Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="relative overflow-hidden p-6 border-2 border-gray-100 hover:border-primary/20 transition-all rounded-2xl group">
-          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-            <Microscope className="h-20 w-20 text-primary rotate-12" />
-          </div>
-          <div className="relative z-10 space-y-4">
-            <div className="bg-blue-50 w-12 h-12 rounded-xl flex items-center justify-center">
-              <Layers className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">{language === 'bn' ? 'মোট টেস্ট' : 'Total Tests'}</p>
-              <h2 className="text-3xl font-black text-gray-900">{tests.length}</h2>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="relative overflow-hidden p-6 border-2 border-gray-100 hover:border-primary/20 transition-all rounded-2xl group">
-          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-            <Building2 className="h-20 w-20 text-primary -rotate-12" />
-          </div>
-          <div className="relative z-10 space-y-4">
-            <div className="bg-emerald-50 w-12 h-12 rounded-xl flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">{language === 'bn' ? 'মোট সেন্টার' : 'Total Centers'}</p>
-              <h2 className="text-3xl font-black text-gray-900">{centers.length}</h2>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="relative overflow-hidden p-6 border-2 border-primary/5 bg-primary/5 rounded-2xl group">
-          <div className="relative z-10 space-y-4">
-            <div className="bg-primary shadow-lg shadow-primary/20 w-12 h-12 rounded-xl flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-primary/60 uppercase tracking-widest">{language === 'bn' ? 'সেবা বৃদ্ধি' : 'Growth'}</p>
-              <h2 className="text-3xl font-black text-primary">+12%</h2>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="relative overflow-hidden p-6 border-2 border-gray-100 hover:border-primary/20 transition-all rounded-2xl group">
-          <div className="relative z-10 space-y-4">
-            <div className="bg-orange-50 w-12 h-12 rounded-xl flex items-center justify-center">
-              <Settings className="h-6 w-6 text-orange-600" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">{language === 'bn' ? 'একটিভ সেটিংস' : 'Active Config'}</p>
-              <h2 className="text-3xl font-black text-gray-900">Standard</h2>
-            </div>
-          </div>
-        </Card>
-      </div>
-
       {/* Category Breakdown */}
       <div className="space-y-6">
-        <h3 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-           <Activity className="h-5 w-5 text-primary" />
-           {language === 'bn' ? 'টেস্ট ক্যাটাগরি বিশ্লেষণ' : 'Test Category Breakdown'}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            { name: "Blood Tests", icon: Microscope, color: "text-red-500", bg: "bg-red-50" },
-            { name: "Cardiology", icon: HeartPulse, color: "text-rose-500", bg: "bg-rose-50" },
-            { name: "Imaging", icon: RadioTower, color: "text-blue-500", bg: "bg-blue-50" },
-            { name: "Pathology", icon: Thermometer, color: "text-orange-500", bg: "bg-orange-50" },
-          ].map((cat) => (
-            <div key={cat.name} className="flex items-center gap-4 bg-white p-4 rounded-2xl border-2 border-gray-50 hover:border-primary/10 hover:shadow-sm transition-all">
-              <div className={`${cat.bg} p-3 rounded-xl`}>
-                <cat.icon className={`h-6 w-6 ${cat.color}`} />
+       
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          {categories.map((cat) => (
+            <Card key={cat.id} className={`flex flex-col items-center justify-center p-6 md:p-8 rounded-[2rem] border-2 border-gray-50 ${cat.border} hover:shadow-xl transition-all duration-300 group overflow-hidden relative cursor-pointer bg-white`}>
+              <div className={`absolute top-0 right-0 w-32 h-32 ${cat.bg} rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700`} />
+              
+              <div className={`${cat.bg} p-4 md:p-5 rounded-2xl mb-4 group-hover:-translate-y-1 transition-transform shadow-sm relative z-10`}>
+                <cat.icon className={`h-6 w-6 md:h-8 md:w-8 ${cat.color}`} />
               </div>
-              <div>
-                <p className="text-xs font-black text-gray-400 uppercase mb-0.5">{cat.name}</p>
-                <p className="text-xl font-black text-gray-900 leading-none">{categoryCounts[cat.name as keyof typeof categoryCounts]}</p>
+              
+              <div className="text-center relative z-10">
+                <h3 className="text-sm md:text-lg font-bold text-gray-900 mb-1">{cat.title}</h3>
+                <div className="flex items-center justify-center gap-1.5 md:gap-2">
+                  <span className={`text-xl md:text-3xl font-black ${cat.color}`}>{cat.count}</span>
+                  <span className="text-[10px] md:text-xs font-semibold text-gray-400 uppercase tracking-widest">{language === 'bn' ? 'টেস্ট' : 'Tests'}</span>
+                </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       </div>
@@ -260,6 +186,34 @@ export default function DiagnosticPage() {
             <Link href="/admin/diagnostic/bookings" className="w-full">
               <Button className="w-full h-14 text-lg font-bold bg-orange-500 hover:bg-orange-600 text-white shadow-xl shadow-orange-200/50 rounded-2xl group transition-all">
                 {language === 'bn' ? 'বুকিং ম্যানেজ করুন' : 'Manage Bookings'}
+                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-2 transition-transform" />
+              </Button>
+            </Link>
+          </div>
+        </Card>
+        <Card className="group relative overflow-hidden p-8 border-2 border-red-100 hover:border-red-300 hover:shadow-2xl hover:shadow-red-100 transition-all duration-500 rounded-3xl flex flex-col justify-between">
+          <div className="absolute top-[-20%] right-[-10%] opacity-5 group-hover:opacity-10 transition-all duration-500">
+             <Activity className="h-64 w-64 text-red-500" />
+          </div>
+          
+          <div className="relative z-10 space-y-4">
+            <div className="bg-red-50 w-16 h-16 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Timer className="h-8 w-8 text-red-500" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-black text-gray-900 group-hover:text-red-500 transition-colors">
+                {language === 'bn' ? 'পরিত্যক্ত কার্ট' : 'Abandoned Carts'}
+              </h3>
+              <p className="text-gray-500 font-medium text-lg leading-relaxed max-w-[90%]">
+                {language === 'bn' ? 'যেসব পেশেন্ট টেস্ট নির্বাচন করে বুকিং সম্পন্ন করেননি তাদের ফলোআপ করুন।' : 'Follow up with patients who selected tests but didn\'t complete their booking.'}
+              </p>
+            </div>
+          </div>
+          
+          <div className="relative z-10 pt-8 mt-auto flex items-center justify-between">
+            <Link href="/admin/diagnostic/abandoned-carts" className="w-full">
+              <Button className="w-full h-14 text-lg font-bold bg-red-500 hover:bg-red-600 text-white shadow-xl shadow-red-200/50 rounded-2xl group transition-all">
+                {language === 'bn' ? 'পরিত্যক্ত কার্ট দেখুন' : 'View Abandoned Carts'}
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-2 transition-transform" />
               </Button>
             </Link>

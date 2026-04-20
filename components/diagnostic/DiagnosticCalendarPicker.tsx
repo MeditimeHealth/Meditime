@@ -67,6 +67,21 @@ export default function DiagnosticCalendarPicker({
   const currentYear = currentMonth.getFullYear();
   const currentMonthIndex = currentMonth.getMonth();
 
+  const today = new Date();
+  const todayYear = today.getFullYear();
+  const todayMonth = today.getMonth();
+
+  const maxYear = todayMonth === 11 ? todayYear + 1 : todayYear;
+  const maxMonth = todayMonth === 11 ? 0 : todayMonth + 1;
+
+  const isPrevDisabled = 
+    currentYear < todayYear ||
+    (currentYear === todayYear && currentMonthIndex <= todayMonth);
+
+  const isNextDisabled =
+    currentYear > maxYear ||
+    (currentYear === maxYear && currentMonthIndex >= maxMonth);
+
   return (
     <Card className="p-6 bg-gradient-to-br from-white to-orange-50 border-2 border-[#FF6B00]/20 shadow-xl">
       <h2
@@ -81,7 +96,8 @@ export default function DiagnosticCalendarPicker({
         <button
           onClick={() => changeMonth(-1)}
           type="button"
-          className="p-2 rounded-lg hover:bg-[#FF6B00]/10 transition-colors"
+          disabled={isPrevDisabled}
+          className={`p-2 rounded-lg transition-colors ${isPrevDisabled ? 'opacity-30 cursor-not-allowed' : 'hover:bg-[#FF6B00]/10'}`}
         >
           <ArrowLeft className="h-5 w-5 text-[#FF6B00]" />
         </button>
@@ -94,7 +110,8 @@ export default function DiagnosticCalendarPicker({
         <button
           onClick={() => changeMonth(1)}
           type="button"
-          className="p-2 rounded-lg hover:bg-[#FF6B00]/10 transition-colors"
+          disabled={isNextDisabled}
+          className={`p-2 rounded-lg transition-colors ${isNextDisabled ? 'opacity-30 cursor-not-allowed' : 'hover:bg-[#FF6B00]/10'}`}
         >
           <ArrowLeft className="h-5 w-5 text-[#FF6B00] rotate-180" />
         </button>

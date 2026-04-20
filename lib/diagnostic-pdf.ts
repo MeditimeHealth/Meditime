@@ -27,7 +27,7 @@ export const generateDiagnosticBookingPDF = async (booking: DiagnosticBookingRec
     doc.setFont('helvetica', 'bold');
     doc.text(selectedVenue.name || 'MediTime Diagnostics', M, 16);
     
-    doc.setFontSize(8);
+    doc.setFontSize(14);
     doc.setFont('helvetica', 'normal');
     doc.text('Booked via MediTime Portal', M, 23);
     

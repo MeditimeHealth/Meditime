@@ -104,7 +104,7 @@ function SearchableMultiSelect({ label, options, selected, onChange, placeholder
             exit={{ opacity: 0, height: 0 }}
             className="bg-white border-2 border-primary/5 rounded-2xl shadow-xl overflow-hidden mt-2"
           >
-            <div className="p-3 border-b border-gray-50 bg-gray-50/30">
+            {/* <div className="p-3 border-b border-gray-50 bg-gray-50/30">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
@@ -116,7 +116,7 @@ function SearchableMultiSelect({ label, options, selected, onChange, placeholder
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
-            </div>
+            </div> */}
             <div className="max-h-60 overflow-y-auto p-2 space-y-1 custom-scrollbar">
               {filteredOptions.length === 0 ? (
                 <div className="p-8 text-center text-gray-400 text-sm font-medium">
