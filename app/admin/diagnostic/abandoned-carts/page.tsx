@@ -162,8 +162,8 @@ export default function AbandonedCartsPage() {
                 </div>
 
                 {/* Cart Details */}
-                <div className="flex-1 space-y-4 border-t lg:border-t-0 lg:border-l border-gray-100 pt-6 lg:pt-0 lg:pl-8">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="flex-1 space-y-4 border-t lg:border-t-0 lg:border-l border-gray-100 pt-6 lg:pt-0 lg:pl-8 flex flex-col items-center justify-center text-center">
+                  <div className="flex flex-wrap items-center justify-center gap-6 mb-2">
                     <h4 className="text-sm font-black text-gray-400 uppercase tracking-wider flex items-center gap-2">
                       <Activity className="h-4 w-4" />
                       {language === 'bn' ? 'নির্বাচিত টেস্টসমূহ' : 'Selected Tests'}
@@ -171,7 +171,7 @@ export default function AbandonedCartsPage() {
                     <span className="text-2xl font-black text-gray-900">৳{cart.totalPrice}</span>
                   </div>
                   
-                  <div className="flex flex-wrap gap-2 text-sm">
+                  <div className="flex flex-wrap gap-2 text-sm justify-center">
                     {cart.tests.map((test: any, idx: number) => (
                       <span key={idx} className="px-4 py-2 bg-slate-50 border border-gray-100 text-gray-700 font-bold rounded-xl hover:bg-slate-100 transition-colors">
                         {language === 'bn' ? (test.nameBn || test.name) : test.name}
@@ -180,11 +180,11 @@ export default function AbandonedCartsPage() {
                   </div>
 
                   {cart.venueId && (
-                    <div className="mt-4 p-4 bg-red-50/50 rounded-2xl border border-red-100 flex items-start gap-3">
-                      <div className="mt-0.5 p-1 bg-red-100 rounded-md">
+                    <div className="mt-4 p-4 bg-red-50/50 rounded-2xl border border-red-100 flex items-center justify-center gap-3">
+                      <div className="p-1 bg-red-100 rounded-md">
                         <Activity className="h-3.5 w-3.5 text-red-600" />
                       </div>
-                      <div>
+                      <div className="text-left">
                         <p className="text-[10px] font-black text-red-400 uppercase leading-none mb-1">{language === 'bn' ? 'পছন্দিত হাসপাতাল' : 'Preferred Venue'}</p>
                         <p className="text-sm font-bold text-gray-800">{cart.venueId.name}</p>
                       </div>
