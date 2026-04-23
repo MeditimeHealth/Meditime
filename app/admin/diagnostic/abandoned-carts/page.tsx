@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { 
-  Timer, 
-  User, 
-  Phone, 
-  Mail, 
-  Activity, 
+import {
+  Timer,
+  User,
+  Phone,
+  Mail,
+  Activity,
   ChevronLeft,
   Search,
   ExternalLink,
@@ -16,15 +16,26 @@ import {
   Trash2
 } from "lucide-react";
 import Link from "next/link";
-import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Card } from "@/components/ui/card";
 import { showToast } from "@/lib/toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function AbandonedCartsPage() {
   const [carts, setCarts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
   const { language } = useLanguage();
 
   const fetchCarts = async () => {
@@ -46,7 +57,7 @@ export default function AbandonedCartsPage() {
     fetchCarts();
   }, []);
 
-  const filteredCarts = carts.filter(cart => 
+  const filteredCarts = carts.filter(cart =>
     cart.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     cart.phoneNumber.includes(searchQuery)
   );
@@ -56,7 +67,7 @@ export default function AbandonedCartsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link 
+          <Link
             href="/admin/diagnostic"
             className={buttonVariants({ variant: "ghost", size: "icon", className: "rounded-full" })}
           >
@@ -76,26 +87,61 @@ export default function AbandonedCartsPage() {
         </div>
 
         {carts.length > 0 && (
-          <Button 
-            onClick={async () => {
-              if (confirm(language === 'bn' ? 'আপনি কি নিশ্চিত যে আপনি সব হিস্ট্রি মুছতে চান?' : 'Are you sure you want to clear all history?')) {
-                try {
-                  const res = await fetch("/api/diagnostic/abandoned-cart", { method: "DELETE" });
-                  if (res.ok) {
-                    showToast.success(language === 'bn' ? 'সব হিস্ট্রি মুছে ফেলা হয়েছে' : 'History cleared successfully');
-                    fetchCarts();
-                  }
-                } catch (err) {
-                  showToast.error("Failed to clear history");
-                }
-              }
-            }}
-            variant="outline" 
-            className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-bold gap-2"
-          >
-            <Trash2 className="h-4 w-4" />
-            {language === 'bn' ? 'সব মুছুন' : 'Clear History'}
-          </Button>
+          <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-bold gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                {language === 'bn' ? 'সব মুছুন' : 'Clear History'}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="rounded-3xl">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-black text-gray-900">
+                  {language === 'bn' ? 'আপনি কি নিশ্চিত?' : 'Are you absolutely sure?'}
+                </DialogTitle>
+                <DialogDescription className="text-gray-500 font-medium py-4">
+                  {language === 'bn'
+                    ? 'এটি সমস্ত পরিত্যক্ত কার্ট ইতিহাস স্থায়ীভাবে মুছে ফেলবে। এই কাজটি আর ফিরিয়ে আনা সম্ভব নয়।'
+                    : 'This action will permanently delete all abandoned cart history. This action cannot be undone.'}
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="gap-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => setIsConfirmOpen(false)}
+                  className="rounded-xl font-bold"
+                >
+                  {language === 'bn' ? 'বাতিল' : 'Cancel'}
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={async () => {
+                    setIsClearing(true);
+                    try {
+                      const res = await fetch("/api/diagnostic/abandoned-cart", { method: "DELETE" });
+                      if (res.ok) {
+                        showToast.success(language === 'bn' ? 'সব হিস্ট্রি মুছে ফেলা হয়েছে' : 'History cleared successfully');
+                        fetchCarts();
+                        setIsConfirmOpen(false);
+                      }
+                    } catch (err) {
+                      showToast.error("Failed to clear history");
+                    } finally {
+                      setIsClearing(false);
+                    }
+                  }}
+                  disabled={isClearing}
+                  className="rounded-xl font-bold bg-red-600 hover:bg-red-700"
+                >
+                  {isClearing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="h-4 w-4 mr-2" />}
+                  {language === 'bn' ? 'হ্যাঁ, মুছুন' : 'Yes, clear history'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         )}
       </div>
 
@@ -132,9 +178,9 @@ export default function AbandonedCartsPage() {
         <div className="grid grid-cols-1 gap-6">
           {filteredCarts.map((cart) => (
             <Card key={cart._id} className="p-6 md:p-8 rounded-3xl border-2 border-gray-50 hover:border-red-100 transition-all shadow-sm hover:shadow-xl hover:shadow-red-500/5 group">
-              <div className="flex flex-col lg:flex-row gap-8">
-                {/* User Info */}
-                <div className="lg:w-1/4 space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                {/* Column 1: User Info */}
+                <div className="space-y-4">
                   <div className="flex items-center gap-4">
                     <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white shadow-lg shadow-red-200">
                       <User className="h-7 w-7" />
@@ -146,7 +192,7 @@ export default function AbandonedCartsPage() {
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2.5 pt-2">
                     <div className="flex items-center gap-3 text-gray-600">
                       <Phone className="h-4 w-4 text-red-400" />
@@ -161,17 +207,14 @@ export default function AbandonedCartsPage() {
                   </div>
                 </div>
 
-                {/* Cart Details */}
-                <div className="flex-1 space-y-4 border-t lg:border-t-0 lg:border-l border-gray-100 pt-6 lg:pt-0 lg:pl-8 flex flex-col items-center justify-center text-center">
-                  <div className="flex flex-wrap items-center justify-center gap-6 mb-2">
-                    <h4 className="text-sm font-black text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                      <Activity className="h-4 w-4" />
-                      {language === 'bn' ? 'নির্বাচিত টেস্টসমূহ' : 'Selected Tests'}
-                    </h4>
-                    <span className="text-2xl font-black text-gray-900">৳{cart.totalPrice}</span>
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-2 text-sm justify-center">
+                {/* Column 2: Selected Tests */}
+                <div className="space-y-4 border-t lg:border-t-0 lg:border-l border-gray-100 pt-6 lg:pt-0 lg:pl-8">
+                  <h4 className="text-sm font-black text-gray-400 uppercase tracking-wider flex items-center gap-2 mb-4">
+                    <Activity className="h-4 w-4" />
+                    {language === 'bn' ? 'নির্বাচিত টেস্টসমূহ' : 'Selected Tests'}
+                  </h4>
+
+                  <div className="flex flex-wrap gap-2 text-sm">
                     {cart.tests.map((test: any, idx: number) => (
                       <span key={idx} className="px-4 py-2 bg-slate-50 border border-gray-100 text-gray-700 font-bold rounded-xl hover:bg-slate-100 transition-colors">
                         {language === 'bn' ? (test.nameBn || test.name) : test.name}
@@ -180,11 +223,11 @@ export default function AbandonedCartsPage() {
                   </div>
 
                   {cart.venueId && (
-                    <div className="mt-4 p-4 bg-red-50/50 rounded-2xl border border-red-100 flex items-center justify-center gap-3">
-                      <div className="p-1 bg-red-100 rounded-md">
+                    <div className="mt-4 p-4 bg-red-50/50 rounded-2xl border border-red-100 flex items-start gap-3">
+                      <div className="mt-0.5 p-1 bg-red-100 rounded-md">
                         <Activity className="h-3.5 w-3.5 text-red-600" />
                       </div>
-                      <div className="text-left">
+                      <div>
                         <p className="text-[10px] font-black text-red-400 uppercase leading-none mb-1">{language === 'bn' ? 'পছন্দিত হাসপাতাল' : 'Preferred Venue'}</p>
                         <p className="text-sm font-bold text-gray-800">{cart.venueId.name}</p>
                       </div>
@@ -192,12 +235,18 @@ export default function AbandonedCartsPage() {
                   )}
                 </div>
 
-                <div className="lg:w-1/5 flex flex-col gap-3 justify-center border-t lg:border-t-0 lg:border-l border-gray-100 pt-6 lg:pt-0 lg:pl-8">
-                  <a 
-                    href={`tel:${cart.phoneNumber}`} 
-                    className={buttonVariants({ 
+                {/* Column 3: Price (Center Aligned) */}
+                <div className="flex flex-col items-center justify-center border-t lg:border-t-0 lg:border-l border-gray-100 pt-6 lg:pt-0">
+                  <span className="text-4xl font-black text-gray-900 leading-none">৳{cart.totalPrice}</span>
+                </div>
+
+                {/* Column 4: Actions */}
+                <div className="flex flex-col gap-3 justify-center border-t lg:border-t-0 lg:border-l border-gray-100 pt-6 lg:pt-0 lg:pl-8">
+                  <a
+                    href={`tel:${cart.phoneNumber}`}
+                    className={buttonVariants({
                       variant: "outline",
-                      className: "w-full border-gray-200 text-gray-700 font-bold rounded-xl h-12 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-95 group/call flex items-center justify-center gap-2" 
+                      className: "w-full border-gray-200 text-gray-700 font-bold rounded-xl h-12 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-95 group/call flex items-center justify-center gap-2"
                     })}
                   >
                     <Phone className="h-5 w-5 group-hover/call:animate-bounce" />
