@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IDiagnosticBooking extends Document {
+  userId?: mongoose.Types.ObjectId;
   patientName: string;
   mobileNumber: string;
   gender?: string;
@@ -22,6 +23,11 @@ export interface IDiagnosticBooking extends Document {
 
 const diagnosticBookingSchema = new Schema<IDiagnosticBooking>(
   {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: false,
+    },
     patientName: {
       type: String,
       required: true,

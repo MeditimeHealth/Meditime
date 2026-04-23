@@ -53,7 +53,15 @@ export default function DiagnosticSuccessPage() {
     setSubmitting(true);
     
     try {
+      const userData = localStorage.getItem("user");
+      let userId = null;
+      if (userData) {
+        const user = JSON.parse(userData);
+        userId = user.id || user._id;
+      }
+
       const payload = {
+        userId,
         patientName: checkoutData.patientName,
         mobileNumber: checkoutData.mobileNumber,
         gender: checkoutData.gender,

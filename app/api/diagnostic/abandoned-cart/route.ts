@@ -18,6 +18,15 @@ export async function POST(req: Request) {
       );
     }
 
+    // If tests are empty, remove the abandoned cart entry
+    if (!tests || tests.length === 0) {
+      await AbandonedCart.deleteOne({ userId: new mongoose.Types.ObjectId(userId) });
+      return NextResponse.json(
+        { message: "Abandoned cart cleared" },
+        { status: 200 }
+      );
+    }
+
     // Upsert the abandoned cart for this user
     const updatedCart = await AbandonedCart.findOneAndUpdate(
       { userId: new mongoose.Types.ObjectId(userId) },
@@ -28,7 +37,6 @@ export async function POST(req: Request) {
         tests,
         venueId: venueId ? new mongoose.Types.ObjectId(venueId) : undefined,
         totalPrice,
-        // updatedAt is automatically updated by timestamps: true
       },
       { upsert: true, new: true, runValidators: true }
     );
@@ -39,6 +47,23 @@ export async function POST(req: Request) {
     );
   } catch (error: any) {
     console.error("Error recording abandoned diagnostic cart:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error", details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    await dbConnect();
+    
+    // Clear all abandoned carts
+    await AbandonedCart.deleteMany({});
+
+    return NextResponse.json({ message: "All abandoned carts cleared" }, { status: 200 });
+  } catch (error: any) {
+    console.error("Error clearing abandoned carts:", error);
     return NextResponse.json(
       { error: "Internal Server Error", details: error.message },
       { status: 500 }

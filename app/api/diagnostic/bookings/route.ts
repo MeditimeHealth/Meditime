@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import DiagnosticBooking from "@/models/DiagnosticBooking";
 import AbandonedCart from "@/models/AbandonedCart";
+import mongoose from "mongoose";
+import "@/models/Hospital"; // Ensure Hospital model is registered for populate
 
 export async function POST(req: Request) {
   try {
@@ -9,6 +11,7 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const newBooking = new DiagnosticBooking({
+      userId: body.userId ? new mongoose.Types.ObjectId(body.userId) : undefined,
       patientName: body.patientName,
       mobileNumber: body.mobileNumber,
       gender: body.gender,
@@ -25,10 +28,12 @@ export async function POST(req: Request) {
 
     // Cleanup abandoned cart for this user
     try {
+      if (body.userId) {
+        await AbandonedCart.deleteMany({ userId: new mongoose.Types.ObjectId(body.userId) });
+      }
       await AbandonedCart.deleteMany({ phoneNumber: body.mobileNumber });
     } catch (cleanupErr) {
       console.error("Error cleaning up abandoned cart:", cleanupErr);
-      // Non-critical error, don't fail the booking
     }
 
     return NextResponse.json(
@@ -40,6 +45,30 @@ export async function POST(req: Request) {
     );
   } catch (error: any) {
     console.error("Error creating diagnostic booking:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error", details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(req: Request) {
+  try {
+    await dbConnect();
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
+
+    if (!userId) {
+      return NextResponse.json({ error: "UserId is required" }, { status: 400 });
+    }
+
+    const bookings = await DiagnosticBooking.find({ 
+      userId: new mongoose.Types.ObjectId(userId) 
+    }).populate('venueId').sort({ createdAt: -1 });
+
+    return NextResponse.json({ bookings }, { status: 200 });
+  } catch (error: any) {
+    console.error("Error fetching patient bookings:", error);
     return NextResponse.json(
       { error: "Internal Server Error", details: error.message },
       { status: 500 }

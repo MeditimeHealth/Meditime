@@ -106,7 +106,14 @@ export default function DiagnosticPage() {
 
   // Sync abandoned cart to server
   useEffect(() => {
-    if (!user || bookedTests.length === 0) return;
+    // Only attempt to sync if user is logged in
+    if (!user) return;
+
+    // If there ARE tests OR if we want to CLEAR an existing cart (tests.length === 0)
+    // we should trigger the sync. The API now handles delete if tests is empty.
+    
+    // We only skip if EVERYTHING is empty and we haven't started (not likely here)
+    // but the main change is removing the early return on length === 0.
 
     const timer = setTimeout(async () => {
       try {
@@ -130,6 +137,35 @@ export default function DiagnosticPage() {
 
     return () => clearTimeout(timer);
   }, [bookedTests, selectedVenue, user]);
+
+  // Fetch bookings from database if logged in
+  useEffect(() => {
+    const fetchUserBookings = async () => {
+      if (!user) return;
+      
+      try {
+        const userId = user.id || user._id;
+        const res = await fetch(`/api/diagnostic/bookings?userId=${userId}`);
+        const data = await res.json();
+        
+        if (res.ok && data.bookings) {
+          // Merge with local storage bookings (prioritizing DB)
+          const localBookings = JSON.parse(localStorage.getItem("myDiagnosticBookings") || "[]");
+          
+          // Use a Map to deduplicate by bookingRef or _id
+          const combined = [...data.bookings, ...localBookings];
+          const unique = Array.from(new Map(combined.map(b => [b._id || b.bookingRef, b])).values());
+          
+          setMyBookingsHistory(unique);
+          localStorage.setItem("myDiagnosticBookings", JSON.stringify(unique));
+        }
+      } catch (error) {
+        console.error("Error fetching cross-device bookings:", error);
+      }
+    };
+
+    fetchUserBookings();
+  }, [user]);
 
   const handleBooking = (test: any) => {
     setBookedTests(prev => {

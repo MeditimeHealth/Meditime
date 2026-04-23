@@ -74,6 +74,29 @@ export default function AbandonedCartsPage() {
             </p>
           </div>
         </div>
+
+        {carts.length > 0 && (
+          <Button 
+            onClick={async () => {
+              if (confirm(language === 'bn' ? 'আপনি কি নিশ্চিত যে আপনি সব হিস্ট্রি মুছতে চান?' : 'Are you sure you want to clear all history?')) {
+                try {
+                  const res = await fetch("/api/diagnostic/abandoned-cart", { method: "DELETE" });
+                  if (res.ok) {
+                    showToast.success(language === 'bn' ? 'সব হিস্ট্রি মুছে ফেলা হয়েছে' : 'History cleared successfully');
+                    fetchCarts();
+                  }
+                } catch (err) {
+                  showToast.error("Failed to clear history");
+                }
+              }
+            }}
+            variant="outline" 
+            className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-bold gap-2"
+          >
+            <Trash2 className="h-4 w-4" />
+            {language === 'bn' ? 'সব মুছুন' : 'Clear History'}
+          </Button>
+        )}
       </div>
 
       {/* Filter and Search */}
@@ -170,18 +193,6 @@ export default function AbandonedCartsPage() {
                 </div>
 
                 <div className="lg:w-1/5 flex flex-col gap-3 justify-center border-t lg:border-t-0 lg:border-l border-gray-100 pt-6 lg:pt-0 lg:pl-8">
-                  <a 
-                    href={`https://wa.me/${cart.phoneNumber}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className={buttonVariants({ 
-                      className: "w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold rounded-xl h-12 shadow-lg shadow-green-100 border-none transition-all active:scale-95 flex items-center justify-center gap-2" 
-                    })}
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                     WhatsApp
-                  </a>
-                  
                   <a 
                     href={`tel:${cart.phoneNumber}`} 
                     className={buttonVariants({ 
