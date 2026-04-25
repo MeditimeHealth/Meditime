@@ -104,19 +104,7 @@ function SearchableMultiSelect({ label, options, selected, onChange, placeholder
             exit={{ opacity: 0, height: 0 }}
             className="bg-white border-2 border-primary/5 rounded-2xl shadow-xl overflow-hidden mt-2"
           >
-            {/* <div className="p-3 border-b border-gray-50 bg-gray-50/30">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  autoFocus
-                  placeholder={language === 'bn' ? "খুঁজুন..." : "Search..."}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-10 border-gray-200 focus:ring-primary rounded-lg text-sm bg-white"
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </div>
-            </div> */}
+           
             <div className="max-h-60 overflow-y-auto p-2 space-y-1 custom-scrollbar">
               {filteredOptions.length === 0 ? (
                 <div className="p-8 text-center text-gray-400 text-sm font-medium">
@@ -149,7 +137,6 @@ function SearchableMultiSelect({ label, options, selected, onChange, placeholder
 export default function CreateDiagnosticTestPage() {
   const router = useRouter();
   const { language } = useLanguage();
-  const [formLanguage, setFormLanguage] = useState<'en' | 'bn'>(language);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -245,62 +232,35 @@ export default function CreateDiagnosticTestPage() {
       </div>
 
       <Card className="p-8 bg-white border-2 border-primary/10 shadow-xl rounded-2xl transition-all animate-in fade-in slide-in-from-top-4">
-        <div className="flex justify-end mb-8">
-          <div className="bg-gray-100/80 p-1.5 rounded-xl inline-flex shadow-inner">
-            <button
-              type="button"
-              onClick={() => setFormLanguage('en')}
-              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                formLanguage === 'en'
-                  ? 'bg-white text-primary shadow-sm scale-105'
-                  : 'text-gray-500 hover:text-gray-800'
-              }`}
-            >
-              English
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormLanguage('bn')}
-              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                formLanguage === 'bn'
-                  ? 'bg-white text-primary shadow-sm scale-105'
-                  : 'text-gray-500 hover:text-gray-800'
-              }`}
-            >
-              বাংলা
-            </button>
-          </div>
-        </div>
+
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
-              <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
-                <Label htmlFor="name" className="text-base font-bold text-gray-700">
-                  {t("testName", language)} <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g. Complete Blood Count (CBC)"
-                  className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl mt-3"
-                  required={formLanguage === 'en'}
-                />
-              </div>
-              <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
-                <Label htmlFor="nameBn" className="text-base font-bold text-gray-700">
-                  {t("nameBn", language)}
-                </Label>
-                <Input
-                  id="nameBn"
-                  value={formData.nameBn}
-                  onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
-                  placeholder="সম্পূর্ণ রক্ত গণনা (CBC)"
-                  className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl mt-3"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
-                />
-              </div>
+              <Label htmlFor="name" className="text-base font-bold text-gray-700">
+                {language === 'bn' ? "টেস্টের নাম (English)" : "Test Name (English)"} <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="e.g. Complete Blood Count (CBC)"
+                className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl mt-3"
+                required
+              />
+            </div>
+            <div className="space-y-3">
+              <Label htmlFor="nameBn" className="text-base font-bold text-gray-700">
+                {language === 'bn' ? "টেস্টের নাম (বাংলা)" : "Test Name (Bengali)"}
+              </Label>
+              <Input
+                id="nameBn"
+                value={formData.nameBn}
+                onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
+                placeholder="সম্পূর্ণ রক্ত গণনা (CBC)"
+                className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl mt-3"
+                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+              />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -338,27 +298,29 @@ export default function CreateDiagnosticTestPage() {
           {/* New Searchable Multi-select Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <SearchableMultiSelect
-              label={formLanguage === 'bn' ? "টেস্ট বিভাগ" : "Test Department"}
+              label={language === 'bn' ? "টেস্ট বিভাগ" : "Test Department"}
               options={departmentOptions}
               selected={formData.departments}
               onChange={(val) => toggleSelection('departments', val)}
-              placeholder={formLanguage === 'bn' ? "বিভাগ নির্বাচন করুন" : "Select departments"}
-              language={formLanguage}
+              placeholder={language === 'bn' ? "বিভাগ নির্বাচন করুন" : "Select departments"}
+              language={language}
             />
 
             <SearchableMultiSelect
-              label={formLanguage === 'bn' ? "সুপারিশ" : "Recommendation"}
+              label={language === 'bn' ? "সুপারিশ" : "Recommendation"}
               options={recommendationOptions}
               selected={formData.recommendations}
               onChange={(val) => toggleSelection('recommendations', val)}
-              placeholder={formLanguage === 'bn' ? "সুপারিশ নির্বাচন করুন" : "Select recommendations"}
-              language={formLanguage}
+              placeholder={language === 'bn' ? "সুপারিশ নির্বাচন করুন" : "Select recommendations"}
+              language={language}
             />
           </div>
 
-          <div className="space-y-3">
-            <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
-              <Label htmlFor="description" className="text-base font-bold text-gray-700">{t("description", language)}</Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-3">
+              <Label htmlFor="description" className="text-base font-bold text-gray-700">
+                {language === 'bn' ? "টেস্ট বর্ণনা (English)" : "Test Description (English)"}
+              </Label>
               <textarea
                 id="description"
                 value={formData.description}
@@ -368,8 +330,10 @@ export default function CreateDiagnosticTestPage() {
                 className="flex w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all mt-3"
               />
             </div>
-            <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
-              <Label htmlFor="descriptionBn" className="text-base font-bold text-gray-700">{t("description", language)}</Label>
+            <div className="space-y-3">
+              <Label htmlFor="descriptionBn" className="text-base font-bold text-gray-700">
+                {language === 'bn' ? "টেস্ট বর্ণনা (বাংলা)" : "Test Description (Bengali)"}
+              </Label>
               <textarea
                 id="descriptionBn"
                 value={formData.descriptionBn}

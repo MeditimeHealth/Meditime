@@ -20,26 +20,61 @@ export const generateDiagnosticBookingPDF = async (booking: DiagnosticBookingRec
 
     // ─────── HEADER BAR ───────
     doc.setFillColor(0, 75, 80); // dark teal
-    doc.rect(0, 0, W, 32, 'F');
+    doc.rect(0, 0, W, 37, 'F');
+    
+    // Add Logo (Top Center)
+    try {
+      // Create a helper to load image
+      const loadImage = (url: string): Promise<HTMLImageElement> => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = 'Anonymous';
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = url;
+        });
+      };
+
+      const logoImg = await loadImage('/logo.png').catch(() => null);
+      if (logoImg) {
+        const logoWidth = 35; 
+        const logoHeight = (logoImg.height * logoWidth) / logoImg.width;
+
+        // Draw white background rectangle for logo
+        const bgPadding = 2;
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(
+          (W - logoWidth) / 2 - bgPadding, 
+          7 - bgPadding, 
+          logoWidth + bgPadding * 2, 
+          logoHeight + bgPadding * 2, 
+          2, 2, 'F'
+        );
+
+        doc.addImage(logoImg, 'PNG', (W - logoWidth) / 2, 7, logoWidth, logoHeight);
+      }
+    } catch (e) {
+      console.warn("PDF Logo failed to load", e);
+    }
     
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text(selectedVenue.name || 'MediTime Diagnostics', M, 16);
+    doc.text(selectedVenue.name || 'MediTime Diagnostics', M, 25);
     
-    doc.setFontSize(14);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text('Booked via MediTime Portal', M, 23);
+    doc.text('Booked via MediTime Portal', M, 31);
     
     // Booking reference (right side)
     doc.setFontSize(7);
-    doc.text('BOOKING REFERENCE', W - M, 12, { align: 'right' });
+    doc.text('BOOKING REFERENCE', W - M, 22, { align: 'right' });
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text(bookingRef, W - M, 20, { align: 'right' });
+    doc.text(bookingRef, W - M, 29, { align: 'right' });
 
     // ─────── DIVIDER LINE ───────
-    let y = 38;
+    let y = 41;
     doc.setDrawColor(0, 75, 80);
     doc.setLineWidth(0.5);
     doc.line(M, y, W - M, y);

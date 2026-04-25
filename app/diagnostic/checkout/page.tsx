@@ -11,9 +11,13 @@ import { showToast } from "@/lib/toast";
 
 import DiagnosticCalendarPicker from "@/components/diagnostic/DiagnosticCalendarPicker";
 import DiagnosticPatientForm from "@/components/diagnostic/DiagnosticPatientForm";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { t } from "@/lib/translations";
+import { convertToBengaliNumber } from "@/lib/utils";
 
 export default function DiagnosticCheckoutPage() {
   const router = useRouter();
+  const { language } = useLanguage();
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -132,7 +136,7 @@ export default function DiagnosticCheckoutPage() {
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 <span style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
-                  ফিরে যান
+                  {t("back", language)}
                 </span>
               </Button>
             </Link>
@@ -153,26 +157,30 @@ export default function DiagnosticCheckoutPage() {
                 style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
               >
                 <div className="p-2 bg-[#00B7B5]/10 text-[#00B7B5] rounded-xl"><Activity className="w-5 h-5"/></div>
-                নির্বাচিত টেস্টসমূহ
+                {t("selectedTests", language)}
               </h2>
               
               <div className="space-y-4">
                 {bookedTests.map((test: any, i: number) => (
                   <div key={i} className="flex justify-between items-center p-3 sm:p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
                     <div>
-                      <p className="font-bold text-slate-800">{test.name}</p>
-                      {test.nameBn && <p className="text-sm text-slate-500 mt-0.5">{test.nameBn}</p>}
+                      <p className="font-bold text-slate-800">
+                        {language === 'bn' && test.nameBn ? test.nameBn : test.name}
+                      </p>
+                      <p className="text-sm text-slate-500 mt-0.5">
+                        {language === 'bn' ? test.name : (test.nameBn || '')}
+                      </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xl font-black text-slate-900">৳{test.price || 0}</p>
+                      <p className="text-xl font-black text-slate-900">৳{convertToBengaliNumber(test.price || 0, language)}</p>
                     </div>
                   </div>
                 ))}
               </div>
               
               <div className="mt-6 flex justify-between items-center p-4 bg-[#00B7B5]/10 rounded-xl border border-[#00B7B5]/20">
-                <p className="font-bold text-lg text-slate-700" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>সর্বমোট</p>
-                <p className="text-2xl font-black text-[#00B7B5]">৳{bookedTests.reduce((a, b) => a + (b.price || 0), 0)}</p>
+                <p className="font-bold text-lg text-slate-700" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{t("totalAmount", language)}</p>
+                <p className="text-2xl font-black text-[#00B7B5]">৳{convertToBengaliNumber(bookedTests.reduce((a, b) => a + (b.price || 0), 0), language)}</p>
               </div>
             </Card>
 
@@ -183,7 +191,7 @@ export default function DiagnosticCheckoutPage() {
                 style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
               >
                 <div className="p-2 bg-[#0088FF]/10 text-[#0088FF] rounded-xl"><MapPin className="w-5 h-5"/></div>
-                নির্বাচিত হাসপাতাল
+                {t("selectedHospital", language)}
               </h2>
               <div className="relative">
                 <div className="p-4 bg-[#0088FF] text-white rounded-xl border-2 border-[#0088FF] shadow-lg">

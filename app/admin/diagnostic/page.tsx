@@ -134,34 +134,6 @@ export default function DiagnosticPage() {
           </div>
         </Card>
 
-        <Card className="group relative overflow-hidden p-8 border-2 border-gray-100 hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 rounded-3xl flex flex-col justify-between">
-          <div className="absolute top-[-20%] right-[-10%] opacity-5 group-hover:opacity-10 transition-all duration-500">
-             <Building2 className="h-64 w-64 text-primary underline" />
-          </div>
-          
-          <div className="relative z-10 space-y-4">
-            <div className="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Building2 className="h-8 w-8 text-primary" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-2xl font-black text-gray-900 group-hover:text-primary transition-colors">
-                {language === 'bn' ? 'সেন্টার পরিচালনা করুন' : 'Manage Centers'}
-              </h3>
-              <p className="text-gray-500 font-medium text-lg leading-relaxed max-w-[90%]">
-                {language === 'bn' ? 'সেন্টারগুলোর লোকেশন, ডিসকাউন্ট এবং অফারগুলো সেট করুন।' : 'Configure diagnostic center locations, package discounts, and special offers.'}
-              </p>
-            </div>
-          </div>
-          
-          <div className="relative z-10 pt-8 mt-auto flex items-center justify-between">
-            <Link href="/admin/diagnostic/centers" className="w-full">
-              <Button className="w-full h-14 text-lg font-bold bg-gray-900 hover:bg-primary text-white shadow-xl shadow-gray-200/50 rounded-2xl group transition-all">
-                {language === 'bn' ? 'ম্যানেজ সেন্টার' : 'Manage Centers'}
-                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-2 transition-transform" />
-              </Button>
-            </Link>
-          </div>
-        </Card>
 
         <Card className="group relative overflow-hidden p-8 border-2 border-orange-100 hover:border-orange-300 hover:shadow-2xl hover:shadow-orange-100 transition-all duration-500 rounded-3xl flex flex-col justify-between">
           <div className="absolute top-[-20%] right-[-10%] opacity-5 group-hover:opacity-10 transition-all duration-500">

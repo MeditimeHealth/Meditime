@@ -1,21 +1,24 @@
+import { useLanguage } from "@/contexts/LanguageContext";
+import { t } from "@/lib/translations";
 import { useState } from "react";
+import { Card } from "../ui/card";
 import { ArrowLeft } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { showToast } from "@/lib/toast";
 
-const banglaDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const banglaMonths = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
-
-const toBengaliNumber = (num: number): string => {
-  return num.toString();
+const getDayName = (date: Date, language: 'en' | 'bn'): string => {
+  const dayIndex = date.getDay();
+  return t(`day_long_${dayIndex}` as any, language);
 };
 
-const getDayName = (date: Date): string => {
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  return days[date.getDay()];
+const convertToBengaliNumber = (num: number | string, language: 'en' | 'bn'): string => {
+  const str = num.toString();
+  if (language === 'en') return str;
+  const englishDigits = '0123456789'.split('');
+  const bengaliDigits = '০১২৩৪৫৬৭৮৯'.split('');
+  return str.split('').map(digit => {
+    const index = englishDigits.indexOf(digit);
+    return index !== -1 ? bengaliDigits[index] : digit;
+  }).join('');
 };
 
 interface DiagnosticCalendarPickerProps {
@@ -26,7 +29,8 @@ interface DiagnosticCalendarPickerProps {
 export default function DiagnosticCalendarPicker({
   selectedDate,
   setSelectedDate
-}: DiagnosticCalendarPickerProps) {
+}: DiagnosticCalendarPickerProps): React.JSX.Element {
+  const { language } = useLanguage();
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const getCalendarDays = () => {
@@ -88,7 +92,7 @@ export default function DiagnosticCalendarPicker({
         className="text-2xl font-bold text-gray-900 mb-5"
         style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
       >
-        Select Date
+        {t("selectDate", language)}
       </h2>
 
       {/* Calendar Header */}
@@ -105,7 +109,7 @@ export default function DiagnosticCalendarPicker({
           className="text-xl font-bold text-gray-900"
           style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
         >
-          {banglaMonths[currentMonthIndex]} {toBengaliNumber(currentYear)}
+          {t(`month_${currentMonthIndex}` as any, language)} {convertToBengaliNumber(currentYear, language)}
         </h3>
         <button
           onClick={() => changeMonth(1)}
@@ -119,13 +123,13 @@ export default function DiagnosticCalendarPicker({
 
       {/* Calendar Days Header */}
       <div className="grid grid-cols-7 gap-2 mb-4">
-        {banglaDays.map((day, index) => (
+        {[1, 2, 3, 4, 5, 6, 0].map((dayIndex) => (
           <div
-            key={index}
+            key={dayIndex}
             className="text-center font-semibold text-gray-700 py-2"
             style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
           >
-            {day}
+            {t(`day_${dayIndex}` as any, language)}
           </div>
         ))}
       </div>
@@ -149,7 +153,7 @@ export default function DiagnosticCalendarPicker({
                 if (isAvailable) {
                   handleDateSelect(date);
                 } else {
-                  showToast.error("You cannot select a past date");
+                  showToast.error(t("pastDateError", language));
                 }
               }}
               disabled={!isAvailable}
@@ -164,7 +168,7 @@ export default function DiagnosticCalendarPicker({
                 fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
               }}
             >
-              {toBengaliNumber(date.getDate())}
+              {convertToBengaliNumber(date.getDate(), language)}
             </button>
           );
         })}
@@ -176,7 +180,7 @@ export default function DiagnosticCalendarPicker({
             className="text-lg font-semibold text-gray-900"
             style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
           >
-            Selected Date: {getDayName(selectedDate)}, {selectedDate.getDate()} {banglaMonths[selectedDate.getMonth()]}, {selectedDate.getFullYear()}
+            {t("selectedDatePrefix", language)} {getDayName(selectedDate, language)}, {convertToBengaliNumber(selectedDate.getDate(), language)} {t(`month_${selectedDate.getMonth()}` as any, language)}, {convertToBengaliNumber(selectedDate.getFullYear(), language)}
           </p>
         </div>
       )}

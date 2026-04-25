@@ -20,14 +20,21 @@ export default function DiagnosticInvoice({
   return (
     <Card className="overflow-hidden border border-slate-200 shadow-lg">
       {/* Teal Header */}
-      <div className="bg-[#004B50] text-white px-8 py-6 flex justify-between items-start">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{selectedVenue?.name || 'MediTime Diagnostics'}</h1>
-          <p className="text-white/60 text-sm mt-1">Booked via MediTime Portal</p>
+      <div className="bg-[#004B50] text-white px-8 py-6">
+        <div className="flex justify-center mb-6">
+          <div className="bg-white p-2 rounded-xl">
+            <img src="/logo.png" alt="MediTime Logo" className="h-8 w-auto" />
+          </div>
         </div>
-        <div className="text-right">
-          <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Booking Reference</p>
-          <p className="text-lg font-bold text-[#FFD700] mt-0.5">{bookingRef}</p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">{selectedVenue?.name || 'MediTime Diagnostics'}</h1>
+            <p className="text-white/60 text-sm mt-1">Booked via MediTime Portal</p>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Booking Reference</p>
+            <p className="text-lg font-bold text-[#FFD700] mt-0.5">{bookingRef}</p>
+          </div>
         </div>
       </div>
 
