@@ -13,7 +13,10 @@ export async function GET(req: Request) {
     
     let query: any = {};
     if (search) {
-       query.patientName = { $regex: search, $options: 'i' };
+       query.$or = [
+         { patientName: { $regex: search, $options: 'i' } },
+         { bookingId: { $regex: search, $options: 'i' } }
+       ];
     }
     if (status) {
        query.status = status;
@@ -26,6 +29,20 @@ export async function GET(req: Request) {
     return NextResponse.json({ bookings }, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching admin diagnostic bookings:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error", details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    await dbConnect();
+    await DiagnosticBooking.deleteMany({});
+    return NextResponse.json({ message: "All booking history cleared" }, { status: 200 });
+  } catch (error: any) {
+    console.error("Error clearing diagnostic bookings:", error);
     return NextResponse.json(
       { error: "Internal Server Error", details: error.message },
       { status: 500 }

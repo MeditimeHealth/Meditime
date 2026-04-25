@@ -32,8 +32,12 @@ export default function DiagnosticInvoice({
             <p className="text-white/60 text-sm mt-1">Booked via MediTime Portal</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Booking Reference</p>
-            <p className="text-lg font-bold text-[#FFD700] mt-0.5">{bookingRef}</p>
+            {bookingRef && bookingRef !== "PENDING" && (
+              <>
+                <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Booking ID</p>
+                <p className="text-lg font-bold text-[#FFD700] mt-0.5">{bookingRef}</p>
+              </>
+            )}
           </div>
         </div>
       </div>

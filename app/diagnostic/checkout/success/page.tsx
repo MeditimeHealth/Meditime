@@ -45,9 +45,8 @@ export default function DiagnosticSuccessPage() {
   }, [router]);
 
   const bookingRef = useMemo(() => {
-    const id = selectedVenue?._id || "000";
-    return `#MDT-${id.slice(-6).toUpperCase()}-${Date.now().toString(36).toUpperCase().slice(-4)}`;
-  }, [selectedVenue?._id]);
+    return savedBookingData?.bookingId || "";
+  }, [savedBookingData]);
 
   const handleBook = async () => {
     setSubmitting(true);
@@ -70,6 +69,7 @@ export default function DiagnosticSuccessPage() {
         appointmentDate: checkoutData.appointmentDate,
         venueId: selectedVenue._id,
         tests: bookedTests,
+        affiliateCode: checkoutData.affiliateCode,
         totalPrice: bookedTests.reduce((a: number, b: any) => a + (b.price || 0), 0)
       };
 
@@ -83,12 +83,13 @@ export default function DiagnosticSuccessPage() {
         throw new Error("Failed to secure diagnostic booking.");
       }
 
-      const bookingSaved = await res.json();
+      const responseData = await res.json();
+      const confirmedBooking = responseData.booking;
       
-      // Store rich data
+      // Store rich data 
       const bookingToSave = {
-        ...bookingSaved.booking,
-        bookingRef,
+        ...confirmedBooking, 
+        bookingId: confirmedBooking.bookingId,
         venueId: selectedVenue,
         tests: bookedTests
       };
@@ -129,9 +130,9 @@ export default function DiagnosticSuccessPage() {
         venueId: selectedVenue,
         tests: bookedTests,
         totalPrice: bookedTests.reduce((a: number, b: any) => a + (b.price || 0), 0),
-        bookingRef
+        bookingId: bookingRef, 
       };
-      await generateDiagnosticBookingPDF(fallbackBooking);
+      await generateDiagnosticBookingPDF(fallbackBooking as any);
     }
   };
 

@@ -10,6 +10,15 @@ export async function POST(req: Request) {
     await dbConnect();
     const body = await req.json();
 
+    // Generate unique 8-digit ID
+    let bookingId = "";
+    let isUnique = false;
+    while (!isUnique) {
+      bookingId = `MDT-${Math.floor(10000000 + Math.random() * 90000000)}`;
+      const existing = await DiagnosticBooking.findOne({ bookingId });
+      if (!existing) isUnique = true;
+    }
+
     const newBooking = new DiagnosticBooking({
       userId: body.userId ? new mongoose.Types.ObjectId(body.userId) : undefined,
       patientName: body.patientName,
@@ -21,7 +30,9 @@ export async function POST(req: Request) {
       venueId: body.venueId,
       tests: body.tests,
       totalPrice: body.totalPrice,
-      status: 'Confirmed'
+      affiliateCode: body.affiliateCode,
+      bookingId,
+      status: 'Pending'
     }); 
 
     await newBooking.save();

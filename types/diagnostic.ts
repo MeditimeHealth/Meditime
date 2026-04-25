@@ -52,6 +52,7 @@ export interface DiagnosticBookingRecord {
   status?: string;
   totalPrice?: number;
   bookingRef?: string;
+  bookingId?: string;
   venueId?: Hospital | any;
   tests?: BookedTest[];
 }

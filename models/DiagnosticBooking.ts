@@ -8,7 +8,8 @@ export interface IDiagnosticBooking extends Document {
   age?: number;
   patientType: 'new' | 'old' | 'report';
   appointmentDate: Date;
-  status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
+  status: 'Pending' | 'Accepted' | 'Completed' | 'Cancelled';
+  bookingId: string;
   venueId: mongoose.Types.ObjectId;
   tests: {
     _id: mongoose.Types.ObjectId;
@@ -17,6 +18,7 @@ export interface IDiagnosticBooking extends Document {
     nameBn?: string;
   }[];
   totalPrice: number;
+  affiliateCode?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -54,8 +56,8 @@ const diagnosticBookingSchema = new Schema<IDiagnosticBooking>(
     },
     status: {
       type: String,
-      enum: ['Pending', 'Confirmed', 'Completed', 'Cancelled'],
-      default: 'Confirmed',
+      enum: ['Pending', 'Accepted', 'Completed', 'Cancelled'],
+      default: 'Pending',
     },
     venueId: {
       type: Schema.Types.ObjectId,
@@ -82,6 +84,13 @@ const diagnosticBookingSchema = new Schema<IDiagnosticBooking>(
     totalPrice: {
       type: Number,
       required: true,
+    },
+    affiliateCode: {
+      type: String,
+    },
+    bookingId: {
+      type: String,
+      default: null,
     },
   },
   {

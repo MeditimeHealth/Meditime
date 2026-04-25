@@ -67,10 +67,16 @@ export default function DiagnosticHistoryModal({
                   <div className="flex flex-col md:flex-row justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-3 mb-2">
-                        <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${booking.status === 'Completed' ? 'bg-green-100 text-green-700' : booking.status === 'Cancelled' ? 'bg-red-100 text-red-700' : 'bg-[#00B7B5]/10 text-[#00B7B5]'}`}>
-                          {booking.status || 'Confirmed'}
+                        <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${
+                          booking.status === 'Completed' ? 'bg-green-100 text-green-700' : 
+                          booking.status === 'Cancelled' ? 'bg-red-100 text-red-700' : 
+                          booking.status === 'Accepted' ? 'bg-blue-100 text-blue-700' : 
+                          'bg-yellow-100 text-yellow-700'
+                        }`}>
+                          {booking.status || 'Pending'}
                         </span>
                         <span className="text-sm font-bold text-slate-900">{new Date(booking.appointmentDate).toISOString().split('T')[0]}</span>
+                        <span className="text-xs font-medium text-slate-400">ID: {booking.bookingId || booking._id?.slice(-8).toUpperCase() || 'N/A'}</span>
                       </div>
                       <p className="font-bold text-slate-800 text-lg">{booking.tests?.map((t: any) => t.name).join(", ")}</p>
                       <p className="text-sm text-slate-500 flex items-center gap-1 mt-1">

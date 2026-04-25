@@ -13,7 +13,13 @@ export const generateDiagnosticBookingPDF = async (booking: DiagnosticBookingRec
     const totalPrice = booking.totalPrice || bookedTests.reduce((a, b) => a + (b.price || 0), 0);
     const selectedVenue = booking.venueId || {};
     
-    const bookingRef = booking.bookingRef || `#MDT-${(selectedVenue._id || "000").slice(-6).toUpperCase()}-${Date.now().toString(36).toUpperCase().slice(-4)}`;
+    // Robustly extract the booking ID
+    const bookingRef = (booking as any).bookingId || 
+                       (booking as any).booking_id || 
+                       (booking as any).bookingRef || 
+                       (booking as any)._id?.toString().slice(-8).toUpperCase() ||
+                       "N/A";
+                       
     const appointmentDate = new Date(booking.appointmentDate).toLocaleDateString('en-US', { 
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
     });
@@ -68,9 +74,10 @@ export const generateDiagnosticBookingPDF = async (booking: DiagnosticBookingRec
     
     // Booking reference (right side)
     doc.setFontSize(7);
-    doc.text('BOOKING REFERENCE', W - M, 22, { align: 'right' });
+    doc.text('BOOKING ID', W - M, 22, { align: 'right' });
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 184, 0); // Use brand yellow/orange for the ID
     doc.text(bookingRef, W - M, 29, { align: 'right' });
 
     // ─────── DIVIDER LINE ───────
@@ -249,7 +256,7 @@ export const generateDiagnosticBookingPDF = async (booking: DiagnosticBookingRec
     doc.text(`Generated on ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, W / 2, footerY + 4, { align: 'center' });
 
     // Save
-    const fileName = `MediTime_Booking_${(booking.patientName || 'Receipt').replace(/\s+/g, '_')}.pdf`;
+    const fileName = `MediTime_Booking_${bookingRef}.pdf`;
     doc.save(fileName);
     
   } catch (err) {
