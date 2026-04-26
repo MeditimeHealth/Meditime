@@ -154,6 +154,13 @@ function DoctorListPageContent() {
   const { language } = useLanguage();
   const t = homepageTranslations[language].doctorsPage;
 
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [totalDoctors, setTotalDoctors] = useState(0);
+  const observerTarget = useRef<HTMLDivElement>(null);
+
   // Carousel ref
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -162,17 +169,46 @@ function DoctorListPageContent() {
 
 
 
-  const fetchDoctors = async () => {
+  const fetchDoctors = async (pageNum: number, isNewFilter: boolean = false) => {
     try {
-      const response = await fetch("/api/doctors");
+      if (pageNum > 1) setLoadingMore(true);
+      else setLoading(true);
+
+      const params = new URLSearchParams();
+      params.append("page", pageNum.toString());
+      params.append("limit", "12");
+      if (searchQuery) params.append("search", searchQuery);
+      if (selectedSpecialty) params.append("specialty", selectedSpecialty);
+      if (selectedHospital) params.append("hospital", selectedHospital);
+      if (selectedDepartment) params.append("department", selectedDepartment);
+      if (selectedDivision) params.append("division", selectedDivision);
+      if (selectedDistrict) params.append("district", selectedDistrict);
+      if (selectedThana) params.append("thana", selectedThana);
+      if (selectedQualification) params.append("qualification", selectedQualification);
+      if (minFee) params.append("minFee", minFee);
+      if (maxFee) params.append("maxFee", maxFee);
+      if (minRating) params.append("minRating", minRating);
+      if (selectedDays.length > 0) params.append("days", selectedDays.join(","));
+      params.append("sortBy", sortBy);
+      params.append("sortDirection", sortDirection);
+
+      const response = await fetch(`/api/doctors?${params.toString()}`);
       const data = await response.json();
+      
       if (response.ok) {
-        setDoctors(data.doctors);
+        if (isNewFilter) {
+          setDoctors(data.doctors);
+        } else {
+          setDoctors(prev => [...prev, ...data.doctors]);
+        }
+        setTotalDoctors(data.total);
+        setHasMore(data.page < data.totalPages);
       }
     } catch (error) {
       console.error("Error fetching doctors:", error);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -253,11 +289,55 @@ function DoctorListPageContent() {
   );
 
   useEffect(() => {
-    fetchDoctors();
     fetchHospitals();
     fetchDivisions();
     fetchDepartments();
   }, []);
+
+  // Fetch doctors when filters change
+  useEffect(() => {
+    setPage(1);
+    fetchDoctors(1, true);
+  }, [
+    searchQuery,
+    selectedSpecialty,
+    selectedHospital,
+    selectedDepartment,
+    selectedDivision,
+    selectedDistrict,
+    selectedThana,
+    selectedQualification,
+    minFee,
+    maxFee,
+    minRating,
+    selectedDays,
+    sortBy,
+    sortDirection
+  ]);
+
+  // Infinite scroll effect
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
+          const nextPage = page + 1;
+          setPage(nextPage);
+          fetchDoctors(nextPage);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [hasMore, loading, loadingMore, page]);
 
   useEffect(() => {
     if (selectedDivision && divisions.length > 0) {
@@ -370,178 +450,7 @@ function DoctorListPageContent() {
   }, [searchQuery, doctors, hospitals]);
 
   // Filter and sort doctors
-  const filteredAndSortedDoctors = useMemo(() => {
-    let filtered = [...doctors];
-
-    // Language-based filter: Ensure doctor has at least one name
-    filtered = filtered.filter((doctor) => {
-      const nameEn = doctor.name && doctor.name.trim() !== '';
-      const nameBn = doctor.nameBn && doctor.nameBn.trim() !== '';
-      return nameEn || nameBn;
-    });
-
-    // Search filter (searches across name, specialty, hospital, qualification, bio, and location)
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((doctor) => {
-        const name = getLocalizedValue(doctor.name, doctor.nameBn, language);
-        const specialty = getLocalizedValue(doctor.specialty, doctor.specialtyBn, language);
-        const hospital = getLocalizedValue(doctor.hospital, doctor.hospitalBn, language);
-        const qualification = getLocalizedValue(doctor.qualification, doctor.qualificationBn, language);
-        const bio = getLocalizedValue(doctor.bio, doctor.bioBn, language);
-        
-        return (
-          name?.toLowerCase().includes(query) ||
-          specialty?.toLowerCase().includes(query) ||
-          hospital?.toLowerCase().includes(query) ||
-          qualification?.toLowerCase().includes(query) ||
-          bio?.toLowerCase().includes(query) ||
-          doctor.division?.toLowerCase().includes(query) ||
-          doctor.district?.toLowerCase().includes(query) ||
-          doctor.thana?.toLowerCase().includes(query) ||
-          doctor.department?.toLowerCase().includes(query)
-        );
-      });
-    }
-
-    // Specialty filter
-    if (selectedSpecialty) {
-      filtered = filtered.filter(
-        (doctor) => doctor.specialty === selectedSpecialty,
-      );
-    }
-
-    // Hospital filter
-    if (selectedHospital) {
-      filtered = filtered.filter(
-        (doctor) => doctor.hospital === selectedHospital,
-      );
-    }
-
-    // Department filter
-    if (selectedDepartment) {
-      filtered = filtered.filter(
-        (doctor) => doctor.department === selectedDepartment,
-      );
-    }
-
-    // Division filter
-    if (selectedDivision) {
-      const divQuery = selectedDivision.toLowerCase().trim();
-      filtered = filtered.filter(
-        (doctor) => doctor.division?.toLowerCase().trim() === divQuery
-      );
-    }
-
-    // District filter
-    if (selectedDistrict) {
-      const distQuery = selectedDistrict.toLowerCase().trim();
-      filtered = filtered.filter(
-        (doctor) => doctor.district?.toLowerCase().trim() === distQuery
-      );
-    }
-
-    // Thana filter
-    if (selectedThana) {
-      const thanaQuery = selectedThana.toLowerCase().trim();
-      filtered = filtered.filter(
-        (doctor) => doctor.thana?.toLowerCase().trim() === thanaQuery
-      );
-    }
-
-    // Qualification filter
-    if (selectedQualification) {
-      filtered = filtered.filter(
-        (doctor) => doctor.qualification === selectedQualification,
-      );
-    }
-
-    // Fee filter
-    if (minFee) {
-      filtered = filtered.filter(
-        (doctor) => doctor.consultationFee >= parseFloat(minFee),
-      );
-    }
-    if (maxFee) {
-      filtered = filtered.filter(
-        (doctor) => doctor.consultationFee <= parseFloat(maxFee),
-      );
-    }
-
-    // Rating filter
-    if (minRating) {
-      filtered = filtered.filter(
-        (doctor) => (doctor.rating || 0) >= parseFloat(minRating),
-      );
-    }
-
-    // Availability days filter
-    if (selectedDays.length > 0) {
-      filtered = filtered.filter((doctor) => {
-        // Handle backward compatibility - convert old format to array
-        const slots = Array.isArray(doctor.availability)
-          ? doctor.availability
-          : [doctor.availability];
-        return slots.some((slot) =>
-          selectedDays.some((day) => slot.days.includes(day)),
-        );
-      });
-    }
-
-    // Sorting
-    filtered.sort((a, b) => {
-      let aVal: string | number;
-      let bVal: string | number;
-
-      switch (sortBy) {
-        case "name":
-          aVal = a.name.toLowerCase();
-          bVal = b.name.toLowerCase();
-          break;
-        case "consultationFee":
-          aVal = a.consultationFee;
-          bVal = b.consultationFee;
-          break;
-        case "rating":
-          aVal = a.rating || 0;
-          bVal = b.rating || 0;
-          break;
-        case "specialty":
-          aVal = a.specialty.toLowerCase();
-          bVal = b.specialty.toLowerCase();
-          break;
-        case "hospital":
-          aVal = (a.hospital || "").toLowerCase();
-          bVal = (b.hospital || "").toLowerCase();
-          break;
-        default:
-          return 0;
-      }
-
-      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
-      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
-      return 0;
-    });
-
-    return filtered;
-  }, [
-    doctors,
-    searchQuery,
-    selectedSpecialty,
-    selectedHospital,
-    selectedQualification,
-    minFee,
-    maxFee,
-    minRating,
-    selectedDays,
-    selectedDepartment,
-    sortBy,
-    sortDirection,
-    language,
-    selectedDivision,
-    selectedDistrict,
-    selectedThana
-  ]);
+  const filteredAndSortedDoctors = doctors;
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -1359,11 +1268,11 @@ function DoctorListPageContent() {
                   <span>
                     {t.showing}{" "}
                     <span className="text-primary font-bold text-lg">
-                      {filteredAndSortedDoctors.length}
+                      {doctors.length}
                     </span>{" "}
                     {t.of}{" "}
                     <span className="text-primary font-bold text-lg">
-                      {doctors.length}
+                      {totalDoctors}
                     </span>{" "}
                     {t.totalDoctors}
                   </span>
@@ -1424,18 +1333,32 @@ function DoctorListPageContent() {
           </motion.div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {filteredAndSortedDoctors.map((doctor, index) => {
+            {doctors.map((doctor, index) => {
               const matchedHospital = hospitals.find(h => h.name === doctor.hospital);
               const doctorWithBnHospital = {
                 ...doctor,
                 hospitalBn: matchedHospital?.nameBn || doctor.hospitalBn || ""
               };
               return (
-                <DoctorCard key={doctor._id} doctor={doctorWithBnHospital} index={index} />
+                <DoctorCard key={`${doctor._id}-${index}`} doctor={doctorWithBnHospital} index={index} />
               );
             })}
           </div>
         )}
+
+        {/* Loading Indicator for Infinite Scroll */}
+        <div ref={observerTarget} className="py-10 flex justify-center w-full">
+          {loadingMore && (
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full"
+            />
+          )}
+          {!hasMore && doctors.length > 0 && (
+            <p className="text-gray-500 font-medium">{language === 'bn' ? 'আর কোনো ডাক্তার নেই' : 'No more doctors to show'}</p>
+          )}
+        </div>
       </div>
       <Footer />
     </div>

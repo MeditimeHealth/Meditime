@@ -27,8 +27,10 @@ export default function DoctorsPage() {
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterLanguage, setFilterLanguage] = useState<'en' | 'bn'>('en');
-  const { language: currentLanguage } = useLanguage();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 12;
+  const { language: currentLanguage, setLanguage } = useLanguage();
 
   const getBengaliDay = (day: string): string => {
     const dayIndex = daysOfWeek.indexOf(day);
@@ -65,9 +67,9 @@ export default function DoctorsPage() {
   };
 
   useEffect(() => {
-    fetchDoctors();
+    fetchDoctors(currentPage);
     fetchHospitals();
-  }, []);
+  }, [currentPage, searchQuery]);
 
   const fetchHospitals = async () => {
     try {
@@ -81,13 +83,22 @@ export default function DoctorsPage() {
     }
   };
 
-  const fetchDoctors = async () => {
+  const fetchDoctors = async (page: number) => {
     try {
-      const response = await fetch("/api/doctors");
+      setLoading(true);
+      const params = new URLSearchParams();
+      params.append("page", page.toString());
+      params.append("limit", limit.toString());
+      if (searchQuery) params.append("search", searchQuery);
+      
+      const response = await fetch(`/api/doctors?${params.toString()}`);
       const data = await response.json();
       if (response.ok) {
         setDoctors(data.doctors || []);
-        setTotal(data.total || data.doctors?.length || 0);
+        setTotal(data.total || 0);
+        setTotalPages(data.totalPages || 1);
+      } else {
+        showToast.error(data.error || "Failed to fetch doctors");
       }
     } catch (error) {
       console.error("Error fetching doctors:", error);
@@ -120,24 +131,25 @@ export default function DoctorsPage() {
   };
 
   const filteredDoctors = doctors.filter(doctor => {
-    // 1. Language Filter Logic
-    const hasEnglish = !!doctor.name;
-    const hasBangla = !!doctor.nameBn;
-
-    if (filterLanguage === 'en' && !hasEnglish) return false;
-    if (filterLanguage === 'bn' && !hasBangla) return false;
-
-    // 2. Search Query Logic
-    const query = searchQuery.toLowerCase().trim();
-    if (!query) return true;
-
-    return (
-      doctor.name.toLowerCase().includes(query) ||
-      doctor.nameBn?.includes(query) ||
-      doctor.specialty?.toLowerCase().includes(query) ||
-      doctor.specialtyBn?.includes(query)
-    );
+    // Show doctor if they have at least one name (English or Bangla)
+    return !!doctor.name || !!doctor.nameBn;
   });
+
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+    return pageNumbers;
+  };
 
   if (loading && doctors.length === 0) {
     return (
@@ -176,7 +188,10 @@ export default function DoctorsPage() {
             type="text"
             placeholder={currentLanguage === 'bn' ? 'ডাক্তারের নাম বা বিশেষজ্ঞ দিয়ে খুঁজুন...' : 'Search by name or specialty...'}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
             className="pl-16 h-16 text-xl border-2 border-gray-100 rounded-[1.5rem] bg-white shadow-lg shadow-gray-100/50 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all pr-6 font-bold placeholder:text-gray-300"
           />
         </div>
@@ -186,8 +201,8 @@ export default function DoctorsPage() {
              <Globe className="h-5 w-5 text-gray-400 stroke-[2.5]" />
            </div>
            <select 
-             value={filterLanguage}
-             onChange={(e) => setFilterLanguage(e.target.value as any)}
+             value={currentLanguage}
+             onChange={(e) => setLanguage(e.target.value as any)}
              className="w-full h-16 pl-14 pr-10 text-lg border-2 border-gray-100 rounded-[1.5rem] bg-white shadow-lg shadow-gray-100/50 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-bold appearance-none cursor-pointer"
            >
              <option value="en">{currentLanguage === 'bn' ? 'ইংরেজি' : 'English'}</option>
@@ -232,7 +247,7 @@ export default function DoctorsPage() {
                 key={doctor._id} 
                 doctor={enrichedDoctor} 
                 disableLink={true}
-                language={filterLanguage}
+                language={currentLanguage}
                 actions={
                   <>
                     <Link href={`/admin/doctors/edit/${doctor._id}`} className="flex-1">
@@ -254,6 +269,44 @@ export default function DoctorsPage() {
               />
             );
           })}
+        </div>
+      )}
+
+      {/* Pagination UI */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 pt-8 pb-12">
+          <Button
+            variant="outline"
+            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
+            className="h-12 w-12 rounded-xl border-2 font-bold"
+          >
+            {"<"}
+          </Button>
+
+          {getPageNumbers().map(pageNum => (
+            <Button
+              key={pageNum}
+              variant={currentPage === pageNum ? "default" : "outline"}
+              onClick={() => setCurrentPage(pageNum)}
+              className={`h-12 w-12 rounded-xl border-2 font-bold transition-all ${
+                currentPage === pageNum 
+                ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-110" 
+                : "hover:border-primary hover:text-primary"
+              }`}
+            >
+              {pageNum}
+            </Button>
+          ))}
+
+          <Button
+            variant="outline"
+            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+            disabled={currentPage === totalPages}
+            className="h-12 w-12 rounded-xl border-2 font-bold"
+          >
+            {">"}
+          </Button>
         </div>
       )}
     </div>

@@ -12,32 +12,90 @@ export async function GET(request: NextRequest) {
   try {
     await dbConnect();
     const { searchParams } = new URL(request.url);
+    
+    // Pagination
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const skip = (page - 1) * limit;
+
+    // Filters
+    const search = searchParams.get("search");
+    const specialty = searchParams.get("specialty");
     const hospital = searchParams.get("hospital");
     const division = searchParams.get("division");
     const district = searchParams.get("district");
     const thana = searchParams.get("thana");
     const department = searchParams.get("department");
+    const qualification = searchParams.get("qualification");
+    const minFee = searchParams.get("minFee");
+    const maxFee = searchParams.get("maxFee");
+    const days = searchParams.get("days")?.split(","); // Array of days
+    const minRating = searchParams.get("minRating");
+
+    // Sorting
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortDirection = searchParams.get("sortDirection") === "asc" ? 1 : -1;
 
     let query: any = {};
-    if (hospital) {
-      query.hospital = hospital;
-    }
-    if (division) {
-      query.division = division;
-    }
-    if (district) {
-      query.district = district;
-    }
-    if (thana) {
-      query.thana = thana;
-    }
-    if (department) {
-      query.department = department;
+
+    // Text search across multiple fields
+    if (search) {
+      const searchRegex = new RegExp(search, "i");
+      query.$or = [
+        { name: searchRegex },
+        { nameBn: searchRegex },
+        { specialty: searchRegex },
+        { specialtyBn: searchRegex },
+        { hospital: searchRegex },
+        { qualification: searchRegex },
+        { qualificationBn: searchRegex },
+        { bio: searchRegex },
+        { bioBn: searchRegex },
+        { designation: searchRegex },
+        { designationBn: searchRegex }
+      ];
     }
 
-    const doctors = await Doctor.find(query).sort({ createdAt: -1 });
-    const total = await Doctor.countDocuments(query);
-    return NextResponse.json({ doctors, total }, { status: 200 });
+    // Exact matches
+    if (specialty) query.specialty = specialty;
+    if (hospital) query.hospital = hospital;
+    if (division) query.division = new RegExp(`^${division}$`, "i");
+    if (district) query.district = new RegExp(`^${district}$`, "i");
+    if (thana) query.thana = new RegExp(`^${thana}$`, "i");
+    if (department) query.department = department;
+    if (qualification) query.qualification = qualification;
+
+    // Range filters
+    if (minFee || maxFee) {
+      query.consultationFee = {};
+      if (minFee) query.consultationFee.$gte = parseFloat(minFee);
+      if (maxFee) query.consultationFee.$lte = parseFloat(maxFee);
+    }
+
+    if (minRating) {
+      query.rating = { $gte: parseFloat(minRating) };
+    }
+
+    // Availability days filter
+    if (days && days.length > 0) {
+      query["availability.days"] = { $in: days };
+    }
+
+    const [doctors, total] = await Promise.all([
+      Doctor.find(query)
+        .sort({ [sortBy]: sortDirection })
+        .skip(skip)
+        .limit(limit),
+      Doctor.countDocuments(query)
+    ]);
+
+    return NextResponse.json({ 
+      doctors, 
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    }, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching doctors:", error);
     return NextResponse.json(
