@@ -154,13 +154,13 @@ export default function BlogSection() {
           {/* Nav arrows */}
           <button
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute -left-4 top-[30%] -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white shadow-md border border-slate-200 items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
+            className="absolute -left-2 top-[30%] -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white shadow-md border border-slate-200 items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute -right-4 top-[30%] -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white shadow-md border border-slate-200 items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
+            className="absolute -right-2 top-[30%] -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white shadow-md border border-slate-200 items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

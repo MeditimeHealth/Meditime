@@ -126,14 +126,14 @@ export default function HospitalPartnersSection() {
           {/* Nav arrows — outside left/right */}
           <button
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
+            className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
             aria-label="Previous"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
+            className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
             aria-label="Next"
           >
             <ChevronRight className="w-5 h-5" />

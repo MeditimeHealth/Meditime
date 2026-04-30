@@ -123,10 +123,16 @@ export async function POST(request: NextRequest) {
 
     // Verify doctor exists
     let doctor;
-    if (doctorId.match(/^[0-9a-fA-F]{24}$/)) {
-      doctor = await Doctor.findById(doctorId);
-    } else {
-      doctor = await Doctor.findOne({ slug: doctorId });
+    const trimmedDoctorId = doctorId.trim();
+    
+    // 1. Try finding by ID if it's a valid ObjectId
+    if (trimmedDoctorId.match(/^[0-9a-fA-F]{24}$/)) {
+      doctor = await Doctor.findById(trimmedDoctorId);
+    }
+    
+    // 2. Fallback to finding by slug if not found by ID or not a valid ObjectId
+    if (!doctor) {
+      doctor = await Doctor.findOne({ slug: trimmedDoctorId });
     }
 
     if (!doctor) {

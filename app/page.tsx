@@ -17,7 +17,7 @@ import Footer from "@/components/footer";
 
 export default function Home() {
   return (
-    <div>
+    <div className="overflow-x-hidden relative">
       <Navbar />
       <HeroSection />
       <SearchSection />

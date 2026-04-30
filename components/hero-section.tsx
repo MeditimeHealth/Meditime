@@ -126,7 +126,7 @@ export default function HeroSection() {
       </div>
 
       {/* ── DESKTOP ─────────────────────────────────────────────────────── */}
-      <div className="hidden lg:block align-center justify-center mx-auto w-[1920px] h-[855px] relative mt-[64px]">
+      <div className="hidden lg:block mx-auto max-w-[1920px] w-full h-[855px] relative mt-[64px]">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}

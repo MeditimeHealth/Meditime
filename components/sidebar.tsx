@@ -297,13 +297,7 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <Link
-                    href="/admin/settings"
-                    className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    <Settings className="h-4 w-4" />
-                    {language === 'bn' ? 'প্রোফাইল সেটিংস' : 'Profile Settings'}
-                  </Link>
+                 
                   <button
                     onClick={onLogout}
                     className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"

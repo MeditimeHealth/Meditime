@@ -301,7 +301,7 @@ export default function BookAppointmentPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          doctorId,
+          doctorId: doctor?._id || doctorId,
           patientName,
           mobileNumber,
           gender: gender || undefined,

@@ -326,7 +326,7 @@ export default function DepartmentSection() {
           {/* Left arrow */}
           <button
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute -left-5 lg:-left-8 top-1/2 -translate-y-1/2 z-10 text-slate-400 hover:text-primary transition-colors"
+            className="absolute -left-2 lg:-left-4 top-1/2 -translate-y-1/2 z-10 text-slate-400 hover:text-primary transition-colors"
             aria-label="Previous"
           >
             <ChevronLeft className="w-7 h-7" strokeWidth={1.8} />
@@ -335,7 +335,7 @@ export default function DepartmentSection() {
           {/* Right arrow */}
           <button
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute -right-5 lg:-right-8 top-1/2 -translate-y-1/2 z-10 text-slate-400 hover:text-primary transition-colors"
+            className="absolute -right-2 lg:-right-4 top-1/2 -translate-y-1/2 z-10 text-slate-400 hover:text-primary transition-colors"
             aria-label="Next"
           >
             <ChevronRight className="w-7 h-7" strokeWidth={1.8} />

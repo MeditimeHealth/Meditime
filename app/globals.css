@@ -267,6 +267,7 @@ p, span, div, a, li, input, button, select, textarea {
 /* Ensure proper scrolling behavior */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 /* Fix for nested scrollable containers */
