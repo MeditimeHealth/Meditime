@@ -32,9 +32,10 @@ import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
 interface User {
   id: string;
-  fullName: string;
+  fullName?: string;
+  username?: string;
   email?: string;
-  phoneNumber: string;
+  phoneNumber?: string;
 }
 
 interface SidebarProps {
@@ -281,12 +282,12 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <span className="text-primary font-semibold">
-                      {user.fullName.charAt(0).toUpperCase()}
+                      {(user.fullName || user.username || 'A').charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">
-                      {user.fullName}
+                      {user.fullName || user.username}
                     </p>
                     {user.email && (
                       <p className="text-xs text-gray-500 truncate">
@@ -295,13 +296,22 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
                     )}
                   </div>
                 </div>
-                <button
-                  onClick={onLogout}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <LogOut className="h-4 w-4" />
-                  {language === 'bn' ? 'লগআউট' : 'Logout'}
-                </button>
+                <div className="flex flex-col gap-1">
+                  <Link
+                    href="/admin/settings"
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <Settings className="h-4 w-4" />
+                    {language === 'bn' ? 'প্রোফাইল সেটিংস' : 'Profile Settings'}
+                  </Link>
+                  <button
+                    onClick={onLogout}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    {language === 'bn' ? 'লগআউট' : 'Logout'}
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="text-center py-4">

@@ -87,12 +87,12 @@ export default function UserLayout({
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <main className="flex-1 lg:mr-64 overflow-y-auto">
-        <div className="p-6 lg:p-8">
+      <UserSidebar user={user} onLogout={handleLogout} />
+      <main className="flex-1 lg:ml-64 overflow-y-auto">
+        <div className="p-6 lg:p-10">
           {children}
         </div>
       </main>
-      <UserSidebar user={user} onLogout={handleLogout} />
     </div>
   );
 }

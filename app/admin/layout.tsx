@@ -6,9 +6,11 @@ import Sidebar from "@/components/sidebar";
 
 interface User {
   id: string;
-  fullName: string;
+  fullName?: string;
+  username?: string;
   email?: string;
-  phoneNumber: string;
+  phoneNumber?: string;
+  role: string;
 }
 
 export default function AdminLayout({
@@ -23,13 +25,12 @@ export default function AdminLayout({
   useEffect(() => {
     const checkUser = () => {
       if (typeof window !== "undefined") {
-        const userData = localStorage.getItem("user");
+        const userData = localStorage.getItem("admin_user");
         if (userData) {
           try {
             setUser(JSON.parse(userData));
           } catch (error) {
-            console.error("Error parsing user data:", error);
-            localStorage.removeItem("user");
+            console.error("Error parsing admin data:", error);
           }
         }
       }
@@ -37,28 +38,30 @@ export default function AdminLayout({
     };
 
     checkUser();
+
+
     window.addEventListener("storage", checkUser);
-    window.addEventListener("userLogin", checkUser);
-    window.addEventListener("userLogout", checkUser);
+    window.addEventListener("adminLogin", checkUser);
+    window.addEventListener("adminLogout", checkUser);
 
     return () => {
       window.removeEventListener("storage", checkUser);
-      window.removeEventListener("userLogin", checkUser);
-      window.removeEventListener("userLogout", checkUser);
+      window.removeEventListener("adminLogin", checkUser);
+      window.removeEventListener("adminLogout", checkUser);
     };
   }, []);
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/auth/logout", {
+      await fetch("/api/admin/auth/logout", {
         method: "POST",
       });
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      localStorage.removeItem("user");
+      localStorage.removeItem("admin_user");
       setUser(null);
-      window.dispatchEvent(new Event("userLogout"));
+      window.dispatchEvent(new Event("adminLogout"));
       router.push("/");
       router.refresh();
     }

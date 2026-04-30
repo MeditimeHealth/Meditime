@@ -6,7 +6,7 @@ import BlogSidebarPhoto from "@/models/BlogSidebarPhoto";
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
-    const User = (await import("@/models/User")).default;
+    const Admin = (await import("@/models/Admin")).default;
     
     // Get userId from query params
     const { searchParams } = new URL(request.url);
@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
 
     // Verify admin access
     if (userId) {
-      const user = await User.findById(userId);
-      if (!user || user.role !== "admin") {
+      const admin = await Admin.findById(userId);
+      if (!admin || (admin.role !== "admin" && admin.role !== "superadmin")) {
         return NextResponse.json(
           { error: "Forbidden - Admin access required" },
           { status: 403 }

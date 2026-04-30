@@ -5,6 +5,7 @@ export interface IDoctor extends Document {
   specialty?: string;
   qualification: string;
   designation?: string;
+  slug: string;
 
 
   email?: string;
@@ -56,6 +57,12 @@ const DoctorSchema: Schema = new Schema(
     },
     designation: {
       type: String,
+      trim: true,
+    },
+    slug: {
+      type: String,
+      unique: true,
+      index: true,
       trim: true,
     },
 

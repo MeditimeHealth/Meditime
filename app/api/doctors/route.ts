@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Doctor from "@/models/Doctor";
 import mongoose from "mongoose";
+import { generateUniqueSlug } from "@/lib/slug";
+import { verifyAdmin } from "@/lib/auth";
 
 // Force model output refreshing
 // if (mongoose.models.Doctor) {
@@ -107,6 +109,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const isAdmin = await verifyAdmin(request);
+    if (!isAdmin) {
+      return NextResponse.json({ error: "Unauthorized. Admin access required." }, { status: 401 });
+    }
+
     await dbConnect();
 
     const body = await request.json();
@@ -197,6 +204,9 @@ export async function POST(request: NextRequest) {
     if (qualificationBn) doctorData.qualificationBn = qualificationBn;
     if (designationBn) doctorData.designationBn = designationBn;
     if (bioBn) doctorData.bioBn = bioBn;
+
+    // Generate slug
+    doctorData.slug = await generateUniqueSlug(doctorData.name || doctorData.nameBn || "doctor");
 
     // Log the data being sent for debugging
     console.log('Creating doctor with data:', JSON.stringify(doctorData, null, 2));

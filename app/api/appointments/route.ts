@@ -4,10 +4,16 @@ import Appointment from '@/models/Appointment';
 import Doctor from '@/models/Doctor';
 import Affiliate from '@/models/Affiliate';
 import User from '@/models/User';
+import { getSession } from '@/lib/auth';
 
 // GET - Fetch all appointments or filter by doctorId
 export async function GET(request: NextRequest) {
   try {
+    const session = await getSession(request);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized. Please login.' }, { status: 401 });
+    }
+
     await dbConnect();
 
     const { searchParams } = new URL(request.url);
@@ -17,17 +23,35 @@ export async function GET(request: NextRequest) {
 
     const query: any = {};
     if (doctorId) {
-      query.doctorId = doctorId;
+      if (doctorId.match(/^[0-9a-fA-F]{24}$/)) {
+        query.doctorId = doctorId;
+      } else {
+        const doctor = await Doctor.findOne({ slug: doctorId });
+        if (doctor) {
+          query.doctorId = doctor._id;
+        } else {
+          query.doctorId = doctorId; // Will likely return empty, which is correct
+        }
+      }
     }
     if (status) {
       query.status = status;
     }
     if (userId) {
+      // If not admin, they can only fetch their own appointments
+      if (session.role !== 'admin' && session.id !== userId) {
+        return NextResponse.json({ error: 'Forbidden. You can only view your own appointments.' }, { status: 403 });
+      }
       query.userId = userId;
     }
 
+    // If no filters provided and not admin, don't allow fetching all
+    if (!doctorId && !userId && !status && session.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden. Admin access required for global view.' }, { status: 403 });
+    }
+
     const appointments = await Appointment.find(query)
-      .populate('doctorId', 'name qualification department hospital image availability')
+      .populate('doctorId', 'name nameBn qualification qualificationBn department departmentBn hospital hospitalBn image availability slug')
       .populate('userId', 'fullName email phoneNumber')
       .populate('affiliateId', 'name affiliateCode email')
       .sort({ appointmentDate: -1, createdAt: -1 });
@@ -98,13 +122,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify doctor exists
-    const doctor = await Doctor.findById(doctorId);
+    let doctor;
+    if (doctorId.match(/^[0-9a-fA-F]{24}$/)) {
+      doctor = await Doctor.findById(doctorId);
+    } else {
+      doctor = await Doctor.findOne({ slug: doctorId });
+    }
+
     if (!doctor) {
       return NextResponse.json(
         { error: 'Doctor not found' },
         { status: 404 }
       );
     }
+
+    // Use the actual doctor _id for the appointment
+    const actualDoctorId = doctor._id;
 
     // Validate affiliate code if provided
     let affiliateId = undefined;
@@ -134,7 +167,7 @@ export async function POST(request: NextRequest) {
 
     // Create appointment (serial number will be assigned by admin when confirming)
     const appointment = await Appointment.create({
-      doctorId,
+      doctorId: actualDoctorId,
       patientName,
       mobileNumber,
       gender: gender || undefined,
@@ -151,7 +184,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Populate doctor info
-    await appointment.populate('doctorId', 'name qualification department hospital image');
+    await appointment.populate('doctorId', 'name qualification department hospital image slug');
 
     return NextResponse.json(
       { message: 'Appointment booked successfully', appointment },

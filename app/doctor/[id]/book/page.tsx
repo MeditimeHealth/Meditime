@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 import { ArrowLeft, MapPin, Loader2, RotateCcw, Ticket, Building2 } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "@/lib/toast";
@@ -333,7 +334,14 @@ export default function BookAppointmentPage() {
   };
 
   const changeMonth = (direction: number) => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + direction, 1));
+    const today = new Date();
+    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    const proposed = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + direction, 1);
+    // Only allow current month and next month
+    const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    if (proposed >= currentMonthStart && proposed <= nextMonth) {
+      setCurrentMonth(proposed);
+    }
   };
 
   if (loading) {
@@ -433,34 +441,51 @@ export default function BookAppointmentPage() {
                   Select Date
                 </h2>
 
+                {/* Calendar - smaller on desktop, larger text */}
+                <div className="max-w-md mx-auto lg:max-w-full">
                 {/* Calendar Header */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-4">
                   <button
                     onClick={() => changeMonth(-1)}
-                    className="p-2 rounded-lg hover:bg-primary/10 transition-colors"
+                    className="p-2 rounded-lg hover:bg-primary/10 transition-colors disabled:opacity-30"
+                    disabled={currentMonth.getMonth() === new Date().getMonth() && currentMonth.getFullYear() === new Date().getFullYear()}
                   >
                     <ArrowLeft className="h-5 w-5 text-primary" />
                   </button>
                   <h3
-                    className="text-xl font-bold text-gray-900"
+                    className="text-lg lg:text-xl font-bold text-gray-900"
                     style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                   >
                     {banglaMonths[currentMonthIndex]} {toBengaliNumber(currentYear)}
                   </h3>
                   <button
                     onClick={() => changeMonth(1)}
-                    className="p-2 rounded-lg hover:bg-primary/10 transition-colors"
+                    className="p-2 rounded-lg hover:bg-primary/10 transition-colors disabled:opacity-30"
+                    disabled={(() => { const n = new Date(); return currentMonth.getMonth() === n.getMonth() + 1 || (currentMonth.getMonth() === 11 && n.getMonth() === 10); })()}
                   >
                     <ArrowLeft className="h-5 w-5 text-primary rotate-180" />
                   </button>
                 </div>
 
+                {/* Unselect Date Button */}
+                {selectedDate && (
+                  <div className="mb-3 flex justify-end">
+                    <button
+                      onClick={() => setSelectedDate(null)}
+                      className="text-sm text-red-500 hover:text-red-700 font-medium flex items-center gap-1 transition-colors"
+                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                    >
+                      ✕ তারিখ বাতিল করুন
+                    </button>
+                  </div>
+                )}
+
                 {/* Calendar Days Header */}
-                <div className="grid grid-cols-7 gap-2 mb-4">
+                <div className="grid grid-cols-7 gap-1 mb-3">
                   {banglaDays.map((day, index) => (
                     <div
                       key={index}
-                      className="text-center font-semibold text-gray-700 py-2"
+                      className="text-center font-semibold text-gray-700 py-1 text-sm lg:text-base"
                       style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                     >
                       {day}
@@ -469,14 +494,14 @@ export default function BookAppointmentPage() {
                 </div>
 
                 {/* Calendar Grid */}
-                <div className="grid grid-cols-7 gap-2">
+                <div className="grid grid-cols-7 gap-1">
                   {calendarDays.map((date, index) => {
                     if (!date) {
                       return <div key={index} className="aspect-square" />;
                     }
 
-                    const isAvailable = isDateAvailable(date); // First 2 available dates (can be booked)
-                    const isInScheduleButNotAvailable = isDateInScheduleButNotAvailable(date); // In schedule but not first 2
+                    const isAvailable = isDateAvailable(date);
+                    const isInScheduleButNotAvailable = isDateInScheduleButNotAvailable(date);
                     const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
                     const isToday = date.toDateString() === new Date().toDateString();
 
@@ -491,7 +516,7 @@ export default function BookAppointmentPage() {
                           }
                         }}
                         disabled={!isAvailable}
-                        className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center ${
+                        className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center text-sm lg:text-base ${
                           isSelected
                             ? "text-white shadow-lg scale-110 ring-4 ring-orange-300"
                             : isAvailable
@@ -500,7 +525,7 @@ export default function BookAppointmentPage() {
                             ? "bg-blue-100 text-blue-700 border-2 border-blue-300 cursor-not-allowed opacity-75"
                             : "bg-gray-100 text-gray-400 cursor-not-allowed"
                         } ${isToday && !isSelected && !isAvailable ? "ring-2 ring-gray-400" : ""}`}
-                        style={{ 
+                        style={{
                           fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
                           backgroundColor: isSelected ? "#ff5e29" : undefined
                         }}
@@ -512,15 +537,16 @@ export default function BookAppointmentPage() {
                 </div>
 
                 {selectedDate && (
-                  <div className="mt-6 p-4 bg-primary/10 rounded-xl border-2 border-primary/20">
+                  <div className="mt-5 p-4 bg-primary/10 rounded-xl border-2 border-primary/20">
                     <p
-                      className="text-lg font-semibold text-gray-900"
+                      className="text-base font-semibold text-gray-900"
                       style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                     >
                       Selected Date: {getDayName(selectedDate)}, {selectedDate.getDate()} {banglaMonths[selectedDate.getMonth()]}, {selectedDate.getFullYear()}
                     </p>
                   </div>
                 )}
+                </div>
               </Card>
             )}
           </div>
@@ -714,6 +740,7 @@ export default function BookAppointmentPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

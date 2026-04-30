@@ -10,8 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import Navbar from "@/components/navbar";
-import Footer from "@/components/footer";
 import Image from "next/image";
 import {
   User,
@@ -31,8 +29,11 @@ import {
   AlertCircle,
   MapPin,
   Stethoscope,
+  ShieldCheck,
+  Award,
 } from "lucide-react";
 import { showToast } from "@/lib/toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { format } from "date-fns";
 
 const profileSchema = z
@@ -84,13 +85,17 @@ interface Appointment {
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   doctorId?: {
     name: string;
+    nameBn?: string;
     qualification?: string;
+    qualificationBn?: string;
     hospital?: string;
+    hospitalBn?: string;
   };
   createdAt: string;
 }
 
 export default function UserProfilePage() {
+  const { language } = useLanguage() as { language: "en" | "bn" };
   const [user, setUser] = useState<UserProfile | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -125,7 +130,6 @@ export default function UserProfilePage() {
       const parsedData = JSON.parse(userData);
       setUser(parsedData);
       
-      // Set form values
       setValue("fullName", parsedData.fullName || "");
       setValue("email", parsedData.email || "");
       setValue("phoneNumber", parsedData.phoneNumber || "");
@@ -138,7 +142,6 @@ export default function UserProfilePage() {
         setImagePreview(parsedData.photo);
       }
       
-      // Fetch user appointments
       if (parsedData.id) {
         fetchAppointments(parsedData.id);
       }
@@ -167,22 +170,22 @@ export default function UserProfilePage() {
 
   const getStatusBadge = (status: string) => {
     const styles = {
-      pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
-      confirmed: "bg-green-100 text-green-800 border-green-300",
-      cancelled: "bg-red-100 text-red-800 border-red-300",
-      completed: "bg-blue-100 text-blue-800 border-blue-300",
+      pending: "bg-amber-50 text-amber-700 border-amber-200/50 shadow-sm shadow-amber-500/10",
+      confirmed: "bg-emerald-50 text-emerald-700 border-emerald-200/50 shadow-sm shadow-emerald-500/10",
+      cancelled: "bg-rose-50 text-rose-700 border-rose-200/50 shadow-sm shadow-rose-500/10",
+      completed: "bg-blue-50 text-blue-700 border-blue-200/50 shadow-sm shadow-blue-500/10",
     };
 
     const labels = {
-      pending: "অপেক্ষমান",
-      confirmed: "নিশ্চিত",
-      cancelled: "বাতিল",
-      completed: "সম্পন্ন",
+      pending: language === 'bn' ? "অপেক্ষমান" : "Pending",
+      confirmed: language === 'bn' ? "নিশ্চিত" : "Confirmed",
+      cancelled: language === 'bn' ? "বাতিল" : "Cancelled",
+      completed: language === 'bn' ? "সম্পন্ন" : "Completed",
     };
 
     const icons = {
-      pending: AlertCircle,
-      confirmed: CheckCircle,
+      pending: Clock,
+      confirmed: ShieldCheck,
       cancelled: XCircle,
       completed: CheckCircle,
     };
@@ -191,9 +194,9 @@ export default function UserProfilePage() {
 
     return (
       <span
-        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold border-2 ${styles[status as keyof typeof styles] || styles.pending}`}
+        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold border ${styles[status as keyof typeof styles] || styles.pending} transition-all hover:scale-105`}
       >
-        <Icon className="h-4 w-4" />
+        <Icon className="h-3.5 w-3.5" />
         {labels[status as keyof typeof labels] || status}
       </span>
     );
@@ -206,18 +209,13 @@ export default function UserProfilePage() {
         showToast.error("Please select an image file");
         return;
       }
-      
       if (file.size > 10 * 1024 * 1024) {
         showToast.error("Image size must be less than 10MB");
         return;
       }
-
       setSelectedImage(file);
-      
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
+      reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
@@ -225,38 +223,27 @@ export default function UserProfilePage() {
   const uploadImage = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append("image", file);
-
-    const response = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-
+    const response = await fetch("/api/upload", { method: "POST", body: formData });
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.error || "Failed to upload image");
     }
-
     const data = await response.json();
     return data.url;
   };
 
   const onSubmit = async (data: ProfileFormValues) => {
     if (!user) return;
-
     setIsSaving(true);
     try {
       let photoUrl = data.photo;
-
-      // Upload new image if selected
       if (selectedImage) {
         setIsUploading(true);
         try {
           photoUrl = await uploadImage(selectedImage);
           setValue("photo", photoUrl);
         } catch (error: any) {
-          showToast.error(error.message || "Failed to upload image. Please try again.");
-          setIsSaving(false);
-          setIsUploading(false);
+          showToast.error(error.message || "Failed to upload image.");
           return;
         } finally {
           setIsUploading(false);
@@ -274,10 +261,7 @@ export default function UserProfilePage() {
         photo: photoUrl || "",
       };
 
-      // Only include password if provided
-      if (data.password && data.password.length > 0) {
-        updateData.password = data.password;
-      }
+      if (data.password && data.password.length > 0) updateData.password = data.password;
 
       const response = await fetch("/api/user/profile", {
         method: "PUT",
@@ -288,23 +272,15 @@ export default function UserProfilePage() {
       const result = await response.json();
 
       if (response.ok) {
-        // Update local storage
         if (result.user) {
           localStorage.setItem("user", JSON.stringify(result.user));
           window.dispatchEvent(new Event("userLogin"));
           setUser(result.user);
-          
-          // Update image preview
-          if (result.user.photo) {
-            setImagePreview(result.user.photo);
-          }
+          if (result.user.photo) setImagePreview(result.user.photo);
         }
-        
         showToast.success("Profile updated successfully!");
         setIsEditing(false);
         setSelectedImage(null);
-        
-        // Clear password fields
         setValue("password", "");
         setValue("confirmPassword", "");
       } else {
@@ -312,7 +288,6 @@ export default function UserProfilePage() {
       }
     } catch (error: any) {
       showToast.error("An error occurred. Please try again.");
-      console.error("Error updating profile:", error);
     } finally {
       setIsSaving(false);
     }
@@ -323,502 +298,338 @@ export default function UserProfilePage() {
   if (loading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-
-      <div className="flex-1 pt-20 pb-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="mb-8 flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-              <p className="text-gray-600 mt-1">Manage your account information</p>
+    <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in duration-700">
+      {/* Header Profile Section */}
+      <section className="relative overflow-hidden rounded-3xl bg-white p-8 shadow-sm border border-gray-100">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full -ml-24 -mb-24 blur-3xl pointer-events-none" />
+        
+        <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+          <div className="relative group">
+            <div className="h-32 w-32 rounded-3xl overflow-hidden shadow-2xl border-4 border-white transition-transform group-hover:scale-105 duration-300">
+              {imagePreview ? (
+                <Image src={imagePreview} alt={user.fullName} fill className="object-cover" />
+              ) : (
+                <div className="h-full w-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white text-4xl font-black">
+                  {user.fullName.charAt(0).toUpperCase()}
+                </div>
+              )}
             </div>
-            {!isEditing && (
-              <Button onClick={() => setIsEditing(true)} variant="default">
+            {isEditing && (
+              <label className="absolute -bottom-2 -right-2 h-10 w-10 bg-primary text-white rounded-xl flex items-center justify-center cursor-pointer hover:bg-primary-dark transition-all shadow-xl active:scale-90">
+                <Camera className="h-5 w-5" />
+                <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+              </label>
+            )}
+          </div>
+          
+          <div className="flex-1 text-center md:text-left space-y-2">
+            <div className="flex flex-col md:flex-row md:items-center gap-3">
+              <h1 className="text-4xl font-black text-gray-900 tracking-tight">
+                {isEditing ? (
+                  <Input
+                    {...register("fullName")}
+                    className="text-4xl font-black border-none p-0 h-auto focus-visible:ring-0 bg-transparent w-full"
+                    placeholder="Full Name"
+                  />
+                ) : user.fullName}
+              </h1>
+            </div>
+            <p className="text-gray-500 font-medium flex items-center justify-center md:justify-start gap-2" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+              <Mail className="h-4 w-4" />
+              {isEditing ? (
+                <Input
+                  {...register("email")}
+                  className="text-gray-500 border-none p-0 h-auto focus-visible:ring-0 bg-transparent"
+                  placeholder={language === 'bn' ? 'ইমেইল এড্রেস' : 'Email Address'}
+                />
+              ) : (user.email || (language === 'bn' ? 'কোনো ইমেইল প্রদান করা হয়নি' : "No email provided"))}
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            {!isEditing ? (
+              <Button 
+                onClick={() => setIsEditing(true)} 
+                className="rounded-2xl px-8 h-12 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-95"
+              >
                 <Edit className="h-4 w-4 mr-2" />
-                Edit Profile
+                {language === "bn" ? "প্রোফাইল সম্পাদন" : "Edit Profile"}
+              </Button>
+            ) : (
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  setIsEditing(false);
+                  setSelectedImage(null);
+                  setImagePreview(user.photo || null);
+                }}
+                className="rounded-2xl px-6 h-12 font-bold hover:bg-gray-50 transition-all"
+              >
+                <X className="h-4 w-4 mr-2" />
+                {language === "bn" ? "বাতিল" : "Cancel"}
               </Button>
             )}
           </div>
+        </div>
+      </section>
 
-          {/* Profile Card */}
-          <Card className="p-8 mb-8">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              {/* Profile Photo Section */}
-              <div className="flex items-center gap-6 mb-8 pb-6 border-b">
-                <div className="relative">
-                  {imagePreview ? (
-                    <div className="relative h-24 w-24 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                      <Image
-                        src={imagePreview}
-                        alt={user.fullName}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-24 w-24 rounded-full bg-gradient-to-r from-primary to-primary-dark flex items-center justify-center text-white text-3xl font-bold border-4 border-white shadow-lg">
-                      {user.fullName.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  {isEditing && (
-                    <label className="absolute bottom-0 right-0 h-8 w-8 bg-primary text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-dark transition-colors shadow-lg">
-                      <Camera className="h-4 w-4" />
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleImageChange}
-                      />
-                    </label>
-                  )}
-                </div>
-                <div className="flex-1">
-                  {isEditing ? (
-                    <Input
-                      {...register("fullName")}
-                      className="text-2xl font-bold border-none p-0 h-auto focus-visible:ring-0"
-                      placeholder="Full Name"
-                    />
-                  ) : (
-                    <h2 className="text-2xl font-bold text-gray-900">{user.fullName}</h2>
-                  )}
-                  {errors.fullName && (
-                    <p className="text-sm text-red-600 mt-1">{errors.fullName.message}</p>
-                  )}
-                  {isEditing ? (
-                    <Input
-                      {...register("email")}
-                      className="text-gray-600 border-none p-0 h-auto focus-visible:ring-0 mt-1"
-                      placeholder="Email (optional)"
-                      type="email"
-                    />
-                  ) : (
-                    <p className="text-gray-600">{user.email || "No email provided"}</p>
-                  )}
-                  {errors.email && (
-                    <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Form Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Full Name */}
-                <div>
-                  <Label className="flex items-center gap-2 text-gray-700 mb-2">
-                    <User className="h-5 w-5 text-gray-500" />
-                    Full Name *
+      {/* Main Grid Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column: Form / Info */}
+        <div className="lg:col-span-2 space-y-8">
+          <Card className="p-8 rounded-3xl border-gray-100 shadow-sm">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <Label className="text-xs font-black uppercase tracking-widest text-gray-400">
+                    {language === "bn" ? "ফোন নম্বর" : "Phone Number"}
                   </Label>
-                  {isEditing ? (
-                    <>
-                      <Input
-                        {...register("fullName")}
-                        placeholder="Full Name"
-                        className={errors.fullName ? "border-red-500" : ""}
-                      />
-                      {errors.fullName && (
-                        <p className="text-sm text-red-600 mt-1">{errors.fullName.message}</p>
-                      )}
-                    </>
-                  ) : (
-                    <p className="text-lg font-medium text-gray-900">{user.fullName}</p>
-                  )}
-                </div>
-
-                {/* Phone Number */}
-                <div>
-                  <Label className="flex items-center gap-2 text-gray-700 mb-2">
-                    <Phone className="h-5 w-5 text-gray-500" />
-                    Phone Number *
-                  </Label>
-                  {isEditing ? (
-                    <>
-                      <Input
-                        {...register("phoneNumber")}
-                        placeholder="Phone Number"
-                        className={errors.phoneNumber ? "border-red-500" : ""}
-                      />
-                      {errors.phoneNumber && (
-                        <p className="text-sm text-red-600 mt-1">{errors.phoneNumber.message}</p>
-                      )}
-                    </>
-                  ) : (
-                    <p className="text-lg font-medium text-gray-900">{user.phoneNumber || "Not provided"}</p>
-                  )}
-                </div>
-
-                {/* Email */}
-                <div>
-                  <Label className="flex items-center gap-2 text-gray-700 mb-2">
-                    <Mail className="h-5 w-5 text-gray-500" />
-                    Email Address
-                  </Label>
-                  {isEditing ? (
-                    <>
-                      <Input
-                        {...register("email")}
-                        placeholder="Email (optional)"
-                        type="email"
-                        className={errors.email ? "border-red-500" : ""}
-                      />
-                      {errors.email && (
-                        <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
-                      )}
-                    </>
-                  ) : (
-                    <p className="text-lg font-medium text-gray-900">{user.email || "Not provided"}</p>
-                  )}
-                </div>
-
-                {/* Gender */}
-                <div>
-                  <Label className="flex items-center gap-2 text-gray-700 mb-2">
-                    Gender *
-                  </Label>
-                  {isEditing ? (
-                    <>
-                      <Select
-                        {...register("gender")}
-                        className={errors.gender ? "border-red-500" : ""}
-                      >
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                      </Select>
-                      {errors.gender && (
-                        <p className="text-sm text-red-600 mt-1">{errors.gender.message}</p>
-                      )}
-                    </>
-                  ) : (
-                    <p className="text-lg font-medium text-gray-900 capitalize">
-                      {user.gender || "Not provided"}
-                    </p>
-                  )}
-                </div>
-
-                {/* Blood Group */}
-                <div>
-                  <Label className="flex items-center gap-2 text-gray-700 mb-2">
-                    Blood Group
-                  </Label>
-                  {isEditing ? (
-                    <>
-                      <Select
-                        {...register("bloodGroup")}
-                      >
-                        <option value="">Select Blood Group</option>
-                        {bloodGroups.map((bg) => (
-                          <option key={bg} value={bg}>
-                            {bg}
-                          </option>
-                        ))}
-                      </Select>
-                    </>
-                  ) : (
-                    <p className="text-lg font-medium text-gray-900">{user.bloodGroup || "Not provided"}</p>
-                  )}
-                </div>
-
-                {/* Age */}
-                <div>
-                  <Label className="flex items-center gap-2 text-gray-700 mb-2">
-                    Age *
-                  </Label>
-                  {isEditing ? (
-                    <>
-                      <Input
-                        {...register("age", { valueAsNumber: true })}
-                        placeholder="Age"
-                        type="number"
-                        className={errors.age ? "border-red-500" : ""}
-                      />
-                      {errors.age && (
-                        <p className="text-sm text-red-600 mt-1">{errors.age.message}</p>
-                      )}
-                    </>
-                  ) : (
-                    <p className="text-lg font-medium text-gray-900">{user.age || "Not provided"}</p>
-                  )}
-                </div>
-
-                {/* Password */}
-                {isEditing && (
-                  <>
-                    <div>
-                      <Label className="flex items-center gap-2 text-gray-700 mb-2">
-                        New Password (leave blank to keep current)
-                      </Label>
-                      <div className="relative">
-                        <Input
-                          {...register("password")}
-                          type={showPassword ? "text" : "password"}
-                          placeholder="New Password"
-                          className={errors.password ? "border-red-500" : ""}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                        >
-                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
-                      </div>
-                      {errors.password && (
-                        <p className="text-sm text-red-600 mt-1">{errors.password.message}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <Label className="flex items-center gap-2 text-gray-700 mb-2">
-                        Confirm Password
-                      </Label>
-                      <div className="relative">
-                        <Input
-                          {...register("confirmPassword")}
-                          type={showConfirmPassword ? "text" : "password"}
-                          placeholder="Confirm Password"
-                          className={errors.confirmPassword ? "border-red-500" : ""}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                        >
-                          {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
-                      </div>
-                      {errors.confirmPassword && (
-                        <p className="text-sm text-red-600 mt-1">{errors.confirmPassword.message}</p>
-                      )}
-                    </div>
-                  </>
-                )}
-
-                {/* Member Since */}
-                {!isEditing && user.createdAt && (
-                  <div>
-                    <Label className="flex items-center gap-2 text-gray-700 mb-2">
-                      <Calendar className="h-5 w-5 text-gray-500" />
-                      Member Since
-                    </Label>
-                    <p className="text-lg font-medium text-gray-900">
-                      {new Date(user.createdAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Action Buttons */}
-              {isEditing && (
-                <div className="flex gap-4 mt-8 pt-6 border-t">
-                  <Button
-                    type="submit"
-                    disabled={isSaving || isUploading}
-                    className="flex-1"
-                  >
-                    {isSaving || isUploading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        {isUploading ? "Uploading..." : "Saving..."}
-                      </>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    {isEditing ? (
+                      <Input {...register("phoneNumber")} className="pl-12 h-14 rounded-2xl bg-gray-50 border-gray-100 focus:bg-white transition-all font-medium" />
                     ) : (
-                      <>
-                        <Save className="h-4 w-4 mr-2" />
-                        Save Changes
-                      </>
+                      <div className="pl-12 h-14 flex items-center text-gray-900 font-bold bg-gray-50/50 rounded-2xl px-4 border border-transparent">
+                        {user.phoneNumber}
+                      </div>
                     )}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setIsEditing(false);
-                      setSelectedImage(null);
-                      // Reset form to original values
-                      setValue("fullName", user.fullName || "");
-                      setValue("email", user.email || "");
-                      setValue("phoneNumber", user.phoneNumber || "");
-                      setValue("gender", (user.gender as any) || "male");
-                      setValue("bloodGroup", user.bloodGroup || "");
-                      setValue("age", (user.age || "") as any);
-                      setValue("password", "");
-                      setValue("confirmPassword", "");
-                      if (user.photo) {
-                        setImagePreview(user.photo);
-                      } else {
-                        setImagePreview(null);
-                      }
-                    }}
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    Cancel
+                  </div>
+                  {errors.phoneNumber && <p className="text-[10px] text-rose-500 font-bold uppercase">{errors.phoneNumber.message}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs font-black uppercase tracking-widest text-gray-400">
+                    {language === "bn" ? "লিঙ্গ" : "Gender"}
+                  </Label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    {isEditing ? (
+                      <Select {...register("gender")} className="pl-12 h-14 rounded-2xl bg-gray-50 border-gray-100 focus:bg-white transition-all font-medium">
+                        <option value="male">{language === "bn" ? "পুরুষ" : "Male"}</option>
+                        <option value="female">{language === "bn" ? "মহিলা" : "Female"}</option>
+                        <option value="other">{language === "bn" ? "অন্যান্য" : "Other"}</option>
+                      </Select>
+                    ) : (
+                      <div className="pl-12 h-14 flex items-center text-gray-900 font-bold bg-gray-50/50 rounded-2xl px-4 border border-transparent capitalize">
+                        {language === 'bn' ? (user.gender === 'male' ? 'পুরুষ' : user.gender === 'female' ? 'মহিলা' : 'অন্যান্য') : user.gender}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs font-black uppercase tracking-widest text-gray-400">
+                    {language === "bn" ? "রক্তের গ্রুপ" : "Blood Group"}
+                  </Label>
+                  <div className="relative">
+                    <Activity className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    {isEditing ? (
+                      <Select {...register("bloodGroup")} className="pl-12 h-14 rounded-2xl bg-gray-50 border-gray-100 focus:bg-white transition-all font-medium">
+                        <option value="">{language === "bn" ? "নির্বাচন করুন" : "Select"}</option>
+                        {bloodGroups.map(bg => <option key={bg} value={bg}>{bg}</option>)}
+                      </Select>
+                    ) : (
+                      <div className="pl-12 h-14 flex items-center text-gray-900 font-bold bg-gray-50/50 rounded-2xl px-4 border border-transparent">
+                        {user.bloodGroup || "—"}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs font-black uppercase tracking-widest text-gray-400">
+                    {language === "bn" ? "বয়স" : "Age"}
+                  </Label>
+                  <div className="relative">
+                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    {isEditing ? (
+                      <Input {...register("age", { valueAsNumber: true })} type="number" className="pl-12 h-14 rounded-2xl bg-gray-50 border-gray-100 focus:bg-white transition-all font-medium" />
+                    ) : (
+                      <div className="pl-12 h-14 flex items-center text-gray-900 font-bold bg-gray-50/50 rounded-2xl px-4 border border-transparent">
+                        {user.age || "—"}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {isEditing && (
+                <div className="pt-6 border-t space-y-6">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-gray-900 flex items-center gap-2">
+                    <ShieldCheck className="h-5 w-5 text-primary" />
+                    {language === "bn" ? "নিরাপত্তা সেটিংস" : "Security Settings"}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2 relative">
+                      <Label className="text-[10px] font-bold text-gray-400 uppercase">{language === 'bn' ? 'নতুন পাসওয়ার্ড' : 'New Password'}</Label>
+                      <Input {...register("password")} type={showPassword ? "text" : "password"} className="h-12 rounded-xl bg-gray-50 border-gray-100" placeholder="••••••••" />
+                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-[42px] text-gray-400 hover:text-primary">
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    <div className="space-y-2 relative">
+                      <Label className="text-[10px] font-bold text-gray-400 uppercase">{language === 'bn' ? 'পাসওয়ার্ড নিশ্চিত করুন' : 'Confirm Password'}</Label>
+                      <Input {...register("confirmPassword")} type={showConfirmPassword ? "text" : "password"} className="h-12 rounded-xl bg-gray-50 border-gray-100" placeholder="••••••••" />
+                      <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-[42px] text-gray-400 hover:text-primary">
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <Button type="submit" disabled={isSaving} className="w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-primary/25 active:scale-[0.98] transition-all">
+                    {isSaving ? <div className="animate-spin rounded-full h-6 w-6 border-2 border-white/30 border-t-white" /> : (language === "bn" ? "পরিবর্তন সংরক্ষণ করুন" : "Save All Changes")}
                   </Button>
                 </div>
               )}
             </form>
           </Card>
 
-          {/* Quick Stats */}
-          {!isEditing && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Card className="p-6 text-center bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-                <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Activity className="h-6 w-6 text-blue-600" />
-                </div>
-                <p className="text-3xl font-bold text-gray-900 mb-1">{appointments.length}</p>
-                <p className="text-sm text-gray-600">Total Appointments</p>
-              </Card>
-
-              <Card className="p-6 text-center bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-                <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Calendar className="h-6 w-6 text-green-600" />
-                </div>
-                <p className="text-3xl font-bold text-gray-900 mb-1">
-                  {appointments.filter(a => a.status === 'completed').length}
-                </p>
-                <p className="text-sm text-gray-600">Completed</p>
-              </Card>
-
-              <Card className="p-6 text-center bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
-                <div className="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Clock className="h-6 w-6 text-orange-600" />
-                </div>
-                <p className="text-3xl font-bold text-gray-900 mb-1">
-                  {appointments.filter(a => a.status === 'pending' || a.status === 'confirmed').length}
-                </p>
-                <p className="text-sm text-gray-600">Upcoming</p>
-              </Card>
+          {/* Appointments Section */}
+          <section className="space-y-6">
+            <div className="flex items-center justify-between px-2">
+              <h2 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+                <Stethoscope className="h-7 w-7 text-primary" />
+                {language === "bn" ? "সাম্প্রতিক অ্যাপয়েন্টমেন্ট" : "Recent Appointments"}
+              </h2>
+              <Button variant="link" onClick={() => router.push('/appointments')} className="text-primary font-black uppercase text-xs tracking-widest">
+                {language === "bn" ? "সব দেখুন" : "View Full History"}
+              </Button>
             </div>
-          )}
 
-          {/* Appointments List */}
-          {!isEditing && (
-            <Card className="p-6 mb-8">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">My Appointments</h3>
-                <Button
-                  onClick={() => router.push('/appointments')}
-                  variant="outline"
-                  size="sm"
-                >
-                  View All
-                </Button>
-              </div>
-
+            <div className="space-y-4">
               {appointmentsLoading ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[1, 2].map(i => <div key={i} className="h-32 rounded-3xl bg-gray-100 animate-pulse" />)}
                 </div>
               ) : appointments.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <Calendar className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p>No appointments found</p>
-                  <Button
-                    onClick={() => router.push('/doctor')}
-                    className="mt-4"
-                    variant="outline"
-                  >
-                    Book Appointment
+                <Card className="p-12 text-center rounded-3xl border-dashed border-gray-200">
+                  <div className="h-20 w-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
+                    <Calendar className="h-10 w-10 text-gray-300" />
+                  </div>
+                  <p className="text-gray-500 font-bold">{language === "bn" ? "কোনো অ্যাপয়েন্টমেন্ট পাওয়া যায়নি" : "No appointments found yet."}</p>
+                  <Button onClick={() => router.push('/doctor')} className="mt-6 rounded-xl font-bold" variant="outline">
+                    {language === "bn" ? "এখনই বুক করুন" : "Book Your First Appointment"}
                   </Button>
-                </div>
+                </Card>
               ) : (
-                <div className="space-y-4">
-                  {appointments.slice(0, 5).map((appointment) => (
-                    <div
-                      key={appointment._id}
-                      className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Stethoscope className="h-5 w-5 text-primary" />
-                            <h4 className="font-semibold text-gray-900">
-                              {appointment.doctorId?.name || 'Unknown Doctor'}
+                <div className="grid grid-cols-1 gap-4">
+                  {appointments.slice(0, 3).map((appointment) => (
+                    <div key={appointment._id} className="group bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div className="flex items-center gap-5">
+                          <div className="h-16 w-16 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                            <Stethoscope className="h-8 w-8" />
+                          </div>
+                          <div>
+                            <h4 className="text-lg font-black text-gray-900 group-hover:text-primary transition-colors" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                              {language === 'bn' 
+                                ? (appointment.doctorId?.nameBn || appointment.doctorId?.name || 'ডাক্তার') 
+                                : (appointment.doctorId?.name || 'Doctor')}
                             </h4>
-                          </div>
-                          {appointment.doctorId?.qualification && (
-                            <p className="text-sm text-gray-600 mb-2">
-                              {appointment.doctorId.qualification}
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-tighter flex items-center gap-1" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                              <MapPin className="h-3 w-3" />
+                              {language === 'bn' ? (appointment.doctorId?.hospitalBn || appointment.hospitalName) : appointment.hospitalName}
                             </p>
-                          )}
-                        </div>
-                        {getStatusBadge(appointment.status)}
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <Calendar className="h-4 w-4" />
-                          <span>
-                            {format(new Date(appointment.appointmentDate), 'MMM dd, yyyy')}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <MapPin className="h-4 w-4" />
-                          <span>{appointment.hospitalName}</span>
-                        </div>
-                        {appointment.serialNumber && (
-                          <div className="flex items-center gap-2 text-gray-600">
-                            <Activity className="h-4 w-4" />
-                            <span className="font-mono">Serial: {appointment.serialNumber}</span>
                           </div>
-                        )}
+                        </div>
+                        <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-4 md:pt-0">
+                          <div className="text-right">
+                            <p className="text-sm font-black text-gray-900">{format(new Date(appointment.appointmentDate), 'MMM dd, yyyy')}</p>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{language === 'bn' ? 'তারিখ' : 'Date'}</p>
+                          </div>
+                          {getStatusBadge(appointment.status)}
+                        </div>
                       </div>
                     </div>
                   ))}
-                  {appointments.length > 5 && (
-                    <Button
-                      onClick={() => router.push('/appointments')}
-                      variant="outline"
-                      className="w-full"
-                    >
-                      View All {appointments.length} Appointments
-                    </Button>
-                  )}
                 </div>
               )}
-            </Card>
-          )}
+            </div>
+          </section>
+        </div>
 
-          {/* Actions */}
-          {!isEditing && (
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-              <div className="space-y-3">
-                <Button
-                  onClick={() => router.push('/doctor')}
-                  className="w-full justify-start"
-                  variant="outline"
-                >
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Book New Appointment
-                </Button>
-                <Button
-                  onClick={() => router.push('/appointments')}
-                  className="w-full justify-start"
-                  variant="outline"
-                >
-                  <Activity className="h-4 w-4 mr-2" />
-                  View My Appointments
-                </Button>
+        {/* Right Column: Stats & Actions */}
+        <div className="space-y-8">
+          {/* Quick Stats Card */}
+          <Card className="p-8 rounded-3xl bg-gray-900 text-white border-none shadow-2xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full -mr-16 -mt-16 blur-3xl" />
+            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-gray-500 mb-8 flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              {language === 'bn' ? 'কার্যকলাপ' : 'Activity Stats'}
+            </h3>
+            
+            <div className="space-y-8">
+              <div className="flex items-end justify-between">
+                <div>
+                  <p className="text-5xl font-black tracking-tighter">{appointments.length}</p>
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-2">{language === 'bn' ? 'মোট বুকিং' : 'Total Bookings'}</p>
+                </div>
+                <div className="h-12 w-12 bg-white/5 rounded-2xl flex items-center justify-center text-primary border border-white/5 group-hover:scale-110 transition-transform">
+                  <Activity className="h-6 w-6" />
+                </div>
               </div>
-            </Card>
-          )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-1">
+                  <p className="text-2xl font-black text-emerald-400">{appointments.filter(a => a.status === 'completed').length}</p>
+                  <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{language === 'bn' ? 'সম্পন্ন' : 'Completed'}</p>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-1">
+                  <p className="text-2xl font-black text-amber-400">{appointments.filter(a => a.status === 'pending' || a.status === 'confirmed').length}</p>
+                  <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{language === 'bn' ? 'আসন্ন' : 'Upcoming'}</p>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Quick Actions Card */}
+          <Card className="p-8 rounded-3xl border-gray-100 shadow-sm space-y-6">
+            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-gray-400 mb-2">
+              {language === 'bn' ? 'দ্রুত ব্যবস্থা' : 'Quick Actions'}
+            </h3>
+            <div className="grid grid-cols-1 gap-3">
+              <Button onClick={() => router.push('/doctor')} className="w-full h-14 rounded-2xl justify-start px-6 gap-4 font-bold group" variant="outline">
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                  <Calendar className="h-4 w-4" />
+                </div>
+                {language === "bn" ? "নতুন অ্যাপয়েন্টমেন্ট" : "Book New Appointment"}
+              </Button>
+              <Button onClick={() => router.push('/appointments')} className="w-full h-14 rounded-2xl justify-start px-6 gap-4 font-bold group" variant="outline">
+                <div className="h-8 w-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                  <ShieldCheck className="h-4 w-4" />
+                </div>
+                {language === "bn" ? "সব বুকিং দেখুন" : "View All Bookings"}
+              </Button>
+            </div>
+          </Card>
+
+          {/* Support Banner */}
+          <div className="p-8 rounded-3xl bg-gradient-to-br from-primary to-primary-dark text-white shadow-xl shadow-primary/20">
+            <div className="h-12 w-12 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
+              <AlertCircle className="h-6 w-6" />
+            </div>
+            <h4 className="text-xl font-black tracking-tight mb-2" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+              {language === 'bn' ? 'সাহায্য প্রয়োজন?' : 'Need Help?'}
+            </h4>
+            <p className="text-sm font-medium text-white/70 mb-6" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+              {language === 'bn' ? 'আমাদের ২৪/৭ সাপোর্ট টিম আপনার মেডিকেল অ্যাপয়েন্টমেন্টে সহায়তা করতে এখানে আছে।' : 'Our 24/7 support team is here to assist with your medical appointments.'}
+            </p>
+            <Button 
+              className="w-full rounded-xl bg-white text-primary font-black hover:bg-white/90 active:scale-95 transition-all"
+              onClick={() => window.open('https://wa.me/8801610385555', '_blank')}
+              style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}
+            >
+              {language === 'bn' ? 'সাপোর্টের সাথে যোগাযোগ করুন' : 'Contact Support'}
+            </Button>
+          </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

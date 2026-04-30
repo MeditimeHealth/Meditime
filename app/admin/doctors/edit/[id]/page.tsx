@@ -1057,6 +1057,36 @@ export default function EditDoctorPage() {
                           {day} ({banglaDays[dayIndex]})
                         </button>
                       ))}
+                      {(() => {
+                        const isOnCall = slot.days.length === daysOfWeek.length && slot.time === "On Call" && slot.timeBn === "অন কল";
+                        
+                        return (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = [...availabilitySlots];
+                              if (isOnCall) {
+                                updated[slotIndex].days = [];
+                                updated[slotIndex].time = "";
+                                updated[slotIndex].timeBn = "";
+                              } else {
+                                updated[slotIndex].days = [...daysOfWeek];
+                                updated[slotIndex].time = "On Call";
+                                updated[slotIndex].timeBn = "অন কল";
+                              }
+                              setAvailabilitySlots(updated);
+                              setValue("availabilitySlots", updated);
+                            }}
+                            className={`px-4 py-2 rounded-md text-sm font-bold transition-all border shadow-sm hover:shadow ${
+                              isOnCall 
+                                ? "bg-amber-600 text-white border-amber-700" 
+                                : "bg-amber-100 text-amber-700 hover:bg-amber-200 border-amber-300"
+                            }`}
+                          >
+                            {language === 'bn' ? 'অন কল (On Call)' : 'On Call'}
+                          </button>
+                        );
+                      })()}
                     </div>
                   </div>
 

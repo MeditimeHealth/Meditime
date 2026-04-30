@@ -4,6 +4,7 @@ import Doctor from '@/models/Doctor';
 import User from '@/models/User';
 import LiveConsultant from '@/models/LiveConsultant';
 import bcrypt from 'bcryptjs';
+import { verifyAdmin } from '@/lib/auth';
 
 function generateRoomId(): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -16,6 +17,12 @@ function generateRoomId(): string {
 
 export async function POST(request: NextRequest) {
   try {
+    // 0. Verify Admin Access
+    const session = await verifyAdmin(request);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized. Admin access required.' }, { status: 401 });
+    }
+
     await dbConnect();
     const body = await request.json();
     const { 

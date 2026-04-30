@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 import { CheckCircle, Calendar, MapPin, User, Phone, ArrowLeft, Home, Ticket, Printer, Stethoscope } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -136,7 +137,7 @@ function BookingSuccessContent() {
               আপনার অ্যাপয়েন্টমেন্টের বিস্তারিত তথ্য শীঘ্রই দেখানো হবে।
             </p>
             <div className="flex gap-4 justify-center">
-              <Link href={`/doctor/${doctorId}`}>
+              <Link href={`/doctor/${appointment.doctorId?.slug || appointment.doctorId?._id || doctorId}`}>
                 <Button
                   variant="outline"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
@@ -181,110 +182,97 @@ function BookingSuccessContent() {
 
         {/* Appointment Slip - Professional Compact Design */}
         <Card className="bg-white border border-slate-200 shadow-xl overflow-hidden print:shadow-none print:border-2" id="appointment-slip">
-          {/* Slip Header - Centered Logo */}
+          {/* Slip Header - No image, MediTime in brand color, Appointment Slip in black */}
           <div className="bg-white border-b border-dashed border-slate-200 px-6 py-6 text-center">
-            <div className="flex flex-col items-center gap-3">
-              <div className="relative w-16 h-16 mb-1">
-                <Image 
-                  src="/logo.png" 
-                  alt="MediTime Logo" 
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <div>
-                <h3 className="font-bold text-2xl text-slate-900 tracking-tight" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
-                  MediTime
-                </h3>
-                <p className="text-sm text-[#00B7B5] font-bold uppercase tracking-wider" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
-                  Appointment Slip
-                </p>
-              </div>
-            </div>
-            
+            <h3 className="font-bold text-2xl tracking-tight" style={{ color: '#00B7B5', fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+              MediTime
+            </h3>
+            <p className="text-sm font-bold text-slate-900 uppercase tracking-wider mt-1" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+              Appointment Slip
+            </p>
             {appointment.serialNumber && (
               <div className="mt-4 pt-4 border-t border-slate-100">
                 <p className="text-xs text-slate-400 uppercase tracking-widest mb-1" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>সিরিয়াল নম্বর</p>
-                <p className="font-mono font-bold text-2xl text-slate-900">
-                  {appointment.serialNumber}
-                </p>
+                <p className="font-mono font-bold text-2xl text-slate-900">{appointment.serialNumber}</p>
               </div>
             )}
           </div>
 
           {/* Slip Content */}
           <div className="p-6 space-y-6">
-            {/* Doctor Info - Highlighted order: Name > Degree > Specialty */}
+            {/* Section 1: Doctor Information */}
             {appointment.doctorId && (
-              <div className="text-center pb-6 border-b border-slate-100">
-                <p className="text-xs text-[#00B7B5] font-bold uppercase tracking-widest mb-1" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>বুকিং করা ডাক্তার</p>
-                <p className="font-bold text-slate-900 text-xl mb-1" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+              <div className="pb-5 border-b border-slate-100">
+                <p className="text-[11px] text-[#00B7B5] font-bold uppercase tracking-widest mb-3" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>ডাক্তারের তথ্য</p>
+                <p className="font-bold text-slate-900 text-xl mb-0.5" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
                   {appointment.doctorId.name}
                 </p>
-                {appointment.doctorId.qualification && (
-                  <p className="text-sm text-slate-600 font-medium mb-1">{appointment.doctorId.qualification}</p>
+                {appointment.doctorId.specialty && (
+                  <p className="text-sm text-[#00B7B5] font-semibold mb-0.5">{appointment.doctorId.specialty}</p>
                 )}
-                {appointment.doctorId.department && (
-                  <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">
-                    {appointment.doctorId.department}
-                  </p>
+                {appointment.doctorId.qualification && (
+                  <p className="text-sm text-slate-600 font-medium mb-0.5">{appointment.doctorId.qualification}</p>
+                )}
+                {appointment.doctorId.designation && (
+                  <p className="text-xs text-slate-400 font-medium">{appointment.doctorId.designation}</p>
                 )}
               </div>
             )}
 
-            {/* Information Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-              <div className="space-y-1">
-                <p className="text-[11px] text-slate-400 uppercase font-bold tracking-wider" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>রোগীর নাম</p>
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-slate-400" />
-                  <p className="font-bold text-slate-800" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{appointment.patientName}</p>
+            {/* Section 2: Patient Information */}
+            <div>
+              <p className="text-[11px] text-[#00B7B5] font-bold uppercase tracking-widest mb-3" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>রোগীর তথ্য</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                <div className="space-y-1">
+                  <p className="text-[11px] text-slate-400 uppercase font-bold tracking-wider" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>রোগীর নাম</p>
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-slate-400" />
+                    <p className="font-bold text-slate-800" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{appointment.patientName}</p>
+                  </div>
                 </div>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-[11px] text-slate-400 uppercase font-bold tracking-wider" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>মোবাইল নম্বর</p>
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-slate-400" />
-                  <p className="font-bold text-slate-800">{appointment.mobileNumber}</p>
+                <div className="space-y-1">
+                  <p className="text-[11px] text-slate-400 uppercase font-bold tracking-wider" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>মোবাইল নম্বর</p>
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-slate-400" />
+                    <p className="font-bold text-slate-800">{appointment.mobileNumber}</p>
+                  </div>
                 </div>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-[11px] text-slate-400 uppercase font-bold tracking-wider" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>অ্যাপয়েন্টমেন্টের তারিখ</p>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-[#00B7B5]" />
-                  <p className="font-bold text-slate-800" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{formatDate(appointment.appointmentDate)}</p>
+                <div className="space-y-1">
+                  <p className="text-[11px] text-slate-400 uppercase font-bold tracking-wider" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>অ্যাপয়েন্টমেন্টের তারিখ</p>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-[#00B7B5]" />
+                    <p className="font-bold text-slate-800" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{formatDate(appointment.appointmentDate)}</p>
+                  </div>
                 </div>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-[11px] text-slate-400 uppercase font-bold tracking-wider" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>হাসপাতাল / চেম্বার</p>
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-red-400" />
-                  <p className="font-bold text-slate-800 line-clamp-1" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{appointment.hospitalName}</p>
+                <div className="space-y-1">
+                  <p className="text-[11px] text-slate-400 uppercase font-bold tracking-wider" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>চেম্বার / হাসপাতাল</p>
+                  <div className="flex items-start gap-2">
+                    <MapPin className="h-4 w-4 text-red-400 mt-0.5" />
+                    <p className="font-bold text-slate-800" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{appointment.hospitalName}</p>
+                  </div>
                 </div>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-[11px] text-slate-400 uppercase font-bold tracking-wider" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>রোগীর ধরন</p>
-                <p className="font-bold text-slate-800" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{getPatientTypeLabel(appointment.patientType)}</p>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-[11px] text-slate-400 uppercase font-bold tracking-wider" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>স্ট্যাটাস</p>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-50 text-green-600 border border-green-100" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
-                  <CheckCircle className="h-3 w-3" />
-                  {appointment.status === "pending" ? "অপেক্ষমান" : appointment.status === "confirmed" ? "নিশ্চিত" : "সম্পন্ন"}
-                </span>
+                <div className="space-y-1">
+                  <p className="text-[11px] text-slate-400 uppercase font-bold tracking-wider" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>রোগীর ধরন</p>
+                  <p className="font-bold text-slate-800" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{getPatientTypeLabel(appointment.patientType)}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[11px] text-slate-400 uppercase font-bold tracking-wider" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>স্ট্যাটাস</p>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-50 text-green-600 border border-green-100" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                    <CheckCircle className="h-3 w-3" />
+                    {appointment.status === "pending" ? "অপেক্ষমান" : appointment.status === "confirmed" ? "নিশ্চিত" : "সম্পন্ন"}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Slip Footer */}
+          {/* Slip Footer - Confirmation text */}
           <div className="bg-slate-50 px-6 py-4 border-t border-slate-100 text-center">
-            <p className="text-xs text-slate-400 font-medium leading-relaxed" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
-              এই স্লিপটি অ্যাপয়েন্টমেন্টের দিন সাথে আনুন। <br /> বিস্তারিত তথ্যের জন্য আমাদের সাথে যোগাযোগ করুন।
+            <p className="text-xs text-slate-600 font-medium leading-relaxed" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+              আপনার অ্যাপয়েন্টমেন্ট কনফার্ম হয়েছে। অল্প সময়ের মধ্যেই আপনার সিরিয়াল নম্বরসহ একটি এসএমএস পাবেন।
+            </p>
+            <p className="text-xs text-slate-400 font-medium mt-1 leading-relaxed">
+              Your appointment has been confirmed. You will receive an SMS with your serial number shortly.
             </p>
           </div>
         </Card>
@@ -315,20 +303,12 @@ function BookingSuccessContent() {
               <span className="text-yellow-600 font-bold">•</span>
               <span>অ্যাপয়েন্টমেন্টের তারিখে সময়মতো উপস্থিত থাকুন</span>
             </li>
-            <li className="flex items-start gap-2">
-              <span className="text-yellow-600 font-bold">•</span>
-              <span>আপনার মোবাইল নম্বরে SMS বা কল আসতে পারে</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-yellow-600 font-bold">•</span>
-              <span>বাতিল করতে হলে কমপক্ষে ২৪ ঘন্টা আগে জানান</span>
-            </li>
           </ul>
         </Card>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6 print:hidden">
-          <Link href={`/doctor/${doctorId}`}>
+          <Link href={`/doctor/${appointment.doctorId?.slug || appointment.doctorId?._id || doctorId}`}>
             <Button
               variant="outline"
               className="w-full sm:w-auto"
@@ -349,6 +329,7 @@ function BookingSuccessContent() {
           </Link>
         </div>
       </div>
+      <Footer />
 
       {/* Print Styles */}
       <style jsx global>{`

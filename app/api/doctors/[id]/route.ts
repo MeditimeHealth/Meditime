@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Doctor from "@/models/Doctor";
+import { generateUniqueSlug } from "@/lib/slug";
+import { verifyAdmin } from "@/lib/auth";
 
 export async function GET(
   request: NextRequest,
@@ -10,7 +12,16 @@ export async function GET(
     await dbConnect();
     const { id } = await params;
 
-    const doctor = await Doctor.findById(id);
+    let doctor;
+    // If it's a valid ObjectId, try finding by ID
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      doctor = await Doctor.findById(id);
+    }
+    
+    // If not found by ID or not a valid ObjectId, try finding by slug
+    if (!doctor) {
+      doctor = await Doctor.findOne({ slug: id });
+    }
     
     if (!doctor) {
       return NextResponse.json(
@@ -37,6 +48,11 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const isAdmin = await verifyAdmin(request);
+    if (!isAdmin) {
+      return NextResponse.json({ error: "Unauthorized. Admin access required." }, { status: 401 });
+    }
+
     await dbConnect();
     const { id } = await params;
     const body = await request.json();
@@ -46,6 +62,7 @@ export async function PUT(
       specialty,
       qualification,
       designation,
+      slug, // Optional manual slug override
 
 
       email,
@@ -108,6 +125,20 @@ export async function PUT(
       availability: availabilityArray,
     };
 
+    // Handle Slug Logic
+    if (slug) {
+      doctorData.slug = slug; // Use provided slug if any
+    } else if (name) {
+      // Regenerate slug if name changed and no manual slug provided
+      const existingDoctor = await Doctor.findById(id);
+      if (existingDoctor && existingDoctor.name !== name) {
+        doctorData.slug = await generateUniqueSlug(name, id);
+      } else if (existingDoctor && !existingDoctor.slug) {
+        // Generate if missing
+        doctorData.slug = await generateUniqueSlug(existingDoctor.name || name, id);
+      }
+    }
+
     // Add optional fields
     if (specialty) doctorData.specialty = specialty;
     if (designation) doctorData.designation = designation;
@@ -165,6 +196,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const isAdmin = await verifyAdmin(request);
+    if (!isAdmin) {
+      return NextResponse.json({ error: "Unauthorized. Admin access required." }, { status: 401 });
+    }
+
     await dbConnect();
     const { id } = await params;
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, UserCircle, Settings, LogOut as LogOutIcon, Wallet, DollarSign, Globe } from "lucide-react";
+import { Menu, X, UserCircle, Settings, LogOut as LogOutIcon, Wallet, DollarSign, Globe, Activity } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -49,7 +49,14 @@ export default function Navbar() {
         const userData = localStorage.getItem("user");
         if (userData) {
           try {
-            setUser(JSON.parse(userData));
+            const parsed = JSON.parse(userData);
+            if (parsed.role === 'admin' || parsed.role === 'superadmin') {
+              // Clear legacy admin data from user session
+              localStorage.removeItem("user");
+              setUser(null);
+            } else {
+              setUser(parsed);
+            }
           } catch (error) {
             console.error("Error parsing user data:", error);
             localStorage.removeItem("user");
@@ -213,124 +220,25 @@ export default function Navbar() {
                 {language === 'en' ? 'বাংলা' : 'English'}
               </motion.button>
 
-              {user || affiliate ? (
+              {user ? (
                 <>
-                  <Sheet>
-                    <SheetTrigger asChild>
-                      <button className="h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 hover:text-primary transition-all hover:scale-105 border border-gray-200">
-                        <Menu className="h-5 w-5" />
-                      </button>
-                    </SheetTrigger>
-                    <SheetContent>
-                      <SheetHeader>
-                        <div className="flex items-center gap-3 pb-4 border-b">
-                          {(user as any)?.photo ? (
-                            <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-gray-200">
-                              <Image
-                                src={(user as any).photo}
-                                alt={user?.fullName || affiliate?.name || "User"}
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                          ) : (
-                            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary-light to-primary flex items-center justify-center text-white font-bold text-lg">
-                              {(user?.fullName || affiliate?.name)?.charAt(0)?.toUpperCase() || "U"}
-                            </div>
-                          )}
-                          <div>
-                            <SheetTitle className="text-left">{user?.fullName || affiliate?.name}</SheetTitle>
-                            <p className="text-sm text-gray-600">{user?.email || affiliate?.email}</p>
-                          </div>
-                        </div>
-                      </SheetHeader>
-                      <div className="mt-6 space-y-2">
-                        {affiliate && (
-                          <>
-                            <button
-                              onClick={() => { router.push('/affiliate-program/dashboard'); }}
-                              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
-                            >
-                              <Wallet className="h-5 w-5 text-gray-600" />
-                              <span className="font-medium">Dashboard</span>
-                            </button>
-                            <button
-                              onClick={() => { router.push('/affiliate-program/profile'); }}
-                              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
-                            >
-                              <UserCircle className="h-5 w-5 text-gray-600" />
-                              <span className="font-medium">My Profile</span>
-                            </button>
-                            <button
-                              onClick={() => { router.push('/affiliate-program/withdrawal'); }}
-                              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
-                            >
-                              <DollarSign className="h-5 w-5 text-gray-600" />
-                              <span className="font-medium">Request Withdrawal</span>
-                            </button>
-                          </>
-                        )}
-                        
-                        {user && !affiliate && (
-                          <>
-                            <button
-                              onClick={() => { router.push('/user/profile'); }}
-                              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
-                            >
-                              <UserCircle className="h-5 w-5 text-gray-600" />
-                              <span className="font-medium">My Profile</span>
-                            </button>
-                            <button
-                              onClick={() => { router.push('/appointments'); }}
-                              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
-                            >
-                              <Wallet className="h-5 w-5 text-gray-600" />
-                              <span className="font-medium">My Appointments</span>
-                            </button>
-                          </>
-                        )}
-                        
-                        {user?.role === 'admin' && (
-                          <button
-                            onClick={() => { router.push('/admin'); }}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-primary/10 rounded-lg transition-colors text-primary"
-                          >
-                            <Settings className="h-5 w-5" />
-                            <span className="font-medium">Admin Dashboard</span>
-                          </button>
-                        )}
-                        
-                        {user?.role === 'doctor' && (
-                          <button
-                            onClick={() => { router.push('/doctor/dashboard'); }}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-primary/10 rounded-lg transition-colors text-primary"
-                          >
-                            <UserCircle className="h-5 w-5" />
-                            <span className="font-medium">Doctor Dashboard</span>
-                          </button>
-                        )}
-                        
-                        <div className="border-t my-2"></div>
-                        
-                        <button
-                          onClick={() => {
-                            if (affiliate) {
-                              localStorage.removeItem("affiliate");
-                              setAffiliate(null);
-                              router.push("/affiliate-program");
-                            } else {
-                              handleLogout();
-                            }
-                          }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-red-50 rounded-lg transition-colors text-red-600"
-                        >
-                          <LogOutIcon className="h-5 w-5" />
-                          <span className="font-medium">Logout</span>
-                        </button>
-                      </div>
-                    </SheetContent>
-                  </Sheet>
+                  <Link
+                    href="/user/dashboard"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all hover:scale-105 active:scale-95"
+                    style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}
+                  >
+                    <Activity className="h-4 w-4" />
+                    {language === 'bn' ? 'ড্যাশবোর্ড' : 'Dashboard'}
+                  </Link>
                 </>
+              ) : affiliate ? (
+                <Link
+                  href="/affiliate-program/dashboard"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all hover:scale-105 active:scale-95"
+                >
+                  <Wallet className="h-4 w-4" />
+                  {language === 'bn' ? 'ড্যাশবোর্ড' : 'Dashboard'}
+                </Link>
               ) : (
                 <>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -467,33 +375,24 @@ export default function Navbar() {
                           )}
                         </div>
                       </div>
-                      {user.role === 'admin' && (
-                        <Link
-                          href="/admin"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="block w-full px-4 py-3 bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white text-base font-semibold rounded-lg transition-all duration-300 shadow-lg text-center"
-                        >
-                          Dashboard
-                        </Link>
-                      )}
+                      <Link
+                        href="/user/dashboard"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block w-full px-4 py-3 bg-primary text-white text-base font-semibold rounded-lg transition-all duration-300 shadow-lg text-center"
+                      >
+                        {language === 'bn' ? 'ড্যাশবোর্ড' : 'Dashboard'}
+                      </Link>
+
                       {user.role === 'doctor' && (
                         <Link
                           href="/doctor/dashboard"
                           onClick={() => setMobileMenuOpen(false)}
-                          className="block w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-base font-semibold rounded-lg transition-all duration-300 shadow-lg text-center"
+                          className="block w-full px-4 py-3 bg-indigo-600 text-white text-base font-semibold rounded-lg transition-all duration-300 shadow-lg text-center"
                         >
                           Doctor Dashboard
                         </Link>
                       )}
-                      <button
-                        onClick={() => {
-                          setMobileMenuOpen(false);
-                          handleLogout();
-                        }}
-                        className="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 text-base font-semibold rounded-lg transition-all duration-300 border border-gray-200"
-                      >
-                        Logout
-                      </button>
+                      {/* Logout removed as per request */}
                     </>
                   ) : (
                     <>

@@ -9,15 +9,15 @@ export async function DELETE(
 ) {
   try {
     await dbConnect();
-    const User = (await import("@/models/User")).default;
+    const Admin = (await import("@/models/Admin")).default;
     
     const body = await request.json().catch(() => ({}));
     const { userId } = body;
 
     // Verify admin access
     if (userId) {
-      const user = await User.findById(userId);
-      if (!user || user.role !== "admin") {
+      const admin = await Admin.findById(userId);
+      if (!admin || (admin.role !== "admin" && admin.role !== "superadmin")) {
         return NextResponse.json(
           { error: "Forbidden - Admin access required" },
           { status: 403 }
@@ -60,15 +60,15 @@ export async function PUT(
 ) {
   try {
     await dbConnect();
-    const User = (await import("@/models/User")).default;
+    const Admin = (await import("@/models/Admin")).default;
     
     const body = await request.json();
     const { imageUrl, linkUrl, title, order, isActive, userId } = body;
 
     // Verify admin access
     if (userId) {
-      const user = await User.findById(userId);
-      if (!user || user.role !== "admin") {
+      const admin = await Admin.findById(userId);
+      if (!admin || (admin.role !== "admin" && admin.role !== "superadmin")) {
         return NextResponse.json(
           { error: "Forbidden - Admin access required" },
           { status: 403 }

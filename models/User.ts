@@ -10,7 +10,9 @@ export interface IUser extends Document {
   age?: number;
   password: string;
   photo?: string;
-  role?: 'admin' | 'user' | 'doctor' | 'bloodDonor' | 'ambulance' | 'affiliate';
+  resetOtp?: string;
+  resetOtpExpiry?: Date;
+  role?: 'user' | 'doctor' | 'bloodDonor' | 'ambulance' | 'affiliate';
   userType?: 'user' | 'doctor' | 'bloodDonor' | 'ambulance' | 'affiliate';
   doctorId?: mongoose.Types.ObjectId;
   // Affiliate-specific fields
@@ -38,13 +40,11 @@ const UserSchema: Schema = new Schema(
     phoneNumber: {
       type: String,
       trim: true,
-      index: true,
     },
     username: {
       type: String,
       trim: true,
       lowercase: true,
-      index: true,
     },
     fullName: {
       type: String,
@@ -71,7 +71,7 @@ const UserSchema: Schema = new Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'user', 'doctor', 'bloodDonor', 'ambulance', 'affiliate'],
+      enum: ['user', 'doctor', 'bloodDonor', 'ambulance', 'affiliate'],
       default: 'user',
     },
     userType: {
@@ -87,11 +87,16 @@ const UserSchema: Schema = new Schema(
       type: String,
       trim: true,
     },
+    resetOtp: {
+      type: String,
+    },
+    resetOtpExpiry: {
+      type: Date,
+    },
     // Affiliate-specific fields
     affiliateCode: {
       type: String,
       trim: true,
-      index: true,
     },
     isActive: {
       type: Boolean,

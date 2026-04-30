@@ -2,9 +2,11 @@ import { motion } from "framer-motion";
 import { Activity, MapPin, Download, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { generateDiagnosticBookingPDF } from "@/lib/diagnostic-pdf";
+import ConfirmationModal from "@/components/ui/confirmation-modal";
+import { useState } from "react";
 
 interface DiagnosticHistoryModalProps {
-  language: string;
+  language: "en" | "bn";
   showBookingsModal: boolean;
   setShowBookingsModal: (val: boolean) => void;
   myBookingsHistory: any[];
@@ -18,6 +20,7 @@ export default function DiagnosticHistoryModal({
   myBookingsHistory,
   setMyBookingsHistory
 }: DiagnosticHistoryModalProps) {
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   if (!showBookingsModal) return null;
 
   return (
@@ -38,12 +41,7 @@ export default function DiagnosticHistoryModal({
                 variant="outline"
                 size="sm"
                 className="text-xs text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 gap-1.5"
-                onClick={() => {
-                  if (confirm(language === 'en' ? 'Are you sure you want to clear all booking history?' : 'আপনি কি সমস্ত বুকিং ইতিহাস মুছে ফেলতে চান?')) {
-                    localStorage.removeItem('myDiagnosticBookings');
-                    setMyBookingsHistory([]);
-                  }
-                }}
+                onClick={() => setShowClearConfirm(true)}
               >
                 <X className="w-3.5 h-3.5" />
                 {language === 'en' ? 'Clear History' : 'ইতিহাস মুছুন'}
@@ -106,6 +104,21 @@ export default function DiagnosticHistoryModal({
           )}
         </div>
       </motion.div>
+
+      <ConfirmationModal
+        isOpen={showClearConfirm}
+        onClose={() => setShowClearConfirm(false)}
+        onConfirm={() => {
+          localStorage.removeItem('myDiagnosticBookings');
+          setMyBookingsHistory([]);
+        }}
+        title={language === 'en' ? 'Clear History' : 'ইতিহাস মুছুন'}
+        message={language === 'en' ? 'Are you sure you want to clear all booking history?' : 'আপনি কি সমস্ত বুকিং ইতিহাস মুছে ফেলতে চান?'}
+        confirmText={language === 'en' ? 'Clear' : 'মুছুন'}
+        cancelText={language === 'en' ? 'Cancel' : 'বাতিল'}
+        variant="danger"
+        language={language}
+      />
     </div>
   );
 }

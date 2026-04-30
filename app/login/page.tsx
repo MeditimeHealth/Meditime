@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
@@ -30,6 +31,12 @@ import { homepageTranslations } from "@/lib/homepage-translations";
 export default function LoginPage() {
   const { language } = useLanguage() as { language: 'en' | 'bn' };
   const t = homepageTranslations[language].authPage;
+
+  const [mode, setMode] = useState<'login' | 'forgot_email' | 'forgot_otp' | 'forgot_reset'>('login');
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetOtp, setResetOtp] = useState("");
+  const [resetPassword, setResetPassword] = useState("");
+  const [resetConfirmPassword, setResetConfirmPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,12 +62,9 @@ export default function LoginPage() {
       const result = await response.json();
 
       if (response.ok) {
-        // Store user data in localStorage
         localStorage.setItem("user", JSON.stringify(result.user));
-        // Dispatch event to update navbar
         window.dispatchEvent(new Event("userLogin"));
         
-        // Redirect based on user type
         const userType = result.user.userType || result.user.role;
         if (userType === 'bloodDonor') {
           router.push("/blood-donor/profile");
@@ -82,6 +86,87 @@ export default function LoginPage() {
     }
   };
 
+  const handleSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail) return showToast.error("Email is required");
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send_otp", email: resetEmail })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast.success(data.message);
+        setMode('forgot_otp');
+      } else {
+        showToast.error(data.error || "Failed to send OTP");
+      }
+    } catch (error) {
+      showToast.error("An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetOtp) return showToast.error("OTP is required");
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "verify_otp", email: resetEmail, otp: resetOtp })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast.success(data.message);
+        setMode('forgot_reset');
+      } else {
+        showToast.error(data.error || "Invalid OTP");
+      }
+    } catch (error) {
+      showToast.error("An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (resetPassword !== resetConfirmPassword) {
+      return showToast.error("Passwords do not match");
+    }
+    if (resetPassword.length < 6) {
+      return showToast.error("Password must be at least 6 characters");
+    }
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reset_password", email: resetEmail, otp: resetOtp, newPassword: resetPassword })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast.success(data.message);
+        setMode('login');
+        setResetEmail("");
+        setResetOtp("");
+        setResetPassword("");
+        setResetConfirmPassword("");
+      } else {
+        showToast.error(data.error || "Failed to reset password");
+      }
+    } catch (error) {
+      showToast.error("An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col" style={{
       backgroundImage: "url('/slide2.jpg')",
@@ -97,12 +182,15 @@ export default function LoginPage() {
               <div className="md:col-span-2 bg-gradient-to-br from-primary/20 to-primary-dark/20 p-12 flex flex-col justify-center text-white">
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 mb-8">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0v-5a2 2 0 012-2h2a2 2 0 012 2v5m-6 0h6" />
-                      </svg>
-                    </div>
-                    <h1 className="text-3xl font-bold">MEDI TIME</h1>
+                    <Image 
+                      src="/logo.png" 
+                      alt="Logo" 
+                      width={120} 
+                      height={120} 
+                      className="h-12 w-auto cursor-pointer bg-white p-2 rounded-xl" 
+                      style={{ width: "auto", height: "auto" }}
+                      priority
+                    />
                   </div>
                   <h2 className="text-5xl font-bold leading-tight">
                     {t.loginHeroTitle}
@@ -116,113 +204,227 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Right Section - Login Form */}
-              <div className="md:col-span-3 bg-white/95 backdrop-blur-sm p-12">
-                <div className="max-w-md mx-auto">
-                  <h3 className="text-3xl font-bold text-gray-900 mb-2">{t.loginTitle}</h3>
-                  <p className="text-gray-600 mb-8">{t.loginSubtitle}</p>
+              {/* Right Section - Login / Forgot Password Forms */}
+              <div className="md:col-span-3 bg-white/95 backdrop-blur-sm p-12 relative">
+                <div className="max-w-md mx-auto relative">
+                  
+                  {/* LOGIN MODE */}
+                  {mode === 'login' && (
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                      <h3 className="text-3xl font-bold text-gray-900 mb-2">{t.loginTitle}</h3>
+                      <p className="text-gray-600 mb-8">{t.loginSubtitle}</p>
 
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    <div>
-                      <Label htmlFor="userType">{t.signInAs} <span className="text-red-500">*</span></Label>
-                      <select
-                        id="userType"
-                        {...register("userType")}
-                        className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                      >
-                        <option value="">{t.userTypePlaceholder}</option>
-                        <option value="user">{t.user}</option>
-                        <option value="doctor">{t.doctor}</option>
-                        <option value="bloodDonor">{t.bloodDonor}</option>
-                        <option value="ambulance">{t.ambulance}</option>
-                      </select>
-                      {errors.userType && (
-                        <p className="text-sm text-red-500 mt-1">{errors.userType.message}</p>
-                      )}
-                    </div>
+                      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        <div>
+                          <Label htmlFor="userType">{t.signInAs} <span className="text-red-500">*</span></Label>
+                          <select
+                            id="userType"
+                            {...register("userType")}
+                            className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                          >
+                            <option value="">{t.userTypePlaceholder}</option>
+                            <option value="user">{t.user}</option>
+                            <option value="doctor">{t.doctor}</option>
+                            <option value="bloodDonor">{t.bloodDonor}</option>
+                            <option value="ambulance">{t.ambulance}</option>
+                          </select>
+                          {errors.userType && (
+                            <p className="text-sm text-red-500 mt-1">{errors.userType.message}</p>
+                          )}
+                        </div>
 
-                    <div>
-                      <Label htmlFor="phoneOrEmail">{t.phoneOrEmail}</Label>
-                      <Input
-                        id="phoneOrEmail"
-                        type="text"
-                        placeholder={t.phoneOrEmailPlaceholder}
-                        {...register("phoneOrEmail")}
-                        className="mt-1"
-                      />
-                      {errors.phoneOrEmail && (
-                        <p className="text-sm text-red-500 mt-1">{errors.phoneOrEmail.message}</p>
-                      )}
-                    </div>
+                        <div>
+                          <Label htmlFor="phoneOrEmail">{t.phoneOrEmail}</Label>
+                          <Input
+                            id="phoneOrEmail"
+                            type="text"
+                            placeholder={t.phoneOrEmailPlaceholder}
+                            {...register("phoneOrEmail")}
+                            className="mt-1"
+                          />
+                          {errors.phoneOrEmail && (
+                            <p className="text-sm text-red-500 mt-1">{errors.phoneOrEmail.message}</p>
+                          )}
+                        </div>
 
-                    <div>
-                      <Label htmlFor="password">{t.password}</Label>
-                      <div className="relative mt-1">
-                        <Input
-                          id="password"
-                          type={showPassword ? "text" : "password"}
-                          placeholder={t.passwordPlaceholder}
-                          {...register("password")}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        <div>
+                          <Label htmlFor="password">{t.password}</Label>
+                          <div className="relative mt-1">
+                            <Input
+                              id="password"
+                              type={showPassword ? "text" : "password"}
+                              placeholder={t.passwordPlaceholder}
+                              {...register("password")}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            >
+                              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                            </button>
+                          </div>
+                          {errors.password && (
+                            <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+                          )}
+                        </div>
+
+                        <div className="flex justify-end">
+                          <button 
+                            type="button"
+                            onClick={() => setMode('forgot_email')} 
+                            className="text-sm text-primary hover:underline bg-transparent border-none p-0 cursor-pointer"
+                          >
+                            {t.forgotPassword}
+                          </button>
+                        </div>
+
+                        <Button
+                          type="submit"
+                          className="w-full bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white"
+                          disabled={isLoading}
                         >
-                          {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                        </button>
-                      </div>
-                      {errors.password && (
-                        <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
-                      )}
+                          {isLoading ? t.signingInBtn : t.signInBtn}
+                        </Button>
+                      </form>
+
+
+                      <p className="mt-6 text-center text-sm text-gray-600">
+                        {t.newHere}{" "}
+                        <Link href="/signup" className="text-primary font-medium hover:underline">
+                          {t.createAccount}
+                        </Link>
+                      </p>
                     </div>
+                  )}
 
-                    <div className="flex justify-end">
-                      <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-                        {t.forgotPassword}
-                      </Link>
+                  {/* FORGOT PASSWORD - EMAIL MODE */}
+                  {mode === 'forgot_email' && (
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                      <button 
+                        onClick={() => setMode('login')}
+                        className="flex items-center text-sm text-gray-500 hover:text-primary mb-6 transition-colors"
+                      >
+                        <ArrowLeft className="h-4 w-4 mr-1" />
+                        {language === "bn" ? "লগইন এ ফিরে যান" : "Back to login"}
+                      </button>
+                      <h3 className="text-3xl font-bold text-gray-900 mb-2">{language === "bn" ? "পাসওয়ার্ড ভুলে গেছেন" : "Forgot Password"}</h3>
+                      <p className="text-gray-600 mb-8">{language === "bn" ? "একটি ৬-ডিজিটের ভেরিফিকেশন কোড পেতে আপনার নিবন্ধিত ইমেইল ঠিকানা লিখুন।" : "Enter your registered email address to receive a 6-digit verification code."}</p>
+
+                      <form onSubmit={handleSendOtp} className="space-y-6">
+                        <div>
+                          <Label htmlFor="resetEmail">{language === "bn" ? "ইমেইল ঠিকানা" : "Email Address"}</Label>
+                          <Input
+                            id="resetEmail"
+                            type="email"
+                            placeholder="e.g. user@example.com"
+                            value={resetEmail}
+                            onChange={(e) => setResetEmail(e.target.value)}
+                            required
+                            className="mt-1"
+                          />
+                        </div>
+                        <Button
+                          type="submit"
+                          className="w-full bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? language === "bn" ? "পাঠানো হচ্ছে..." : "Sending..." : language === "bn" ? "ভেরিফিকেশন কোড পাঠান" : "Send Verification Code"}
+                        </Button>
+                      </form>
                     </div>
+                  )}
 
-                    <Button
-                      type="submit"
-                      className="w-full bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? t.signingInBtn : t.signInBtn}
-                    </Button>
-                  </form>
+                  {/* FORGOT PASSWORD - OTP MODE */}
+                  {mode === 'forgot_otp' && (
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                      <button 
+                        onClick={() => setMode('forgot_email')}
+                        className="flex items-center text-sm text-gray-500 hover:text-primary mb-6 transition-colors"
+                      >
+                        <ArrowLeft className="h-4 w-4 mr-1" />
+                        {language === "bn" ? "ফিরে যান" : "Back"}
+                      </button>
+                      <h3 className="text-3xl font-bold text-gray-900 mb-2">{language === "bn" ? "আপনার ইমেইল চেক করুন" : "Check Your Email"}</h3>
+                      <p className="text-gray-600 mb-8">{language === "bn" ? "আমরা একটি ৬-ডিজিটের ভেরিফিকেশন কোড পাঠিয়েছি " : "We've sent a 6-digit verification code to "}<strong>{resetEmail}</strong>. {language === "bn" ? "এটি ১০ মিনিটের মধ্যে শেষ হয়ে যাবে।" : "It will expire in 10 minutes."}</p>
 
-                  <div className="mt-8">
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-300"></div>
-                      </div>
-                      <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-white/95 text-gray-500">{t.or}</span>
-                      </div>
+                      <form onSubmit={handleVerifyOtp} className="space-y-6">
+                        <div>
+                          <Label htmlFor="resetOtp">{language === "bn" ? "৬-ডিজিটের কোড" : "6-Digit Code"}</Label>
+                          <Input
+                            id="resetOtp"
+                            type="text"
+                            placeholder={language === "bn" ? "ওটিপি লিখুন" : "Enter OTP"}
+                            value={resetOtp}
+                            onChange={(e) => setResetOtp(e.target.value)}
+                            required
+                            className="mt-1 text-center text-2xl tracking-[0.5em] font-mono"
+                            maxLength={6}
+                          />
+                        </div>
+                        <Button
+                          type="submit"
+                          className="w-full bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? language === "bn" ? "যাচাই করা হচ্ছে..." : "Verifying..." : language === "bn" ? "কোড যাচাই করুন" : "Verify Code"}
+                        </Button>
+                      </form>
                     </div>
+                  )}
 
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full mt-6"
-                    >
-                      <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                      </svg>
-                      {t.signInGoogle}
-                    </Button>
-                  </div>
+                  {/* FORGOT PASSWORD - RESET MODE */}
+                  {mode === 'forgot_reset' && (
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                      <h3 className="text-3xl font-bold text-gray-900 mb-2">{language === "bn" ? "নতুন পাসওয়ার্ড" : "New Password"}</h3>
+                      <p className="text-gray-600 mb-8">{language === "bn" ? "প্রায় শেষ! আপনার অ্যাকাউন্টের জন্য একটি নতুন নিরাপদ পাসওয়ার্ড তৈরি করুন।" : "Almost there! Create a new secure password for your account."}</p>
 
-                  <p className="mt-6 text-center text-sm text-gray-600">
-                    {t.newHere}{" "}
-                    <Link href="/signup" className="text-primary font-medium hover:underline">
-                      {t.createAccount}
-                    </Link>
-                  </p>
+                      <form onSubmit={handleResetPassword} className="space-y-6">
+                        <div>
+                          <Label htmlFor="newPassword">{language === "bn" ? "নতুন পাসওয়ার্ড" : "New Password"}</Label>
+                          <div className="relative mt-1">
+                            <Input
+                              id="newPassword"
+                              type={showPassword ? "text" : "password"}
+                              placeholder={language === "bn" ? "কমপক্ষে ৬টি অক্ষর" : "Min 6 characters"}
+                              value={resetPassword}
+                              onChange={(e) => setResetPassword(e.target.value)}
+                              required
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            >
+                              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="confirmNewPassword">{language === "bn" ? "পাসওয়ার্ড নিশ্চিত করুন" : "Confirm Password"}</Label>
+                          <Input
+                            id="confirmNewPassword"
+                            type="password"
+                            placeholder={language === "bn" ? "নতুন পাসওয়ার্ড পুনরায় লিখুন" : "Re-enter new password"}
+                            value={resetConfirmPassword}
+                            onChange={(e) => setResetConfirmPassword(e.target.value)}
+                            required
+                            className="mt-1"
+                          />
+                        </div>
+
+                        <Button
+                          type="submit"
+                          className="w-full bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? language === "bn" ? "রিসেট করা হচ্ছে..." : "Resetting..." : language === "bn" ? "পাসওয়ার্ড রিসেট করুন" : "Reset Password"}
+                        </Button>
+                      </form>
+                    </div>
+                  )}
+
                 </div>
               </div>
             </div>

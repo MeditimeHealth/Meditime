@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
+import { signToken } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -97,7 +98,15 @@ export async function POST(request: NextRequest) {
       userData.name = user.fullName; // For backward compatibility
     }
 
-    return NextResponse.json(
+    // Generate JWT Token
+    const token = await signToken({
+      id: String(user._id),
+      email: user.email || '',
+      role: user.role || 'user',
+      userType: user.userType || 'user'
+    });
+
+    const response = NextResponse.json(
       { 
         message: "Login successful", 
         user: userData,
@@ -105,6 +114,17 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
+
+    // Set secure HTTP-Only cookie
+    response.cookies.set('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 2, // 2 hours for security
+      path: '/',
+    });
+
+    return response;
   } catch (error: any) {
     console.error("Login error:", error);
     return NextResponse.json(

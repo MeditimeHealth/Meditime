@@ -28,6 +28,24 @@ import {
   Stethoscope,
   ChevronLeft,
   ChevronRight,
+  Heart,
+  Brain,
+  Bone,
+  Eye,
+  Smile,
+  Baby,
+  Ear,
+  Droplets,
+  Activity,
+  Wind,
+  Scissors,
+  Microscope,
+  Zap,
+  Dumbbell,
+  ScanLine,
+  Droplet,
+  HeartPulse,
+  Pill,
 } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Link from "next/link";
@@ -127,7 +145,9 @@ function DoctorListPageContent() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Filter states
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
@@ -167,17 +187,48 @@ function DoctorListPageContent() {
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const currentDays = t.days;
 
+  // Dedicated suggestions state (independent of main grid)
+  const [suggestionDoctors, setSuggestionDoctors] = useState<Doctor[]>([]);
+  const [debouncedSuggestQuery, setDebouncedSuggestQuery] = useState("");
+  // Ref for scrolling to results
+  const resultsRef = useRef<HTMLDivElement>(null);
 
+  // Department keyword → Lucide icon mapping
+  const getDeptIcon = (name: string) => {
+    const n = name.toLowerCase();
+    if (n.includes('heart') || n.includes('cardio') || n.includes('হার্ট') || n.includes('হৃদ')) return <Heart className="w-7 h-7" />;
+    if (n.includes('brain') || n.includes('neuro') || n.includes('মস্তিষ্ক') || n.includes('নিউরো')) return <Brain className="w-7 h-7" />;
+    if (n.includes('bone') || n.includes('ortho') || n.includes('হাড়') || n.includes('অর্থো')) return <Bone className="w-7 h-7" />;
+    if (n.includes('eye') || n.includes('ophthal') || n.includes('চোখ') || n.includes('অক্সি')) return <Eye className="w-7 h-7" />;
+    if (n.includes('teeth') || n.includes('dental') || n.includes('dent') || n.includes('দাঁত')) return <Smile className="w-7 h-7" />;
+    if (n.includes('child') || n.includes('paed') || n.includes('pediatric') || n.includes('শিশু') || n.includes('বাড়ি')) return <Baby className="w-7 h-7" />;
+    if (n.includes('ent') || n.includes('ear') || n.includes('nose') || n.includes('নাক') || n.includes('কান')) return <Ear className="w-7 h-7" />;
+    if (n.includes('kidney') || n.includes('nephro') || n.includes('urol') || n.includes('কিডনি') || n.includes('বৃক্ক')) return <Droplet className="w-7 h-7" />;
+    if (n.includes('gastro') || n.includes('liver') || n.includes('digest') || n.includes('যকৃত') || n.includes('পাকস্থলী')) return <Activity className="w-7 h-7" />;
+    if (n.includes('lung') || n.includes('pulmo') || n.includes('chest') || n.includes('respirat') || n.includes('ফুসফুস') || n.includes('ছাতি')) return <Wind className="w-7 h-7" />;
+    if (n.includes('skin') || n.includes('derma') || n.includes('চর্ম') || n.includes('ত্বক')) return <Droplets className="w-7 h-7" />;
+    if (n.includes('mental') || n.includes('psycho') || n.includes('psychiatr') || n.includes('মানসিক')) return <Brain className="w-7 h-7" />;
+    if (n.includes('surg') || n.includes('সার্জারি') || n.includes('সার্জিক্যাল')) return <Scissors className="w-7 h-7" />;
+    if (n.includes('onco') || n.includes('cancer') || n.includes('ক্যানসার')) return <Microscope className="w-7 h-7" />;
+    if (n.includes('diabet') || n.includes('endocrin') || n.includes('ডায়াবেট') || n.includes('হরমোন')) return <Zap className="w-7 h-7" />;
+    if (n.includes('physio') || n.includes('rehab') || n.includes('ফিজিো')) return <Dumbbell className="w-7 h-7" />;
+    if (n.includes('radio') || n.includes('রেডিও')) return <ScanLine className="w-7 h-7" />;
+    if (n.includes('gynec') || n.includes('obstet') || n.includes('women') || n.includes('নারী') || n.includes('প্রসূত')) return <HeartPulse className="w-7 h-7" />;
+    if (n.includes('medicine') || n.includes('general') || n.includes('মেডিসিন') || n.includes('সাধারণ')) return <Pill className="w-7 h-7" />;
+    return <Stethoscope className="w-7 h-7" />;
+  };
 
   const fetchDoctors = async (pageNum: number, isNewFilter: boolean = false) => {
     try {
       if (pageNum > 1) setLoadingMore(true);
-      else setLoading(true);
+      else {
+        if (!loading) setIsSearching(true);
+      }
 
       const params = new URLSearchParams();
       params.append("page", pageNum.toString());
       params.append("limit", "12");
-      if (searchQuery) params.append("search", searchQuery);
+      if (debouncedSearchQuery) params.append("search", debouncedSearchQuery);
       if (selectedSpecialty) params.append("specialty", selectedSpecialty);
       if (selectedHospital) params.append("hospital", selectedHospital);
       if (selectedDepartment) params.append("department", selectedDepartment);
@@ -208,6 +259,7 @@ function DoctorListPageContent() {
       console.error("Error fetching doctors:", error);
     } finally {
       setLoading(false);
+      setIsSearching(false);
       setLoadingMore(false);
     }
   };
@@ -294,12 +346,44 @@ function DoctorListPageContent() {
     fetchDepartments();
   }, []);
 
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Debounce suggestions query (faster — 300ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSuggestQuery(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Fetch dedicated suggestions (independent of main grid)
+  useEffect(() => {
+    if (!debouncedSuggestQuery || debouncedSuggestQuery.length < 1) {
+      setSuggestionDoctors([]);
+      return;
+    }
+    const fetchSuggestions = async () => {
+      try {
+        const res = await fetch(`/api/doctors?search=${encodeURIComponent(debouncedSuggestQuery)}&limit=8`);
+        const data = await res.json();
+        if (res.ok) setSuggestionDoctors(data.doctors || []);
+      } catch {}
+    };
+    fetchSuggestions();
+  }, [debouncedSuggestQuery]);
+
   // Fetch doctors when filters change
   useEffect(() => {
     setPage(1);
     fetchDoctors(1, true);
   }, [
-    searchQuery,
+    debouncedSearchQuery,
     selectedSpecialty,
     selectedHospital,
     selectedDepartment,
@@ -391,63 +475,58 @@ function DoctorListPageContent() {
     return departments.map((d) => d.name);
   }, [departments]);
 
-  // Auto-suggestions based on search query
+  // Auto-suggestions based on search query — uses dedicated suggestion doctors
   const suggestions = useMemo(() => {
     if (!searchQuery || searchQuery.length < 1) return [];
 
     const query = searchQuery.toLowerCase();
     const results: Array<{
       type: string;
+      typeBn: string;
       value: string;
       doctor?: Doctor;
       hospital?: Hospital;
       link?: string;
     }> = [];
 
-    // Get matching doctors (limited to 5 for suggestions)
-    const matchingDoctors = doctors
-      .filter(
-        (doctor) =>
-          doctor.name.toLowerCase().includes(query) ||
-          doctor.specialty.toLowerCase().includes(query) ||
-          doctor.hospital?.toLowerCase().includes(query),
+    // From dedicated suggestion fetch
+    suggestionDoctors
+      .filter(doctor =>
+        doctor.name.toLowerCase().includes(query) ||
+        doctor.nameBn?.includes(searchQuery) ||
+        doctor.specialty?.toLowerCase().includes(query) ||
+        doctor.specialtyBn?.includes(searchQuery)
       )
-      .slice(0, 5);
+      .slice(0, 5)
+      .forEach(doctor => {
+        if (doctor.name.toLowerCase().includes(query) || doctor.nameBn?.includes(searchQuery)) {
+          results.push({ type: 'Doctor', typeBn: 'ডাক্তার', value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name, doctor });
+        } else if (
+          doctor.specialty.toLowerCase().includes(query) &&
+          !results.some(r => r.type === 'Specialty' && r.value === doctor.specialty)
+        ) {
+          results.push({ type: 'Specialty', typeBn: 'বিশেষজ্ঞতা', value: language === 'bn' && doctor.specialtyBn ? doctor.specialtyBn : doctor.specialty });
+        }
+      });
 
-    matchingDoctors.forEach((doctor) => {
-      if (doctor.name.toLowerCase().includes(query)) {
-        results.push({ type: "Doctor", value: doctor.name, doctor });
-      }
-      if (
-        doctor.specialty.toLowerCase().includes(query) &&
-        !results.some(
-          (r) => r.type === "Specialty" && r.value === doctor.specialty,
-        )
-      ) {
-        results.push({ type: "Specialty", value: doctor.specialty });
-      }
-    });
+    // Matching hospitals
+    hospitals
+      .filter(h => h.name.toLowerCase().includes(query))
+      .slice(0, 3)
+      .forEach(hospital => {
+        if (!results.some(r => r.type === 'Hospital' && r.value === hospital.name)) {
+          results.push({
+            type: 'Hospital',
+            typeBn: 'হাসপাতাল',
+            value: language === 'bn' && hospital.nameBn ? hospital.nameBn : hospital.name,
+            hospital,
+            link: `/hospital/${encodeURIComponent(hospital.name)}`,
+          });
+        }
+      });
 
-    // Get matching hospitals
-    const matchingHospitals = hospitals
-      .filter((h) => h.name.toLowerCase().includes(query))
-      .slice(0, 3);
-
-    matchingHospitals.forEach((hospital) => {
-      if (
-        !results.some((r) => r.type === "Hospital" && r.value === hospital.name)
-      ) {
-        results.push({
-          type: "Hospital",
-          value: hospital.name,
-          hospital,
-          link: `/hospital/${encodeURIComponent(hospital.name)}`,
-        });
-      }
-    });
-
-    return results.slice(0, 8); // Limit to 8 suggestions
-  }, [searchQuery, doctors, hospitals]);
+    return results.slice(0, 8);
+  }, [searchQuery, suggestionDoctors, hospitals, language]);
 
   // Filter and sort doctors
   const filteredAndSortedDoctors = doctors;
@@ -635,7 +714,7 @@ function DoctorListPageContent() {
                   }}
                   onFocus={() => setShowSuggestions(true)}
                   onBlur={() => {
-                    setTimeout(() => setShowSuggestions(false), 200);
+                    setTimeout(() => setShowSuggestions(false), 300);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "ArrowDown") {
@@ -661,9 +740,12 @@ function DoctorListPageContent() {
                   }}
                   className="w-full pl-12 md:pl-14 pr-4 py-2.5 md:py-7 text-sm md:text-lg border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent placeholder:text-gray-400"
                 />
-                <Button className="hidden md:flex bg-primary hover:bg-primary-dark text-white items-center gap-2 rounded-xl px-8 py-6 text-lg font-medium transition-all shadow-lg hover:shadow-primary/30">
+                <Button
+                  onClick={() => { setShowSuggestions(false); resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+                  className="bg-primary hover:bg-primary-dark text-white flex items-center gap-2 rounded-xl px-4 md:px-8 py-6 text-sm md:text-lg font-medium transition-all shadow-lg hover:shadow-primary/30"
+                >
                   <Search className="h-5 w-5" />
-                  {t.searchButton}
+                  <span className="hidden md:inline">{t.searchButton}</span>
                 </Button>
               </div>
             </div>
@@ -690,27 +772,24 @@ function DoctorListPageContent() {
                             router.push(suggestion.link);
                             setShowSuggestions(false);
                           } else if (suggestion.doctor) {
-                            setSearchQuery(suggestion.doctor.name);
+                            setSearchQuery(language === 'bn' && suggestion.doctor.nameBn ? suggestion.doctor.nameBn : suggestion.doctor.name);
                             setShowSuggestions(false);
                           } else {
                             setSearchQuery(suggestion.value);
                             setShowSuggestions(false);
                           }
+                          setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
                         }}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
-                            <div
-                              className="font-bold text-gray-800 text-base"
-                            >
+                            <div className="font-bold text-gray-800 text-base">
                               {suggestion.value}
                             </div>
                             {suggestion.doctor && (
-                              <div
-                                className="text-sm text-gray-500 mt-1 flex items-center gap-2"
-                              >
+                              <div className="text-sm text-gray-500 mt-1 flex items-center gap-2">
                                 <span className="text-primary font-medium">
-                                  {suggestion.doctor.specialty}
+                                  {language === 'bn' && suggestion.doctor.specialtyBn ? suggestion.doctor.specialtyBn : suggestion.doctor.specialty}
                                 </span>
                                 {suggestion.doctor.hospital && (
                                   <>
@@ -721,9 +800,7 @@ function DoctorListPageContent() {
                               </div>
                             )}
                             {suggestion.hospital && (
-                              <div
-                                className="text-sm text-gray-500 mt-1 font-medium text-primary"
-                              >
+                              <div className="text-sm text-gray-500 mt-1 font-medium text-primary">
                                 {t.clickToViewDoctors}
                               </div>
                             )}
@@ -737,7 +814,7 @@ function DoctorListPageContent() {
                                   : "bg-green-100 text-green-700"
                             }`}
                           >
-                            {suggestion.type}
+                            {language === 'bn' ? suggestion.typeBn : suggestion.type}
                           </span>
                         </div>
                       </motion.div>
@@ -791,21 +868,16 @@ function DoctorListPageContent() {
                   disableOnInteraction: false,
                 }}
                 breakpoints={{
-                  640: {
-                    slidesPerView: 3,
-                  },
-                  768: {
-                    slidesPerView: 4,
-                  },
-                  1024: {
-                    slidesPerView: 5,
-                  },
+                  480: { slidesPerView: 2 },
+                  640: { slidesPerView: 3 },
+                  768: { slidesPerView: 4 },
+                  1024: { slidesPerView: 5 },
                 }}
                 loop={departments.length > 5}
                 className="pb-4"
               >
                 {departments.map((dept, index) => (
-                  <SwiperSlide key={dept._id || dept.name}>
+                            <SwiperSlide key={dept._id || dept.name}>
                     <motion.button
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -815,8 +887,9 @@ function DoctorListPageContent() {
                       onClick={() => {
                         setSelectedDepartment(dept.name);
                         setSelectedDept(dept.name);
+                        setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
                       }}
-                      className={`flex flex-col items-center justify-center gap-2 p-5 rounded-lg w-full h-[180px] transition-all duration-300 ${
+                      className={`flex flex-col items-center justify-center gap-2 p-3 md:p-5 rounded-lg w-full h-[120px] md:h-[160px] transition-all duration-300 ${
                         selectedDept === dept.name
                           ? "bg-[#3DB5A0] text-white shadow-md"
                           : "bg-white text-gray-700 border border-gray-200"
@@ -824,10 +897,8 @@ function DoctorListPageContent() {
                     >
                       {/* Circular Icon Container */}
                       <div
-                        className={`w-14 h-14 rounded-full flex items-center justify-center overflow-hidden shrink-0 ${
-                          selectedDept === dept.name
-                            ? "bg-white/20"
-                            : "bg-gray-100"
+                        className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center overflow-hidden shrink-0 ${
+                          selectedDept === dept.name ? "bg-white/20" : "bg-gray-100"
                         }`}
                       >
                         {dept.image ? (
@@ -837,15 +908,15 @@ function DoctorListPageContent() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <Stethoscope className="w-7 h-7 text-gray-600" />
+                          <span className={selectedDept === dept.name ? "text-white" : "text-[#3DB5A0]"}>
+                            {getDeptIcon(dept.name)}
+                          </span>
                         )}
                       </div>
                       {/* Department Name */}
                       <p
-                        className={`font-bold text-sm text-center mt-1 ${
-                          selectedDept === dept.name
-                            ? "text-white"
-                            : "text-gray-900"
+                        className={`font-bold text-xs md:text-sm text-center mt-1 leading-tight ${
+                          selectedDept === dept.name ? "text-white" : "text-gray-900"
                         }`}
                       >
                         {getLocalizedValue(dept.name, dept.nameBn, language)}
@@ -1244,6 +1315,7 @@ function DoctorListPageContent() {
         </AnimatePresence>
 
         {/* Results Count Section */}
+        <div ref={resultsRef}>
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -1299,52 +1371,64 @@ function DoctorListPageContent() {
         </motion.div>
 
         {/* Doctor Cards Section */}
-        {filteredAndSortedDoctors.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="mb-8"
-          >
-            <Card className="p-12 text-center bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 shadow-lg">
-              <div className="mb-6">
-                <Stethoscope className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <p
-                  className="text-xl font-semibold text-gray-600 mb-4"
-                >
-                  {t.noDoctors}
-                </p>
-              </div>
-              {hasActiveFilters && (
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    onClick={clearFilters}
-                    variant="outline"
-                    className="px-6 py-3 border-2 shadow-md hover:shadow-lg"
+        <div className="relative">
+          {isSearching && (
+            <div className="absolute inset-0 z-10 bg-white/50 backdrop-blur-[1px] flex items-center justify-center rounded-2xl min-h-[400px]">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
+              />
+            </div>
+          )}
+
+          {filteredAndSortedDoctors.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="mb-8"
+            >
+              <Card className="p-12 text-center bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 shadow-lg">
+                <div className="mb-6">
+                  <Stethoscope className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <p
+                    className="text-xl font-semibold text-gray-600 mb-4"
                   >
-                    {t.clearFilters}
-                  </Button>
-                </motion.div>
-              )}
-            </Card>
-          </motion.div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {doctors.map((doctor, index) => {
-              const matchedHospital = hospitals.find(h => h.name === doctor.hospital);
-              const doctorWithBnHospital = {
-                ...doctor,
-                hospitalBn: matchedHospital?.nameBn || doctor.hospitalBn || ""
-              };
-              return (
-                <DoctorCard key={`${doctor._id}-${index}`} doctor={doctorWithBnHospital} index={index} />
-              );
-            })}
-          </div>
-        )}
+                    {t.noDoctors}
+                  </p>
+                </div>
+                {hasActiveFilters && (
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button
+                      onClick={clearFilters}
+                      variant="outline"
+                      className="px-6 py-3 border-2 shadow-md hover:shadow-lg"
+                    >
+                      {t.clearFilters}
+                    </Button>
+                  </motion.div>
+                )}
+              </Card>
+            </motion.div>
+          ) : (
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 transition-opacity duration-300 ${isSearching ? 'opacity-30' : 'opacity-100'}`}>
+              {doctors.map((doctor, index) => {
+                const matchedHospital = hospitals.find(h => h.name === doctor.hospital);
+                const doctorWithBnHospital = {
+                  ...doctor,
+                  hospitalBn: matchedHospital?.nameBn || doctor.hospitalBn || ""
+                };
+                return (
+                  <DoctorCard key={`${doctor._id}-${index}`} doctor={doctorWithBnHospital} index={index} />
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         {/* Loading Indicator for Infinite Scroll */}
         <div ref={observerTarget} className="py-10 flex justify-center w-full">
@@ -1359,6 +1443,7 @@ function DoctorListPageContent() {
             <p className="text-gray-500 font-medium">{language === 'bn' ? 'আর কোনো ডাক্তার নেই' : 'No more doctors to show'}</p>
           )}
         </div>
+        </div>{/* /resultsRef */}
       </div>
       <Footer />
     </div>

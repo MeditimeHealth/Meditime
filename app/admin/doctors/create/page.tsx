@@ -646,6 +646,36 @@ export default function CreateDoctorPage() {
                           </button>
                         );
                       })}
+                      {(() => {
+                        const currentDays = watch(`availability.${slotIndex}.days`) || [];
+                        const currentTime = watch(`availability.${slotIndex}.time`);
+                        const currentTimeBn = watch(`availability.${slotIndex}.timeBn`);
+                        const isOnCall = currentDays.length === daysOfWeek.length && currentTime === "On Call" && currentTimeBn === "অন কল";
+                        
+                        return (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (isOnCall) {
+                                setValue(`availability.${slotIndex}.days`, []);
+                                setValue(`availability.${slotIndex}.time`, "");
+                                setValue(`availability.${slotIndex}.timeBn`, "");
+                              } else {
+                                setValue(`availability.${slotIndex}.days`, daysOfWeek);
+                                setValue(`availability.${slotIndex}.time`, "On Call");
+                                setValue(`availability.${slotIndex}.timeBn`, "অন কল");
+                              }
+                            }}
+                            className={`px-4 py-2 rounded-md text-sm font-bold transition-all border shadow-sm hover:shadow ${
+                              isOnCall 
+                                ? "bg-amber-600 text-white border-amber-700" 
+                                : "bg-amber-100 text-amber-700 hover:bg-amber-200 border-amber-300"
+                            }`}
+                          >
+                            {language === 'bn' ? 'অন কল (On Call)' : 'On Call'}
+                          </button>
+                        );
+                      })()}
                     </div>
                   </div>
 
