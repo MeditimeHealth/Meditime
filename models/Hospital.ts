@@ -10,7 +10,7 @@ export interface IHospital extends Document {
   // Bangla Fields
   nameBn?: string;
   addressBn?: string;
-
+  slug?:string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,6 +37,10 @@ const HospitalSchema: Schema = new Schema(
       type: String,
       trim: true,
       lowercase: true,
+    },
+    slug: {
+      type: String,
+      trim: true,
     },
     // Bangla Fields
     nameBn: { type: String, trim: true },

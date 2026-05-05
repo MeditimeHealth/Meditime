@@ -385,7 +385,7 @@ export default function AppointmentsPage() {
                         <p className="text-sm text-gray-500 mb-1">রোগীর নাম</p>
 
                         {appointment.affiliateCode ? (
-                          <Link 
+                          <Link
                             href={`/admin/affiliate-management?code=${appointment.affiliateCode}`}
                             className="flex items-center gap-2 text-purple-600 bg-purple-50 px-2 py-1 rounded border border-purple-100 hover:bg-purple-100 transition-colors"
                           >
@@ -397,7 +397,7 @@ export default function AppointmentsPage() {
                             <ExternalLink className="h-3 w-3" />
                           </Link>
                         ) : (
-                          <Link 
+                          <Link
                             href={`/admin/patients?phone=${appointment.mobileNumber}`}
                             className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100 hover:bg-green-100 transition-colors flex items-center gap-1"
                           >
@@ -759,10 +759,7 @@ export default function AppointmentsPage() {
               {error && (
                 <p
                   className="text-red-500 text-sm mt-2"
-                  style={{
-                    fontFamily:
-                      "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
+
                 >
                   {error}
                 </p>

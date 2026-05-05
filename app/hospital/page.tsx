@@ -8,15 +8,17 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Search, X, MapPin, Building2, Phone, Mail, Users, ArrowRight } from "lucide-react";
 import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
-
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { homepageTranslations } from "@/lib/homepage-translations";
 
 interface Hospital {
   _id: string;
   name: string;
   nameBn?: string;
+  slug?: string;
   thana?: {
     _id: string;
     name: string;
@@ -65,6 +67,7 @@ export default function HospitalListPage() {
   const [thanas, setThanas] = useState<Thana[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   
@@ -79,7 +82,7 @@ export default function HospitalListPage() {
 
   const fetchHospitals = useCallback(async () => {
     try {
-      const response = await fetch("/api/locations/hospitals");
+      const response = await fetch("/api/locations/hospitals?limit=100");
       const data = await response.json();
       if (response.ok) {
         setHospitals(data.hospitals);
@@ -155,35 +158,13 @@ export default function HospitalListPage() {
     }
   }, [selectedDistrict, districts, fetchThanas]);
 
-  const suggestions = useMemo(() => {
-    if (!searchQuery || searchQuery.length < 1) return [];
-    
-    const query = searchQuery.toLowerCase();
-    const results: Array<{ type: string; value: string; hospital?: Hospital }> = [];
-
-    const matchingHospitals = hospitals
-      .filter(
-        hospital =>
-          hospital.name.toLowerCase().includes(query) ||
-          hospital.address?.toLowerCase().includes(query) ||
-          hospital.phone?.toLowerCase().includes(query) ||
-          hospital.email?.toLowerCase().includes(query) ||
-          getHospitalLocationString(hospital).toLowerCase().includes(query)
-      )
-      .slice(0, 5);
-
-    matchingHospitals.forEach(hospital => {
-      if (hospital.name.toLowerCase().includes(query)) {
-        results.push({ type: "হাসপাতাল", value: hospital.name, hospital });
-      }
-      if (hospital.address?.toLowerCase().includes(query) && 
-          !results.some(r => r.type === "ঠিকানা" && r.value === hospital.address)) {
-        results.push({ type: "ঠিকানা", value: hospital.address || "" });
-      }
-    });
-
-    return results.slice(0, 8);
-  }, [searchQuery, hospitals]);
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const getHospitalLocationString = (hospital: Hospital): string => {
     const parts: string[] = [];
@@ -215,29 +196,88 @@ export default function HospitalListPage() {
     return parts.join(", ");
   };
 
-  const filteredAndSortedHospitals = useMemo(() => {
-    let filtered = [...hospitals];
+  const suggestions = useMemo(() => {
+    const trimmedQuery = searchQuery.trim().toLowerCase();
+    if (!trimmedQuery || trimmedQuery.length < 1) return [];
+    
+    const results: Array<{ type: string; value: string; hospital?: Hospital }> = [];
 
-    // Language-based filter: Only show hospitals with content in the selected language
-    filtered = filtered.filter((hospital) => {
-      if (language === 'en') {
-        // For English, show only hospitals that have English name
-        return hospital.name && hospital.name.trim() !== '';
-      } else {
-        // For Bangla, show only hospitals that have Bangla name
-        return hospital.nameBn && hospital.nameBn.trim() !== '';
+    // Filter and Sort hospitals by relevance
+    const matchingHospitals = hospitals
+      .filter(hospital => {
+        const name = (hospital.name || "").toLowerCase();
+        const nameBn = (hospital.nameBn || "").toLowerCase();
+        const address = (hospital.address || "").toLowerCase();
+        const addressBn = (hospital.addressBn || "").toLowerCase();
+        const location = getHospitalLocationString(hospital).toLowerCase();
+        
+        return (
+          name.includes(trimmedQuery) ||
+          nameBn.includes(trimmedQuery) ||
+          address.includes(trimmedQuery) ||
+          addressBn.includes(trimmedQuery) ||
+          location.includes(trimmedQuery)
+        );
+      })
+      .sort((a, b) => {
+        const aName = (a.name || "").toLowerCase();
+        const bName = (b.name || "").toLowerCase();
+        const aNameBn = (a.nameBn || "").toLowerCase();
+        const bNameBn = (b.nameBn || "").toLowerCase();
+
+        // Exact match priority
+        const aExact = aName === trimmedQuery || aNameBn === trimmedQuery;
+        const bExact = bName === trimmedQuery || bNameBn === trimmedQuery;
+        if (aExact && !bExact) return -1;
+        if (!aExact && bExact) return 1;
+
+        // Starts with priority
+        const aStarts = aName.startsWith(trimmedQuery) || aNameBn.startsWith(trimmedQuery);
+        const bStarts = bName.startsWith(trimmedQuery) || bNameBn.startsWith(trimmedQuery);
+        if (aStarts && !bStarts) return -1;
+        if (!aStarts && bStarts) return 1;
+
+        return aName.localeCompare(bName);
+      })
+      .slice(0, 10);
+
+    matchingHospitals.forEach(hospital => {
+      const displayName = getLocalizedValue(hospital.name, hospital.nameBn, language);
+      if (displayName && !results.some(r => r.value === displayName)) {
+        results.push({ 
+          type: language === 'bn' ? "হাসপাতাল" : "Hospital", 
+          value: displayName, 
+          hospital 
+        });
       }
     });
 
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+    return results;
+  }, [searchQuery, hospitals, language, getHospitalLocationString]);
+
+
+
+  const filteredAndSortedHospitals = useMemo(() => {
+    let filtered = [...hospitals];
+
+    // Removed restrictive language filter to show all hospitals
+    
+    if (debouncedSearchQuery) {
+      const query = debouncedSearchQuery.toLowerCase();
       filtered = filtered.filter((hospital) => {
         const name = getLocalizedValue(hospital.name, hospital.nameBn, language);
         const address = getLocalizedValue(hospital.address, hospital.addressBn, language);
         const locationStr = getHospitalLocationString(hospital);
         
-        // Also check against raw names in case user searches for a location name directly
-        const rawLocationStr = [
+        // Also check against raw names and alternate language fields for better coverage
+        const searchPool = [
+          hospital.name,
+          hospital.nameBn,
+          hospital.address,
+          hospital.addressBn,
+          hospital.phone,
+          hospital.email,
+          locationStr,
           hospital.thana?.district?.division?.name,
           hospital.thana?.district?.division?.nameBn,
           hospital.thana?.district?.name,
@@ -246,14 +286,7 @@ export default function HospitalListPage() {
           hospital.thana?.nameBn
         ].filter(Boolean).join(" ").toLowerCase();
 
-        return (
-          name?.toLowerCase().includes(query) ||
-          address?.toLowerCase().includes(query) ||
-          hospital.phone?.toLowerCase().includes(query) ||
-          hospital.email?.toLowerCase().includes(query) ||
-          locationStr.toLowerCase().includes(query) ||
-          rawLocationStr.includes(query)
-        );
+        return searchPool.includes(query);
       });
     }
 
@@ -365,9 +398,9 @@ export default function HospitalListPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative mt-20 h-[400px] md:h-[500px] w-full overflow-hidden"
+        className="relative mt-20 h-[450px] md:h-[550px] w-full overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-primary/50 to-primary-dark/50 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1a365d]/90 via-[#2C5282]/80 to-primary/60 z-10" />
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
@@ -377,127 +410,91 @@ export default function HospitalListPage() {
             backgroundSize: "cover",
           }}
         />
-        <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className="relative z-20 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pb-20">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1
-                className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl"
-              >
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
                 {t.heroTitle}
               </h1>
-              {/* <p
-                className="text-xl md:text-2xl text-white/95 mb-8 drop-shadow-lg"
-              >
-                Different Locations, 20+ Specialities, and 400+ Doctors near Savar from 40+ Hospitals.
-              </p> */}
-              {/* <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className="flex items-center justify-center gap-2"
-              >
-                <div className="p-3 bg-white/20 backdrop-blur-md rounded-full">
-                  <Building2 className="h-8 w-8 text-white" />
-                </div>
-                <span
-                  className="text-white/90 text-lg font-semibold"
-                >
-                  Trusted Healthcare
-                </span>
-              </motion.div> */}
+              <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8 font-light">
+                {language === 'bn' ? 'সাভারের কাছে বিভিন্ন লোকেশন, ২০+ স্পেশালিটি এবং ৪০+ হাসপাতাল থেকে ডাক্তার খুঁজে নিন।' : 'Find doctors near Savar from different locations, 20+ specialties, and 40+ hospitals.'}
+              </p>
             </motion.div>
           </div>
         </div>
       </motion.div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 -mt-20 relative z-30">
-        {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
-        >
-          <Card className="p-6 md:p-8 bg-white border-2 border-primary/10 shadow-lg">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-              {/* <div className="p-5 bg-gradient-to-br from-primary to-primary-dark rounded-2xl shadow-lg">
-                <Building2 className="h-12 w-12 text-white" />
-              </div> */}
-              <div className="flex-1">
-                <h2
-                  className="text-3xl md:text-4xl font-bold text-gray-900 mb-3"
-                >
-                  {t.listTitle}
-                </h2>
-                <p
-                  className="text-lg text-gray-600 leading-relaxed"
-                >
-                  {t.selectLocation}
-                </p>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* Modern Search Bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 -mt-32 relative z-30">
+        {/* Search Section - Floating */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-8"
+          className="mb-16"
         >
-          <div className="relative">
-            <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6 z-10" />
-            <Input
-              type="text"
-              placeholder={t.searchPlaceholder}
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setShowSuggestions(true);
-                setFocusedIndex(-1);
-              }}
-              onFocus={() => setShowSuggestions(true)}
-              onBlur={() => {
-                setTimeout(() => setShowSuggestions(false), 200);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "ArrowDown") {
-                  e.preventDefault();
-                  setFocusedIndex(prev => 
-                    prev < suggestions.length - 1 ? prev + 1 : prev
-                  );
-                } else if (e.key === "ArrowUp") {
-                  e.preventDefault();
-                  setFocusedIndex(prev => prev > 0 ? prev - 1 : -1);
-                } else if (e.key === "Enter" && focusedIndex >= 0) {
-                  e.preventDefault();
-                  const suggestion = suggestions[focusedIndex];
-                  if (suggestion.hospital) {
-                    setSearchQuery(suggestion.hospital.name);
-                  } else {
-                    setSearchQuery(suggestion.value);
-                  }
-                  setShowSuggestions(false);
-                } else if (e.key === "Escape") {
-                  setShowSuggestions(false);
-                }
-              }}
-              className="pl-14 pr-4 py-6 text-lg border-2 border-gray-300 focus:border-primary rounded-xl shadow-lg focus:shadow-xl transition-all"
-              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-            />
-            
+          <div className="relative max-w-3xl mx-auto">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+              <div className="relative bg-white rounded-2xl shadow-xl flex items-center p-2">
+                <Search className="absolute left-4 md:left-6 top-1/2 transform -translate-y-1/2 text-primary h-5 w-5 md:h-6 md:w-6 z-10" />
+                <Input
+                  type="text"
+                  placeholder={t.searchPlaceholder}
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowSuggestions(true);
+                    setFocusedIndex(-1);
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
+                  onBlur={() => {
+                    setTimeout(() => setShowSuggestions(false), 300);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowDown") {
+                      e.preventDefault();
+                      setFocusedIndex((prev) =>
+                        prev < suggestions.length - 1 ? prev + 1 : prev,
+                      );
+                    } else if (e.key === "ArrowUp") {
+                      e.preventDefault();
+                      setFocusedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+                    } else if (e.key === "Enter" && focusedIndex >= 0) {
+                      e.preventDefault();
+                      const suggestion = suggestions[focusedIndex];
+                      if (suggestion.hospital) {
+                        setSearchQuery(getLocalizedValue(suggestion.hospital.name, suggestion.hospital.nameBn, language));
+                      } else {
+                        setSearchQuery(suggestion.value);
+                      }
+                      setShowSuggestions(false);
+                    } else if (e.key === "Escape") {
+                      setShowSuggestions(false);
+                    }
+                  }}
+                  className="w-full pl-12 md:pl-14 pr-4 py-2.5 md:py-7 text-sm md:text-lg border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent placeholder:text-gray-400"
+                />
+                <Button
+                  onClick={() => setShowSuggestions(false)}
+                  className="bg-primary hover:bg-primary-dark text-white flex items-center gap-2 rounded-xl px-4 md:px-8 py-6 text-sm md:text-lg font-medium transition-all shadow-lg hover:shadow-primary/30"
+                >
+                  <Search className="h-5 w-5" />
+                  <span className="hidden md:inline">{language === 'bn' ? 'খুঁজুন' : 'Search'}</span>
+                </Button>
+              </div>
+            </div>
+
             <AnimatePresence>
               {showSuggestions && suggestions.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50 max-h-96 overflow-y-auto"
+                  className="absolute top-full left-0 right-0 mt-4 bg-white border border-gray-100 rounded-2xl shadow-2xl z-50 max-h-96 overflow-y-auto overflow-hidden divide-y divide-gray-50"
                 >
                   {suggestions.map((suggestion, index) => (
                     <motion.div
@@ -505,12 +502,12 @@ export default function HospitalListPage() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className={`px-5 py-4 cursor-pointer hover:bg-primary/5 transition-colors border-b border-gray-100 last:border-b-0 ${
-                        index === focusedIndex ? "bg-primary/10" : ""
+                      className={`px-6 py-4 cursor-pointer hover:bg-gray-50 transition-colors ${
+                        index === focusedIndex ? "bg-gray-50" : ""
                       }`}
                       onClick={() => {
                         if (suggestion.hospital) {
-                          setSearchQuery(suggestion.hospital.name);
+                          setSearchQuery(getLocalizedValue(suggestion.hospital.name, suggestion.hospital.nameBn, language));
                         } else {
                           setSearchQuery(suggestion.value);
                         }
@@ -519,24 +516,17 @@ export default function HospitalListPage() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <div 
-                            className="font-semibold text-gray-900 text-base"
-                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                          >
+                          <div className="font-bold text-gray-800 text-base">
                             {suggestion.value}
                           </div>
                           {suggestion.hospital && (
-                            <div 
-                              className="text-sm text-gray-500 mt-1"
-                              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                            >
+                            <div className="text-sm text-gray-500 mt-1">
                               {getHospitalLocationString(suggestion.hospital)}
                             </div>
                           )}
                         </div>
                         <span 
-                          className="text-xs text-primary bg-primary/10 px-3 py-1.5 rounded-full font-semibold"
-                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                          className="text-xs text-primary bg-primary/10 px-3 py-1.5 rounded-full font-bold uppercase tracking-wider"
                         >
                           {suggestion.type}
                         </span>
@@ -569,14 +559,16 @@ export default function HospitalListPage() {
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        
+
               <div>
                 <Label 
                   htmlFor="filter-division" 
                   className="mb-3 block text-base font-semibold text-gray-700"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
-                  ১. {t.division}
+                  {language === 'bn' ? '২. বিভাগ' : '2. Division'}
                 </Label>
                 <select
                   id="filter-division"
@@ -600,7 +592,7 @@ export default function HospitalListPage() {
                   className="mb-3 block text-base font-semibold text-gray-700"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
-                  ২. {t.district}
+                  {language === 'bn' ? '৩. জেলা' : '3. District'}
                 </Label>
                 <select
                   id="filter-district"
@@ -625,7 +617,7 @@ export default function HospitalListPage() {
                   className="mb-3 block text-base font-semibold text-gray-700"
                   style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
                 >
-                  ৩. {t.thana}
+                  {language === 'bn' ? '৪. উপজেলা/থানা' : '4. Thana'}
                 </Label>
                 <select
                   id="filter-thana"
@@ -711,7 +703,7 @@ export default function HospitalListPage() {
                   transition={{ duration: 0.4, delay: index * 0.05 }}
                   whileHover={{ y: -5 }}
                 >
-                  <Link href={`/hospital/${encodeURIComponent(hospital.name)}`}>
+                  <Link href={`/hospital/${encodeURIComponent(hospital?.slug || hospital.name)}`}>
                     <Card className="relative bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 h-full cursor-pointer group overflow-hidden">
                       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       <div className="p-6 flex flex-col h-full">
@@ -759,6 +751,7 @@ export default function HospitalListPage() {
           )}
         </AnimatePresence>
       </div>
+      <Footer />
     </div>
   );
 }
