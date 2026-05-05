@@ -64,7 +64,6 @@ export async function PATCH(
     }
 
     // Build update object - allow duplicate serial numbers
-    // Serial numbers can be reused (e.g., 23 can be assigned to multiple appointments)
     const updateData: any = { status };
     if (serialNumber) {
       updateData.serialNumber = serialNumber.toUpperCase();
@@ -74,7 +73,7 @@ export async function PATCH(
       id,
       updateData,
       { new: true }
-    ).populate('doctorId', 'name qualification department hospital image')
+    ).populate('doctorId', 'name nameBn qualification qualificationBn specialty specialtyBn designation designationBn department hospital image slug')
      .populate('userId', 'fullName email phoneNumber');
 
     if (!appointment) {
@@ -108,7 +107,7 @@ export async function GET(
     const { id } = await params;
 
     const appointment = await Appointment.findById(id)
-      .populate('doctorId', 'name qualification department hospital')
+      .populate('doctorId', 'name nameBn qualification qualificationBn specialty specialtyBn designation designationBn department hospital image slug')
       .populate('userId', 'fullName email phoneNumber');
 
     if (!appointment) {
@@ -162,4 +161,3 @@ export async function DELETE(
     );
   }
 }
-

@@ -15,8 +15,15 @@ import { showToast } from "@/lib/toast";
 interface Doctor {
   _id: string;
   name: string;
+  nameBn?: string;
+  specialty?: string;
+  specialtyBn?: string;
   qualification: string;
+  qualificationBn?: string;
+  designation?: string;
+  designationBn?: string;
   hospital?: string;
+  image?: string;
   availability: Array<{
     days: string[];
     startTime: string;
@@ -295,39 +302,43 @@ export default function BookAppointmentPage() {
       const userData = typeof window !== "undefined" ? localStorage.getItem("user") : null;
       const user = userData ? JSON.parse(userData) : null;
 
-      const response = await fetch("/api/appointments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // Save booking data to localStorage and go to checkout page
+      const checkoutData = {
+        doctorId: doctor?._id || doctorId,
+        doctorSlug: doctorId,
+        doctor: {
+          _id: doctor._id,
+          name: doctor.name,
+          nameBn: doctor.nameBn,
+          specialty: doctor.specialty,
+          specialtyBn: doctor.specialtyBn,
+          qualification: doctor.qualification,
+          qualificationBn: doctor.qualificationBn,
+          designation: doctor.designation,
+          designationBn: doctor.designationBn,
+          hospital: doctor.hospital,
+          image: doctor.image,
+          availability: doctor.availability,
         },
-        body: JSON.stringify({
-          doctorId: doctor?._id || doctorId,
-          patientName,
-          mobileNumber,
-          gender: gender || undefined,
-          age: age ? parseInt(age) : undefined,
-          patientType,
-          hospitalName: doctor.hospital,
-          appointmentDate: selectedDate.toISOString(),
-          userId: user?._id || user?.id || undefined,
-          affiliateCode: affiliateCode || undefined,
-        }),
-      });
+        patientName,
+        mobileNumber,
+        gender: gender || undefined,
+        age: age ? parseInt(age) : undefined,
+        patientType,
+        hospitalName: doctor.hospital,
+        appointmentDate: selectedDate.toISOString(),
+        userId: user?._id || user?.id || undefined,
+        affiliateCode: affiliateCode || undefined,
+      };
 
-      const data = await response.json();
-      if (response.ok && data.appointment) {
-        // Save appointment to localStorage as backup
-        if (typeof window !== "undefined") {
-          localStorage.setItem("lastAppointment", JSON.stringify(data.appointment));
-        }
-        // Redirect to success page with appointment ID
-        router.push(`/doctor/${doctorId}/book/success?appointmentId=${data.appointment._id}`);
-      } else {
-        alert(data.error || "Failed to book appointment");
+      if (typeof window !== "undefined") {
+        localStorage.setItem("pendingBooking", JSON.stringify(checkoutData));
       }
+
+      router.push(`/doctor/${doctorId}/book/checkout`);
     } catch (error) {
-      console.error("Error booking appointment:", error);
-      alert("Failed to book appointment");
+      console.error("Error preparing checkout:", error);
+      alert("Something went wrong, please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -729,10 +740,10 @@ export default function BookAppointmentPage() {
                   {submitting ? (
                     <>
                       <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                      বুক করা হচ্ছে...
+                      অপেক্ষা করুন...
                     </>
                   ) : (
-                    "অ্যাপয়েন্টমেন্ট বুক করুন"
+                    "পরবর্তী ধাপ →"
                   )}
                 </Button>
               </form>

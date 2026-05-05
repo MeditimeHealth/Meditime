@@ -11,16 +11,17 @@ export async function GET(
   try {
     await dbConnect();
     const { id } = await params;
+    const decodedId = decodeURIComponent(id);
 
     let doctor;
     // If it's a valid ObjectId, try finding by ID
-    if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      doctor = await Doctor.findById(id);
+    if (decodedId.match(/^[0-9a-fA-F]{24}$/)) {
+      doctor = await Doctor.findById(decodedId);
     }
     
     // If not found by ID or not a valid ObjectId, try finding by slug
     if (!doctor) {
-      doctor = await Doctor.findOne({ slug: id });
+      doctor = await Doctor.findOne({ slug: decodedId });
     }
     
     if (!doctor) {

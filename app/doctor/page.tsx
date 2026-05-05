@@ -195,27 +195,87 @@ function DoctorListPageContent() {
 
   // Department keyword → Lucide icon mapping
   const getDeptIcon = (name: string) => {
-    const n = name.toLowerCase();
-    if (n.includes('heart') || n.includes('cardio') || n.includes('হার্ট') || n.includes('হৃদ')) return <Heart className="w-7 h-7" />;
-    if (n.includes('brain') || n.includes('neuro') || n.includes('মস্তিষ্ক') || n.includes('নিউরো')) return <Brain className="w-7 h-7" />;
-    if (n.includes('bone') || n.includes('ortho') || n.includes('হাড়') || n.includes('অর্থো')) return <Bone className="w-7 h-7" />;
-    if (n.includes('eye') || n.includes('ophthal') || n.includes('চোখ') || n.includes('অক্সি')) return <Eye className="w-7 h-7" />;
-    if (n.includes('teeth') || n.includes('dental') || n.includes('dent') || n.includes('দাঁত')) return <Smile className="w-7 h-7" />;
-    if (n.includes('child') || n.includes('paed') || n.includes('pediatric') || n.includes('শিশু') || n.includes('বাড়ি')) return <Baby className="w-7 h-7" />;
-    if (n.includes('ent') || n.includes('ear') || n.includes('nose') || n.includes('নাক') || n.includes('কান')) return <Ear className="w-7 h-7" />;
-    if (n.includes('kidney') || n.includes('nephro') || n.includes('urol') || n.includes('কিডনি') || n.includes('বৃক্ক')) return <Droplet className="w-7 h-7" />;
-    if (n.includes('gastro') || n.includes('liver') || n.includes('digest') || n.includes('যকৃত') || n.includes('পাকস্থলী')) return <Activity className="w-7 h-7" />;
-    if (n.includes('lung') || n.includes('pulmo') || n.includes('chest') || n.includes('respirat') || n.includes('ফুসফুস') || n.includes('ছাতি')) return <Wind className="w-7 h-7" />;
-    if (n.includes('skin') || n.includes('derma') || n.includes('চর্ম') || n.includes('ত্বক')) return <Droplets className="w-7 h-7" />;
-    if (n.includes('mental') || n.includes('psycho') || n.includes('psychiatr') || n.includes('মানসিক')) return <Brain className="w-7 h-7" />;
-    if (n.includes('surg') || n.includes('সার্জারি') || n.includes('সার্জিক্যাল')) return <Scissors className="w-7 h-7" />;
-    if (n.includes('onco') || n.includes('cancer') || n.includes('ক্যানসার')) return <Microscope className="w-7 h-7" />;
-    if (n.includes('diabet') || n.includes('endocrin') || n.includes('ডায়াবেট') || n.includes('হরমোন')) return <Zap className="w-7 h-7" />;
-    if (n.includes('physio') || n.includes('rehab') || n.includes('ফিজিো')) return <Dumbbell className="w-7 h-7" />;
-    if (n.includes('radio') || n.includes('রেডিও')) return <ScanLine className="w-7 h-7" />;
-    if (n.includes('gynec') || n.includes('obstet') || n.includes('women') || n.includes('নারী') || n.includes('প্রসূত')) return <HeartPulse className="w-7 h-7" />;
-    if (n.includes('medicine') || n.includes('general') || n.includes('মেডিসিন') || n.includes('সাধারণ')) return <Pill className="w-7 h-7" />;
     return <Stethoscope className="w-7 h-7" />;
+  };
+
+  const getDeptPublicIcon = (name: string) => {
+    const icons = [
+      "Burn-Plastic & Reconstructive Surgery.png",
+      "Cardiology & Medicine.png",
+      "Chest Thoracic Surgery.png",
+      "Dermatology & Venereology.png",
+      "Diabetes  Endocrinology.png",
+      "ENT-Ear Nose & Throat.png",
+      "Gastro-Liver Diseases.png",
+      "General & Laparoscopic Surgery.png",
+      "Gynecology & Obstetrics.png",
+      "Hematology & Medicine (Blood diseases).png",
+      "Hepato-Biliary & Liver Transplant Surgery.png",
+      "Medicine Specialist.png",
+      "Neonatal & Pediatrics.png",
+      "Nephrology & Medicine.png",
+      "Neuromedicine & Neurosurgery.png",
+      "Nuclear Medicine.png",
+      "Nutrition & Dietetics.png",
+      "Oncology Cancer).png",
+      "Ophthalmology.png",
+      "Oral & Dental Diseases.png",
+      "Pain Medicine & Rheumatology .png",
+      "Physiotherapy.png",
+      "Psychiatry & Psychotherapy.png",
+      "Pulmonology & Asthma.png",
+      "Thyroid & Hormone .png",
+      "Trauma & Orthopedic Surgery.png",
+      "Urology & Nephrology.png",
+      "Vascular Surgery (Blood vessels).png"
+    ];
+
+    const n = name.toLowerCase();
+    
+    // Nearest name logic
+    if (n.includes('heart') || n.includes('cardio') || n.includes('হার্ট') || n.includes('হৃদ')) return "/icon_of_dept/Cardiology & Medicine.png";
+    if (n.includes('kidney') || n.includes('nephro') || n.includes('কিডনি')) return "/icon_of_dept/Nephrology & Medicine.png";
+    if (n.includes('brain') || n.includes('neuro') || n.includes('মস্তিষ্ক') || n.includes('নিউরো')) return "/icon_of_dept/Neuromedicine & Neurosurgery.png";
+    if (n.includes('child') || n.includes('pediatric') || n.includes('neonatal') || n.includes('শিশু')) return "/icon_of_dept/Neonatal & Pediatrics.png";
+    if (n.includes('eye') || n.includes('ophthal') || n.includes('চোখ')) return "/icon_of_dept/Ophthalmology.png";
+    if (n.includes('skin') || n.includes('derma') || n.includes('চর্ম')) return "/icon_of_dept/Dermatology & Venereology.png";
+    if (n.includes('dental') || n.includes('teeth') || n.includes('দাঁত')) return "/icon_of_dept/Oral & Dental Diseases.png";
+    if (n.includes('ent') || n.includes('ear') || n.includes('nose') || n.includes('নাক') || n.includes('কান')) return "/icon_of_dept/ENT-Ear Nose & Throat.png";
+    if (n.includes('gastro') || n.includes('liver') || n.includes('যকৃত')) return "/icon_of_dept/Gastro-Liver Diseases.png";
+    
+    if (n.includes('surgery') || n.includes('সার্জারি')) {
+       if (n.includes('plastic') || n.includes('burn')) return "/icon_of_dept/Burn-Plastic & Reconstructive Surgery.png";
+       if (n.includes('vascular')) return "/icon_of_dept/Vascular Surgery (Blood vessels).png";
+       if (n.includes('thoracic') || n.includes('chest')) return "/icon_of_dept/Chest Thoracic Surgery.png";
+       if (n.includes('ortho') || n.includes('trauma')) return "/icon_of_dept/Trauma & Orthopedic Surgery.png";
+       if (n.includes('hepato') || n.includes('liver')) return "/icon_of_dept/Hepato-Biliary & Liver Transplant Surgery.png";
+       return "/icon_of_dept/General & Laparoscopic Surgery.png";
+    }
+    
+    if (n.includes('medicine') || n.includes('মেডিসিন')) {
+        if (n.includes('nuclear')) return "/icon_of_dept/Nuclear Medicine.png";
+        if (n.includes('pain')) return "/icon_of_dept/Pain Medicine & Rheumatology .png";
+        return "/icon_of_dept/Medicine Specialist.png";
+    }
+    
+    if (n.includes('cancer') || n.includes('onco') || n.includes('ক্যানসার')) return "/icon_of_dept/Oncology Cancer).png";
+    if (n.includes('hormone') || n.includes('thyroid') || n.includes('হরমোন')) return "/icon_of_dept/Thyroid & Hormone .png";
+    if (n.includes('diabetes') || n.includes('ডায়াবেটিস')) return "/icon_of_dept/Diabetes  Endocrinology.png";
+    if (n.includes('bone') || n.includes('ortho') || n.includes('হাড়')) return "/icon_of_dept/Trauma & Orthopedic Surgery.png";
+    if (n.includes('mental') || n.includes('psychiatry') || n.includes('মানসিক')) return "/icon_of_dept/Psychiatry & Psychotherapy.png";
+    if (n.includes('asthma') || n.includes('pulmonology') || n.includes('হাঁপানি') || n.includes('ফুসফুস')) return "/icon_of_dept/Pulmonology & Asthma.png";
+    if (n.includes('blood') || n.includes('hemato') || n.includes('রক্ত')) return "/icon_of_dept/Hematology & Medicine (Blood diseases).png";
+    if (n.includes('nutrition') || n.includes('diet') || n.includes('পুষ্টি')) return "/icon_of_dept/Nutrition & Dietetics.png";
+    if (n.includes('physio') || n.includes('ফিজিওথেরাপি')) return "/icon_of_dept/Physiotherapy.png";
+    if (n.includes('gynec') || n.includes('obstet') || n.includes('গাইনি')) return "/icon_of_dept/Gynecology & Obstetrics.png";
+    if (n.includes('urology') || n.includes('ইউরোলজি')) return "/icon_of_dept/Urology & Nephrology.png";
+    if (n.includes('vascular') || n.includes('ভ্যাসকুলার')) return "/icon_of_dept/Vascular Surgery (Blood vessels).png";
+
+    // Fallback search in icon list
+    const fallback = icons.find(icon => icon.toLowerCase().includes(n) || n.includes(icon.toLowerCase().replace('.png', '')));
+    if (fallback) return `/icon_of_dept/${fallback}`;
+    
+    return null;
   };
 
   const fetchDoctors = async (pageNum: number, isNewFilter: boolean = false) => {
@@ -354,11 +414,11 @@ function DoctorListPageContent() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Debounce suggestions query (faster — 300ms)
+  // Debounce suggestions query (faster — 150ms)
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSuggestQuery(searchQuery);
-    }, 300);
+    }, 150);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
@@ -491,37 +551,21 @@ function DoctorListPageContent() {
 
     // From dedicated suggestion fetch
     suggestionDoctors
-      .filter(doctor =>
-        doctor.name.toLowerCase().includes(query) ||
-        doctor.nameBn?.includes(searchQuery) ||
-        doctor.specialty?.toLowerCase().includes(query) ||
-        doctor.specialtyBn?.includes(searchQuery)
-      )
-      .slice(0, 5)
+      .slice(0, 8)
       .forEach(doctor => {
-        if (doctor.name.toLowerCase().includes(query) || doctor.nameBn?.includes(searchQuery)) {
+        const nameMatches = doctor.name.toLowerCase().includes(query) || doctor.nameBn?.includes(searchQuery);
+        const specialtyMatches = doctor.specialty.toLowerCase().includes(query) || doctor.specialtyBn?.includes(searchQuery);
+
+        if (nameMatches) {
           results.push({ type: 'Doctor', typeBn: 'ডাক্তার', value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name, doctor });
         } else if (
-          doctor.specialty.toLowerCase().includes(query) &&
-          !results.some(r => r.type === 'Specialty' && r.value === doctor.specialty)
+          specialtyMatches &&
+          !results.some(r => r.type === 'Specialty' && r.value === (language === 'bn' && doctor.specialtyBn ? doctor.specialtyBn : doctor.specialty))
         ) {
           results.push({ type: 'Specialty', typeBn: 'বিশেষজ্ঞতা', value: language === 'bn' && doctor.specialtyBn ? doctor.specialtyBn : doctor.specialty });
-        }
-      });
-
-    // Matching hospitals
-    hospitals
-      .filter(h => h.name.toLowerCase().includes(query))
-      .slice(0, 3)
-      .forEach(hospital => {
-        if (!results.some(r => r.type === 'Hospital' && r.value === hospital.name)) {
-          results.push({
-            type: 'Hospital',
-            typeBn: 'হাসপাতাল',
-            value: language === 'bn' && hospital.nameBn ? hospital.nameBn : hospital.name,
-            hospital,
-            link: `/hospital/${encodeURIComponent(hospital.name)}`,
-          });
+        } else {
+          // Fallback: if it matched something else (like bio or qualification), just show as a doctor suggestion
+          results.push({ type: 'Doctor', typeBn: 'ডাক্তার', value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name, doctor });
         }
       });
 
@@ -759,6 +803,8 @@ function DoctorListPageContent() {
                   className="absolute top-full left-0 right-0 mt-4 bg-white border border-gray-100 rounded-2xl shadow-2xl z-50 max-h-96 overflow-y-auto overflow-hidden divide-y divide-gray-50"
                 >
                   {suggestions.map((suggestion, index) => {
+                    console.log(suggestion);
+                    
                     const content = (
                       <motion.div
                         initial={{ opacity: 0, x: -10 }}
@@ -784,24 +830,13 @@ function DoctorListPageContent() {
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
                             <div className="font-bold text-gray-800 text-base">
-                              {suggestion.value}
+                              {language === 'bn' && suggestion?.doctor?.nameBn ? suggestion?.doctor?.nameBn : suggestion?.doctor?.name || suggestion?.doctor?.nameBn}
                             </div>
                             {suggestion.doctor && (
                               <div className="text-sm text-gray-500 mt-1 flex items-center gap-2">
                                 <span className="text-primary font-medium">
-                                  {language === 'bn' && suggestion.doctor.specialtyBn ? suggestion.doctor.specialtyBn : suggestion.doctor.specialty}
+                                  {language === 'bn' && suggestion.doctor.specialtyBn ? suggestion.doctor.specialtyBn : suggestion.doctor.specialty || suggestion.doctor.specialtyBn}
                                 </span>
-                                {suggestion.doctor.hospital && (
-                                  <>
-                                    <span className="w-1 h-1 rounded-full bg-gray-300"></span>
-                                    <span>{suggestion.doctor.hospital}</span>
-                                  </>
-                                )}
-                              </div>
-                            )}
-                            {suggestion.hospital && (
-                              <div className="text-sm text-gray-500 mt-1 font-medium text-primary">
-                                {t.clickToViewDoctors}
                               </div>
                             )}
                           </div>
@@ -814,7 +849,7 @@ function DoctorListPageContent() {
                                   : "bg-green-100 text-green-700"
                             }`}
                           >
-                            {language === 'bn' ? suggestion.typeBn : suggestion.type}
+                            {language === 'bn' ? suggestion.typeBn : suggestion.type || suggestion.type}
                           </span>
                         </div>
                       </motion.div>
@@ -897,11 +932,15 @@ function DoctorListPageContent() {
                     >
                       {/* Circular Icon Container */}
                       <div
-                        className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center overflow-hidden shrink-0 ${
-                          selectedDept === dept.name ? "bg-white/20" : "bg-gray-100"
-                        }`}
+                        className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center overflow-hidden shrink-0`}
                       >
-                        {dept.image ? (
+                        {getDeptPublicIcon(dept.name) ? (
+                          <img
+                            src={getDeptPublicIcon(dept.name)!}
+                            alt={dept.name}
+                            className="object-contain"
+                          />
+                        ) : dept.image ? (
                           <img
                             src={dept.image}
                             alt={dept.name}
@@ -964,7 +1003,7 @@ function DoctorListPageContent() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div>
+              {/* <div>
                 <Label
                   htmlFor="filter-division"
                   className="mb-3 block text-base font-semibold text-gray-700"
@@ -989,9 +1028,9 @@ function DoctorListPageContent() {
                   <ChevronLeft className="w-4 h-4 -rotate-90" />
                 </div>
               </div>
-              </div>
+              </div> */}
 
-              <div>
+              {/* <div>
                 <Label
                   htmlFor="filter-district"
                   className="mb-3 block text-base font-semibold text-gray-700"
@@ -1053,7 +1092,7 @@ function DoctorListPageContent() {
                   <ChevronLeft className="w-4 h-4 -rotate-90" />
                 </div>
               </div>
-              </div>
+              </div> */}
 
               <div>
                 <Label
@@ -1417,10 +1456,10 @@ function DoctorListPageContent() {
           ) : (
             <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 transition-opacity duration-300 ${isSearching ? 'opacity-30' : 'opacity-100'}`}>
               {doctors.map((doctor, index) => {
-                const matchedHospital = hospitals.find(h => h.name === doctor.hospital);
                 const doctorWithBnHospital = {
                   ...doctor,
-                  hospitalBn: matchedHospital?.nameBn || doctor.hospitalBn || ""
+                  hospitalBn: "",
+                  hospital: ""
                 };
                 return (
                   <DoctorCard key={`${doctor._id}-${index}`} doctor={doctorWithBnHospital} index={index} />
