@@ -162,11 +162,7 @@ UserSchema.index(
   { unique: true, partialFilterExpression: { affiliateCode: { $type: "string", $gt: "" } } }
 );
 
-// Delete existing model to force recompilation with updated schema
-if (mongoose.models.User) {
-  mongoose.deleteModel('User');
-}
-
-const User = mongoose.model<IUser>('User', UserSchema);
+// Use existing model or create new one
+const User = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
 
 export default User;

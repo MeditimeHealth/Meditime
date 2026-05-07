@@ -12,22 +12,30 @@ export async function GET(
     const resolvedParams = params instanceof Promise ? await params : params;
     const { id } = resolvedParams;
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { error: "Invalid hospital ID" },
-        { status: 400 }
-      );
-    }
-
-    const hospital = await Hospital.findById(id).populate({
-      path: "thana",
-      populate: {
-        path: "district",
+    let hospital;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      hospital = await Hospital.findById(id).populate({
+        path: "thana",
         populate: {
-          path: "division",
+          path: "district",
+          populate: {
+            path: "division",
+          },
         },
-      },
-    });
+      });
+    } else {
+      hospital = await Hospital.findOne({
+        $or: [{ slug: id }, { name: id }],
+      }).populate({
+        path: "thana",
+        populate: {
+          path: "district",
+          populate: {
+            path: "division",
+          },
+        },
+      });
+    }
 
     if (!hospital) {
       return NextResponse.json(

@@ -282,7 +282,6 @@ export default function CreateDoctorPage() {
                     {...register("nameBn")}
                     placeholder="ডাঃ জন ডো"
                     className="mt-1"
-                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                   />
                   {errors.name && (
                     <p className="text-sm text-red-500 mt-1">
@@ -313,7 +312,6 @@ export default function CreateDoctorPage() {
                     {...register("specialtyBn")}
                     placeholder="হৃদরোগ বিশেষজ্ঞ"
                     className="mt-1"
-                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                   />
               </div>
             </div>
@@ -346,7 +344,6 @@ export default function CreateDoctorPage() {
                     placeholder="এমবিবিএস, এমডি"
                     rows={2}
                     className="mt-1"
-                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                   />
                   {errors.qualification && (
                     <p className="text-sm text-red-500 mt-1">
@@ -373,7 +370,6 @@ export default function CreateDoctorPage() {
                     {...register("designationBn")}
                     placeholder="সিনিয়র কনসালটেন্ট"
                     className="mt-1"
-                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                   />
               </div>
             </div>
@@ -573,7 +569,6 @@ export default function CreateDoctorPage() {
                   rows={4}
                   className="mt-1"
                   placeholder="ডাক্তারের জীবনী..."
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                 />
             </div>
           </div>
@@ -638,9 +633,7 @@ export default function CreateDoctorPage() {
                                 ? "bg-primary text-white"
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                             }`}
-                            style={{
-                              fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', sans-serif" : undefined
-                            }}
+                            
                           >
                             {language === 'bn' ? banglaDays[dayIndex] + 'বার' : day}
                           </button>
@@ -700,8 +693,7 @@ export default function CreateDoctorPage() {
                         {...register(`availability.${slotIndex}.timeBn`)}
                         placeholder="উদাঃ সকাল ১০:০০ - বিকাল ০৪:০০"
                         className="mt-1"
-                        style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
-                      />
+                          />
                   </div>
                   </div>
                 </div>

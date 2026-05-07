@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Appointment from '@/models/Appointment';
+import Doctor from '@/models/Doctor';
+import User from '@/models/User';
 
 // PATCH - Update appointment status and serial number
 export async function PATCH(

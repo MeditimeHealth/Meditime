@@ -120,7 +120,7 @@ export default function UserSidebar({ user, onLogout }: UserSidebarProps) {
                       >
                         <div className="flex items-center gap-3">
                           <Icon className={cn("h-5 w-5 transition-transform group-hover:scale-110", isActive ? "text-white" : "text-gray-400 group-hover:text-primary")} />
-                          <span style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                          <span>
                             {getLocalizedValue(item.title, item.titleBn, language)}
                           </span>
                         </div>

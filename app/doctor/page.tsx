@@ -64,6 +64,7 @@ interface Department {
 
 
 interface Doctor {
+  slug: string;
   _id: string;
   name: string;
   nameBn?: string;
@@ -557,15 +558,32 @@ function DoctorListPageContent() {
         const specialtyMatches = doctor.specialty.toLowerCase().includes(query) || doctor.specialtyBn?.includes(searchQuery);
 
         if (nameMatches) {
-          results.push({ type: 'Doctor', typeBn: 'ডাক্তার', value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name, doctor });
+          results.push({ 
+            type: 'Doctor', 
+            typeBn: 'ডাক্তার', 
+            value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name, 
+            doctor,
+            link: `/doctor/${doctor?.slug || doctor._id}`
+          });
         } else if (
           specialtyMatches &&
           !results.some(r => r.type === 'Specialty' && r.value === (language === 'bn' && doctor.specialtyBn ? doctor.specialtyBn : doctor.specialty))
         ) {
-          results.push({ type: 'Specialty', typeBn: 'বিশেষজ্ঞতা', value: language === 'bn' && doctor.specialtyBn ? doctor.specialtyBn : doctor.specialty });
+          const specialtyName = language === 'bn' && doctor.specialtyBn ? doctor.specialtyBn : doctor.specialty;
+          results.push({ 
+            type: 'Specialty', 
+            typeBn: 'বিশেষজ্ঞতা', 
+            value: specialtyName,
+            link: `/doctor?specialty=${encodeURIComponent(doctor.specialty)}`
+          });
         } else {
-          // Fallback: if it matched something else (like bio or qualification), just show as a doctor suggestion
-          results.push({ type: 'Doctor', typeBn: 'ডাক্তার', value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name, doctor });
+          results.push({ 
+            type: 'Doctor', 
+            typeBn: 'ডাক্তার', 
+            value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name, 
+            doctor,
+            link: `/doctor/${doctor.slug || doctor._id}`
+          });
         }
       });
 
@@ -1003,7 +1021,7 @@ function DoctorListPageContent() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* <div>
+              <div>
                 <Label
                   htmlFor="filter-division"
                   className="mb-3 block text-base font-semibold text-gray-700"
@@ -1028,9 +1046,9 @@ function DoctorListPageContent() {
                   <ChevronLeft className="w-4 h-4 -rotate-90" />
                 </div>
               </div>
-              </div> */}
+              </div>
 
-              {/* <div>
+              <div>
                 <Label
                   htmlFor="filter-district"
                   className="mb-3 block text-base font-semibold text-gray-700"
@@ -1092,7 +1110,7 @@ function DoctorListPageContent() {
                   <ChevronLeft className="w-4 h-4 -rotate-90" />
                 </div>
               </div>
-              </div> */}
+              </div>
 
               <div>
                 <Label
@@ -1462,7 +1480,7 @@ function DoctorListPageContent() {
                   hospital: ""
                 };
                 return (
-                  <DoctorCard key={`${doctor._id}-${index}`} doctor={doctorWithBnHospital} index={index} />
+                  <DoctorCard key={`${doctor._id}-${index}`} doctor={doctor} index={index} />
                 );
               })}
             </div>

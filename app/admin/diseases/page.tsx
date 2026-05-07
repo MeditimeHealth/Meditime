@@ -34,7 +34,7 @@ export default function DiseasesPage() {
   const { language } = useLanguage();
   const [filterLanguage, setFilterLanguage] = useState<'en' | 'bn'>('en');
   const [formLanguage, setFormLanguage] = useState<'en' | 'bn'>(language);
-  
+
   // Form state
   const [departmentId, setDepartmentId] = useState<string>("");
   const [diseaseNames, setDiseaseNames] = useState<string[]>([""]);
@@ -137,15 +137,15 @@ export default function DiseasesPage() {
 
       const payload = editingId
         ? {
-            name: primary.name || "",
-            bangla: primary.bangla || "",
-            departmentId,
-          }
+          name: primary.name || "",
+          bangla: primary.bangla || "",
+          departmentId,
+        }
         : {
-            names: validEntries.map(entry => entry.name || ""),
-            banglas: validEntries.map(entry => entry.bangla || ""),
-            departmentId,
-          };
+          names: validEntries.map(entry => entry.name || ""),
+          banglas: validEntries.map(entry => entry.bangla || ""),
+          departmentId,
+        };
 
       const response = await fetch(url, {
         method,
@@ -162,7 +162,7 @@ export default function DiseasesPage() {
         setDepartmentId("");
         setDiseaseNames([""]);
         setDiseaseNamesBn([""]);
-        
+
         showToast.success(editingId ? "Disease updated successfully" : "Diseases created successfully");
       } else {
         showToast.error(result.error || "Failed to save disease");
@@ -246,7 +246,7 @@ export default function DiseasesPage() {
             {language === 'bn' ? 'রোগের তালিকা এবং বিভাগ পরিচালনা করুন' : 'Create and manage medical diseases and conditions'}
           </p>
         </div>
-        <Button 
+        <Button
           onClick={() => {
             setShowForm(!showForm);
             setEditingId(null);
@@ -267,8 +267,8 @@ export default function DiseasesPage() {
             <Filter className="h-4 w-4" />
             <span className="text-sm font-bold uppercase tracking-wider">{t("allDepartments", language)}:</span>
           </div>
-          <select 
-            value={selectedDepartmentFilter} 
+          <select
+            value={selectedDepartmentFilter}
             onChange={(e) => setSelectedDepartmentFilter(e.target.value)}
             className="flex-1 min-w-[200px] h-11 rounded-xl border-gray-200 bg-gray-50 px-4 py-2 font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
           >
@@ -285,7 +285,7 @@ export default function DiseasesPage() {
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Globe className="h-4 w-4 text-gray-400" />
             </div>
-            <select 
+            <select
               value={filterLanguage}
               onChange={(e) => setFilterLanguage(e.target.value as 'en' | 'bn')}
               className="w-full h-11 pl-10 pr-8 rounded-xl border-gray-200 bg-gray-50 px-4 py-2 font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none cursor-pointer"
@@ -310,9 +310,9 @@ export default function DiseasesPage() {
             <h2 className="text-2xl font-bold text-gray-800">
               {editingId ? t("editDisease", language) : t("addDisease", language)}
             </h2>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => { setShowForm(false); setEditingId(null); }}
               className="rounded-full h-10 w-10 p-0"
             >
@@ -326,22 +326,20 @@ export default function DiseasesPage() {
                 <button
                   type="button"
                   onClick={() => setFormLanguage('en')}
-                  className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                    formLanguage === 'en'
+                  className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${formLanguage === 'en'
                       ? 'bg-white text-primary shadow-sm scale-105'
                       : 'text-gray-500 hover:text-gray-800'
-                  }`}
+                    }`}
                 >
                   English
                 </button>
                 <button
                   type="button"
                   onClick={() => setFormLanguage('bn')}
-                  className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                    formLanguage === 'bn'
+                  className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${formLanguage === 'bn'
                       ? 'bg-white text-primary shadow-sm scale-105'
                       : 'text-gray-500 hover:text-gray-800'
-                  }`}
+                    }`}
                 >
                   বাংলা
                 </button>
@@ -371,9 +369,9 @@ export default function DiseasesPage() {
 
               <div className="space-y-4 pt-4 border-t border-gray-100">
                 <Label className="text-base font-bold text-gray-700">
-                   {formLanguage === 'en' ? t("diseaseNames", language) : t("diseaseNames", language)}
+                  {formLanguage === 'en' ? t("diseaseNames", language) : t("diseaseNames", language)}
                 </Label>
-                
+
                 <div className={formLanguage === 'en' ? 'space-y-3 block' : 'hidden'}>
                   {diseaseNames.map((name, index) => (
                     <div key={index} className="group relative flex gap-3 animate-in fade-in slide-in-from-left-2 transition-all">
@@ -410,7 +408,6 @@ export default function DiseasesPage() {
                           placeholder="রোগের নাম লিখুন (যেমন: হাঁপানি)"
                           required={index === 0 && formLanguage === 'bn'}
                           className="h-12 text-lg border-gray-200 rounded-xl focus:ring-primary"
-                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                         />
                       </div>
                       {!editingId && diseaseNamesBn.length > 1 && (
@@ -427,7 +424,7 @@ export default function DiseasesPage() {
                     </div>
                   ))}
                 </div>
-                
+
                 {!editingId && (
                   <Button
                     type="button"
@@ -443,8 +440,8 @@ export default function DiseasesPage() {
             </div>
 
             <div className="flex gap-4 pt-6">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={loading}
                 className="flex-1 h-14 text-xl font-bold bg-primary hover:bg-primary/90 shadow-lg rounded-xl transition-all active:scale-95"
               >
@@ -457,9 +454,9 @@ export default function DiseasesPage() {
                   editingId ? t("update", language) : t("createDiseases", language)
                 )}
               </Button>
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => { setShowForm(false); setEditingId(null); }}
                 className="flex-1 h-14 text-xl font-bold border-2 rounded-xl transition-all"
               >
@@ -480,7 +477,7 @@ export default function DiseasesPage() {
               {diseases.length === 0 ? t("noDiseases", language) : (language === 'bn' ? 'ফিল্টার অনুযায়ী কোনো রোগ পাওয়া যায়নি' : 'No diseases found for this filter')}
             </p>
             {diseases.length === 0 && (
-              <Button 
+              <Button
                 onClick={() => setShowForm(true)}
                 className="bg-primary text-white h-14 px-8 text-lg font-bold rounded-xl shadow-lg"
               >
@@ -495,7 +492,7 @@ export default function DiseasesPage() {
           {filteredDiseases.map((disease) => (
             <Card key={disease._id} className="group relative p-0 bg-white border-2 border-gray-100 hover:border-primary/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all duration-500 rounded-[2rem] overflow-hidden flex flex-col h-full">
               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary/50 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-              
+
               <div className="p-8 space-y-6 flex-1">
                 <div className="flex items-start justify-between gap-5">
                   <div className="space-y-4 flex-1">
@@ -503,21 +500,21 @@ export default function DiseasesPage() {
                       {filterLanguage === 'bn' ? (disease.bangla || disease.name) : disease.name}
                     </h3>
                     {filterLanguage === 'bn' && disease.name && disease.name !== disease.bangla && (
-                       <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">{disease.name}</p>
+                      <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">{disease.name}</p>
                     )}
                     {filterLanguage === 'en' && disease.bangla && disease.bangla !== disease.name && (
-                      <p 
+                      <p
                         className="text-gray-500 font-medium text-lg leading-tight"
-                        style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                       >
                         {disease.bangla}
                       </p>
                     )}
-                    
+
                     {disease.department && (
                       <div className="flex items-center gap-2 mt-4 px-3 py-1.5 bg-primary/5 text-primary rounded-xl w-fit text-xs font-bold tracking-tight">
-                         <Hospital className="h-3.5 w-3.5" />
-                         <span>{language === 'bn' ? (disease.department.nameBn || disease.department.name) : disease.department.name}</span>
+                        <Hospital className="h-3.5 w-3.5" />
+                        <span>{language === 'bn' ? (disease.department.nameBn || disease.department.name) : disease.department.name}</span>
                       </div>
                     )}
                   </div>
@@ -533,8 +530,8 @@ export default function DiseasesPage() {
                   <Edit className="h-4 w-4 mr-2" />
                   {t("edit", language)}
                 </Button>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="flex-1 h-12 font-black text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl"
                   onClick={() => handleDelete(disease._id)}
                 >

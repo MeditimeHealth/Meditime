@@ -206,11 +206,11 @@ export default function PopupManager() {
                             <>
                                <div className="space-y-2">
                                   <Label htmlFor="titleBn" className="text-sm font-bold text-gray-600 uppercase tracking-widest">{t("popupTitleBn", language)}</Label>
-                                  <Input id="titleBn" {...register("titleBn")} placeholder="যেমন: বিশেষ অফার!" className="h-14 text-lg border-2 border-gray-100 focus:border-primary rounded-2xl" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }} />
+                                  <Input id="titleBn" {...register("titleBn")} placeholder="যেমন: বিশেষ অফার!" className="h-14 text-lg border-2 border-gray-100 focus:border-primary rounded-2xl"  />
                                </div>
                                <div className="space-y-2">
                                   <Label htmlFor="descriptionBn" className="text-sm font-bold text-gray-600 uppercase tracking-widest">{t("popupDescriptionBn", language)}</Label>
-                                  <Textarea id="descriptionBn" {...register("descriptionBn")} rows={5} placeholder="আপনার অফারের বিস্তারিত এখানে লিখুন..." className="text-lg border-2 border-gray-100 focus:border-primary rounded-2xl p-4" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }} />
+                                  <Textarea id="descriptionBn" {...register("descriptionBn")} rows={5} placeholder="আপনার অফারের বিস্তারিত এখানে লিখুন..." className="text-lg border-2 border-gray-100 focus:border-primary rounded-2xl p-4"  />
                                </div>
                             </>
                           )}

@@ -4,6 +4,10 @@ import Doctor from "@/models/Doctor";
 import mongoose from "mongoose";
 import { generateUniqueSlug } from "@/lib/slug";
 import { verifyAdmin } from "@/lib/auth";
+import Thana from "@/models/Thana";
+import District from "@/models/District";
+import Division from "@/models/Division";
+import Hospital from "@/models/Hospital";
 
 // Force model output refreshing
 // if (mongoose.models.Doctor) {
@@ -61,11 +65,63 @@ export async function GET(request: NextRequest) {
     // Exact matches
     if (specialty) query.specialty = specialty;
     if (hospital) query.hospital = hospital;
-    if (division) query.division = new RegExp(`^${division}$`, "i");
-    if (district) query.district = new RegExp(`^${district}$`, "i");
-    if (thana) query.thana = new RegExp(`^${thana}$`, "i");
     if (department) query.department = department;
     if (qualification) query.qualification = qualification;
+
+    // Location filtering
+    if (division || district || thana) {
+      let thanaQuery: any = {};
+      
+      if (thana) {
+         thanaQuery.name = new RegExp(`^${thana}$`, "i");
+      }
+      
+      if (district) {
+         const districtObj = await District.findOne({ name: new RegExp(`^${district}$`, "i") });
+         if (districtObj) {
+            thanaQuery.district = districtObj._id;
+         } else {
+            thanaQuery.district = null; 
+         }
+      } else if (division) {
+         const divisionObj = await Division.findOne({ name: new RegExp(`^${division}$`, "i") });
+         if (divisionObj) {
+            const districtObjs = await District.find({ division: divisionObj._id });
+            const districtIds = districtObjs.map(d => d._id);
+            thanaQuery.district = { $in: districtIds };
+         } else {
+            thanaQuery.district = null;
+         }
+      }
+
+      let hospitalNames: string[] = [];
+      if (thanaQuery.district !== null) {
+         const thanas = await Thana.find(thanaQuery);
+         const thanaIds = thanas.map(t => t._id);
+         if (thanaIds.length > 0) {
+            const hospitals = await Hospital.find({ thana: { $in: thanaIds } });
+            hospitalNames = hospitals.map(h => h.name).filter(Boolean);
+         }
+      }
+
+      let locationConditions = [];
+      let directLocationMatch: any = {};
+      if (division) directLocationMatch.division = new RegExp(`^${division}$`, "i");
+      if (district) directLocationMatch.district = new RegExp(`^${district}$`, "i");
+      if (thana) directLocationMatch.thana = new RegExp(`^${thana}$`, "i");
+      
+      locationConditions.push(directLocationMatch);
+      
+      if (hospitalNames.length > 0) {
+         locationConditions.push({ hospital: { $in: hospitalNames } });
+      }
+
+      if (query.$and) {
+         query.$and.push({ $or: locationConditions });
+      } else {
+         query.$and = [{ $or: locationConditions }];
+      }
+    }
 
     // Range filters
     if (minFee || maxFee) {
@@ -90,6 +146,7 @@ export async function GET(request: NextRequest) {
         .limit(limit),
       Doctor.countDocuments(query)
     ]);
+
 
     return NextResponse.json({ 
       doctors, 

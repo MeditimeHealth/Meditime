@@ -29,7 +29,7 @@ export default function ConfirmationModal({
 }: ConfirmationModalProps) {
   if (!isOpen) return null;
 
-  const fontStyle = language === 'bn' ? { fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" } : {};
+  const fontStyle = {};
 
   return (
     <AnimatePresence>

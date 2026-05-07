@@ -124,7 +124,7 @@ export default function DoctorSidebar({ user, onLogout }: DoctorSidebarProps) {
                   )}
                 >
                   <Icon className="h-5 w-5" />
-                  <span style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                  <span >
                     {getLocalizedValue(item.title, item.titleBn, language)}
                   </span>
                 </Link>

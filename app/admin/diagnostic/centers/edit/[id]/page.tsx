@@ -244,7 +244,6 @@ export default function EditDiagnosticCenterPage({ params }: Props) {
                   onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
                   placeholder="স্কয়ার ডায়াগনস্টিক সেন্টার"
                   className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl mt-3"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                 />
               </div>
             </div>

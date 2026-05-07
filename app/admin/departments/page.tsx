@@ -281,7 +281,6 @@ export default function DepartmentsPage() {
                     onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
                     placeholder="বিভাগের নাম লিখুন"
                     className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary mt-2"
-                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                   />
                 </div>
               </div>

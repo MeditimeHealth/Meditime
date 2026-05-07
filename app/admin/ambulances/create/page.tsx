@@ -200,7 +200,7 @@ export default function CreateAmbulancePage() {
                 {...register("nameBn")}
                 placeholder="অ্যাম্বুলেন্স সার্ভিসের নাম লিখুন"
                 className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+              
               />
             </div>
 

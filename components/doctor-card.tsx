@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
-import { Clock, MapPin, Stethoscope, ChevronRight } from "lucide-react";
+import { Clock, MapPin, Stethoscope, ChevronRight, Building2 } from "lucide-react";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
 export interface Doctor {
@@ -144,11 +144,12 @@ export default function DoctorCard({
   const displayHospital = getLocalizedValue(doctor.hospital, doctor.hospitalBn, language);
   const availabilityText = formatAvailability(doctor.availability, language);
 
+
   const CardContent = (
     <Card className={`p-5 bg-white border border-gray-100 hover:border-primary/30 shadow-sm transition-all duration-300 h-full flex flex-col ${!disableLink ? 'hover:shadow-xl cursor-pointer group' : ''}`}>
 
       {/* TOP: image + info — flex-1 pushes bottom section down */}
-      <div className="flex flex-col gap-3 flex-1 mb-4">
+      <div className="flex flex-col gap-6 flex-1 mb-4">
         {/* Doctor Image - centered */}
         <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-50 border-2 border-gray-100 flex-shrink-0 group-hover:border-primary/20 transition-colors mx-auto">
           {doctor.image ? (
@@ -167,7 +168,7 @@ export default function DoctorCard({
         </div>
 
         {/* Doctor Info */}
-        <div className="w-full min-w-0">
+        <div className="w-full min-w-0 flex flex-col gap-3">
           <h3 className="text-base font-bold text-gray-900 leading-snug mb-1 group-hover:text-primary transition-colors">
             {displayName}
           </h3>
@@ -184,15 +185,18 @@ export default function DoctorCard({
       </div>
 
       {/* BOTTOM: hospital, time, fee, button — always pinned at bottom */}
-      <div className="space-y-2.5">
-        {/* Hospital Name */}
-        {displayHospital && (
-          <div className="flex items-start gap-2 group/loc">
-            <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0 group-hover/loc:text-primary transition-colors" />
-            <p className="text-sm font-medium text-gray-600">{displayHospital}</p>
-          </div>
-        )}
+      <div className="space-y-6">
 
+        {/* Time / Availability */}
+        <div className="flex flex-col gap-2">
+            <div className="bg-gray-50/80 rounded-xl p-3 border border-gray-100/50 group-hover:bg-primary/5 transition-colors">
+          <div className="flex items-start gap-2 text-xs text-gray-700">
+            <Building2 className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
+            <span className="font-semibold leading-relaxed">
+              {language === 'bn' ? doctor.hospitalBn : doctor.hospital}
+            </span>
+          </div>
+        </div>
         {/* Time / Availability */}
         <div className="bg-gray-50/80 rounded-xl p-3 border border-gray-100/50 group-hover:bg-primary/5 transition-colors">
           <div className="flex items-start gap-2 text-xs text-gray-700">
@@ -202,6 +206,8 @@ export default function DoctorCard({
             </span>
           </div>
         </div>
+        </div>
+      
 
         {/* Consultation Fee */}
         {/* <div className="flex items-center justify-between py-2 border-t border-dashed border-gray-200">

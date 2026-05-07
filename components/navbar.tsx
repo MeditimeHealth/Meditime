@@ -225,7 +225,6 @@ export default function Navbar() {
                   <Link
                     href="/user/dashboard"
                     className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all hover:scale-105 active:scale-95"
-                    style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}
                   >
                     <Activity className="h-4 w-4" />
                     {language === 'bn' ? 'ড্যাশবোর্ড' : 'Dashboard'}

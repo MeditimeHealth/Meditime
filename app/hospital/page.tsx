@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { homepageTranslations } from "@/lib/homepage-translations";
+import router from "next/router";
 
 interface Hospital {
   _id: string;
@@ -70,11 +71,11 @@ export default function HospitalListPage() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
-  
+
   const [selectedDivision, setSelectedDivision] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedThana, setSelectedThana] = useState("");
-  
+
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const { language } = useLanguage();
@@ -110,7 +111,7 @@ export default function HospitalListPage() {
     try {
       const division = divisions.find(d => d.name === divisionName);
       if (!division) return;
-      
+
       const response = await fetch(`/api/locations/districts?division=${division._id}`);
       const data = await response.json();
       if (response.ok) {
@@ -125,7 +126,7 @@ export default function HospitalListPage() {
     try {
       const district = districts.find(d => d.name === districtName);
       if (!district) return;
-      
+
       const response = await fetch(`/api/locations/thanas?district=${district._id}`);
       const data = await response.json();
       if (response.ok) {
@@ -168,7 +169,7 @@ export default function HospitalListPage() {
 
   const getHospitalLocationString = (hospital: Hospital): string => {
     const parts: string[] = [];
-    
+
     // Division
     const divisionName = getLocalizedValue(
       hospital.thana?.district?.division?.name,
@@ -199,7 +200,7 @@ export default function HospitalListPage() {
   const suggestions = useMemo(() => {
     const trimmedQuery = searchQuery.trim().toLowerCase();
     if (!trimmedQuery || trimmedQuery.length < 1) return [];
-    
+
     const results: Array<{ type: string; value: string; hospital?: Hospital }> = [];
 
     // Filter and Sort hospitals by relevance
@@ -210,7 +211,7 @@ export default function HospitalListPage() {
         const address = (hospital.address || "").toLowerCase();
         const addressBn = (hospital.addressBn || "").toLowerCase();
         const location = getHospitalLocationString(hospital).toLowerCase();
-        
+
         return (
           name.includes(trimmedQuery) ||
           nameBn.includes(trimmedQuery) ||
@@ -244,10 +245,10 @@ export default function HospitalListPage() {
     matchingHospitals.forEach(hospital => {
       const displayName = getLocalizedValue(hospital.name, hospital.nameBn, language);
       if (displayName && !results.some(r => r.value === displayName)) {
-        results.push({ 
-          type: language === 'bn' ? "হাসপাতাল" : "Hospital", 
-          value: displayName, 
-          hospital 
+        results.push({
+          type: language === 'bn' ? "হাসপাতাল" : "Hospital",
+          value: displayName,
+          hospital
         });
       }
     });
@@ -261,14 +262,14 @@ export default function HospitalListPage() {
     let filtered = [...hospitals];
 
     // Removed restrictive language filter to show all hospitals
-    
+
     if (debouncedSearchQuery) {
       const query = debouncedSearchQuery.toLowerCase();
       filtered = filtered.filter((hospital) => {
         const name = getLocalizedValue(hospital.name, hospital.nameBn, language);
         const address = getLocalizedValue(hospital.address, hospital.addressBn, language);
         const locationStr = getHospitalLocationString(hospital);
-        
+
         // Also check against raw names and alternate language fields for better coverage
         const searchPool = [
           hospital.name,
@@ -375,7 +376,7 @@ export default function HospitalListPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center"
-            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
           >
             <motion.div
               animate={{ rotate: 360 }}
@@ -502,12 +503,12 @@ export default function HospitalListPage() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className={`px-6 py-4 cursor-pointer hover:bg-gray-50 transition-colors ${
-                        index === focusedIndex ? "bg-gray-50" : ""
-                      }`}
+                      className={`px-6 py-4 cursor-pointer hover:bg-gray-50 transition-colors ${index === focusedIndex ? "bg-gray-50" : ""
+                        }`}
                       onClick={() => {
                         if (suggestion.hospital) {
-                          setSearchQuery(getLocalizedValue(suggestion.hospital.name, suggestion.hospital.nameBn, language));
+                          const slug = suggestion.hospital.slug || encodeURIComponent(suggestion.hospital.name);
+                          router.push(`/hospital/${slug}`);
                         } else {
                           setSearchQuery(suggestion.value);
                         }
@@ -525,7 +526,7 @@ export default function HospitalListPage() {
                             </div>
                           )}
                         </div>
-                        <span 
+                        <span
                           className="text-xs text-primary bg-primary/10 px-3 py-1.5 rounded-full font-bold uppercase tracking-wider"
                         >
                           {suggestion.type}
@@ -548,9 +549,9 @@ export default function HospitalListPage() {
         >
           <Card className="p-6 md:p-8 bg-gradient-to-br from-primary/10 via-primary/5 to-white border-2 border-primary/20 shadow-xl">
             <div className="mb-6">
-              <h2 
+              <h2
                 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-3"
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
               >
                 <div className="p-2 bg-primary/20 rounded-lg">
                   <MapPin className="h-6 w-6 text-primary" />
@@ -560,13 +561,13 @@ export default function HospitalListPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        
+
 
               <div>
-                <Label 
-                  htmlFor="filter-division" 
+                <Label
+                  htmlFor="filter-division"
                   className="mb-3 block text-base font-semibold text-gray-700"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                 >
                   {language === 'bn' ? '২. বিভাগ' : '2. Division'}
                 </Label>
@@ -575,7 +576,7 @@ export default function HospitalListPage() {
                   value={selectedDivision}
                   onChange={(e) => handleDivisionSelect(e.target.value)}
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                 >
                   <option value="">{t.selectDivision}</option>
                   {divisions.map((div) => (
@@ -587,10 +588,10 @@ export default function HospitalListPage() {
               </div>
 
               <div>
-                <Label 
-                  htmlFor="filter-district" 
+                <Label
+                  htmlFor="filter-district"
                   className="mb-3 block text-base font-semibold text-gray-700"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                 >
                   {language === 'bn' ? '৩. জেলা' : '3. District'}
                 </Label>
@@ -600,7 +601,7 @@ export default function HospitalListPage() {
                   onChange={(e) => handleDistrictSelect(e.target.value)}
                   disabled={!selectedDivision}
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-base bg-white shadow-sm hover:shadow-md transition-all"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                 >
                   <option value="">{selectedDivision ? t.selectDistrict : t.selectDivisionFirst}</option>
                   {districts.map((dist) => (
@@ -612,10 +613,10 @@ export default function HospitalListPage() {
               </div>
 
               <div>
-                <Label 
-                  htmlFor="filter-thana" 
+                <Label
+                  htmlFor="filter-thana"
                   className="mb-3 block text-base font-semibold text-gray-700"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                 >
                   {language === 'bn' ? '৪. উপজেলা/থানা' : '4. Thana'}
                 </Label>
@@ -625,7 +626,7 @@ export default function HospitalListPage() {
                   onChange={(e) => handleThanaSelect(e.target.value)}
                   disabled={!selectedDistrict || !selectedDivision}
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-base bg-white shadow-sm hover:shadow-md transition-all"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                 >
                   <option value="">{selectedDivision && selectedDistrict ? t.selectThana : t.selectDistrictFirst}</option>
                   {thanas.map((thana) => (
@@ -651,7 +652,7 @@ export default function HospitalListPage() {
                     setSelectedThana("");
                   }}
                   className="flex items-center gap-2 px-5 py-2.5"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                 >
                   <X className="h-5 w-5" />
                   {t.reset}
@@ -662,7 +663,7 @@ export default function HospitalListPage() {
         </motion.div>
 
         {/* Sort and Results Count */}
-    
+
 
         {/* Hospital Cards Grid */}
         <AnimatePresence mode="wait">
@@ -675,18 +676,18 @@ export default function HospitalListPage() {
             >
               <Card className="p-16 text-center shadow-xl bg-gradient-to-br from-gray-50 to-white">
                 <Building2 className="h-24 w-24 mx-auto text-gray-300 mb-6" />
-                <p 
+                <p
                   className="text-2xl font-semibold text-gray-600 mb-4"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                 >
                   {t.noHospitals}
                 </p>
                 {hasActiveFilters && (
-                  <Button 
-                    onClick={clearFilters} 
+                  <Button
+                    onClick={clearFilters}
                     variant="outline"
                     className="mt-4"
-                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                   >
                     {t.clearFilters}
                   </Button>
@@ -710,37 +711,37 @@ export default function HospitalListPage() {
                         {/* 1. Center the hospital icon */}
                         <div className="mb-4 flex justify-center"> {/* Changed to justify-center */}
                           <div className="p-3 bg-blue-50 text-primary rounded-xl shrink-0 group-hover:scale-110 transition-transform duration-300">
-                             <Building2 className="h-6 w-6" />
+                            <Building2 className="h-6 w-6" />
                           </div>
                         </div>
 
-                        <h3 
+                        <h3
                           className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors mb-3 leading-tight text-center"
-                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                         >
                           {getLocalizedValue(hospital.name, hospital.nameBn, language)}
                         </h3>
 
                         {/* 2. MapPin moved to address */}
                         <div className="flex items-start gap-2 mb-4 flex-grow justify-center">
-                            <MapPin className="h-4 w-4 text-gray-400 mt-1 shrink-0" />
-                            {hospital.address ? (
-                              <p 
-                                className="text-sm text-gray-500 leading-relaxed text-center"
-                                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                              >
-                               {getLocalizedValue(hospital.address, hospital.addressBn, language)}
-                              </p>
-                            ) : (
-                               <p className="text-sm text-gray-400 italic">ঠিকানা উপলব্ধ নয়</p>
-                            )}
+                          <MapPin className="h-4 w-4 text-gray-400 mt-1 shrink-0" />
+                          {hospital.address ? (
+                            <p
+                              className="text-sm text-gray-500 leading-relaxed text-center"
+
+                            >
+                              {getLocalizedValue(hospital.address, hospital.addressBn, language)}
+                            </p>
+                          ) : (
+                            <p className="text-sm text-gray-400 italic">ঠিকানা উপলব্ধ নয়</p>
+                          )}
                         </div>
-                        
+
                         <div className="pt-4 border-t border-gray-100 mt-auto flex items-center justify-center text-sm font-medium">
-                            <span className="text-primary flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-                              {/* 3. Button icon changed to ArrowRight */}
-                              {t.viewDoctors} <ArrowRight className="w-4 h-4" />
-                            </span>
+                          <span className="text-primary flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                            {/* 3. Button icon changed to ArrowRight */}
+                            {t.viewDoctors} <ArrowRight className="w-4 h-4" />
+                          </span>
                         </div>
                       </div>
                     </Card>

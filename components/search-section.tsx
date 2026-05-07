@@ -168,13 +168,13 @@ export default function SearchSection() {
                 }
               }}
               className="flex-1 border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto text-base text-gray-700 placeholder:text-gray-400 bg-transparent"
-              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
             />
             {/* Teal embedded button */}
             <button
               onClick={handleSearch}
               className="shrink-0 bg-primary hover:bg-primary/90 text-white text-xs sm:text-sm font-semibold px-4 sm:px-6 py-2 sm:py-2.5 rounded-full transition-all whitespace-nowrap shadow-sm"
-              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
             >
               {t.button}
             </button>
@@ -186,23 +186,22 @@ export default function SearchSection() {
               {suggestions.map((suggestion, index) => {
                 const content = (
                   <div
-                    className={`px-5 py-4 cursor-pointer hover:bg-primary/5 transition-colors border-b border-gray-100 last:border-b-0 ${
-                      index === focusedIndex ? "bg-primary/10" : ""
-                    }`}
+                    className={`px-5 py-4 cursor-pointer hover:bg-primary/5 transition-colors border-b border-gray-100 last:border-b-0 ${index === focusedIndex ? "bg-primary/10" : ""
+                      }`}
                     onClick={() => handleSuggestionClick(suggestion)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div
                           className="font-semibold text-gray-900 text-base"
-                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                         >
                           {suggestion.value}
                         </div>
                         {suggestion.doctor && (
                           <div
                             className="text-sm text-gray-500 mt-1"
-                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                           >
                             {suggestion.doctor.specialty}
                             {suggestion.doctor.hospital && ` • ${suggestion.doctor.hospital}`}
@@ -211,7 +210,7 @@ export default function SearchSection() {
                         {suggestion.hospital && (
                           <div
                             className="text-sm text-gray-500 mt-1"
-                            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                           >
                             {t.hospitalSubtitle}
                           </div>
@@ -219,15 +218,15 @@ export default function SearchSection() {
                       </div>
                       <span
                         className="text-xs text-primary bg-primary/10 px-3 py-1.5 rounded-full font-semibold"
-                        style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                       >
                         {suggestion.type === "Doctor"
                           ? t.doctorTag
                           : suggestion.type === "Specialty"
-                          ? t.specialtyTag
-                          : suggestion.type === "Hospital"
-                          ? t.hospitalTag
-                          : suggestion.type}
+                            ? t.specialtyTag
+                            : suggestion.type === "Hospital"
+                              ? t.hospitalTag
+                              : suggestion.type}
                       </span>
                     </div>
                   </div>

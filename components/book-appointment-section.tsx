@@ -85,7 +85,6 @@ export default function BookAppointmentSection() {
           >
             <h2 
               className="text-xl sm:text-3xl lg:text-[42px] font-bold text-slate-900 mb-6 sm:mb-10 text-center lg:text-left leading-tight"
-              style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : "inherit" }}
             >
               {translations.title[language]}
             </h2>
@@ -99,8 +98,7 @@ export default function BookAppointmentSection() {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className="w-full bg-[#F5F8FA] text-slate-700 placeholder:text-slate-400 text-base px-6 py-4 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all border-0"
-                style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : "inherit" }}
-              />
+                />
 
               {/* Phone Number */}
               <input
@@ -110,8 +108,7 @@ export default function BookAppointmentSection() {
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 className="w-full bg-[#F5F8FA] text-slate-700 placeholder:text-slate-400 text-base px-6 py-4 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all border-0"
-                style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : "inherit" }}
-              />
+                />
 
               {/* Message */}
               <textarea
@@ -121,24 +118,21 @@ export default function BookAppointmentSection() {
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
                 className="w-full bg-[#F5F8FA] text-slate-700 placeholder:text-slate-400 text-base px-6 py-4 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all border-0 resize-none"
-                style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : "inherit" }}
-              />
+                />
 
               {/* Submit button */}
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full bg-primary hover:bg-primary/95 text-white font-bold text-[15px] py-5 rounded-full transition-all shadow-lg hover:shadow-primary/30 disabled:opacity-60 mt-4 tracking-wide"
-                style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : "inherit" }}
-              >
+                >
                 {loading ? translations.submitting[language] : translations.submit[language]}
               </button>
 
               {success && (
                 <p 
                   className="text-center text-sm text-green-600 font-medium"
-                  style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : "inherit" }}
-                >
+                    >
                   {translations.success[language]}
                 </p>
               )}

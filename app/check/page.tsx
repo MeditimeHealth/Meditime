@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  CreditCard, 
-  Search, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
+import {
+  CreditCard,
+  Search,
+  CheckCircle,
+  XCircle,
+  Clock,
   User,
   Calendar,
   Shield
@@ -66,23 +66,23 @@ export default function CheckCardPage() {
 
   const getCardTypeStyle = (type: string) => {
     const styles: Record<string, { bg: string; text: string; border: string }> = {
-      silver: { 
-        bg: "bg-gradient-to-br from-gray-300 to-gray-500", 
+      silver: {
+        bg: "bg-gradient-to-br from-gray-300 to-gray-500",
         text: "text-gray-800",
         border: "border-gray-400"
       },
-      gold: { 
-        bg: "bg-gradient-to-br from-yellow-400 to-yellow-600", 
+      gold: {
+        bg: "bg-gradient-to-br from-yellow-400 to-yellow-600",
         text: "text-yellow-900",
         border: "border-yellow-500"
       },
-      platinum: { 
-        bg: "bg-gradient-to-br from-purple-400 to-purple-700", 
+      platinum: {
+        bg: "bg-gradient-to-br from-purple-400 to-purple-700",
         text: "text-white",
         border: "border-purple-500"
       },
-      corporate: { 
-        bg: "bg-gradient-to-br from-blue-500 to-blue-800", 
+      corporate: {
+        bg: "bg-gradient-to-br from-blue-500 to-blue-800",
         text: "text-white",
         border: "border-blue-600"
       },
@@ -119,16 +119,16 @@ export default function CheckCardPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
-      
+
       {/* Hero Section */}
-      <div 
+      <div
         className="relative mt-16 px-4 sm:px-6 lg:px-8 py-16 sm:py-24"
         style={{
           backgroundImage: "linear-gradient(135deg, #009A98 0%, #00B5B2 50%, #007977 100%)",
         }}
       >
         <div className="absolute inset-0 bg-black/20"></div>
-        
+
         <div className="relative z-10 container mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -161,12 +161,10 @@ export default function CheckCardPage() {
             <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label 
-                    htmlFor="serialNumber" 
+                  <label
+                    htmlFor="serialNumber"
                     className="block text-sm font-medium text-gray-700 mb-2"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
+
                   >
                     কার্ড সিরিয়াল নম্বর
                   </label>
@@ -204,12 +202,12 @@ export default function CheckCardPage() {
                   {result?.valid && result.card ? (
                     <div className="space-y-6">
                       {/* Card Visual */}
-                      <div 
+                      <div
                         className={`relative ${getCardTypeStyle(result.card.cardType).bg} rounded-2xl p-6 text-white shadow-xl overflow-hidden`}
                       >
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
-                        
+
                         <div className="relative z-10">
                           <div className="flex items-start justify-between mb-6">
                             <div>
@@ -218,7 +216,7 @@ export default function CheckCardPage() {
                             </div>
                             <CreditCard className="w-10 h-10 text-white/80" />
                           </div>
-                          
+
                           <div className="flex items-center gap-4 mb-4">
                             {result.card.photo ? (
                               <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white/50">
@@ -239,7 +237,7 @@ export default function CheckCardPage() {
                               <p className="text-white/70 font-mono">{result.card.serialNumber}</p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-2 text-white/80">
                             <Calendar className="w-4 h-4" />
                             <span className="text-sm">
@@ -250,15 +248,13 @@ export default function CheckCardPage() {
                       </div>
 
                       {/* Status Badge */}
-                      <div 
+                      <div
                         className={`flex items-center justify-center gap-3 py-4 px-6 rounded-xl ${getStatusColor(result.card.status)}`}
                       >
                         {getStatusIcon(result.card.status)}
-                        <span 
+                        <span
                           className="text-lg font-semibold"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
+
                         >
                           {result.card.status === "Active" && "কার্ডটি সক্রিয় আছে"}
                           {result.card.status === "Expired" && "কার্ডের মেয়াদ শেষ"}
@@ -268,11 +264,9 @@ export default function CheckCardPage() {
 
                       {/* Card Details */}
                       <div className="bg-gray-50 rounded-xl p-6 space-y-3">
-                        <h3 
+                        <h3
                           className="font-semibold text-gray-900 mb-4"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
+
                         >
                           কার্ডের বিবরণ
                         </h3>
@@ -303,19 +297,15 @@ export default function CheckCardPage() {
                       <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <XCircle className="w-8 h-8 text-red-500" />
                       </div>
-                      <h3 
+                      <h3
                         className="text-xl font-semibold text-gray-900 mb-2"
-                        style={{
-                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
+                        
                       >
                         কার্ড পাওয়া যায়নি
                       </h3>
-                      <p 
+                      <p
                         className="text-gray-600"
-                        style={{
-                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
+                        
                       >
                         এই সিরিয়াল নম্বরে কোনো কার্ড নিবন্ধিত নেই। সঠিক নম্বর দিয়ে আবার চেষ্টা করুন।
                       </p>

@@ -116,7 +116,7 @@ export default function BookAppointmentPage() {
     const availabilityArray = Array.isArray(doctor.availability)
       ? doctor.availability
       : [doctor.availability];
-    
+
     // Combine all days from all availability slots
     const allDays = new Set<string>();
     availabilityArray.forEach((slot) => {
@@ -151,7 +151,7 @@ export default function BookAppointmentPage() {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     // Generate available dates for the next 30 days
     const allAvailableDates: Date[] = [];
     for (let i = 0; i < 30; i++) {
@@ -159,7 +159,7 @@ export default function BookAppointmentPage() {
       date.setDate(today.getDate() + i);
       date.setHours(0, 0, 0, 0);
       const dayName = getDayName(date);
-      
+
       // Check if date is not in the past and matches available days
       if (date >= today && availableDays.includes(dayName)) {
         const dateStr = getDateString(date);
@@ -214,9 +214,9 @@ export default function BookAppointmentPage() {
   // Check if date is in the first 2 available dates (can be booked)
   const isDateAvailable = useCallback((date: Date): boolean => {
     if (latestAvailableDates.length === 0) return false;
-    
+
     const dateStr = getDateString(date);
-    
+
     // Only return true if date is in the latestAvailableDates array (first 2)
     return latestAvailableDates.some((availableDate) => {
       return getDateString(availableDate) === dateStr;
@@ -226,23 +226,23 @@ export default function BookAppointmentPage() {
   // Check if date matches doctor's schedule and is not booked (to show all available dates)
   const isDateInSchedule = useCallback((date: Date): boolean => {
     if (!doctor) return false;
-    
+
     const availableDays = getAvailableDays();
     if (availableDays.length === 0) return false;
-    
+
     const dayName = getDayName(date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const dateToCheck = new Date(date);
     dateToCheck.setHours(0, 0, 0, 0);
-    
+
     // Check if date matches schedule and is not booked
     if (dateToCheck >= today && availableDays.includes(dayName)) {
       const dateStr = getDateString(date);
       const isBooked = existingAppointments.includes(dateStr);
       return !isBooked;
     }
-    
+
     return false;
   }, [doctor, existingAppointments, getAvailableDays]);
 
@@ -277,7 +277,7 @@ export default function BookAppointmentPage() {
 
   const handleDateSelect = (date: Date) => {
     const dateStr = getDateString(date);
-    
+
     const isInLatestTwo = latestAvailableDates.some((availableDate) => {
       return getDateString(availableDate) === dateStr;
     });
@@ -397,7 +397,7 @@ export default function BookAppointmentPage() {
             <Link href={`/doctor/${doctorId}`}>
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                <span style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                <span >
                   ফিরে যান
                 </span>
               </Button>
@@ -414,27 +414,27 @@ export default function BookAppointmentPage() {
             <Card className="p-6 bg-gradient-to-br from-white to-blue-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-2xl font-bold text-gray-900 mb-5"
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
               >
                 হাসপাতাল
               </h2>
               <div className="relative">
                 {doctor.hospital ? (
                   <div className="p-4 bg-primary text-white rounded-xl border-2 border-primary shadow-lg">
-                    <p className="text-lg font-semibold flex items-center gap-2" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                    <p className="text-lg font-semibold flex items-center gap-2" >
                       <Building2 className="h-5 w-5" />
                       {doctor.hospital}
                     </p>
                   </div>
                 ) : (
-                  <p className="text-gray-500 p-4 bg-gray-50 rounded-xl" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                  <p className="text-gray-500 p-4 bg-gray-50 rounded-xl" >
                     কোন হাসপাতাল নির্ধারিত নেই
                   </p>
                 )}
               </div>
               {/* {doctor.hospital && (
                 <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-xl">
-                  <p className="text-green-700 font-medium flex items-center gap-2" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                  <p className="text-green-700 font-medium flex items-center gap-2" >
                     <MapPin className="h-4 w-4" />
                     অ্যাপয়েন্টমেন্ট হবে: {doctor.hospital}
                   </p>
@@ -447,116 +447,114 @@ export default function BookAppointmentPage() {
               <Card className="p-6 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
                 <h2
                   className="text-2xl font-bold text-gray-900 mb-5"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                 >
                   Select Date
                 </h2>
 
                 {/* Calendar - smaller on desktop, larger text */}
                 <div className="max-w-md mx-auto lg:max-w-full">
-                {/* Calendar Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <button
-                    onClick={() => changeMonth(-1)}
-                    className="p-2 rounded-lg hover:bg-primary/10 transition-colors disabled:opacity-30"
-                    disabled={currentMonth.getMonth() === new Date().getMonth() && currentMonth.getFullYear() === new Date().getFullYear()}
-                  >
-                    <ArrowLeft className="h-5 w-5 text-primary" />
-                  </button>
-                  <h3
-                    className="text-lg lg:text-xl font-bold text-gray-900"
-                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                  >
-                    {banglaMonths[currentMonthIndex]} {toBengaliNumber(currentYear)}
-                  </h3>
-                  <button
-                    onClick={() => changeMonth(1)}
-                    className="p-2 rounded-lg hover:bg-primary/10 transition-colors disabled:opacity-30"
-                    disabled={(() => { const n = new Date(); return currentMonth.getMonth() === n.getMonth() + 1 || (currentMonth.getMonth() === 11 && n.getMonth() === 10); })()}
-                  >
-                    <ArrowLeft className="h-5 w-5 text-primary rotate-180" />
-                  </button>
-                </div>
-
-                {/* Unselect Date Button */}
-                {selectedDate && (
-                  <div className="mb-3 flex justify-end">
+                  {/* Calendar Header */}
+                  <div className="flex items-center justify-between mb-4">
                     <button
-                      onClick={() => setSelectedDate(null)}
-                      className="text-sm text-red-500 hover:text-red-700 font-medium flex items-center gap-1 transition-colors"
-                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+                      onClick={() => changeMonth(-1)}
+                      className="p-2 rounded-lg hover:bg-primary/10 transition-colors disabled:opacity-30"
+                      disabled={currentMonth.getMonth() === new Date().getMonth() && currentMonth.getFullYear() === new Date().getFullYear()}
                     >
-                      ✕ তারিখ বাতিল করুন
+                      <ArrowLeft className="h-5 w-5 text-primary" />
+                    </button>
+                    <h3
+                      className="text-lg lg:text-xl font-bold text-gray-900"
+
+                    >
+                      {banglaMonths[currentMonthIndex]} {toBengaliNumber(currentYear)}
+                    </h3>
+                    <button
+                      onClick={() => changeMonth(1)}
+                      className="p-2 rounded-lg hover:bg-primary/10 transition-colors disabled:opacity-30"
+                      disabled={(() => { const n = new Date(); return currentMonth.getMonth() === n.getMonth() + 1 || (currentMonth.getMonth() === 11 && n.getMonth() === 10); })()}
+                    >
+                      <ArrowLeft className="h-5 w-5 text-primary rotate-180" />
                     </button>
                   </div>
-                )}
 
-                {/* Calendar Days Header */}
-                <div className="grid grid-cols-7 gap-1 mb-3">
-                  {banglaDays.map((day, index) => (
-                    <div
-                      key={index}
-                      className="text-center font-semibold text-gray-700 py-1 text-sm lg:text-base"
-                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                    >
-                      {day}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Calendar Grid */}
-                <div className="grid grid-cols-7 gap-1">
-                  {calendarDays.map((date, index) => {
-                    if (!date) {
-                      return <div key={index} className="aspect-square" />;
-                    }
-
-                    const isAvailable = isDateAvailable(date);
-                    const isInScheduleButNotAvailable = isDateInScheduleButNotAvailable(date);
-                    const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
-                    const isToday = date.toDateString() === new Date().toDateString();
-
-                    return (
+                  {/* Unselect Date Button */}
+                  {selectedDate && (
+                    <div className="mb-3 flex justify-end">
                       <button
-                        key={index}
-                        onClick={() => {
-                          if (isAvailable) {
-                            handleDateSelect(date);
-                          } else if (isInScheduleButNotAvailable) {
-                            showToast.error("Please select from the first 2 available dates");
-                          }
-                        }}
-                        disabled={!isAvailable}
-                        className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center text-sm lg:text-base ${
-                          isSelected
-                            ? "text-white shadow-lg scale-110 ring-4 ring-orange-300"
-                            : isAvailable
-                            ? "bg-primary text-white border-2 border-primary hover:bg-primary/90 hover:shadow-md hover:scale-105"
-                            : isInScheduleButNotAvailable
-                            ? "bg-blue-100 text-blue-700 border-2 border-blue-300 cursor-not-allowed opacity-75"
-                            : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        } ${isToday && !isSelected && !isAvailable ? "ring-2 ring-gray-400" : ""}`}
-                        style={{
-                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          backgroundColor: isSelected ? "#ff5e29" : undefined
-                        }}
-                      >
-                        {toBengaliNumber(date.getDate())}
-                      </button>
-                    );
-                  })}
-                </div>
+                        onClick={() => setSelectedDate(null)}
+                        className="text-sm text-red-500 hover:text-red-700 font-medium flex items-center gap-1 transition-colors"
 
-                {selectedDate && (
-                  <div className="mt-5 p-4 bg-primary/10 rounded-xl border-2 border-primary/20">
-                    <p
-                      className="text-base font-semibold text-gray-900"
-                      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
-                    >
-                      Selected Date: {getDayName(selectedDate)}, {selectedDate.getDate()} {banglaMonths[selectedDate.getMonth()]}, {selectedDate.getFullYear()}
-                    </p>
+                      >
+                        ✕ তারিখ বাতিল করুন
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Calendar Days Header */}
+                  <div className="grid grid-cols-7 gap-1 mb-3">
+                    {banglaDays.map((day, index) => (
+                      <div
+                        key={index}
+                        className="text-center font-semibold text-gray-700 py-1 text-sm lg:text-base"
+
+                      >
+                        {day}
+                      </div>
+                    ))}
                   </div>
-                )}
+
+                  {/* Calendar Grid */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {calendarDays.map((date, index) => {
+                      if (!date) {
+                        return <div key={index} className="aspect-square" />;
+                      }
+
+                      const isAvailable = isDateAvailable(date);
+                      const isInScheduleButNotAvailable = isDateInScheduleButNotAvailable(date);
+                      const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
+                      const isToday = date.toDateString() === new Date().toDateString();
+
+                      return (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            if (isAvailable) {
+                              handleDateSelect(date);
+                            } else if (isInScheduleButNotAvailable) {
+                              showToast.error("Please select from the first 2 available dates");
+                            }
+                          }}
+                          disabled={!isAvailable}
+                          className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center text-sm lg:text-base ${isSelected
+                              ? "text-white shadow-lg scale-110 ring-4 ring-orange-300"
+                              : isAvailable
+                                ? "bg-primary text-white border-2 border-primary hover:bg-primary/90 hover:shadow-md hover:scale-105"
+                                : isInScheduleButNotAvailable
+                                  ? "bg-blue-100 text-blue-700 border-2 border-blue-300 cursor-not-allowed opacity-75"
+                                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            } ${isToday && !isSelected && !isAvailable ? "ring-2 ring-gray-400" : ""}`}
+                          style={{
+                            backgroundColor: isSelected ? "#ff5e29" : undefined
+                          }}
+                        >
+                          {toBengaliNumber(date.getDate())}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {selectedDate && (
+                    <div className="mt-5 p-4 bg-primary/10 rounded-xl border-2 border-primary/20">
+                      <p
+                        className="text-base font-semibold text-gray-900"
+
+                      >
+                        Selected Date: {getDayName(selectedDate)}, {selectedDate.getDate()} {banglaMonths[selectedDate.getMonth()]}, {selectedDate.getFullYear()}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </Card>
             )}
@@ -568,7 +566,7 @@ export default function BookAppointmentPage() {
               <div className="flex items-center justify-between mb-5">
                 <h2
                   className="text-2xl font-bold text-gray-900"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                 >
                   রোগীর তথ্য
                 </h2>
@@ -585,7 +583,7 @@ export default function BookAppointmentPage() {
                     setAffiliateCode("");
                   }}
                   className="flex items-center gap-2 text-gray-600 hover:text-primary hover:border-primary"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                 >
                   <RotateCcw className="h-4 w-4" />
                   মুছুন
@@ -594,7 +592,7 @@ export default function BookAppointmentPage() {
 
               {/* Required fields notice */}
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600 flex items-center gap-2" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                <p className="text-sm text-red-600 flex items-center gap-2" >
                   <span className="text-red-500 font-bold">*</span>
                   চিহ্নিত ঘরগুলো অবশ্যই পূরণ করতে হবে
                 </p>
@@ -603,7 +601,7 @@ export default function BookAppointmentPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Patient Name - Required */}
                 <div>
-                  <Label htmlFor="patientName" className="flex items-center gap-1" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                  <Label htmlFor="patientName" className="flex items-center gap-1" >
                     রোগীর নাম <span className="text-red-500 font-bold">*</span>
                   </Label>
                   <Input
@@ -618,7 +616,7 @@ export default function BookAppointmentPage() {
 
                 {/* Mobile Number - Required */}
                 <div>
-                  <Label htmlFor="mobileNumber" className="flex items-center gap-1" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                  <Label htmlFor="mobileNumber" className="flex items-center gap-1" >
                     মোবাইল নম্বর <span className="text-red-500 font-bold">*</span>
                   </Label>
                   <Input
@@ -634,7 +632,7 @@ export default function BookAppointmentPage() {
 
                 {/* Gender - Optional */}
                 <div>
-                  <Label htmlFor="gender" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                  <Label htmlFor="gender" >
                     লিঙ্গ
                   </Label>
                   <select
@@ -642,18 +640,18 @@ export default function BookAppointmentPage() {
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
                     className="mt-1 w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white"
-                    style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                   >
                     <option value="">লিঙ্গ নির্বাচন করুন</option>
                     <option value="male">পুরুষ</option>
                     <option value="female">মহিলা</option>
-                
+
                   </select>
                 </div>
 
                 {/* Age - Optional */}
                 <div>
-                  <Label htmlFor="age" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                  <Label htmlFor="age" >
                     বয়স
                   </Label>
                   <Input
@@ -669,7 +667,7 @@ export default function BookAppointmentPage() {
 
                 {/* Affiliate Code - with Serial Input Option */}
                 <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200">
-                  <Label htmlFor="affiliateCode" className="flex items-center gap-2 text-purple-700" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                  <Label htmlFor="affiliateCode" className="flex items-center gap-2 text-purple-700" >
                     <Ticket className="h-4 w-4" />
                     সিরিয়াল/অ্যাফিলিয়েট কোড (ঐচ্ছিক)
                   </Label>
@@ -680,14 +678,14 @@ export default function BookAppointmentPage() {
                     placeholder="সিরিয়াল বা অ্যাফিলিয়েট কোড লিখুন"
                     className="mt-2 border-2 border-purple-300 focus:border-purple-500 bg-white"
                   />
-                  <p className="mt-2 text-xs text-purple-600" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                  <p className="mt-2 text-xs text-purple-600" >
                     রেফারেল কোড থাকলে এখানে লিখুন
                   </p>
                 </div>
 
                 {/* Patient Type - Required */}
                 <div>
-                  <Label className="flex items-center gap-1" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                  <Label className="flex items-center gap-1" >
                     রোগীর ধরন <span className="text-red-500 font-bold">*</span>
                   </Label>
                   <div className="mt-2 space-y-2">
@@ -698,11 +696,10 @@ export default function BookAppointmentPage() {
                     ].map((type) => (
                       <label
                         key={type.value}
-                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all hover:bg-primary/5 ${
-                          patientType === type.value 
-                            ? "border-primary bg-primary/10 shadow-sm" 
+                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all hover:bg-primary/5 ${patientType === type.value
+                            ? "border-primary bg-primary/10 shadow-sm"
                             : "border-gray-200 bg-white"
-                        }`}
+                          }`}
                       >
                         <input
                           type="radio"
@@ -712,7 +709,7 @@ export default function BookAppointmentPage() {
                           onChange={(e) => setPatientType(e.target.value as "old" | "new" | "report")}
                           className="w-4 h-4 text-primary accent-primary"
                         />
-                        <span style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                        <span >
                           {type.label}
                         </span>
                       </label>
@@ -723,7 +720,7 @@ export default function BookAppointmentPage() {
                 {/* Validation Warning */}
                 {(!doctor.hospital || !selectedDate) && (
                   <div className="p-3 bg-yellow-50 border border-yellow-300 rounded-lg">
-                    <p className="text-sm text-yellow-700" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                    <p className="text-sm text-yellow-700" >
                       {!doctor.hospital && "⚠️ হাসপাতাল নির্ধারিত নেই"}
                       {!doctor.hospital && !selectedDate && " এবং "}
                       {!selectedDate && "⚠️ তারিখ নির্বাচন করুন"}
@@ -735,7 +732,7 @@ export default function BookAppointmentPage() {
                   type="submit"
                   disabled={!doctor.hospital || !selectedDate || !patientName || !mobileNumber || submitting}
                   className="w-full bg-gradient-to-r from-primary to-orange-600 hover:from-orange-600 hover:to-primary text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                 >
                   {submitting ? (
                     <>

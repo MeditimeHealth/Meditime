@@ -49,7 +49,7 @@ export default function DiagnosticPatientForm({
       <div className="flex items-center justify-between mb-5">
         <h2
           className="text-2xl font-bold text-gray-900"
-          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
         >
           {t("patientInformation", language)}
         </h2>
@@ -66,7 +66,7 @@ export default function DiagnosticPatientForm({
             setAffiliateCode("");
           }}
           className="flex items-center gap-2 text-gray-600 hover:text-[#00B7B5] hover:border-[#00B7B5] rounded-lg"
-          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
         >
           <RotateCcw className="h-4 w-4" />
           {t("resetForm", language)}
@@ -75,7 +75,7 @@ export default function DiagnosticPatientForm({
 
       {/* Required fields notice */}
       <div className="mb-4 p-3 bg-red-50/50 border border-red-100 rounded-lg">
-        <p className="text-xs text-red-500 font-medium flex items-center gap-2" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+        <p className="text-xs text-red-500 font-medium flex items-center gap-2" >
           <span className="text-red-500 font-bold">*</span>
           {t("requiredFieldsNotice", language)}
         </p>
@@ -84,7 +84,7 @@ export default function DiagnosticPatientForm({
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Patient Name - Required */}
         <div>
-          <Label htmlFor="patientName" className="flex items-center gap-1 font-bold text-gray-700" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+          <Label htmlFor="patientName" className="flex items-center gap-1 font-bold text-gray-700" >
             {t("patientNameLabel", language)} <span className="text-red-500 font-bold">*</span>
           </Label>
           <Input
@@ -99,7 +99,7 @@ export default function DiagnosticPatientForm({
 
         {/* Mobile Number - Required */}
         <div>
-          <Label htmlFor="mobileNumber" className="flex items-center gap-1 font-bold text-gray-700" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+          <Label htmlFor="mobileNumber" className="flex items-center gap-1 font-bold text-gray-700" >
             {t("mobileNumberLabel", language)} <span className="text-red-500 font-bold">*</span>
           </Label>
           <Input
@@ -115,7 +115,7 @@ export default function DiagnosticPatientForm({
 
         {/* Gender - Optional */}
         <div>
-          <Label htmlFor="gender" className="font-bold text-gray-700" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+          <Label htmlFor="gender" className="font-bold text-gray-700" >
             {t("genderLabel", language)}
           </Label>
           <select
@@ -123,7 +123,7 @@ export default function DiagnosticPatientForm({
             value={gender}
             onChange={(e) => setGender(e.target.value)}
             className="mt-1 w-full h-12 px-4 border-2 border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00B7B5] bg-white transition-all"
-            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
           >
             <option value="">{t("selectGender", language)}</option>
             <option value="male">{t("male", language)}</option>
@@ -133,7 +133,7 @@ export default function DiagnosticPatientForm({
 
         {/* Age - Optional */}
         <div>
-          <Label htmlFor="age" className="font-bold text-gray-700" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+          <Label htmlFor="age" className="font-bold text-gray-700" >
             {t("ageLabel", language)}
           </Label>
           <Input
@@ -149,7 +149,7 @@ export default function DiagnosticPatientForm({
 
         {/* Affiliate Code - with Serial Input Option */}
         <div className="p-4 bg-slate-50 rounded-xl border-2 border-dashed border-[#00B7B5]/20">
-          <Label htmlFor="affiliateCode" className="flex items-center gap-2 text-[#004B50] font-bold" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+          <Label htmlFor="affiliateCode" className="flex items-center gap-2 text-[#004B50] font-bold" >
             <Ticket className="h-4 w-4" />
             {t("serialAffiliateCode", language)}
           </Label>
@@ -160,7 +160,7 @@ export default function DiagnosticPatientForm({
             placeholder={t("serialAffiliateCode", language)}
             className="mt-2 border-2 border-gray-200 h-12 rounded-xl focus:border-[#00B7B5] bg-white uppercase font-bold tracking-wider"
           />
-          <p className="mt-2 text-xs text-gray-500 font-medium" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+          <p className="mt-2 text-xs text-gray-500 font-medium" >
             {t("referralCodeHelp", language)}
           </p>
         </div>
@@ -169,7 +169,7 @@ export default function DiagnosticPatientForm({
           type="submit"
           disabled={!selectedDate || !patientName || !mobileNumber || submitting}
           className="w-full h-14 bg-[#00B7B5] hover:bg-[#004B50] text-white font-bold py-4 text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-xl"
-          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
         >
           {submitting ? (
             <>

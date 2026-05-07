@@ -114,7 +114,7 @@ function CheckoutContent() {
   const doctorId = params?.id as string;
   const { language } = useLanguage();
   const txt = t[language];
-  const fontStyle = { fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" };
+  const fontStyle = {};
 
   const [booking, setBooking] = useState<any>(null);
   const [doctor, setDoctor] = useState<any>(null);

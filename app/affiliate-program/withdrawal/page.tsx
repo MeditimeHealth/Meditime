@@ -157,10 +157,7 @@ export default function WithdrawalRequestPage() {
           <div className="mb-8">
             <h1
               className="text-3xl font-bold text-gray-900"
-              style={{
-                fontFamily:
-                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-              }}
+             
             >
               উইথড্র রিকোয়েস্ট
             </h1>

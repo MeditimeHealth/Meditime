@@ -306,7 +306,6 @@ export default function EditBloodDonorPage() {
                   {...register("nameBn")}
                   placeholder="নাম লিখুন"
                   className="mt-1"
-                  style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
                 />
               </div>
             )}

@@ -127,9 +127,7 @@ const getStatusBadge = (status: string) => {
   return (
     <span
       className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold border-2 ${styles[status as keyof typeof styles] || styles.pending}`}
-      style={{
-        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-      }}
+      
     >
       <Icon className="h-4 w-4" />
       {labels[status as keyof typeof labels] || status}
@@ -288,19 +286,13 @@ export default function AppointmentsPage() {
       <div>
         <h1
           className="text-3xl font-bold text-gray-900"
-          style={{
-            fontFamily:
-              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-          }}
+          
         >
           অ্যাপয়েন্টমেন্ট
         </h1>
         <p
           className="text-gray-600 mt-2"
-          style={{
-            fontFamily:
-              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-          }}
+          
         >
           রোগীর অ্যাপয়েন্টমেন্ট পরিচালনা করুন
         </p>
@@ -321,10 +313,7 @@ export default function AppointmentsPage() {
             className={
               filter === filterOption.value ? "bg-primary text-white" : ""
             }
-            style={{
-              fontFamily:
-                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
+            
           >
             {filterOption.label}
           </Button>
@@ -335,10 +324,7 @@ export default function AppointmentsPage() {
         <Card className="p-12 text-center">
           <p
             className="text-gray-500 text-lg"
-            style={{
-              fontFamily:
-                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
+            
           >
             কোন অ্যাপয়েন্টমেন্ট পাওয়া যায়নি
           </p>
@@ -357,10 +343,7 @@ export default function AppointmentsPage() {
                     <User className="h-5 w-5 text-primary" />
                     <h4
                       className="font-bold text-lg text-gray-800"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
+                      
                     >
                       রোগীর তথ্য
                     </h4>
@@ -409,10 +392,7 @@ export default function AppointmentsPage() {
 
                       <h3
                         className="text-xl font-bold text-gray-900"
-                        style={{
-                          fontFamily:
-                            "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
+                        
                       >
                         {appointment.patientName}
                       </h3>
@@ -438,10 +418,7 @@ export default function AppointmentsPage() {
                           <p className="text-xs text-gray-500">রোগীর ধরন</p>
                           <p
                             className="font-medium text-gray-900"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
+                           
                           >
                             {getPatientTypeLabel(appointment.patientType)}
                           </p>
@@ -457,10 +434,7 @@ export default function AppointmentsPage() {
                             </p>
                             <p
                               className="font-medium text-gray-900"
-                              style={{
-                                fontFamily:
-                                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                              }}
+                              
                             >
                               {appointment.age
                                 ? `${toBengaliNumber(appointment.age)} বছর`
@@ -490,10 +464,7 @@ export default function AppointmentsPage() {
                       <Stethoscope className="h-5 w-5 text-primary" />
                       <h4
                         className="font-bold text-lg text-gray-800"
-                        style={{
-                          fontFamily:
-                            "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
+                        
                       >
                         ডাক্তার ও অ্যাপয়েন্টমেন্ট
                       </h4>
@@ -521,19 +492,13 @@ export default function AppointmentsPage() {
                         <div>
                           <p
                             className="font-bold text-gray-900"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
+                            
                           >
                             {appointment.doctorId?.name || "Unknown Doctor"}
                           </p>
                           <p
                             className="text-xs text-gray-600 mt-1"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
+                            
                           >
                             {appointment.doctorId?.qualification &&
                               `${appointment.doctorId.qualification}`}
@@ -559,10 +524,7 @@ export default function AppointmentsPage() {
                         <p className="text-xs text-gray-500">হাসপাতাল</p>
                         <p
                           className="font-medium text-gray-900"
-                          style={{
-                            fontFamily:
-                              "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
+                          
                         >
                           {appointment.hospitalName}
                         </p>
@@ -577,10 +539,7 @@ export default function AppointmentsPage() {
                           <p className="text-xs text-gray-500">তারিখ</p>
                           <p
                             className="font-medium text-gray-900"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
+                            
                           >
                             {formatDate(appointment.appointmentDate)}
                           </p>
@@ -594,10 +553,7 @@ export default function AppointmentsPage() {
                             <p className="text-xs text-gray-500">চেম্বার সময়</p>
                             <p
                               className="font-medium text-gray-900"
-                              style={{
-                                fontFamily:
-                                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                              }}
+                              
                             >
                               {appointment.doctorId.availability.map((slot, idx) => (
                                 <span key={idx}>
@@ -628,10 +584,7 @@ export default function AppointmentsPage() {
                           <Button
                             onClick={() => handleConfirmClick(appointment)}
                             className="flex-1 bg-green-600 hover:bg-green-700 text-white h-9 text-sm"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
+                            
                           >
                             নিশ্চিত করুন
                           </Button>
@@ -641,10 +594,7 @@ export default function AppointmentsPage() {
                             }
                             variant="outline"
                             className="flex-1 border-red-300 text-red-600 hover:bg-red-50 h-9 text-sm"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
+                            
                           >
                             বাতিল করুন
                           </Button>
@@ -657,10 +607,7 @@ export default function AppointmentsPage() {
                               handleCompleteAppointment(appointment._id)
                             }
                             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-9 text-sm"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
+                            
                           >
                             সম্পন্ন করুন
                           </Button>
@@ -670,10 +617,7 @@ export default function AppointmentsPage() {
                             }
                             variant="outline"
                             className="flex-1 border-red-300 text-red-600 hover:bg-red-50 h-9 text-sm"
-                            style={{
-                              fontFamily:
-                                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
+                            
                           >
                             বাতিল করুন
                           </Button>
@@ -695,10 +639,7 @@ export default function AppointmentsPage() {
             <div className="flex items-center justify-between mb-6">
               <h3
                 className="text-xl font-bold text-gray-900"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 সিরিয়াল নম্বর দিন
               </h3>
@@ -720,10 +661,7 @@ export default function AppointmentsPage() {
               <p className="text-sm text-gray-500 mb-1">রোগী</p>
               <p
                 className="font-bold text-gray-900"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+               
               >
                 {selectedAppointment.patientName}
               </p>
@@ -740,10 +678,7 @@ export default function AppointmentsPage() {
               <Label
                 htmlFor="serialNumber"
                 className="text-gray-700 mb-2 block"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 সিরিয়াল নম্বর <span className="text-red-500">*</span>
               </Label>
@@ -778,10 +713,7 @@ export default function AppointmentsPage() {
                 variant="outline"
                 className="flex-1"
                 disabled={submitting}
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 বাতিল
               </Button>
@@ -789,10 +721,7 @@ export default function AppointmentsPage() {
                 onClick={handleConfirmWithSerial}
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                 disabled={submitting}
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 {submitting ? (
                   <>

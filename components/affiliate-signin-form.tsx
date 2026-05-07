@@ -49,9 +49,9 @@ export default function AffiliateSigninForm() {
         // Store affiliate data in localStorage
         const affiliateData = result.affiliate || result.user;
         localStorage.setItem("affiliate", JSON.stringify(affiliateData));
-        
+
         showToast.success("Successfully signed in!");
-        
+
         // Redirect to affiliate dashboard
         window.location.href = "/affiliate-program/dashboard";
       } else {
@@ -68,17 +68,13 @@ export default function AffiliateSigninForm() {
     <div>
       <h3
         className="text-2xl font-bold text-gray-900 mb-2"
-        style={{
-          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-        }}
+       
       >
         অ্যাফিলিয়েট লগইন
       </h3>
       <p
         className="text-gray-600 mb-6"
-        style={{
-          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-        }}
+       
       >
         আপনার অ্যাকাউন্টে প্রবেশ করুন
       </p>
@@ -137,9 +133,7 @@ export default function AffiliateSigninForm() {
           <Link
             href="/forgot-password"
             className="text-sm text-primary hover:underline"
-            style={{
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
+
           >
             পাসওয়ার্ড ভুলে গেছেন?
           </Link>
@@ -149,9 +143,7 @@ export default function AffiliateSigninForm() {
           type="submit"
           className="w-full bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white py-3"
           disabled={isLoading}
-          style={{
-            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-          }}
+         
         >
           {isLoading ? "লগইন হচ্ছে..." : "লগইন করুন"}
         </Button>

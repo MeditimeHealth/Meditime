@@ -303,7 +303,6 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
                 {...register("nameBn")}
                 placeholder="হাসপাতালের নাম লিখুন"
                 className={`h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl ${errors.nameBn ? 'border-red-500' : ''}`}
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
               />
               {errors.nameBn && <p className="text-xs text-red-500 font-bold underline decoration-dotted">{errors.nameBn.message}</p>}
             </div>
@@ -391,7 +390,6 @@ export default function EditHospitalPage({ params }: { params: Promise<{ id: str
                 {...register("addressBn")}
                 placeholder="হাসপাতালের ঠিকানা"
                 className={`h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl ${errors.addressBn ? 'border-red-500' : ''}`}
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
               />
               {errors.addressBn && <p className="text-xs text-red-500 font-bold underline decoration-dotted">{errors.addressBn.message}</p>}
             </div>

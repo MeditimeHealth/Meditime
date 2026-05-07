@@ -94,11 +94,11 @@ export default function DoctorProfilePage() {
   const doctorId = params?.id as string;
   const [doctor, setDoctor] = useState<Doctor | null>(null);
   const [relatedDoctors, setRelatedDoctors] = useState<Doctor[]>([]);
-  const [hospitals, setHospitals] = useState<{name: string, nameBn?: string}[]>([]);
+  const [hospitals, setHospitals] = useState<{ name: string, nameBn?: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [departmentDiseases, setDepartmentDiseases] = useState<Array<{name: string, bangla: string}>>([]);
-  const [departmentInfo, setDepartmentInfo] = useState<{name: string, nameBn?: string} | null>(null);
+  const [departmentDiseases, setDepartmentDiseases] = useState<Array<{ name: string, bangla: string }>>([]);
+  const [departmentInfo, setDepartmentInfo] = useState<{ name: string, nameBn?: string } | null>(null);
   const { language } = useLanguage();
 
   useEffect(() => {
@@ -129,7 +129,7 @@ export default function DoctorProfilePage() {
       if (response.ok && data.doctor) {
         setDoctor(data.doctor);
         console.log("Fetched doctor data:", data.doctor);
-        
+
         // Populate diseases from doctor's specific list first
         if (data.doctor.diseases && data.doctor.diseases.length > 0) {
           const mappedDiseases = data.doctor.diseases.map((d: string) => ({
@@ -159,7 +159,7 @@ export default function DoctorProfilePage() {
       // First, get the department ID by name
       const deptResponse = await fetch(`/api/departments?name=${encodeURIComponent(departmentName)}`);
       const deptData = await deptResponse.json();
-      
+
       if (deptData.departments && deptData.departments.length > 0) {
         const department = deptData.departments[0];
         // Store department info for language switching
@@ -167,11 +167,11 @@ export default function DoctorProfilePage() {
           name: department.name || departmentName,
           nameBn: department.nameBn
         });
-        
+
         // Then fetch diseases for this department
         const diseaseResponse = await fetch(`/api/diseases?department=${department._id}`);
         const diseaseData = await diseaseResponse.json();
-        
+
         if (diseaseData.diseases && diseaseData.diseases.length > 0) {
           // Store both English and Bangla names
           const diseasesWithBothNames = diseaseData.diseases
@@ -179,8 +179,8 @@ export default function DoctorProfilePage() {
               name: disease.name || '',
               bangla: disease.bangla || disease.name || ''
             }))
-            .filter((d: {name: string, bangla: string}) => d.name || d.bangla); // Filter out empty diseases
-          
+            .filter((d: { name: string, bangla: string }) => d.name || d.bangla); // Filter out empty diseases
+
           setDepartmentDiseases(prev => {
             // Merge with existing (doctor-specific) diseases, avoiding duplicates
             const existingNames = new Set(prev.map(d => d.name.toLowerCase()));
@@ -213,14 +213,14 @@ export default function DoctorProfilePage() {
 
   const fetchRelatedDoctors = async () => {
     if (!doctor) return;
-    
+
     try {
       const response = await fetch("/api/doctors");
       const data = await response.json();
       if (response.ok && data.doctors) {
         // Filter out current doctor
         let filtered = data.doctors.filter((d: Doctor) => d._id !== doctorId);
-        
+
         // If in Bangla mode, prioritize/filter doctors with Bangla names to avoid mixing
         if (language === 'bn') {
           const withBn = filtered.filter((d: Doctor) => d.nameBn);
@@ -236,19 +236,19 @@ export default function DoctorProfilePage() {
             });
           }
         }
-        
+
         // Sort by relevance score
         const sorted = filtered.sort((a: Doctor, b: Doctor) => {
           const relevanceA = calculateRelevanceScore(doctor, a);
           const relevanceB = calculateRelevanceScore(doctor, b);
-          
+
           // Secondary sort by relevance
           if (relevanceA !== relevanceB) return relevanceB - relevanceA;
-          
+
           // Tertiary sort: prioritize doctors with images if scores are same
           if (a.image && !b.image) return -1;
           if (!a.image && b.image) return 1;
-          
+
           return 0;
         });
 
@@ -265,7 +265,7 @@ export default function DoctorProfilePage() {
     if (doctor) {
       fetchRelatedDoctors();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doctor, language]);
 
   if (loading) {
@@ -304,7 +304,7 @@ export default function DoctorProfilePage() {
   // Use nullish coalescing so a fee of 0 doesn't fall back incorrectly
   const newPatientFee = doctor.newPatientFee ?? doctor.consultationFee;
   const oldPatientFee = doctor.oldPatientFee;
-  
+
   const enrichedDoctor = {
     ...doctor,
     hospitalBn: hospitals.find(h => h.name === doctor.hospital)?.nameBn || doctor.hospitalBn || ""
@@ -317,12 +317,16 @@ export default function DoctorProfilePage() {
 
   // Hospital address for schedule section (thana + district)
   const hospitalObj = hospitals.find((h: any) => h.name === doctor.hospital) as any;
-  const hospitalAddress = [hospitalObj?.thana, hospitalObj?.district].filter(Boolean).join(', ');
+  
+  const thanaName = hospitalObj?.thana ? (language === 'bn' && hospitalObj.thana.nameBn ? hospitalObj.thana.nameBn : hospitalObj.thana.name) : null;
+  const districtName = hospitalObj?.thana?.district ? (language === 'bn' && hospitalObj.thana.district.nameBn ? hospitalObj.thana.district.nameBn : hospitalObj.thana.district.name) : null;
+  
+  const hospitalAddress = [thanaName, districtName].filter(Boolean).join(', ');
 
   // Dynamic JSON-LD Schema Markup for SEO
   const baseUrl = "https://meditime.com.bd";
   const doctorUrl = `${baseUrl}/doctor/${doctor.slug || doctor._id}`;
-  
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -383,7 +387,7 @@ export default function DoctorProfilePage() {
             "priceCurrency": "BDT"
           }
         ],
-        "openingHoursSpecification": availabilityArray.flatMap(slot => 
+        "openingHoursSpecification": availabilityArray.flatMap(slot =>
           (slot.days || []).map(day => {
             const timeParts = (slot.time || "09:00 - 17:00").split(' - ');
             return {
@@ -429,7 +433,6 @@ export default function DoctorProfilePage() {
     ]
   };
 
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* JSON-LD Schema Markup */}
@@ -441,13 +444,13 @@ export default function DoctorProfilePage() {
 
       {/* Breadcrumbs */}
       <div className="bg-gradient-to-r from-gray-50 to-white border-b-2 border-gray-200 py-4">
-         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 text-base md:text-lg font-semibold text-gray-700">
-            <Link href="/" className="hover:text-primary transition-colors" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{language === 'bn' ? 'হোম' : 'Home'}</Link>
+            <Link href="/" className="hover:text-primary transition-colors" >{language === 'bn' ? 'হোম' : 'Home'}</Link>
             <span className="text-gray-400">/</span>
-            <Link href="/doctor" className="hover:text-primary transition-colors" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{language === 'bn' ? 'বিশেষজ্ঞ ডাক্তার' : 'Doctors'}</Link>
+            <Link href="/doctor" className="hover:text-primary transition-colors" >{language === 'bn' ? 'বিশেষজ্ঞ ডাক্তার' : 'Doctors'}</Link>
             <span className="text-gray-400">/</span>
-            <span className="text-gray-900" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{getLocalizedValue(doctor.name, doctor.nameBn, language)}</span>
+            <span className="text-gray-900" >{getLocalizedValue(doctor.name, doctor.nameBn, language)}</span>
           </div>
         </div>
       </div>
@@ -473,7 +476,7 @@ export default function DoctorProfilePage() {
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* ... (Profile info same as updated previously) ... */}
-           <div className="relative">
+          <div className="relative">
             {/* Profile Picture - Positioned over cover */}
             <div className="absolute -top-24 md:-top-32 left-0">
               <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-6 border-white shadow-2xl bg-white ring-4 ring-white">
@@ -499,14 +502,12 @@ export default function DoctorProfilePage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
                     <h1
-                      className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900"
-                      style={{
-                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
+                      className="text-3xl md:text-4xl font-bold text-gray-900"
+
                     >
                       {getLocalizedValue(doctor.name, doctor.nameBn, language)}
                     </h1>
-                     {/* Safe rating check to avoid 0 rendering */}
+                    {/* Safe rating check to avoid 0 rendering */}
                     {!!doctor.rating && doctor.rating > 0 && (
                       <div className="flex items-center gap-2 bg-yellow-50 px-4 py-2 rounded-full border-2 border-yellow-200">
                         <Star className="h-6 w-6 fill-yellow-400 text-yellow-400" />
@@ -516,31 +517,31 @@ export default function DoctorProfilePage() {
                   </div>
                   <div className="space-y-2">
                     {/* Specialty */}
-                    <p className="text-primary font-bold text-lg md:text-xl">
+                    <p className="text-primary font-bold text-lg md:text-2xl">
                       {getLocalizedValue(doctor.specialty, doctor.specialtyBn, language)}
                     </p>
 
                     {/* Degree/Qualification */}
                     <p
                       className="text-lg md:text-xl text-gray-700 font-semibold"
-                      style={{
-                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
+
                     >
                       {getLocalizedValue(doctor.qualification, doctor.qualificationBn, language)}
                     </p>
 
                     {/* Designation */}
-                    {doctor.designation && (
-                      <p
-                        className="text-base md:text-lg text-gray-600 font-medium"
-                        style={{
-                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
-                      >
+                    {(doctor.designation || doctor.designationBn) && (
+                      <p className="text-base md:text-lg text-gray-600 font-medium">
                         {getLocalizedValue(doctor.designation, doctor.designationBn, language)}
                       </p>
                     )}
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <Building2 className="h-5 w-5 text-primary shrink-0" />
+                      <p className="text-base md:text-lg font-bold text-gray-800">
+                        {getLocalizedValue(enrichedDoctor.hospital, enrichedDoctor.hospitalBn, language)}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -558,9 +559,7 @@ export default function DoctorProfilePage() {
               <Card className="p-8 bg-gradient-to-br from-white to-blue-50 border-2 border-primary/20 shadow-xl">
                 <h2
                   className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
-                  style={{
-                    fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
+
                 >
                   {language === 'bn' ? 'যে সকল রোগের চিকিৎসা করা হয়' : 'Diseases Treated'}
                 </h2>
@@ -572,9 +571,7 @@ export default function DoctorProfilePage() {
                         <li
                           key={index}
                           className="flex items-start gap-3 text-base md:text-lg font-semibold text-gray-800"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
+
                         >
                           <span className="text-primary mt-1">•</span>
                           <span>{getLocalizedValue(disease.name, disease.bangla, language)}</span>
@@ -587,9 +584,7 @@ export default function DoctorProfilePage() {
                         <li
                           key={index}
                           className="flex items-start gap-3 text-base md:text-lg font-semibold text-gray-800"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
+
                         >
                           <span className="text-primary mt-1">•</span>
                           <span>{getLocalizedValue(disease.name, disease.bangla, language)}</span>
@@ -606,18 +601,14 @@ export default function DoctorProfilePage() {
               <Card className="p-8 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
                 <h2
                   className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
-                  style={{
-                    fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
+
                 >
                   {language === 'bn' ? `${getLocalizedValue(doctor.name, doctor.nameBn, language)} সম্পর্কে` : `About ${getLocalizedValue(doctor.name, doctor.nameBn, language)}`}
                 </h2>
                 <div className="bg-white p-6 rounded-xl border-2 border-primary/10 shadow-md">
                   <p
                     className="text-base md:text-lg text-gray-800 leading-relaxed whitespace-pre-line"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
+
                   >
                     {getLocalizedValue(doctor.bio, doctor.bioBn, language)}
                   </p>
@@ -631,9 +622,7 @@ export default function DoctorProfilePage() {
                 <Card className="p-8 bg-gradient-to-br from-white to-purple-50 border-2 border-primary/20 shadow-xl">
                   <h2
                     className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
+
                   >
                     {language === 'bn' ? 'সংশ্লিষ্ট ডাক্তার' : 'Related Doctors'}
                   </h2>
@@ -653,9 +642,7 @@ export default function DoctorProfilePage() {
             <div >
               {/* <h2
                 className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
-                style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 অ্যাপয়েন্টমেন্ট বুক করুন
               </h2> */}
@@ -663,9 +650,7 @@ export default function DoctorProfilePage() {
                 <Link href={`/doctor/${doctorId}/book`}>
                   <Button
                     className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-6 shadow-lg hover:shadow-xl transition-all"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
+
                   >
                     {language === 'bn' ? 'বুক অ্যাপয়েন্টমেন্ট' : 'Book Appointment'}
                   </Button>
@@ -677,9 +662,7 @@ export default function DoctorProfilePage() {
             <Card className="p-6 bg-gradient-to-br from-white to-amber-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
-                style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 {language === 'bn' ? 'ডাক্তারের পরামর্শ ফি' : 'Consultation Fee'}
               </h2>
@@ -687,17 +670,13 @@ export default function DoctorProfilePage() {
                 <div className="flex items-center justify-between p-5 bg-white rounded-xl border-2 border-primary/10 shadow-md">
                   <span
                     className="text-base md:text-lg font-bold text-gray-800"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
+
                   >
                     {language === 'bn' ? 'নতুন রোগী' : 'New Patient'}
                   </span>
                   <span
                     className="text-xl md:text-2xl font-bold text-primary"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
+
                   >
                     ৳{newPatientFee}
                   </span>
@@ -706,17 +685,13 @@ export default function DoctorProfilePage() {
                   <div className="flex items-center justify-between p-5 bg-white rounded-xl border-2 border-primary/10 shadow-md">
                     <span
                       className="text-base md:text-lg font-bold text-gray-800"
-                      style={{
-                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
+
                     >
                       {language === 'bn' ? 'পুরাতন রোগী' : 'Returning Patient'}
                     </span>
                     <span
                       className="text-xl md:text-2xl font-bold text-primary"
-                      style={{
-                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
+
                     >
                       ৳{oldPatientFee}
                     </span>
@@ -729,9 +704,7 @@ export default function DoctorProfilePage() {
             <Card className="p-6 bg-gradient-to-br from-white to-indigo-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
-                style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 {language === 'bn' ? 'চেম্বার সময়সূচি' : 'Chamber Schedule'}
               </h2>
@@ -743,15 +716,13 @@ export default function DoctorProfilePage() {
                         <MapPin className="h-5 w-5 text-primary shrink-0" />
                         <p
                           className="text-base md:text-lg font-bold text-gray-800"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
+
                         >
                           {getLocalizedValue(enrichedDoctor.hospital, enrichedDoctor.hospitalBn, language)}
                         </p>
                       </div>
                       {hospitalAddress && (
-                        <p className="text-sm text-gray-500 mt-1 ml-7" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                        <p className="text-sm text-gray-500 mt-1 ml-7" >
                           {hospitalAddress}
                         </p>
                       )}
@@ -762,16 +733,16 @@ export default function DoctorProfilePage() {
                       const sortedDays = (slot.days || []).sort((a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b));
                       const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
                       const isOnCall = time === "On Call" || time === "অন কল";
-                      
+
                       let dayRange = "";
                       if (!isOnCall && sortedDays.length > 0) {
                         if (language === 'bn') {
-                          dayRange = sortedDays.length === 1 
-                            ? getBengaliDay(sortedDays[0]) 
+                          dayRange = sortedDays.length === 1
+                            ? getBengaliDay(sortedDays[0])
                             : `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])}`;
                         } else {
-                          dayRange = sortedDays.length === 1 
-                            ? sortedDays[0] 
+                          dayRange = sortedDays.length === 1
+                            ? sortedDays[0]
                             : `${sortedDays[0]} to ${sortedDays[sortedDays.length - 1]}`;
                         }
                       }
@@ -784,9 +755,7 @@ export default function DoctorProfilePage() {
                           <Clock className="h-4 w-4 text-primary shrink-0" />
                           <span
                             className="text-sm md:text-base font-semibold text-gray-700 whitespace-nowrap"
-                            style={{
-                              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                            }}
+                            
                           >
                             {dayRange} {time}
                           </span>
@@ -803,9 +772,7 @@ export default function DoctorProfilePage() {
               <Card className="p-6 bg-white border-2 border-primary/10 shadow-lg">
                 <h2
                   className="text-xl font-bold text-gray-900 mb-4"
-                  style={{
-                    fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
+                  
                 >
                   ডাক্তার রেটিং
                 </h2>
@@ -824,25 +791,19 @@ export default function DoctorProfilePage() {
                   </div>
                   <p
                     className="text-2xl font-bold text-gray-900 mb-1"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
+                    
                   >
                     {doctor.rating.toFixed(2)}
                   </p>
                   <p
                     className="text-sm text-gray-600"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
+                    
                   >
                     ৫ এর ভেতর {doctor.rating.toFixed(2)}
                   </p>
                   <Button
                     className="mt-4 w-full"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
+                    
                   >
                     রেট ডাক্তার
                   </Button>
@@ -857,9 +818,7 @@ export default function DoctorProfilePage() {
             <Card className="p-6 bg-gradient-to-br from-white to-amber-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
-                style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 {language === 'bn' ? 'ডাক্তারের পরামর্শ ফি' : 'Consultation Fee'}
               </h2>
@@ -867,17 +826,13 @@ export default function DoctorProfilePage() {
                 <div className="flex items-center justify-between p-5 bg-white rounded-xl border-2 border-primary/10 shadow-md">
                   <span
                     className="text-base md:text-lg font-bold text-gray-800"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
+
                   >
                     {language === 'bn' ? 'নতুন রোগী' : 'New Patient'}
                   </span>
                   <span
                     className="text-xl md:text-2xl font-bold text-primary"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
+
                   >
                     ৳{newPatientFee}
                   </span>
@@ -886,17 +841,13 @@ export default function DoctorProfilePage() {
                   <div className="flex items-center justify-between p-5 bg-white rounded-xl border-2 border-primary/10 shadow-md">
                     <span
                       className="text-base md:text-lg font-bold text-gray-800"
-                      style={{
-                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
+
                     >
                       {language === 'bn' ? 'পুরাতন রোগী' : 'Returning Patient'}
                     </span>
                     <span
                       className="text-xl md:text-2xl font-bold text-primary"
-                      style={{
-                        fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
+
                     >
                       ৳{oldPatientFee}
                     </span>
@@ -909,9 +860,7 @@ export default function DoctorProfilePage() {
             <Card className="p-6 bg-gradient-to-br from-white to-indigo-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
-                style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 {language === 'bn' ? 'চেম্বার সময়সূচি' : 'Chamber Schedule'}
               </h2>
@@ -923,22 +872,20 @@ export default function DoctorProfilePage() {
                         <MapPin className="h-5 w-5 text-primary shrink-0" />
                         <p
                           className="text-base md:text-lg font-bold text-gray-800"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
+
                         >
                           {getLocalizedValue(enrichedDoctor.hospital, enrichedDoctor.hospitalBn, language)}
                         </p>
                       </div>
                       {hospitalAddress && (
-                        <p className="text-sm text-gray-500 mt-1 ml-7" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                        <p className="text-sm text-gray-500 mt-1 ml-7" >
                           {hospitalAddress}
                         </p>
                       )}
                     </div>
                   )}
                   <div className="space-y-2">
-                    {Array.from(new Set(availabilityArray.map(slot => 
+                    {Array.from(new Set(availabilityArray.map(slot =>
                       (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "")
                     ).filter(Boolean))).map((time, index) => (
                       <div
@@ -948,9 +895,7 @@ export default function DoctorProfilePage() {
                         <Clock className="h-4 w-4 text-primary shrink-0" />
                         <span
                           className="text-sm md:text-base font-semibold text-gray-700 whitespace-nowrap"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
+
                         >
                           {time}
                         </span>
@@ -965,9 +910,7 @@ export default function DoctorProfilePage() {
             <Card className="p-6 bg-gradient-to-br from-white to-emerald-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
-                style={{
-                  fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 {language === 'bn' ? 'অ্যাপয়েন্টমেন্ট বুক করুন' : 'Book Appointment'}
               </h2>
@@ -975,9 +918,7 @@ export default function DoctorProfilePage() {
                 <Link href={`/doctor/${doctorId}/book`}>
                   <Button
                     className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all"
-                    style={{
-                      fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                    }}
+
                   >
                     {language === 'bn' ? 'বুক অ্যাপয়েন্টমেন্ট' : 'Book Appointment'}
                   </Button>
@@ -990,9 +931,7 @@ export default function DoctorProfilePage() {
               <Card className="p-8 bg-gradient-to-br from-white to-purple-50 border-2 border-primary/20 shadow-xl">
                 <h2
                   className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
-                  style={{
-                    fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                  }}
+
                 >
                   {language === 'bn' ? 'সংশ্লিষ্ট ডাক্তার' : 'Related Doctors'}
                 </h2>

@@ -38,7 +38,7 @@ export default function DiagnosticCheckoutPage() {
     if (typeof window !== "undefined") {
       const savedTests = localStorage.getItem("diagnosticCart");
       const savedVenue = localStorage.getItem("diagnosticVenue");
-      
+
       if (savedTests && savedVenue) {
         setBookedTests(JSON.parse(savedTests));
         setSelectedVenue(JSON.parse(savedVenue));
@@ -84,11 +84,11 @@ export default function DiagnosticCheckoutPage() {
         affiliateCode,
         appointmentDate: selectedDate.toISOString()
       };
-      
+
       if (typeof window !== "undefined") {
         localStorage.setItem("diagnosticCheckout", JSON.stringify(checkoutData));
       }
-      
+
       router.push(`/diagnostic/checkout/success`);
     } catch (error) {
       console.error("Error confirming details:", error);
@@ -135,7 +135,7 @@ export default function DiagnosticCheckoutPage() {
             <Link href={`/diagnostic`}>
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                <span style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                <span >
                   {t("back", language)}
                 </span>
               </Button>
@@ -148,18 +148,18 @@ export default function DiagnosticCheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Hospital Info & Calendar */}
           <div className="lg:col-span-2 space-y-6">
-            
+
             {/* Selected Tests Summary */}
             <Card className="p-6 bg-gradient-to-br from-white to-[#00B7B5]/5 border-2 border-[#00B7B5]/20 shadow-xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#00B7B5]/5 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
               <h2
                 className="text-2xl font-bold text-gray-900 mb-5 flex items-center gap-2"
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
               >
-                <div className="p-2 bg-[#00B7B5]/10 text-[#00B7B5] rounded-xl"><Activity className="w-5 h-5"/></div>
+                <div className="p-2 bg-[#00B7B5]/10 text-[#00B7B5] rounded-xl"><Activity className="w-5 h-5" /></div>
                 {t("selectedTests", language)}
               </h2>
-              
+
               <div className="space-y-4">
                 {bookedTests.map((test: any, i: number) => (
                   <div key={i} className="flex justify-between items-center p-3 sm:p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
@@ -177,9 +177,9 @@ export default function DiagnosticCheckoutPage() {
                   </div>
                 ))}
               </div>
-              
+
               <div className="mt-6 flex justify-between items-center p-4 bg-[#00B7B5]/10 rounded-xl border border-[#00B7B5]/20">
-                <p className="font-bold text-lg text-slate-700" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>{t("totalAmount", language)}</p>
+                <p className="font-bold text-lg text-slate-700" >{t("totalAmount", language)}</p>
                 <p className="text-2xl font-black text-[#00B7B5]">৳{convertToBengaliNumber(bookedTests.reduce((a, b) => a + (b.price || 0), 0), language)}</p>
               </div>
             </Card>
@@ -188,14 +188,14 @@ export default function DiagnosticCheckoutPage() {
             <Card className="p-6 bg-gradient-to-br from-white to-blue-50 border-2 border-[#0088FF]/20 shadow-xl">
               <h2
                 className="text-2xl font-bold text-gray-900 mb-5 flex items-center gap-2"
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
               >
-                <div className="p-2 bg-[#0088FF]/10 text-[#0088FF] rounded-xl"><MapPin className="w-5 h-5"/></div>
+                <div className="p-2 bg-[#0088FF]/10 text-[#0088FF] rounded-xl"><MapPin className="w-5 h-5" /></div>
                 {t("selectedHospital", language)}
               </h2>
               <div className="relative">
                 <div className="p-4 bg-[#0088FF] text-white rounded-xl border-2 border-[#0088FF] shadow-lg">
-                  <p className="text-xl font-semibold flex items-center gap-2" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}>
+                  <p className="text-xl font-semibold flex items-center gap-2" >
                     <Building2 className="h-6 w-6" />
                     {selectedVenue.name}
                   </p>
@@ -205,11 +205,11 @@ export default function DiagnosticCheckoutPage() {
             </Card>
 
             {/* Calendar */}
-            <DiagnosticCalendarPicker 
+            <DiagnosticCalendarPicker
               selectedDate={selectedDate}
               setSelectedDate={setSelectedDate}
             />
-            
+
           </div>
 
           {/* Right Column - Form */}

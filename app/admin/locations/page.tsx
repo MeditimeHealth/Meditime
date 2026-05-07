@@ -344,7 +344,7 @@ export default function LocationsPage() {
                 </div>
                 <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
                   <Label htmlFor="nameBn" className="text-base font-bold text-gray-700">{t("nameBn", language)} <span className="text-red-500">*</span></Label>
-                  <Input id="nameBn" value={formData.nameBn} onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })} placeholder="ঢাকা" className="h-12 text-lg rounded-xl mt-2" style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }} required={formLanguage === 'bn'} />
+                  <Input id="nameBn" value={formData.nameBn} onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })} placeholder="ঢাকা" className="h-12 text-lg rounded-xl mt-2"  required={formLanguage === 'bn'} />
                 </div>
               </div>
 

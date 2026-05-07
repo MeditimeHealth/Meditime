@@ -40,16 +40,16 @@ interface Doctor {
   diseases?: string[];
   slotDuration?: number;
   availability:
-    | Array<{
-        days: string[];
-        startTime: string;
-        endTime: string;
-      }>
-    | {
-        days: string[];
-        startTime: string;
-        endTime: string;
-      };
+  | Array<{
+    days: string[];
+    startTime: string;
+    endTime: string;
+  }>
+  | {
+    days: string[];
+    startTime: string;
+    endTime: string;
+  };
 
   bio?: string;
   image?: string;
@@ -128,10 +128,10 @@ const areDaysConsecutive = (sortedDays: string[]): boolean => {
 const formatAvailability = (
   availability:
     | Array<{
-        days: string[];
-        startTime: string;
-        endTime: string;
-      }>
+      days: string[];
+      startTime: string;
+      endTime: string;
+    }>
     | { days: string[]; startTime: string; endTime: string; }
 ): string => {
   const slots = Array.isArray(availability) ? availability : [availability];
@@ -217,10 +217,7 @@ export default function DepartmentDoctorsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center"
-            style={{
-              fontFamily:
-                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
+            
           >
             <motion.div
               animate={{ rotate: 360 }}
@@ -266,19 +263,13 @@ export default function DepartmentDoctorsPage() {
             >
               <h1
                 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 {departmentName}
               </h1>
               <p
                 className="text-xl md:text-2xl text-white/95 mb-8 drop-shadow-lg"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 এই বিভাগের সকল বিশেষজ্ঞ ডাক্তার দেখুন এবং অ্যাপয়েন্টমেন্ট বুক করুন
               </p>
@@ -305,10 +296,7 @@ export default function DepartmentDoctorsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-12 pr-4 py-6 text-lg border-2 border-gray-200 focus:border-primary rounded-xl shadow-sm"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               />
             </div>
           </div>
@@ -323,10 +311,7 @@ export default function DepartmentDoctorsPage() {
         >
           <p
             className="text-lg text-gray-600"
-            style={{
-              fontFamily:
-                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
+            
           >
             {filteredDoctors.length} {banglaLabels.doctors}{" "}
             {banglaLabels.found}
@@ -346,19 +331,13 @@ export default function DepartmentDoctorsPage() {
               </div>
               <h3
                 className="text-2xl font-semibold text-gray-700 mb-4"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 {banglaLabels.noDoctors}
               </h3>
               <p
                 className="text-gray-500 mb-8"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 দয়া করে অন্য বিভাগ দেখুন অথবা পরে আবার চেষ্টা করুন
               </p>
@@ -394,9 +373,9 @@ export default function DepartmentDoctorsPage() {
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
                             <svg className="w-12 h-12 text-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <circle cx="12" cy="8" r="4" fill="currentColor" fillOpacity="0.3"/>
-                              <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" strokeWidth="1.5" fill="currentColor" fillOpacity="0.1"/>
-                              <path d="M15 3v2M15 7v2M13 5h4" stroke="#4A90A4" strokeWidth="1.5" strokeLinecap="round"/>
+                              <circle cx="12" cy="8" r="4" fill="currentColor" fillOpacity="0.3" />
+                              <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" strokeWidth="1.5" fill="currentColor" fillOpacity="0.1" />
+                              <path d="M15 3v2M15 7v2M13 5h4" stroke="#4A90A4" strokeWidth="1.5" strokeLinecap="round" />
                             </svg>
                           </div>
                         )}
@@ -405,9 +384,7 @@ export default function DepartmentDoctorsPage() {
                       {/* Doctor Name */}
                       <h3
                         className="text-xl font-bold text-[#2C5282]"
-                        style={{
-                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
+                        
                       >
                         {doctor.name}
                       </h3>
@@ -415,9 +392,7 @@ export default function DepartmentDoctorsPage() {
                       {/* Position & Qualification */}
                       <p
                         className="text-sm text-[#4A90A4] leading-relaxed"
-                        style={{
-                          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                        }}
+                        
                       >
                         {doctor.qualification || "বিশেষজ্ঞ"}
                       </p>
@@ -426,9 +401,7 @@ export default function DepartmentDoctorsPage() {
                       {doctor.department && (
                         <p
                           className="text-sm text-[#4A90A4]"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
+
                         >
                           {doctor.department}
                         </p>
@@ -441,9 +414,7 @@ export default function DepartmentDoctorsPage() {
                       {doctor.hospital && (
                         <p
                           className="text-base font-semibold text-gray-700 leading-relaxed"
-                          style={{
-                            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                          }}
+
                         >
                           {doctor.hospital}
                         </p>

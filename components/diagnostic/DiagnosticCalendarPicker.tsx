@@ -78,7 +78,7 @@ export default function DiagnosticCalendarPicker({
   const maxYear = todayMonth === 11 ? todayYear + 1 : todayYear;
   const maxMonth = todayMonth === 11 ? 0 : todayMonth + 1;
 
-  const isPrevDisabled = 
+  const isPrevDisabled =
     currentYear < todayYear ||
     (currentYear === todayYear && currentMonthIndex <= todayMonth);
 
@@ -90,7 +90,7 @@ export default function DiagnosticCalendarPicker({
     <Card className="p-6 bg-gradient-to-br from-white to-orange-50 border-2 border-[#FF6B00]/20 shadow-xl">
       <h2
         className="text-2xl font-bold text-gray-900 mb-5"
-        style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
       >
         {t("selectDate", language)}
       </h2>
@@ -107,7 +107,7 @@ export default function DiagnosticCalendarPicker({
         </button>
         <h3
           className="text-xl font-bold text-gray-900"
-          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
         >
           {t(`month_${currentMonthIndex}` as any, language)} {convertToBengaliNumber(currentYear, language)}
         </h3>
@@ -127,7 +127,7 @@ export default function DiagnosticCalendarPicker({
           <div
             key={dayIndex}
             className="text-center font-semibold text-gray-700 py-2"
-            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
           >
             {t(`day_${dayIndex}` as any, language)}
           </div>
@@ -157,16 +157,13 @@ export default function DiagnosticCalendarPicker({
                 }
               }}
               disabled={!isAvailable}
-              className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center ${
-                isSelected
+              className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center ${isSelected
                   ? "text-white shadow-lg scale-110 ring-4 ring-orange-300 bg-[#FF6B00]"
                   : isAvailable
-                  ? "bg-white text-slate-700 border border-slate-200 hover:border-[#FF6B00] hover:text-[#FF6B00] hover:shadow-md"
-                  : "bg-gray-100 text-gray-400 cursor-not-allowed border border-transparent"
-              } ${isToday && !isSelected && !isAvailable ? "ring-2 ring-gray-400" : ""}`}
-              style={{ 
-                fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-              }}
+                    ? "bg-white text-slate-700 border border-slate-200 hover:border-[#FF6B00] hover:text-[#FF6B00] hover:shadow-md"
+                    : "bg-gray-100 text-gray-400 cursor-not-allowed border border-transparent"
+                } ${isToday && !isSelected && !isAvailable ? "ring-2 ring-gray-400" : ""}`}
+      
             >
               {convertToBengaliNumber(date.getDate(), language)}
             </button>
@@ -178,7 +175,7 @@ export default function DiagnosticCalendarPicker({
         <div className="mt-6 p-4 bg-[#FF6B00]/10 rounded-xl border-2 border-[#FF6B00]/20">
           <p
             className="text-lg font-semibold text-gray-900"
-            style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
           >
             {t("selectedDatePrefix", language)} {getDayName(selectedDate, language)}, {convertToBengaliNumber(selectedDate.getDate(), language)} {t(`month_${selectedDate.getMonth()}` as any, language)}, {convertToBengaliNumber(selectedDate.getFullYear(), language)}
           </p>

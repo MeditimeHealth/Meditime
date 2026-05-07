@@ -259,7 +259,7 @@ export default function CreateDiagnosticTestPage() {
                 onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
                 placeholder="সম্পূর্ণ রক্ত গণনা (CBC)"
                 className="h-12 text-lg border-gray-200 focus:ring-primary focus:border-primary rounded-xl mt-3"
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+               
               />
             </div>
           </div>
@@ -341,7 +341,7 @@ export default function CreateDiagnosticTestPage() {
                 rows={4}
                 placeholder="টেস্টের বিস্তারিত বিবরণ লিখুন..."
                 className="flex w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all mt-3"
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', sans-serif" }}
+               
               />
             </div>
           </div>

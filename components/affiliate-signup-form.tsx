@@ -77,7 +77,7 @@ export default function AffiliateSignupForm() {
         const affiliateData = result.affiliate || result.user;
         setAffiliateCode(affiliateData.affiliateCode);
         showToast.success("Affiliate account created successfully!");
-        
+
         // Store affiliate data in localStorage
         localStorage.setItem("affiliate", JSON.stringify(affiliateData));
       } else {
@@ -104,22 +104,18 @@ export default function AffiliateSignupForm() {
           <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-4" />
           <h3
             className="text-2xl font-bold text-gray-900 mb-2"
-            style={{
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
+
           >
             সফলভাবে নিবন্ধিত হয়েছে!
           </h3>
           <p
             className="text-gray-600 mb-6"
-            style={{
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
+
           >
             আপনার অ্যাফিলিয়েট কোড:
           </p>
         </div>
-        
+
         <div className="bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl p-6 mb-6 max-w-md mx-auto">
           <div className="flex items-center justify-center gap-3">
             <code className="text-2xl font-bold text-primary">{affiliateCode}</code>
@@ -135,9 +131,7 @@ export default function AffiliateSignupForm() {
 
         <p
           className="text-sm text-gray-600 mb-6"
-          style={{
-            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-          }}
+        
         >
           এই কোডটি সংরক্ষণ করুন এবং আপনার রেফারেলের সাথে শেয়ার করুন
         </p>
@@ -145,9 +139,7 @@ export default function AffiliateSignupForm() {
         <Button
           onClick={() => window.location.href = "/affiliate-program/dashboard"}
           className="bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white"
-          style={{
-            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-          }}
+        
         >
           ড্যাশবোর্ডে যান
         </Button>
@@ -159,17 +151,13 @@ export default function AffiliateSignupForm() {
     <div>
       <h3
         className="text-2xl font-bold text-gray-900 mb-2"
-        style={{
-          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-        }}
+        
       >
         অ্যাফিলিয়েট অ্যাকাউন্ট তৈরি করুন
       </h3>
       <p
         className="text-gray-600 mb-6"
-        style={{
-          fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-        }}
+        
       >
         আপনার তথ্য দিয়ে নিবন্ধন করুন
       </p>
@@ -297,9 +285,7 @@ export default function AffiliateSignupForm() {
           <Label
             htmlFor="agreeToTerms"
             className="text-sm font-normal cursor-pointer leading-relaxed"
-            style={{
-              fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
+
           >
             আমি মেডিটাইমের{" "}
             <Link href="/terms" className="text-primary hover:underline">
@@ -320,9 +306,7 @@ export default function AffiliateSignupForm() {
           type="submit"
           className="w-full bg-gradient-to-r from-primary-light to-primary hover:from-primary hover:to-primary-dark text-white py-3"
           disabled={isLoading}
-          style={{
-            fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-          }}
+        
         >
           {isLoading ? "অ্যাকাউন্ট তৈরি হচ্ছে..." : "নিবন্ধন করুন"}
         </Button>

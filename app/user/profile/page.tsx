@@ -341,7 +341,7 @@ export default function UserProfilePage() {
                 ) : user.fullName}
               </h1>
             </div>
-            <p className="text-gray-500 font-medium flex items-center justify-center md:justify-start gap-2" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+            <p className="text-gray-500 font-medium flex items-center justify-center md:justify-start gap-2" >
               <Mail className="h-4 w-4" />
               {isEditing ? (
                 <Input
@@ -527,12 +527,12 @@ export default function UserProfilePage() {
                             <Stethoscope className="h-8 w-8" />
                           </div>
                           <div>
-                            <h4 className="text-lg font-black text-gray-900 group-hover:text-primary transition-colors" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                            <h4 className="text-lg font-black text-gray-900 group-hover:text-primary transition-colors" >
                               {language === 'bn' 
                                 ? (appointment.doctorId?.nameBn || appointment.doctorId?.name || 'ডাক্তার') 
                                 : (appointment.doctorId?.name || 'Doctor')}
                             </h4>
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-tighter flex items-center gap-1" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-tighter flex items-center gap-1" >
                               <MapPin className="h-3 w-3" />
                               {language === 'bn' ? (appointment.doctorId?.hospitalBn || appointment.hospitalName) : appointment.hospitalName}
                             </p>
@@ -614,16 +614,16 @@ export default function UserProfilePage() {
             <div className="h-12 w-12 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
               <AlertCircle className="h-6 w-6" />
             </div>
-            <h4 className="text-xl font-black tracking-tight mb-2" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+            <h4 className="text-xl font-black tracking-tight mb-2" >
               {language === 'bn' ? 'সাহায্য প্রয়োজন?' : 'Need Help?'}
             </h4>
-            <p className="text-sm font-medium text-white/70 mb-6" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+            <p className="text-sm font-medium text-white/70 mb-6" >
               {language === 'bn' ? 'আমাদের ২৪/৭ সাপোর্ট টিম আপনার মেডিকেল অ্যাপয়েন্টমেন্টে সহায়তা করতে এখানে আছে।' : 'Our 24/7 support team is here to assist with your medical appointments.'}
             </p>
             <Button 
               className="w-full rounded-xl bg-white text-primary font-black hover:bg-white/90 active:scale-95 transition-all"
               onClick={() => window.open('https://wa.me/8801610385555', '_blank')}
-              style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}
+              
             >
               {language === 'bn' ? 'সাপোর্টের সাথে যোগাযোগ করুন' : 'Contact Support'}
             </Button>

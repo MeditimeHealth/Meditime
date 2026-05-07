@@ -108,7 +108,7 @@ const getStatusBadge = (status: string, language: string) => {
   return (
     <span
       className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold border-2 ${styles[status as keyof typeof styles] || styles.pending}`}
-      style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}
+      
     >
       <Icon className="h-4 w-4" />
       {labels[status as keyof typeof labels] || status}
@@ -253,10 +253,10 @@ export default function UserDashboardPage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+          <h1 className="text-3xl font-bold text-gray-900" >
             {language === 'bn' ? 'আমার ড্যাশবোর্ড' : 'My Dashboard'}
           </h1>
-          <p className="text-gray-600 mt-2" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+          <p className="text-gray-600 mt-2" >
             {language === 'bn' ? `স্বাগতম, ${user?.fullName}` : `Welcome, ${user?.fullName}`}
           </p>
         </div>
@@ -265,7 +265,7 @@ export default function UserDashboardPage() {
           <Button 
             onClick={() => setShowBookingsModal(true)} 
             className="bg-primary hover:bg-primary/90 text-white gap-2 rounded-xl shadow-lg transition-all py-6"
-            style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}
+            
           >
             <Activity className="w-5 h-5" />
             <span className="hidden sm:inline">{language === 'bn' ? 'ডায়াগনস্টিক ইতিহাস' : 'Diagnostic History'}</span>
@@ -280,7 +280,7 @@ export default function UserDashboardPage() {
           <Button 
             onClick={() => window.open('https://wa.me/8801610385555', '_blank')}
             className="bg-[#25D366] hover:bg-[#128C7E] text-white gap-2 rounded-xl shadow-lg transition-all py-6"
-            style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}
+            
           >
             <Phone className="w-5 h-5" />
             {language === 'bn' ? 'সাপোর্ট' : 'Support'}
@@ -314,7 +314,7 @@ export default function UserDashboardPage() {
 
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2" >
             <Calendar className="h-5 w-5 text-primary" />
             {language === 'bn' ? 'আমার অ্যাপয়েন্টমেন্টসমূহ' : 'My Appointments'}
           </h2>
@@ -329,7 +329,7 @@ export default function UserDashboardPage() {
                     ? 'bg-primary text-white shadow-md' 
                     : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-100'
                 }`}
-                style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}
+                
               >
                 {f === 'all' ? (language === 'bn' ? 'সব' : 'All') : 
                  f === 'pending' ? (language === 'bn' ? 'অপেক্ষমান' : 'Pending') :
@@ -348,7 +348,7 @@ export default function UserDashboardPage() {
         ) : appointments.length === 0 ? (
           <Card className="p-8 md:p-12 text-center border-dashed border-2">
             <Calendar className="h-10 w-10 md:h-12 md:w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-sm md:text-base text-gray-500 mb-6" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+            <p className="text-sm md:text-base text-gray-500 mb-6" >
               {language === 'bn' ? 'কোন অ্যাপয়েন্টমেন্ট পাওয়া যায়নি' : 'No appointments found'}
             </p>
             <Link href="/doctor">
@@ -378,12 +378,12 @@ export default function UserDashboardPage() {
                         </div>
                       )}
                     </div>
-                      <h3 className="text-base md:text-lg font-bold text-gray-900 truncate" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                      <h3 className="text-base md:text-lg font-bold text-gray-900 truncate" >
                         {language === 'bn' 
                           ? (appointment.doctorId?.nameBn || appointment.doctorId?.name || 'ডাক্তার') 
                           : (appointment.doctorId?.name || 'Doctor')}
                       </h3>
-                      <p className="text-[10px] md:text-xs text-gray-500 font-medium truncate" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                      <p className="text-[10px] md:text-xs text-gray-500 font-medium truncate" >
                         {language === 'bn' 
                           ? (appointment.doctorId?.qualificationBn || appointment.doctorId?.qualification) 
                           : appointment.doctorId?.qualification}
@@ -396,12 +396,12 @@ export default function UserDashboardPage() {
                   <div className="flex-1 min-w-0">
                     <div className="hidden lg:flex flex-wrap items-start justify-between gap-2 mb-4">
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                        <h3 className="text-lg font-bold text-gray-900" >
                           {language === 'bn' 
                             ? (appointment.doctorId?.nameBn || appointment.doctorId?.name || 'ডাক্তার') 
                             : (appointment.doctorId?.name || 'Doctor')}
                         </h3>
-                        <p className="text-xs text-gray-500 font-medium" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                        <p className="text-xs text-gray-500 font-medium" >
                           {language === 'bn' 
                             ? (appointment.doctorId?.qualificationBn || appointment.doctorId?.qualification) 
                             : appointment.doctorId?.qualification}
@@ -416,7 +416,7 @@ export default function UserDashboardPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-y-3 md:gap-y-4 gap-x-4 md:gap-x-6">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary shrink-0" />
-                        <span className="text-xs md:text-sm font-semibold text-gray-700" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                        <span className="text-xs md:text-sm font-semibold text-gray-700" >
                           {formatDate(appointment.appointmentDate)}
                         </span>
                       </div>
@@ -428,13 +428,13 @@ export default function UserDashboardPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary shrink-0" />
-                        <span className="text-xs md:text-sm font-semibold text-gray-700 truncate" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                        <span className="text-xs md:text-sm font-semibold text-gray-700 truncate" >
                           {appointment.hospitalName}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <User className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary shrink-0" />
-                        <span className="text-xs md:text-sm font-semibold text-gray-700 truncate" style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}>
+                        <span className="text-xs md:text-sm font-semibold text-gray-700 truncate" >
                           {appointment.patientName} ({getPatientTypeLabel(appointment.patientType, language)})
                         </span>
                       </div>
@@ -455,7 +455,7 @@ export default function UserDashboardPage() {
                         variant="ghost"
                         className="flex-1 lg:flex-none text-red-500 hover:text-red-600 hover:bg-red-50 h-9 md:h-10 px-3 md:px-4 rounded-xl font-bold text-xs md:text-sm"
                         size="sm"
-                        style={{ fontFamily: language === 'bn' ? "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" : undefined }}
+                        
                       >
                         {cancellingId === appointment._id ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4 mr-2" />}
                         {language === 'bn' ? 'বাতিল' : 'Cancel'}

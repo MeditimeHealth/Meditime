@@ -190,12 +190,8 @@ DoctorSchema.pre('save', function(next) {
   next();
 });
 
-// Delete the model if it exists to avoid schema conflicts
-if (mongoose.models.Doctor) {
-  delete mongoose.models.Doctor;
-}
-
-const Doctor = mongoose.model<IDoctor>('Doctor', DoctorSchema);
+// Use existing model or create new one
+const Doctor = mongoose.models.Doctor || mongoose.model<IDoctor>('Doctor', DoctorSchema);
 
 export default Doctor;
 

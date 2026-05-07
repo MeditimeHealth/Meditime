@@ -52,11 +52,7 @@ export default function DepartmentsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center"
-            style={{
-              fontFamily:
-                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
-          >
+                      >
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -101,19 +97,13 @@ export default function DepartmentsPage() {
             >
               <h1
                 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 কোন রোগে কোন ডাক্তার?
               </h1>
               <p
                 className="text-xl md:text-2xl text-white/95 mb-8 drop-shadow-lg"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               >
                 আপনার প্রয়োজন অনুযায়ী সঠিক বিভাগ এবং বিশেষজ্ঞ ডাক্তার খুঁজুন
               </p>
@@ -140,10 +130,7 @@ export default function DepartmentsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-12 pr-4 py-6 text-lg border-2 border-gray-200 focus:border-primary rounded-xl shadow-sm"
-                style={{
-                  fontFamily:
-                    "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                }}
+                
               />
             </div>
           </div>
@@ -158,11 +145,7 @@ export default function DepartmentsPage() {
         >
           <p
             className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed"
-            style={{
-              fontFamily:
-                "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-            }}
-          >
+                      >
             আমাদের সকল চিকিৎসা বিভাগ দেখুন এবং আপনার প্রয়োজন অনুযায়ী সঠিক বিশেষজ্ঞ ডাক্তার খুঁজে নিন। 
             প্রতিটি বিভাগে ক্লিক করে সেই বিভাগের সকল ডাক্তারদের তালিকা দেখুন।
           </p>
@@ -177,10 +160,7 @@ export default function DepartmentsPage() {
           >
             <p
               className="text-xl"
-              style={{
-                fontFamily:
-                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-              }}
+              
             >
               {searchQuery
                 ? "কোনো বিভাগ খুঁজে পাওয়া যায়নি"
@@ -222,10 +202,7 @@ export default function DepartmentsPage() {
                     {/* Department Name */}
                     <h3
                       className="text-base md:text-lg font-bold text-gray-800 group-hover:text-primary transition-colors duration-300"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
+                      
                     >
                       {department.name}
                     </h3>
@@ -233,10 +210,7 @@ export default function DepartmentsPage() {
                     {/* View Doctors Link */}
                     <p
                       className="mt-2 text-sm text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      style={{
-                        fontFamily:
-                          "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-                      }}
+                      
                     >
                       ডাক্তার দেখুন →
                     </p>
@@ -257,10 +231,7 @@ export default function DepartmentsPage() {
           >
             <p
               className="text-lg text-gray-600"
-              style={{
-                fontFamily:
-                  "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif",
-              }}
+              
             >
               মোট {filteredDepartments.length} টি বিভাগ পাওয়া গেছে
             </p>

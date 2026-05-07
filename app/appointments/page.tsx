@@ -101,7 +101,7 @@ const getStatusBadge = (status: string) => {
   return (
     <span
       className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold border-2 ${styles[status as keyof typeof styles] || styles.pending}`}
-      style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
     >
       <Icon className="h-4 w-4" />
       {labels[status as keyof typeof labels] || status}
@@ -147,8 +147,8 @@ export default function AppointmentsPage() {
   const fetchAppointments = async (userId: string) => {
     try {
       setLoading(true);
-      const url = filter !== "all" 
-        ? `/api/appointments?userId=${userId}&status=${filter}` 
+      const url = filter !== "all"
+        ? `/api/appointments?userId=${userId}&status=${filter}`
         : `/api/appointments?userId=${userId}`;
       const response = await fetch(url);
       const data = await response.json();
@@ -179,9 +179,9 @@ export default function AppointmentsPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           status: "cancelled",
-          userId: user.id 
+          userId: user.id
         }),
       });
 
@@ -228,15 +228,15 @@ export default function AppointmentsPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 
+            <h1
               className="text-3xl font-bold text-gray-900 mb-2"
-              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
             >
               আমার অ্যাপয়েন্টমেন্ট
             </h1>
-            <p 
+            <p
               className="text-gray-600"
-              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
             >
               আপনার সকল অ্যাপয়েন্টমেন্টের তালিকা দেখুন
             </p>
@@ -280,7 +280,7 @@ export default function AppointmentsPage() {
                 onClick={() => setFilter(filterOption.value)}
                 variant={filter === filterOption.value ? "default" : "outline"}
                 className={filter === filterOption.value ? "bg-primary text-white" : ""}
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
               >
                 {filterOption.label}
               </Button>
@@ -296,7 +296,7 @@ export default function AppointmentsPage() {
               <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <p
                 className="text-gray-500 text-lg mb-4"
-                style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
               >
                 কোন অ্যাপয়েন্টমেন্ট পাওয়া যায়নি
               </p>
@@ -339,7 +339,7 @@ export default function AppointmentsPage() {
                           <Link href={`/doctor/${appointment.doctorId._id}`}>
                             <h3
                               className="text-xl font-bold text-gray-900 mb-1 hover:text-primary transition-colors cursor-pointer"
-                              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                             >
                               {appointment.doctorId?.name || "Unknown Doctor"}
                             </h3>
@@ -367,7 +367,7 @@ export default function AppointmentsPage() {
                             <p className="text-sm text-gray-500">তারিখ</p>
                             <p
                               className="font-semibold text-gray-900"
-                              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                             >
                               {formatDate(appointment.appointmentDate)}
                             </p>
@@ -380,7 +380,7 @@ export default function AppointmentsPage() {
                             <p className="text-sm text-gray-500">সময়</p>
                             <p
                               className="font-semibold text-gray-900"
-                              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                             >
                               {formatTime(appointment.appointmentTime)}
                             </p>
@@ -393,7 +393,7 @@ export default function AppointmentsPage() {
                             <p className="text-sm text-gray-500">হাসপাতাল</p>
                             <p
                               className="font-semibold text-gray-900"
-                              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                             >
                               {appointment.hospitalName}
                             </p>
@@ -406,7 +406,7 @@ export default function AppointmentsPage() {
                             <p className="text-sm text-gray-500">রোগীর ধরন</p>
                             <p
                               className="font-semibold text-gray-900"
-                              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                             >
                               {getPatientTypeLabel(appointment.patientType)}
                             </p>
@@ -419,7 +419,7 @@ export default function AppointmentsPage() {
                             <p className="text-sm text-gray-500">রোগীর নাম</p>
                             <p
                               className="font-semibold text-gray-900"
-                              style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                             >
                               {appointment.patientName}
                             </p>
@@ -453,7 +453,7 @@ export default function AppointmentsPage() {
                           disabled={cancellingId === appointment._id}
                           variant="outline"
                           className="border-red-300 text-red-600 hover:bg-red-50"
-                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                         >
                           {cancellingId === appointment._id ? (
                             <>
@@ -472,7 +472,7 @@ export default function AppointmentsPage() {
                         <Button
                           variant="outline"
                           className="w-full"
-                          style={{ fontFamily: "'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif" }}
+
                         >
                           <ExternalLink className="h-4 w-4 mr-2" />
                           ডাক্তার দেখুন
