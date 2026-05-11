@@ -64,7 +64,7 @@ export default function Navbar() {
         } else {
           setUser(null);
         }
-        
+
         const affiliateData = localStorage.getItem("affiliate");
         if (affiliateData) {
           try {
@@ -79,7 +79,7 @@ export default function Navbar() {
       }
     };
 
-    checkUser(); 
+    checkUser();
 
     window.addEventListener("storage", checkUser);
     window.addEventListener("userLogin", checkUser);
@@ -102,9 +102,8 @@ export default function Navbar() {
     } finally {
       localStorage.removeItem("user");
       setUser(null);
-      window.dispatchEvent(new Event("userLogout"));
-      router.push("/");
-      router.refresh();
+      // Use window.location.href for a hard redirect to ensure all states are cleared
+      window.location.href = "/";
     }
   };
 
@@ -149,12 +148,12 @@ export default function Navbar() {
               className="transition-all duration-300"
             >
               <Link href="/" onClick={() => setMobileMenuOpen(false)}>
-                <Image 
-                  src="/logo.png" 
-                  alt="Logo" 
-                  width={120} 
-                  height={120} 
-                  className="h-8 sm:h-8 md:h-8 w-auto cursor-pointer" 
+                <Image
+                  src="/logo.png"
+                  alt="Logo"
+                  width={120}
+                  height={120}
+                  className="h-8 sm:h-8 md:h-8 w-auto cursor-pointer"
                   style={{ width: "auto", height: "auto" }}
                   priority
                 />
@@ -174,10 +173,14 @@ export default function Navbar() {
                   >
                     <Link
                       href={link.href}
-                      className="relative group"
+                      className="relative group min-w-[85px] xl:min-w-[110px] flex items-center justify-center"
                     >
                       <span
-                        className={`text-xs xl:text-sm font-medium uppercase tracking-wider transition-all duration-300 whitespace-nowrap ${
+                        className={`${
+                          language === 'bn' 
+                            ? "text-[13px] xl:text-[15px] font-bold" 
+                            : "text-[11px] xl:text-[13px] font-semibold"
+                        } uppercase tracking-wider transition-all duration-300 whitespace-nowrap text-center ${
                           isActive
                             ? "text-primary"
                             : "text-slate-700 group-hover:text-primary"
@@ -245,7 +248,7 @@ export default function Navbar() {
                       href="/login"
                       className="text-sm font-semibold text-gray-700 hover:text-primary transition-colors duration-300 px-3 py-2 rounded-lg hover:bg-primary/5"
                     >
-                       {t.login}
+                      {t.login}
                     </Link>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -253,7 +256,7 @@ export default function Navbar() {
                       href="/signup"
                       className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-white text-sm font-semibold transition-all duration-300"
                     >
-                       {t.signup}
+                      {t.signup}
                     </Link>
                   </motion.div>
                 </>
@@ -335,11 +338,10 @@ export default function Navbar() {
                         <Link
                           href={link.href}
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`block px-4 py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-200 ${
-                            isActive
+                          className={`block px-4 py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-200 ${isActive
                               ? "bg-primary/10 text-primary border-2 border-primary/20"
                               : "text-gray-700 hover:bg-gray-100 hover:text-primary"
-                          }`}
+                            }`}
                         >
                           {link.label}
                         </Link>

@@ -552,7 +552,7 @@ export default function DoctorProfilePage() {
                     </p>
 
                     {/* Designation */}
-                    {(doctor.designation || doctor.designationBn) && (
+                    {getLocalizedValue(doctor.designation, doctor.designationBn, language) && (
                       <p className="text-base md:text-lg text-gray-600 font-medium">
                         {getLocalizedValue(doctor.designation, doctor.designationBn, language)}
                       </p>
@@ -691,32 +691,34 @@ export default function DoctorProfilePage() {
               
               <div className="p-6 bg-white">
                 <div className="flex flex-col md:flex-row items-stretch justify-between gap-4 md:gap-0">
-                  {/* Returning Patient */}
+                  {/* New Patient Fee */}
                   <div className="flex-1 text-center md:border-r border-primary/10 py-2">
                     <p className="text-sm text-gray-500 font-bold mb-1">
-                      {language === 'bn' ? 'পুরাতন রোগী :' : 'Returning Patient :'}
+                      {language === 'bn' ? 'নতুন রোগী:' : 'New Patient:'}
                     </p>
                     <p className="text-xl font-bold text-gray-900">
-                      ৳{oldPatientFee || newPatientFee}
+                      ৳{newPatientFee || 0}
                     </p>
                   </div>
 
-                  {/* New Patient */}
+                  {/* Old Patient Fee */}
                   <div className="flex-1 text-center md:border-r border-primary/10 py-2">
                     <p className="text-sm text-gray-500 font-bold mb-1">
-                      {language === 'bn' ? 'নতুন রোগী :' : 'New Patient :'}
+                      {language === 'bn' ? 'পুরাতন রোগী:' : 'Old Patient:'}
                     </p>
                     <p className="text-xl font-bold text-gray-900">
-                      ৳{newPatientFee}
+                      ৳{oldPatientFee || 0}
                     </p>
                   </div>
 
-                  {/* Report Fee */}
+                  {/* Consultation Fee */}
                   <div className="flex-1 text-center py-2">
                     <p className="text-sm text-gray-500 font-bold mb-1">
-                      {language === 'bn' ? 'রিপোর্ট দেখানো :' : 'Report Review :'}
+                      {language === 'bn' ? 'কনসালটেশন:' : 'Consultation:'}
                     </p>
-                    <p className="text-xl font-bold text-gray-900">৳200</p>
+                    <p className="text-xl font-bold text-gray-900">
+                      ৳{doctor.consultationFee || 0}
+                    </p>
                   </div>
                 </div>
               </div>

@@ -67,9 +67,8 @@ export default function UserLayout({
     } finally {
       localStorage.removeItem("user");
       setUser(null);
-      window.dispatchEvent(new Event("userLogout"));
-      router.push("/");
-      router.refresh();
+      // Use window.location.href for a hard redirect to ensure all states are cleared
+      window.location.href = "/";
     }
   };
 

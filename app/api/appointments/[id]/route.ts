@@ -109,7 +109,7 @@ export async function GET(
     const { id } = await params;
 
     const appointment = await Appointment.findById(id)
-      .populate('doctorId', 'name nameBn qualification qualificationBn specialty specialtyBn designation designationBn department hospital image slug')
+      .populate('doctorId')
       .populate('userId', 'fullName email phoneNumber');
 
     if (!appointment) {

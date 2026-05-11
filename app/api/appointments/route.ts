@@ -51,10 +51,10 @@ export async function GET(request: NextRequest) {
     }
 
     const appointments = await Appointment.find(query)
-      .populate('doctorId', 'name nameBn qualification qualificationBn department departmentBn hospital hospitalBn image availability slug')
+      .populate('doctorId')
       .populate('userId', 'fullName email phoneNumber')
       .populate('affiliateId', 'name affiliateCode email')
-      .sort({ appointmentDate: -1, createdAt: -1 });
+      .sort({ createdAt: -1 });
 
     return NextResponse.json(
       { appointments },
@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Populate doctor info
-    await appointment.populate('doctorId', 'name qualification department hospital image slug');
+    await appointment.populate('doctorId');
 
     return NextResponse.json(
       { message: 'Appointment booked successfully', appointment },
@@ -205,3 +205,44 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// DELETE - Clear user appointment history
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getSession(request);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized. Please login.' }, { status: 401 });
+    }
+
+    await dbConnect();
+
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
+    // Security check: Users can only clear their own history
+    if (session.role !== 'admin' && session.id !== userId) {
+      return NextResponse.json({ error: 'Forbidden. You can only clear your own history.' }, { status: 403 });
+    }
+
+    // We only delete 'completed' or 'cancelled' appointments when clearing history
+    // Active appointments (pending/confirmed) should be preserved or manually cancelled first
+    const result = await Appointment.deleteMany({
+      userId: userId,
+      status: { $in: ['completed', 'cancelled'] }
+    });
+
+    return NextResponse.json(
+      { message: 'History cleared successfully', deletedCount: result.deletedCount },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error('Error clearing appointments:', error);
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

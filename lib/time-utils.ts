@@ -122,3 +122,30 @@ export const getTimeUntil = (targetDate: Date | string): { days: number; hours: 
   return { days, hours, minutes, seconds, total: diff };
 };
 
+
+const banglaMonths = [
+  "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
+  "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"
+];
+
+const banglaDays = ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"];
+
+// Convert English number to Bengali
+export const toBengaliNumber = (num: number | string): string => {
+  const bengaliDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+  return num.toString().split("").map(digit => bengaliDigits[parseInt(digit)] || digit).join("");
+};
+
+export const formatBengaliDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  const day = date.getDay();
+  const dayNum = date.getDate();
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  return `${banglaDays[day]}, ${toBengaliNumber(dayNum)} ${banglaMonths[month]}, ${toBengaliNumber(year)}`;
+};
+
+export const formatBengaliTime = (timeString?: string, language: string = 'bn'): string => {
+  if (!timeString) return language === 'bn' ? "সময় নির্ধারিত হয়নি" : "Time not scheduled";
+  return timeString;
+};

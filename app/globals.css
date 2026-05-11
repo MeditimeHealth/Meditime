@@ -1,4 +1,4 @@
-@import url('https://fonts.maateen.me/kalpurush/font.css');
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
@@ -38,12 +38,12 @@
   --gray-800: #1f2937;
   --gray-900: #111827;
 
-  --font-kalpurush: 'Kalpurush', 'SolaimanLipi', 'Siyam Rupali', sans-serif;
+
   --font-inter: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-heading-en: 'Google Sans Flex', 'Inter', ui-sans-serif, sans-serif;
   --font-body-en: 'Roboto', 'Inter', ui-sans-serif, sans-serif;
-  --font-heading-bn: 'Hind Siliguri', 'Kalpurush', sans-serif;
-  --font-body-bn: 'Noto Sans Bengali', 'Kalpurush', sans-serif;
+  --font-heading-bn: 'Hind Siliguri', sans-serif;
+  --font-body-bn: 'Noto Sans Bengali', sans-serif;
 
   /* Shadow System */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -66,19 +66,19 @@
 }
 
 :root[data-language="en"] {
-  --font-primary-heading: var(--font-heading-en);
-  --font-primary-body: var(--font-body-en);
+  --font-primary-heading: 'Google Sans Flex', 'Inter', ui-sans-serif, sans-serif;
+  --font-primary-body: 'Roboto', 'Inter', ui-sans-serif, sans-serif;
 }
 
 :root[data-language="bn"] {
-  --font-primary-heading: var(--font-heading-bn);
-  --font-primary-body: var(--font-body-bn);
+  --font-primary-heading: 'Hind Siliguri', sans-serif;
+  --font-primary-body: 'Noto Sans Bengali', sans-serif;
 }
 
 /* Fallback if data-language is not yet set */
 :root {
-  --font-primary-heading: var(--font-heading-en); 
-  --font-primary-body: var(--font-body-en);
+  --font-primary-heading: 'Google Sans Flex', 'Inter', ui-sans-serif, sans-serif;
+  --font-primary-body: 'Roboto', 'Inter', ui-sans-serif, sans-serif;
 }
 
 body {
@@ -104,7 +104,31 @@ input, textarea, [contenteditable] {
   user-select: text;
 }
 
-/* Ensure global typography override to supersede inline hardcoded kalpurush tags recursively */
+/* Language-specific Typography Overrides */
+[data-language="bn"] h1, [data-language="bn"] h2, [data-language="bn"] h3, 
+[data-language="bn"] h4, [data-language="bn"] h5, [data-language="bn"] h6 {
+  font-family: 'Hind Siliguri', sans-serif !important;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+[data-language="bn"] p, [data-language="bn"] li, [data-language="bn"] span, 
+[data-language="bn"] a, [data-language="bn"] button {
+  font-family: 'Noto Sans Bengali', sans-serif !important;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+[data-language="en"] h1, [data-language="en"] h2, [data-language="en"] h3, 
+[data-language="en"] h4, [data-language="en"] h5, [data-language="en"] h6 {
+  font-family: 'Google Sans Flex', sans-serif !important;
+}
+
+[data-language="en"] p {
+  font-family: 'Roboto', sans-serif !important;
+}
+
+/* Ensure global typography override to supersede inline hardcoded tags */
 h1, h2, h3, h4, h5, h6, 
 .text-4xl, .text-5xl, .text-6xl, .text-3xl, .text-2xl, .text-xl, .text-lg,
 title, .heading, strong {
