@@ -713,9 +713,25 @@ function DoctorListPageContent() {
     );
   }
 
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": language === 'bn' ? 'বিশেষজ্ঞ ডাক্তার তালিকা' : 'Specialist Doctor List',
+    "itemListElement": doctors.map((doctor, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": getLocalizedValue(doctor.name, doctor.nameBn, language),
+      "url": `https://meditime.com.bd/doctor/${doctor.slug || doctor._id}`
+    }))
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       <Navbar />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
 
       {/* Cover Photo / Hero Section */}
       <motion.div

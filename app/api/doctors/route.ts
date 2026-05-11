@@ -263,7 +263,7 @@ export async function POST(request: NextRequest) {
     if (bioBn) doctorData.bioBn = bioBn;
 
     // Generate slug
-    doctorData.slug = await generateUniqueSlug(doctorData.name || doctorData.nameBn || "doctor");
+    doctorData.slug = await generateUniqueSlug(doctorData.name || doctorData.nameBn || "doctor", Doctor);
 
     // Log the data being sent for debugging
     console.log('Creating doctor with data:', JSON.stringify(doctorData, null, 2));

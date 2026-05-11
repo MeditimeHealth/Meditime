@@ -129,14 +129,17 @@ export async function PUT(
     // Handle Slug Logic
     if (slug) {
       doctorData.slug = slug; // Use provided slug if any
-    } else if (name) {
-      // Regenerate slug if name changed and no manual slug provided
+    } else {
       const existingDoctor = await Doctor.findById(id);
-      if (existingDoctor && existingDoctor.name !== name) {
-        doctorData.slug = await generateUniqueSlug(name, id);
-      } else if (existingDoctor && !existingDoctor.slug) {
+      const newName = name || body.nameBn;
+      const oldName = existingDoctor?.name || existingDoctor?.nameBn;
+
+      if (existingDoctor && !existingDoctor.slug && (newName || oldName)) {
         // Generate if missing
-        doctorData.slug = await generateUniqueSlug(existingDoctor.name || name, id);
+        doctorData.slug = await generateUniqueSlug(newName || oldName || 'doctor', Doctor, id);
+      } else if (existingDoctor && newName && newName !== oldName) {
+        // Regenerate slug if name changed and no manual slug provided
+        doctorData.slug = await generateUniqueSlug(newName, Doctor, id);
       }
     }
 

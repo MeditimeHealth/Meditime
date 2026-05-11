@@ -78,9 +78,32 @@ export default function MembershipPage() {
     setOpenFaq(openFaq === index ? null : index);
   };
 
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": language === 'bn' ? 'মেডিটাইম হেলথ কার্ড' : 'Meditime Health Card',
+    "image": "https://meditime.com.bd/logo.png",
+    "description": t.desc,
+    "brand": {
+      "@type": "Brand",
+      "name": "Meditime"
+    },
+    "offers": membershipPlans.map(plan => ({
+      "@type": "Offer",
+      "name": plan.title,
+      "price": plan.price.replace(/[^\d]/g, ''),
+      "priceCurrency": "BDT",
+      "availability": "https://schema.org/InStock"
+    }))
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
       
       {/* Hero Section */}
       <motion.div

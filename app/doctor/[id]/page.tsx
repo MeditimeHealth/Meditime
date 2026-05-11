@@ -310,6 +310,10 @@ export default function DoctorProfilePage() {
     hospitalBn: hospitals.find(h => h.name === doctor.hospital)?.nameBn || doctor.hospitalBn || ""
   };
 
+  const fees = [doctor.newPatientFee, doctor.oldPatientFee, doctor.consultationFee].filter(f => f !== undefined && f !== null && f > 0) as number[];
+  const minFee = fees.length > 0 ? Math.min(...fees) : (doctor.newPatientFee || doctor.consultationFee);
+
+
   const enrichedRelatedDoctors = relatedDoctors.map(rd => ({
     ...rd,
     hospitalBn: hospitals.find(h => h.name === rd.hospital)?.nameBn || rd.hospitalBn || ""
@@ -317,10 +321,10 @@ export default function DoctorProfilePage() {
 
   // Hospital address for schedule section (thana + district)
   const hospitalObj = hospitals.find((h: any) => h.name === doctor.hospital) as any;
-  
+
   const thanaName = hospitalObj?.thana ? (language === 'bn' && hospitalObj.thana.nameBn ? hospitalObj.thana.nameBn : hospitalObj.thana.name) : null;
   const districtName = hospitalObj?.thana?.district ? (language === 'bn' && hospitalObj.thana.district.nameBn ? hospitalObj.thana.district.nameBn : hospitalObj.thana.district.name) : null;
-  
+
   const hospitalAddress = [thanaName, districtName].filter(Boolean).join(', ');
 
   // Dynamic JSON-LD Schema Markup for SEO
@@ -359,14 +363,25 @@ export default function DoctorProfilePage() {
         "@id": `${doctorUrl}#physician`,
         "name": doctor.name,
         "image": doctor.image || `${baseUrl}/logo.png`,
-        "description": doctor.bio || `${doctor.name} - ${doctor.specialty}`,
+        "description": getLocalizedValue(doctor.bio, doctor.bioBn, language) || `${doctor.name} - ${doctor.specialty}`,
         "url": doctorUrl,
         "medicalSpecialty": doctor.specialty,
-        "telephone": "+8801946102102", // Generic contact or fetch if available
-        "areaServed": {
-          "@type": "Place",
-          "name": doctor.district || "Bangladesh"
+        "telephone": "+8801946102102",
+        "priceRange": minFee ? `৳${minFee}` : undefined,
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": hospitalAddress || doctor.hospital,
+          "addressLocality": doctor.thana || "",
+          "addressRegion": doctor.district || "",
+          "addressCountry": "BD"
         },
+        "aggregateRating": doctor.rating ? {
+          "@type": "AggregateRating",
+          "ratingValue": doctor.rating,
+          "reviewCount": "10", // Placeholder if no actual count
+          "bestRating": "5",
+          "worstRating": "1"
+        } : undefined,
         "affiliation": [
           {
             "@type": "Hospital",
@@ -377,14 +392,6 @@ export default function DoctorProfilePage() {
               "addressRegion": doctor.district || "",
               "addressCountry": "BD"
             }
-          }
-        ],
-        "makesOffer": [
-          {
-            "@type": "Offer",
-            "name": "Consultation Fee",
-            "price": String(doctor.consultationFee),
-            "priceCurrency": "BDT"
           }
         ],
         "openingHoursSpecification": availabilityArray.flatMap(slot =>
@@ -403,9 +410,24 @@ export default function DoctorProfilePage() {
         "@type": "BreadcrumbList",
         "@id": `${doctorUrl}#breadcrumb`,
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": baseUrl },
-          { "@type": "ListItem", "position": 2, "name": "Doctors", "item": `${baseUrl}/doctor` },
-          { "@type": "ListItem", "position": 3, "name": doctor.name, "item": doctorUrl }
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": language === 'bn' ? 'হোম' : 'Home',
+            "item": baseUrl
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": language === 'bn' ? 'বিশেষজ্ঞ ডাক্তার' : 'Doctors',
+            "item": `${baseUrl}/doctor`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": getLocalizedValue(doctor.name, doctor.nameBn, language),
+            "item": doctorUrl
+          }
         ]
       },
       {
@@ -659,44 +681,44 @@ export default function DoctorProfilePage() {
             </div>
 
             {/* Fees Section */}
-            <Card className="p-6 bg-gradient-to-br from-white to-amber-50 border-2 border-primary/20 shadow-xl">
-              <h2
-                className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
-                
-              >
-                {language === 'bn' ? 'ডাক্তারের পরামর্শ ফি' : 'Consultation Fee'}
-              </h2>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-5 bg-white rounded-xl border-2 border-primary/10 shadow-md">
-                  <span
-                    className="text-base md:text-lg font-bold text-gray-800"
-
-                  >
-                    {language === 'bn' ? 'নতুন রোগী' : 'New Patient'}
-                  </span>
-                  <span
-                    className="text-xl md:text-2xl font-bold text-primary"
-
-                  >
-                    ৳{newPatientFee}
-                  </span>
-                </div>
-                {!!oldPatientFee && (
-                  <div className="flex items-center justify-between p-5 bg-white rounded-xl border-2 border-primary/10 shadow-md">
-                    <span
-                      className="text-base md:text-lg font-bold text-gray-800"
-
-                    >
-                      {language === 'bn' ? 'পুরাতন রোগী' : 'Returning Patient'}
-                    </span>
-                    <span
-                      className="text-xl md:text-2xl font-bold text-primary"
-
-                    >
-                      ৳{oldPatientFee}
-                    </span>
+            <Card className="overflow-hidden border-2 border-primary/20 shadow-xl">
+              <div className="bg-primary p-4 flex items-center justify-center gap-3">
+               
+                <h2 className="text-xl md:text-2xl font-bold text-white">
+                  {language === 'bn' ? 'ডাক্তারের পরামর্শ ফি' : 'Consultation Fee'}
+                </h2>
+              </div>
+              
+              <div className="p-6 bg-white">
+                <div className="flex flex-col md:flex-row items-stretch justify-between gap-4 md:gap-0">
+                  {/* Returning Patient */}
+                  <div className="flex-1 text-center md:border-r border-primary/10 py-2">
+                    <p className="text-sm text-gray-500 font-bold mb-1">
+                      {language === 'bn' ? 'পুরাতন রোগী :' : 'Returning Patient :'}
+                    </p>
+                    <p className="text-xl font-bold text-gray-900">
+                      ৳{oldPatientFee || newPatientFee}
+                    </p>
                   </div>
-                )}
+
+                  {/* New Patient */}
+                  <div className="flex-1 text-center md:border-r border-primary/10 py-2">
+                    <p className="text-sm text-gray-500 font-bold mb-1">
+                      {language === 'bn' ? 'নতুন রোগী :' : 'New Patient :'}
+                    </p>
+                    <p className="text-xl font-bold text-gray-900">
+                      ৳{newPatientFee}
+                    </p>
+                  </div>
+
+                  {/* Report Fee */}
+                  <div className="flex-1 text-center py-2">
+                    <p className="text-sm text-gray-500 font-bold mb-1">
+                      {language === 'bn' ? 'রিপোর্ট দেখানো :' : 'Report Review :'}
+                    </p>
+                    <p className="text-xl font-bold text-gray-900">৳200</p>
+                  </div>
+                </div>
               </div>
             </Card>
 
@@ -704,7 +726,7 @@ export default function DoctorProfilePage() {
             <Card className="p-6 bg-gradient-to-br from-white to-indigo-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
-                
+
               >
                 {language === 'bn' ? 'চেম্বার সময়সূচি' : 'Chamber Schedule'}
               </h2>
@@ -750,12 +772,11 @@ export default function DoctorProfilePage() {
                       return (
                         <div
                           key={index}
-                          className="flex items-center gap-2 p-3 bg-gray-50 rounded-full flex-nowrap"
+                          className="flex items-start gap-2 p-3 bg-gray-50 rounded-2xl"
                         >
-                          <Clock className="h-4 w-4 text-primary shrink-0" />
+                          <Clock className="h-4 w-4 text-primary shrink-0 mt-1" />
                           <span
-                            className="text-sm md:text-base font-semibold text-gray-700 whitespace-nowrap"
-                            
+                            className="text-sm md:text-base font-semibold text-gray-700"
                           >
                             {dayRange} {time}
                           </span>
@@ -815,44 +836,46 @@ export default function DoctorProfilePage() {
           {/* Mobile Layout - Reordered */}
           <div className="lg:hidden space-y-6">
             {/* Fees Section - Mobile */}
-            <Card className="p-6 bg-gradient-to-br from-white to-amber-50 border-2 border-primary/20 shadow-xl">
-              <h2
-                className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
-                
-              >
-                {language === 'bn' ? 'ডাক্তারের পরামর্শ ফি' : 'Consultation Fee'}
-              </h2>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-5 bg-white rounded-xl border-2 border-primary/10 shadow-md">
-                  <span
-                    className="text-base md:text-lg font-bold text-gray-800"
-
-                  >
-                    {language === 'bn' ? 'নতুন রোগী' : 'New Patient'}
-                  </span>
-                  <span
-                    className="text-xl md:text-2xl font-bold text-primary"
-
-                  >
-                    ৳{newPatientFee}
-                  </span>
+            <Card className="overflow-hidden border-2 border-primary/20 shadow-xl">
+              <div className="bg-primary p-4 flex items-center justify-center gap-3">
+                <div className="bg-white/20 p-2 rounded-lg">
+                  <Stethoscope className="h-6 w-6 text-white" />
                 </div>
-                {oldPatientFee && (
-                  <div className="flex items-center justify-between p-5 bg-white rounded-xl border-2 border-primary/10 shadow-md">
-                    <span
-                      className="text-base md:text-lg font-bold text-gray-800"
-
-                    >
+                <h2 className="text-xl md:text-2xl font-bold text-white">
+                  {language === 'bn' ? 'ডাক্তারের পরামর্শ ফি' : 'Consultation Fee'}
+                </h2>
+              </div>
+              
+              <div className="p-6 bg-white">
+                <div className="flex items-center justify-between gap-2">
+                  {/* Returning Patient */}
+                  <div className="flex-1 text-center border-r border-primary/10">
+                    <p className="text-[10px] text-gray-500 font-bold mb-1 h-8 flex items-center justify-center">
                       {language === 'bn' ? 'পুরাতন রোগী' : 'Returning Patient'}
-                    </span>
-                    <span
-                      className="text-xl md:text-2xl font-bold text-primary"
-
-                    >
-                      ৳{oldPatientFee}
-                    </span>
+                    </p>
+                    <p className="text-sm font-bold text-gray-900">
+                      ৳{oldPatientFee || newPatientFee}
+                    </p>
                   </div>
-                )}
+
+                  {/* New Patient */}
+                  <div className="flex-1 text-center border-r border-primary/10">
+                    <p className="text-[10px] text-gray-500 font-bold mb-1 h-8 flex items-center justify-center">
+                      {language === 'bn' ? 'নতুন রোগী' : 'New Patient'}
+                    </p>
+                    <p className="text-sm font-bold text-gray-900">
+                      ৳{newPatientFee}
+                    </p>
+                  </div>
+
+                  {/* Report Fee */}
+                  <div className="flex-1 text-center">
+                    <p className="text-[10px] text-gray-500 font-bold mb-1 h-8 flex items-center justify-center">
+                      {language === 'bn' ? 'রিপোর্ট দেখানো' : 'Report Review'}
+                    </p>
+                    <p className="text-sm font-bold text-gray-900">৳200</p>
+                  </div>
+                </div>
               </div>
             </Card>
 
@@ -860,7 +883,7 @@ export default function DoctorProfilePage() {
             <Card className="p-6 bg-gradient-to-br from-white to-indigo-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
-                
+
               >
                 {language === 'bn' ? 'চেম্বার সময়সূচি' : 'Chamber Schedule'}
               </h2>
@@ -910,7 +933,7 @@ export default function DoctorProfilePage() {
             <Card className="p-6 bg-gradient-to-br from-white to-emerald-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-xl md:text-2xl font-bold text-gray-900 mb-5"
-                
+
               >
                 {language === 'bn' ? 'অ্যাপয়েন্টমেন্ট বুক করুন' : 'Book Appointment'}
               </h2>

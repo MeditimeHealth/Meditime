@@ -5,6 +5,7 @@ import User from '@/models/User';
 import LiveConsultant from '@/models/LiveConsultant';
 import bcrypt from 'bcryptjs';
 import { verifyAdmin } from '@/lib/auth';
+import { generateUniqueSlug } from '@/lib/slug';
 
 function generateRoomId(): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -78,6 +79,9 @@ export async function POST(request: NextRequest) {
     if (nameBn) doctorObj.nameBn = nameBn;
     if (specialtyBn) doctorObj.specialtyBn = specialtyBn;
     if (phone) doctorObj.phoneNumber = phone;
+
+    // Auto-generate slug from name, fallback to nameBn
+    doctorObj.slug = await generateUniqueSlug(name || nameBn || 'doctor', Doctor);
     
     const doctor = await Doctor.create(doctorObj);
 

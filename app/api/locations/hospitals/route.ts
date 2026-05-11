@@ -5,6 +5,7 @@ import Hospital from "@/models/Hospital";
 import Thana from "@/models/Thana";
 import District from "@/models/District";
 import Division from "@/models/Division";
+import { generateUniqueSlug } from "@/lib/slug";
 
 export async function GET(request: NextRequest) {
   try {
@@ -92,8 +93,12 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Auto-generate slug from name, fallback to nameBn
+    const slug = await generateUniqueSlug(name || nameBn || 'hospital', Hospital, undefined, 'hospital');
+
     const hospital = await Hospital.create({
       name: name || "",
+      slug,
       thana: thana || undefined,
       address: address || undefined,
       phone: phone || undefined,

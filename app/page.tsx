@@ -16,8 +16,38 @@ import Footer from "@/components/footer";
 
 
 export default function Home() {
+  const baseUrl = "https://meditime.com.bd";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Meditime",
+    "url": baseUrl,
+    "logo": `${baseUrl}/logo.png`,
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+8801946102102",
+      "contactType": "customer service",
+      "areaServed": "BD",
+      "availableLanguage": ["Bengali", "English"]
+    },
+    "sameAs": [
+      "https://www.facebook.com/meditimebd",
+      "https://twitter.com/meditimebd",
+      "https://www.linkedin.com/company/meditimebd"
+    ],
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": `${baseUrl}/doctor?search={search_term_string}`,
+      "query-input": "required name=search_term_string"
+    }
+  };
+
   return (
     <div className="overflow-x-hidden relative">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar />
       <HeroSection />
       <SearchSection />

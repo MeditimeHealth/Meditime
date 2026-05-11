@@ -367,9 +367,37 @@ export default function DiagnosticPage() {
   ];
 
 
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": language === 'bn' ? 'ডায়াগনস্টিক টেস্ট তালিকা' : 'Diagnostic Test List',
+    "itemListElement": tests.map((test, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "Service",
+        "name": getLocalizedValue(test.name, test.nameBn, language),
+        "serviceType": "Diagnostic Test",
+        "provider": {
+          "@type": "MedicalOrganization",
+          "name": "Meditime"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": test.price,
+          "priceCurrency": "BDT"
+        }
+      }
+    }))
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
 
       {/* Cover Photo / Hero Section */}
       <motion.div

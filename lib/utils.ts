@@ -20,7 +20,9 @@ export function slugify(text: string) {
   return text
     .toLowerCase()
     .trim()
+    .replace(/[.]+/g, '-')
     .replace(/\s+/g, '-')
     .replace(/[^\w\u0980-\u09FF-]+/g, '')
-    .replace(/--+/g, '-');
+    .replace(/--+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
