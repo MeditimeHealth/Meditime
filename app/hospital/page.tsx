@@ -227,18 +227,39 @@ export default function HospitalListPage() {
         const aNameBn = (a.nameBn || "").toLowerCase();
         const bNameBn = (b.nameBn || "").toLowerCase();
 
-        // Exact match priority
+        // 1. Exact match name priority
         const aExact = aName === trimmedQuery || aNameBn === trimmedQuery;
         const bExact = bName === trimmedQuery || bNameBn === trimmedQuery;
         if (aExact && !bExact) return -1;
         if (!aExact && bExact) return 1;
 
-        // Starts with priority
+        // 2. Starts with name priority
         const aStarts = aName.startsWith(trimmedQuery) || aNameBn.startsWith(trimmedQuery);
         const bStarts = bName.startsWith(trimmedQuery) || bNameBn.startsWith(trimmedQuery);
         if (aStarts && !bStarts) return -1;
         if (!aStarts && bStarts) return 1;
 
+        // 3. Contains name priority
+        const aContainsName = aName.includes(trimmedQuery) || aNameBn.includes(trimmedQuery);
+        const bContainsName = bName.includes(trimmedQuery) || bNameBn.includes(trimmedQuery);
+        if (aContainsName && !bContainsName) return -1;
+        if (!aContainsName && bContainsName) return 1;
+
+        // 4. Address/Location match priority
+        const aLocation = getHospitalLocationString(a).toLowerCase();
+        const bLocation = getHospitalLocationString(b).toLowerCase();
+        const aAddr = (a.address || "").toLowerCase();
+        const bAddr = (b.address || "").toLowerCase();
+        const aAddrBn = (a.addressBn || "").toLowerCase();
+        const bAddrBn = (b.addressBn || "").toLowerCase();
+
+        const aAddrMatch = aAddr.includes(trimmedQuery) || aAddrBn.includes(trimmedQuery) || aLocation.includes(trimmedQuery);
+        const bAddrMatch = bAddr.includes(trimmedQuery) || bAddrBn.includes(trimmedQuery) || bLocation.includes(trimmedQuery);
+
+        if (aAddrMatch && !bAddrMatch) return -1;
+        if (!aAddrMatch && bAddrMatch) return 1;
+
+        // 5. Default Alphabetical
         return aName.localeCompare(bName);
       })
       .slice(0, 10);
@@ -309,13 +330,56 @@ export default function HospitalListPage() {
     }
 
     filtered.sort((a, b) => {
+      // Priority sorting based on search relevance when a query is present
+      if (debouncedSearchQuery) {
+        const query = debouncedSearchQuery.toLowerCase();
+        const aName = (a.name || "").toLowerCase();
+        const bName = (b.name || "").toLowerCase();
+        const aNameBn = (a.nameBn || "").toLowerCase();
+        const bNameBn = (b.nameBn || "").toLowerCase();
+
+        // 1. Exact Name Match
+        const aExact = aName === query || aNameBn === query;
+        const bExact = bName === query || bNameBn === query;
+        if (aExact && !bExact) return -1;
+        if (!aExact && bExact) return 1;
+
+        // 2. Name Starts With Match
+        const aStarts = aName.startsWith(query) || aNameBn.startsWith(query);
+        const bStarts = bName.startsWith(query) || bNameBn.startsWith(query);
+        if (aStarts && !bStarts) return -1;
+        if (!aStarts && bStarts) return 1;
+
+        // 3. Name Contains Match
+        const aContains = aName.includes(query) || aNameBn.includes(query);
+        const bContains = bName.includes(query) || bNameBn.includes(query);
+        if (aContains && !bContains) return -1;
+        if (!aContains && bContains) return 1;
+
+        // 4. Address/Location Match
+        const aLocation = getHospitalLocationString(a).toLowerCase();
+        const bLocation = getHospitalLocationString(b).toLowerCase();
+        const aAddr = (a.address || "").toLowerCase();
+        const bAddr = (b.address || "").toLowerCase();
+        const aAddrBn = (a.addressBn || "").toLowerCase();
+        const bAddrBn = (b.addressBn || "").toLowerCase();
+
+        const aAddrMatch = aAddr.includes(query) || aAddrBn.includes(query) || aLocation.includes(query);
+        const bAddrMatch = bAddr.includes(query) || bAddrBn.includes(query) || bLocation.includes(query);
+
+        if (aAddrMatch && !bAddrMatch) return -1;
+        if (!aAddrMatch && bAddrMatch) return 1;
+
+        // If they are in the same relevance group, fall through to default sort logic
+      }
+
       let aVal: string;
       let bVal: string;
 
       switch (sortBy) {
         case "name":
-          aVal = a.name.toLowerCase();
-          bVal = b.name.toLowerCase();
+          aVal = (a.name || "").toLowerCase();
+          bVal = (b.name || "").toLowerCase();
           break;
         case "location":
           aVal = getHospitalLocationString(a).toLowerCase();
