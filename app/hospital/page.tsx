@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { homepageTranslations } from "@/lib/homepage-translations";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 interface Hospital {
   _id: string;
@@ -78,6 +78,7 @@ export default function HospitalListPage() {
 
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const router = useRouter();
   const { language } = useLanguage();
   const t = homepageTranslations[language].hospitalsPage;
 
@@ -332,7 +333,7 @@ export default function HospitalListPage() {
     return filtered;
   }, [
     hospitals,
-    searchQuery,
+    debouncedSearchQuery,
     selectedDivision,
     selectedDistrict,
     selectedThana,
@@ -468,7 +469,8 @@ export default function HospitalListPage() {
                       e.preventDefault();
                       const suggestion = suggestions[focusedIndex];
                       if (suggestion.hospital) {
-                        setSearchQuery(getLocalizedValue(suggestion.hospital.name, suggestion.hospital.nameBn, language));
+                        const slug = suggestion.hospital.slug || encodeURIComponent(suggestion.hospital.name);
+                        router.push(`/hospital/${slug}`);
                       } else {
                         setSearchQuery(suggestion.value);
                       }
