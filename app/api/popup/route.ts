@@ -1,10 +1,33 @@
 import { NextResponse } from "next/server";
 import Popup from "@/models/Popup";
+import Offer from "@/models/Offer";
 import dbConnect from "@/lib/mongodb";
 
 export async function GET() {
     try {
         await dbConnect();
+        
+        // 1. Check for latest active Offer with isPopup: true
+        const latestOffer = await Offer.findOne({ isActive: true, isPopup: true }).sort({ updatedAt: -1 });
+        
+        if (latestOffer) {
+            return NextResponse.json({ 
+                success: true, 
+                popup: {
+                    title: latestOffer.title,
+                    titleBn: latestOffer.titleBn,
+                    description: latestOffer.description,
+                    descriptionBn: latestOffer.descriptionBn,
+                    imageUrl: latestOffer.imageUrl,
+                    buttonText: latestOffer.buttonText,
+                    buttonTextBn: latestOffer.buttonTextBn,
+                    buttonLink: latestOffer.linkUrl,
+                    isActive: latestOffer.isActive
+                } 
+            });
+        }
+
+        // 2. Fallback to manual Popup
         let popup = await Popup.findOne().sort({ updatedAt: -1 });
 
         if (!popup) {

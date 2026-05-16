@@ -7,6 +7,7 @@ import DepartmentSection from "@/components/department-section";
 import MembershipSection from "@/components/membership-section";
 import StatsSection from "@/components/stats-section";
 import PatientReviewSection from "@/components/patient-review-section";
+import ContactSection from "@/components/contact-section";
 import HospitalPartnersSection from "@/components/hospital-partners-section";
 import BlogSection from "@/components/blog-section";
 import BookAppointmentSection from "@/components/book-appointment-section";
@@ -53,12 +54,14 @@ export default function Home() {
       <SearchSection />
       <ServicesSection />
       <WhyChooseSection />
-      <DepartmentSection />
       <MembershipSection />
+      <DepartmentSection />
+
       <StatsSection />
       <PatientReviewSection />
+      <ContactSection />
       <HospitalPartnersSection />
-      <BookAppointmentSection />
+      {/* <BookAppointmentSection /> */}
       <BlogSection />
       <FaqSection />
       <AppDownloadSection />

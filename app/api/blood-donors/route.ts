@@ -29,9 +29,14 @@ export async function GET(request: NextRequest) {
       query.availabilityStatus = availabilityStatus;
     }
     
-    // Only show approved blood donors to public
+    // Handle approval status filtering
     const isAdmin = searchParams.get("admin") === "true";
-    if (!isAdmin) {
+    const isApprovedParam = searchParams.get("isApproved");
+
+    if (isApprovedParam !== null) {
+      query.isApproved = isApprovedParam === "true";
+    } else if (!isAdmin) {
+      // Default for public is only approved
       query.isApproved = true;
     }
 
@@ -87,7 +92,7 @@ export async function POST(request: NextRequest) {
       availabilityStatus,
       lastDonationDate: lastDonationDate ? new Date(lastDonationDate) : undefined,
       userId: userId || undefined,
-      isApproved: isApproved !== undefined ? isApproved : true, // Admin creates are auto-approved
+      isApproved: false, // Applications are pending by default
     });
 
     return NextResponse.json(

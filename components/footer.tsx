@@ -55,17 +55,17 @@ export default function Footer() {
 
           {/* Email pill */}
           <div
-            className="flex items-center bg-white rounded-full border border-white/10 p-1 w-full max-w-md lg:ml-auto overflow-hidden"
+            className="flex items-center bg-white/5 rounded-full border border-white/10 p-1.5 w-full max-w-lg lg:ml-auto transition-all focus-within:border-[#3DB5A0]/50 focus-within:ring-4 focus-within:ring-[#3DB5A0]/5 shadow-inner"
           >
             <input
               type="email"
               placeholder={t.emailPlaceholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 bg-transparent border-none focus:ring-0 outline-none text-sm px-4 py-2 text-slate-900 min-w-0"
+              className="flex-1 bg-transparent border-none focus:ring-0 outline-none text-[15px] px-6 py-2 text-white placeholder:text-slate-500 min-w-0"
             />
             <button
-              className="shrink-0 bg-[#3DB5A0] hover:bg-[#34a38f] text-[12px] sm:text-sm font-bold text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full transition-all"
+              className="shrink-0 bg-[#3DB5A0] hover:bg-[#34a38f] text-[13px] font-bold text-white px-8 py-3 rounded-full transition-all shadow-lg active:scale-95"
             >
               {t.sendEmail}
             </button>
@@ -77,28 +77,30 @@ export default function Footer() {
           
           {/* Column 1: Logo, Slogan, Get In Touch, Social Icons */}
           <div className="flex flex-col gap-6">
-            <Link href="/" className="inline-block">
-              <Image
-                src="/logo.png"
-                alt="Meditime"
-                width={180}
-                height={40}
-                priority
-                className="h-10 w-auto object-contain brightness-0 invert"
-              />
-            </Link>
-            
-            <p className="text-[13px] leading-relaxed text-slate-400">
-              {t.slogan}
-            </p>
+            <div className="flex flex-col gap-3">
+              <Link href="/" className="inline-block">
+                <Image
+                  src="/logo.png"
+                  alt="Meditime"
+                  width={180}
+                  height={40}
+                  priority
+                  className="h-10 w-auto object-contain brightness-0 invert"
+                />
+              </Link>
+               <p className="text-[16px] text-slate-400 leading-relaxed">
+                {t.tagline}
+              </p>
+              <p className="text-[13px] leading-relaxed text-slate-400 max-w-[240px]">
+                {t.slogan}
+              </p>
+            </div>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 mt-2">
               <h4 className="text-[14px] font-bold text-white uppercase tracking-wider">
                 {t.getInTouch}
               </h4>
-              <p className="text-[13px] text-slate-400 leading-relaxed">
-                {t.tagline}
-              </p>
+             
               <div className="flex items-center gap-3">
                 {socialLinks.map((s, i) => {
                   const Icon = s.icon;
@@ -109,7 +111,7 @@ export default function Footer() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={s.label}
-                      className="w-9 h-9 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:bg-[#3DB5A0] hover:border-[#3DB5A0] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#3DB5A0]"
+                      className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/5 bg-white/5 text-slate-400 hover:bg-[#3DB5A0] hover:border-[#3DB5A0] hover:text-white transition-all transform hover:-translate-y-1 shadow-lg"
                     >
                       <Icon size={18} />
                     </a>

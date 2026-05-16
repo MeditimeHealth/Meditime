@@ -114,8 +114,8 @@ export default function HeroSection() {
                     href={slide.ctaLink}
                     target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
                   >
-                    <button className="bg-white text-slate-900 font-bold text-[16px] px-10 py-4 rounded-full shadow-lg active:scale-95 transition-all">
-                      {slide.ctaText}
+                    <button className="btn-slide bg-white text-slate-900 font-bold text-[16px] px-10 py-4 rounded-full shadow-lg active:scale-95">
+                      <span className="relative z-10">{slide.ctaText}</span>
                     </button>
                   </Link>
                 </div>
@@ -151,8 +151,8 @@ export default function HeroSection() {
                 />
                 <div className="absolute inset-0 bg-black/40" />
 
-                <div className="absolute inset-0 flex flex-col justify-center pl-[80px] pr-8">
-                  <div className="max-w-[480px]">
+                <div className="absolute inset-0 flex flex-col justify-center max-w-7xl mx-auto">
+                  <div>
                     <h1 className="text-[42px] font-bold leading-[1.15] text-white mb-4">
                       {slide.title}
                     </h1>
@@ -163,8 +163,8 @@ export default function HeroSection() {
                       href={slide.ctaLink}
                       target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
                     >
-                      <button className="bg-white text-slate-900 font-medium text-[15px] px-7 py-3 rounded-full hover:opacity-90 transition-opacity">
-                        {slide.ctaText}
+                      <button className="btn-slide bg-white text-slate-900 font-medium text-[15px] px-7 py-3 ">
+                        <span className="relative z-10">{slide.ctaText}</span>
                       </button>
                     </Link>
                   </div>

@@ -105,19 +105,22 @@ export const homepageTranslations = {
           name: "Motiur Rahman",
           location: "Ex Army Personnel, Home Owner in Gazipur",
           text: "Found the best Diabetic Specialist in Savar I have ever met in the last 7 years. Recommended",
-          avatar: null
+          avatar: null,
+          time: "2 hours ago"
         },
         {
           name: "Asma Jannat Noyon",
           location: "House Wife, Ashulia, Savar DOHS",
           text: "Easily Booked doctor appointment in Ibn sina for My 80 Year Old Mother Suffering from Kidney complications.",
-          avatar: null
+          avatar: null,
+          time: "1 day ago"
         },
         {
           name: "SM Jahidul Islam",
           location: "Merchandise Manager at ABA Group, Tongi",
           text: "Tested My lipid panel found the platform useful, enjoyed a 15% discount using my corporate membership card.",
-          avatar: null
+          avatar: null,
+          time: "3 days ago"
         }
       ]
     },
@@ -219,6 +222,45 @@ export const homepageTranslations = {
       ambulanceTitle: "Ambulance Contact:",
       ambulanceDesc: "We provide a comprehensive, up-to-date directory of ambulance services throughout Savar and surrounding areas. When speed is everything, trust us to connect you with the fastest help available. Access reliable transport at the tap of a button.",
       ambulanceBtn: "Call Now",
+      socialProof: {
+        doctor: "Doctor",
+        hospital: "Hospital",
+        test: "Test",
+        bloodDonor: "Blood Donor",
+        doctorCount: "2000+",
+        hospitalCount: "40+",
+        testCount: "100+",
+        bloodDonorCount: "1000+",
+      },
+      faq: {
+        title: "Frequently Asked Questions",
+        questions: [
+          {
+            question: "Do I need to pay any upfront fees to book a doctor?",
+            answer: "No, booking through Meditime is completely free. You only pay the doctor’s fee directly at the hospital when you arrive for your visit.",
+          },
+          {
+            question: "How will I receive my prescription after a video call?",
+            answer: "Once the consultation ends, a digital prescription will be instantly uploaded to your profile. You can download it or show it at any pharmacy to buy medicine.",
+          },
+          {
+            question: "What are the benefits of searching for hospitals through Meditime?",
+            answer: "We provide real-time info on specialized services, bed availability, and ratings for 40+ top hospitals, helping you make the right choice instantly.",
+          },
+          {
+            question: "How does the \"Compare Price\" feature help me save money?",
+            answer: "We show you test prices from multiple diagnostic centers near you on one screen. This allows you to choose the most affordable and reliable option easily.",
+          },
+          {
+            question: "Can I contact a blood donor directly in case of an emergency?",
+            answer: "Yes! Our directory provides direct contact numbers for verified donors. You can call them immediately without any third-party intervention.",
+          },
+          {
+            question: "How long will it take for an ambulance to reach my location?",
+            answer: "We connect you with the nearest available ambulance in your area. Based on your location, our average response time is between 15-20 minutes.",
+          },
+        ]
+      }
     },
     doctorsPage: {
       heroTitle: "Trusted Doctors Near You in Savar:",
@@ -484,6 +526,38 @@ export const homepageTranslations = {
       subtitle: "Need help fast? We have a complete list of 24/7 ambulance services in Savar and surrounding areas.",
       callBtn: "Call Now",
       findByLocation: "Find Ambulance by Location",
+      becomePartnerBtn: "Become an Ambulance Partner",
+      socialProof: {
+        quantity: "Ambulance Quantity",
+        success: "Success Counter",
+        verified: "Verified Badge",
+        responseTime: "Response Time",
+        quantityCount: "1000+",
+        successCount: "1000+",
+        verifiedLabel: "BRTA Certified",
+        responseTimeLabel: "20-30 Minutes",
+      },
+      card: {
+        verified: "Verified",
+        type: "Type",
+        address: "Address",
+        vehicleNumber: "Vehicle Number",
+        status: "Status",
+        callNow: "Call Now",
+      },
+      types: {
+        ac: "AC Ambulance",
+        nonAc: "Non AC Ambulance",
+        icu: "ICU Ambulance",
+        freezing: "Freezing Ambulance",
+        nicu: "NICU Ambulance",
+        air: "Air Ambulance",
+      },
+      statuses: {
+        available: "Available",
+        onCall: "On Call",
+        unavailable: "Unavailable",
+      }
     },
     bloodDonor: {
       title: "Give the Gift of Life: Become a Proud Blood Donor.",
@@ -627,19 +701,22 @@ export const homepageTranslations = {
           name: "মতিউর রহমান",
           location: "সাবেক সেনাসদস্য, গাজীপুরের বাসিন্দা",
           text: "সাভারে গত ৭ বছরের মধ্যে দেখা সেরা ডায়াবেটিক বিশেষজ্ঞের খোঁজ পেলাম। আমি সত্যিই সন্তুষ্ট এবং অন্যদেরও পরামর্শ দেব।",
-          avatar: null
+          avatar: null,
+          time: "২ ঘণ্টা আগে"
         },
         {
           name: "আসমা জান্নাত নয়ন",
           location: "গৃহিণী, আশুলিয়া, সাভার ডিওএইচএস",
           text: "আমার ৮০ বছর বয়সী মা কিডনি জটিলতায় ভুগছিলেন। ইবনে সিনায় খুব সহজেই ওনার জন্য ভালো ডাক্তার বুক করতে পেরেছি।",
-          avatar: null
+          avatar: null,
+          time: "১ দিন আগে"
         },
         {
           name: "এস এম জাহিদুল ইসলাম",
           location: "মার্চেন্ডাইজ ম্যানেজার, এবিএ গ্রুপ, টঙ্গী",
           text: "লিপিড প্যানেল টেস্ট করলাম এবং আমার কর্পোরেট মেম্বারশিপ কার্ড ব্যবহার করে ১৫% ডিসকাউন্ট পেলাম। প্লাটফর্মটি সত্যিই কাজের।",
-          avatar: null
+          avatar: null,
+          time: "৩ দিন আগে"
         }
       ]
     },
@@ -741,6 +818,45 @@ export const homepageTranslations = {
       ambulanceTitle: "অ্যাম্বুলেন্স সার্ভিস:",
       ambulanceDesc: "জরুরি পরিস্থিতিতে সাভার ও পার্শ্ববর্তী এলাকার সকল নির্ভরযোগ্য অ্যাম্বুলেন্সের কন্টাক্ট নম্বর এখন এক জায়গায়। বিপদের সময় দ্রুত ও নিরাপদ যাতায়াত নিশ্চিত করতে আমরা আছি আপনার পাশে। দ্রুত সাহায্য পেতে এখনই আমাদের তালিকাটি দেখুন।",
       ambulanceBtn: "অ্যাম্বুলেন্স খুঁজুন",
+      socialProof: {
+        doctor: "ডাক্তার",
+        hospital: "হাসপাতাল",
+        test: "টেস্ট",
+        bloodDonor: "রক্তদাতা",
+        doctorCount: "২০০০+",
+        hospitalCount: "৪০+",
+        testCount: "১০০+",
+        bloodDonorCount: "১০০০+",
+      },
+      faq: {
+        title: "সচরাচর জিজ্ঞাসিত প্রশ্নাবলী",
+        questions: [
+          {
+            question: "ডাক্তার বুক করার জন্য আমাকে কি কোনো অগ্রিম ফি দিতে হবে?",
+            answer: "না, মেডিটাইমে বুকিং একদম ফ্রি। আপনি সরাসরি হাসপাতালে পৌঁছে শুধুমাত্র ডাক্তারের ভিজিট প্রদান করবেন।",
+          },
+          {
+            question: "ভিডিও কলের পর আমি প্রেসক্রিপশন কীভাবে পাবো?",
+            answer: "কনসালটেশন শেষ হওয়ার সাথে সাথেই আপনার প্রোফাইলে একটি ডিজিটাল প্রেসক্রিপশন চলে আসবে। আপনি এটি ডাউনলোড করতে পারবেন বা যেকোনো ফার্মেসিতে দেখিয়ে ওষুধ কিনতে পারবেন।",
+          },
+          {
+            question: "মেডিটাইমের মাধ্যমে হাসপাতাল খুঁজলে আমার লাভ কী?",
+            answer: "আমরা আপনাকে ৪০টিরও বেশি সেরা হাসপাতালের বিশেষ সেবা, বেড খালি আছে কি না এবং রেটিং সম্পর্কে সঠিক তথ্য দিই, যা আপনাকে দ্রুত সিদ্ধান্ত নিতে সাহায্য করবে।",
+          },
+          {
+            question: "দাম তুলনা করার ফিচারটি আমার টাকা বাঁচাতে কীভাবে সাহায্য করে?",
+            answer: "আমরা আপনার আশেপাশের বিভিন্ন ডায়াগনস্টিক সেন্টারের টেস্টের দাম এক জায়গায় দেখাই। এতে আপনি নিজেই সবচেয়ে সাশ্রয়ী এবং নির্ভরযোগ্য ল্যাবটি বেছে নিতে পারেন।",
+          },
+          {
+            question: "জরুরি প্রয়োজনে আমি কি রক্তদাতার সাথে সরাসরি যোগাযোগ করতে পারব?",
+            answer: "হ্যাঁ! আমাদের ডিরেক্টরিতে ভেরিফাইড ডোনারদের সরাসরি নম্বর দেওয়া থাকে। কোনো মাধ্যম ছাড়াই আপনি সরাসরি তাদের সাথে যোগাযোগ করতে পারবেন।",
+          },
+          {
+            question: "অ্যাম্বুলেন্সটি আমার কাছে পৌঁছাতে কতক্ষণ সময় নেবে?",
+            answer: "আমরা আপনার এলাকার সবচেয়ে কাছের অ্যাম্বুলেন্সের সাথে আপনাকে যুক্ত করি। আপনার অবস্থানের ওপর ভিত্তি করে আমাদের গড় রেসপন্স টাইম ১৫-২০ মিনিট।",
+          },
+        ]
+      }
     },
     doctorsPage: {
       heroTitle: "সাভার ও পার্শ্ববর্তী এলাকার সেরা বিশেষজ্ঞ ডাক্তারগণ",
@@ -1006,6 +1122,38 @@ export const homepageTranslations = {
       subtitle: "দ্রুত সাহায্য প্রয়োজন? সাভার ও এর আশেপাশে ২৪/৭ অ্যাম্বুলেন্স সার্ভিসের সম্পূর্ণ তালিকা এখানে পাবেন।",
       callBtn: "এখনই কল করুন",
       findByLocation: "অবস্থান অনুযায়ী অ্যাম্বুলেন্স খুঁজুন",
+      becomePartnerBtn: "অ্যাম্বুলেন্স পার্টনার হন",
+      socialProof: {
+        quantity: "অ্যাম্বুলেন্সের সংখ্যা",
+        success: "সফল সেবা",
+        verified: "ভেরিফাইড ব্যাজ",
+        responseTime: "রেসপন্স টাইম",
+        quantityCount: 1000,
+        successCount: 1000,
+        verifiedLabel: "BRTA অনুমোদিত",
+        responseTimeLabel: "২০-৩০ মিনিট",
+      },
+      card: {
+        verified: "ভেরিফাইড",
+        type: "ধরন",
+        address: "ঠিকানা",
+        vehicleNumber: "গাড়ি নম্বর",
+        status: "অবস্থা",
+        callNow: "এখনই কল করুন",
+      },
+      types: {
+        ac: "এসি অ্যাম্বুলেন্স",
+        nonAc: "নন-এসি অ্যাম্বুলেন্স",
+        icu: "আইসিইউ অ্যাম্বুলেন্স",
+        freezing: "ফ্রিজিং অ্যাম্বুলেন্স",
+        nicu: "এনআইসিইউ অ্যাম্বুলেন্স",
+        air: "এয়ার অ্যাম্বুলেন্স",
+      },
+      statuses: {
+        available: "উপলব্ধ",
+        onCall: "কলে আছে",
+        unavailable: "অনুপলব্ধ",
+      }
     },
     bloodDonor: {
       title: "রক্ত দিন, জীবন বাচাঁন: গর্বিত রক্তদাতা হোন।",

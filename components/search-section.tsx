@@ -11,13 +11,21 @@ import { homepageTranslations } from "@/lib/homepage-translations";
 interface Doctor {
   _id: string;
   name: string;
+  nameBn?: string;
+  slug?: string;
   specialty?: string;
+  specialtyBn?: string;
+  department?: string;
+  departmentBn?: string;
   hospital?: string;
+  hospitalBn?: string;
 }
 
 interface Hospital {
   _id: string;
   name: string;
+  nameBn?: string;
+  slug?: string;
 }
 
 export default function SearchSection() {
@@ -57,54 +65,100 @@ export default function SearchSection() {
 
   const suggestions = useMemo(() => {
     if (!searchQuery || searchQuery.length < 1) return [];
-    const query = searchQuery.toLowerCase();
-    const results: Array<{
+    const query = searchQuery.toLowerCase().trim();
+    
+    interface ScoredSuggestion {
       type: string;
       value: string;
       doctor?: Doctor;
       hospital?: Hospital;
-      link?: string;
-    }> = [];
+      link: string;
+      score: number;
+    }
 
-    const matchingDoctors = doctors
-      .filter(
-        (doctor) =>
-          (doctor.name && doctor.name.toLowerCase().includes(query)) ||
-          (doctor.specialty && doctor.specialty.toLowerCase().includes(query)) ||
-          (doctor.hospital && doctor.hospital.toLowerCase().includes(query))
-      )
-      .slice(0, 5);
+    const results: ScoredSuggestion[] = [];
 
-    matchingDoctors.forEach((doctor) => {
-      if (doctor.name && doctor.name.toLowerCase().includes(query)) {
-        results.push({ type: "Doctor", value: doctor.name, doctor });
+    // 1. Doctor Scoring & Matching
+    doctors.forEach((doctor) => {
+      const name = (doctor.name || "").toLowerCase();
+      const nameBn = (doctor.nameBn || "").toLowerCase();
+      const specialty = (doctor.specialty || "").toLowerCase();
+      const specialtyBn = (doctor.specialtyBn || "").toLowerCase();
+      const dept = (doctor.department || "").toLowerCase(); // Note: department field name check
+      const hospital = (doctor.hospital || "").toLowerCase();
+
+      let maxScore = 0;
+
+      // Exact matches get highest priority
+      if (name === query || nameBn === query) maxScore = 100;
+      else if (name.startsWith(query) || nameBn.startsWith(query)) maxScore = 80;
+      else if (name.includes(query) || nameBn.includes(query)) maxScore = 60;
+
+      // Specialty matches
+      if (specialty.includes(query) || specialtyBn.includes(query)) {
+        const specScore = specialty === query ? 50 : 30;
+        if (specScore > maxScore) {
+          // If the specialty is the primary match, we might want to add the specialty category too
+          if (!results.some(r => r.type === "Specialty" && r.value.toLowerCase() === specialty)) {
+            results.push({
+              type: "Specialty",
+              value: language === 'bn' ? (doctor.specialtyBn || doctor.specialty || "") : (doctor.specialty || ""),
+              link: `/doctor?search=${encodeURIComponent(doctor.specialty || "")}`,
+              score: specScore + 5 // Slightly higher than individual doctor specialty score
+            });
+          }
+        }
+        maxScore = Math.max(maxScore, specScore);
       }
-      if (
-        doctor.specialty &&
-        doctor.specialty.toLowerCase().includes(query) &&
-        !results.some((r) => r.type === "Specialty" && r.value === doctor.specialty)
-      ) {
-        results.push({ type: "Specialty", value: doctor.specialty });
+
+      // Department/Hospital context matches
+      if (dept.includes(query) || hospital.includes(query)) {
+        maxScore = Math.max(maxScore, 20);
       }
-    });
 
-    const matchingHospitals = hospitals
-      .filter((h) => h.name && h.name.toLowerCase().includes(query))
-      .slice(0, 3);
-
-    matchingHospitals.forEach((hospital) => {
-      if (!results.some((r) => r.type === "Hospital" && r.value === hospital.name)) {
+      if (maxScore > 0) {
         results.push({
-          type: "Hospital",
-          value: hospital.name,
-          hospital,
-          link: `/hospital/${encodeURIComponent(hospital.name)}`,
+          type: "Doctor",
+          value: language === 'bn' ? (doctor.nameBn || doctor.name) : doctor.name,
+          doctor,
+          link: `/doctor/${doctor.slug || doctor._id}`,
+          score: maxScore
         });
       }
     });
 
-    return results.slice(0, 8);
-  }, [searchQuery, doctors, hospitals]);
+    // 2. Hospital Scoring & Matching
+    hospitals.forEach((hospital) => {
+      const name = (hospital.name || "").toLowerCase();
+      const nameBn = (hospital.nameBn || "").toLowerCase();
+
+      let hScore = 0;
+      if (name === query || nameBn === query) hScore = 95; // Slightly below doctor exact match to keep mixture
+      else if (name.startsWith(query) || nameBn.startsWith(query)) hScore = 75;
+      else if (name.includes(query) || nameBn.includes(query)) hScore = 55;
+
+      if (hScore > 0) {
+        // Avoid duplicate hospital suggestions
+        if (!results.some(r => r.type === "Hospital" && r.hospital?._id === hospital._id)) {
+          results.push({
+            type: "Hospital",
+            value: language === 'bn' ? (hospital.nameBn || hospital.name) : hospital.name,
+            hospital,
+            link: `/hospital/${hospital.slug || encodeURIComponent(hospital.name)}`,
+            score: hScore
+          });
+        }
+      }
+    });
+
+    // Sort by score (descending) and then type to ensure mixture if scores are same
+    return results
+      .sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.type.localeCompare(b.type); // Secondary sort to interleave types
+      })
+      .slice(0, 8);
+  }, [searchQuery, doctors, hospitals, language]);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {

@@ -1,33 +1,80 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useInView, useSpring, useTransform } from "framer-motion";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { 
-  Heart, 
-  Search, 
-  MapPin, 
-  Phone, 
-  User, 
+import {
+  Heart,
+  Search,
+  MapPin,
+  Phone,
+  User,
   Droplet,
   PlusCircle,
   ShieldCheck,
   ChevronRight,
   Filter,
   CheckCircle2,
-  Users
+  Users,
+  Loader2,
+  Clock
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
+import { homepageTranslations } from "@/lib/homepage-translations";
+import { PiDropDuotone, PiCheckCircleDuotone, PiShieldCheckDuotone, PiClockDuotone } from "react-icons/pi";
+import toast from "react-hot-toast";
 
 const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
+/**
+ * Counter Component (Matches Homepage)
+ */
+function Counter({ value, suffix = "" }: { value: number | string; suffix?: string }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.5 });
+
+  const numericValue = typeof value === 'number' ? value : parseInt(value);
+  const isNumeric = !isNaN(numericValue);
+
+  const spring = useSpring(0, {
+    stiffness: 40,
+    damping: 20,
+    restDelta: 0.001
+  });
+
+  const displayValue = useTransform(spring, (current) => Math.floor(current));
+
+  useEffect(() => {
+    if (isInView && isNumeric) {
+      spring.set(numericValue);
+    }
+  }, [isInView, spring, numericValue, isNumeric]);
+
+  return (
+    <span ref={ref}>
+      {isNumeric ? <motion.span>{displayValue}</motion.span> : value}
+      {suffix}
+    </span>
+  );
+}
+
 export default function BloodDonorPage() {
-  const { language } = useLanguage();
+  const { language } = useLanguage() as { language: 'en' | 'bn' };
   const [selectedGroup, setSelectedGroup] = useState("");
   const [divisions, setDivisions] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
@@ -36,7 +83,22 @@ export default function BloodDonorPage() {
   const [donors, setDonors] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
+
+  const tH = homepageTranslations[language].hospitalsPage;
+
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    nameBn: "",
+    phoneNumber: "",
+    bloodGroup: "A+",
+    division: "",
+    district: "",
+    thana: "",
+    availabilityStatus: "Available",
+  });
 
   const fetchDivisions = useCallback(async () => {
     try {
@@ -48,15 +110,20 @@ export default function BloodDonorPage() {
     }
   }, []);
 
-  const fetchDistricts = useCallback(async (divisionId: string) => {
+  const fetchDistricts = useCallback(async (divisionId: string, target: 'filter' | 'modal' = 'filter') => {
     try {
-      const res = await fetch(`/api/locations/districts?division=${divisionId}`);
+      const div = divisions.find(d => d._id === divisionId || d.name === divisionId);
+      if (!div) return;
+      const res = await fetch(`/api/locations/districts?division=${div._id}`);
       const data = await res.json();
-      if (res.ok) setDistricts(data.districts);
+      if (res.ok) {
+        if (target === 'filter') setDistricts(data.districts);
+        return data.districts;
+      }
     } catch (error) {
       console.error("Error fetching districts:", error);
     }
-  }, []);
+  }, [divisions]);
 
   useEffect(() => {
     fetchDivisions();
@@ -103,327 +170,412 @@ export default function BloodDonorPage() {
     }
   };
 
+  // Modal Specific States
+  const [modalDistricts, setModalDistricts] = useState<any[]>([]);
+  const [modalThanas, setModalThanas] = useState<any[]>([]);
+
+  const handleModalDivisionChange = async (val: string) => {
+    setFormData(prev => ({ ...prev, division: val, district: "", thana: "" }));
+    const dists = await fetchDistricts(val, 'modal');
+    if (dists) setModalDistricts(dists);
+  };
+
+  const handleModalDistrictChange = async (val: string) => {
+    setFormData(prev => ({ ...prev, district: val, thana: "" }));
+    const districtObj = modalDistricts.find(d => d.name === val);
+    if (!districtObj) return;
+    const response = await fetch(`/api/locations/thanas?district=${districtObj._id}`);
+    const data = await response.json();
+    if (response.ok) setModalThanas(data.thanas);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/blood-donors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
+        toast.success(language === 'bn' ? "আবেদন সফলভাবে পাঠানো হয়েছে!" : "Application submitted successfully!");
+        setIsModalOpen(false);
+        setFormData({
+          name: "",
+          nameBn: "",
+          phoneNumber: "",
+          bloodGroup: "A+",
+          division: "",
+          district: "",
+          thana: "",
+          availabilityStatus: "Available",
+        });
+      } else {
+        const data = await response.json();
+        toast.error(data.error || "Something went wrong");
+      }
+    } catch (error) {
+      toast.error("Network error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const scrollToJoin = () => {
+    const section = document.getElementById("join-section");
+    if (section) section.scrollIntoView({ behavior: "smooth" });
+  };
+
   const t = {
     title: { en: "Find a Blood Donor", bn: "রক্তদাতা খুঁজুন" },
     subtitle: { en: "Connecting life-saving blood donors with those in need across Bangladesh.", bn: "সারা বাংলাদেশে রক্তদাতাদের সাথে প্রয়োজনে ব্যক্তিদের সংযোগ স্থাপন করছি।" },
     searchBtn: { en: "Search Donors", bn: "দাতা খুঁজুন" },
-    becomeDonor: { en: "Become a Donor", bn: "রক্তদাতা হোন" },
-    stats: [
-      { label: { en: "Active Donors", bn: "সক্রিয় দাতা" }, value: "12k+" },
-      { label: { en: "Lives Saved", bn: "জীবন বাঁচানো" }, value: "45k+" },
-      { label: { en: "Districts", bn: "জেলা" }, value: "64" }
-    ]
+    becomeDonor: { en: "Become a Blood Donor", bn: "রক্তদাতা হোন" },
+    socialProof: {
+      quantity: { en: "Register Donor", bn: "নিবন্ধিত দাতা" },
+      success: { en: "Successful Register", bn: "সফল নিবন্ধন" },
+      verified: { en: "Verified Donor", bn: "ভেরিফাইড দাতা" },
+      responseTime: { en: "Response Time", bn: "রেসপন্স টাইম" },
+      verifiedLabel: { en: "Trusted & Secure", bn: "বিশ্বস্ত ও নিরাপদ" },
+      responseTimeLabel: { en: "30 Minutes", bn: "৩০ মিনিট" },
+    },
+    card: {
+      address: { en: "Address", bn: "ঠিকানা" },
+      status: { en: "Status", bn: "অবস্থা" },
+      verified: { en: "Verified", bn: "ভেরিফাইড" },
+      callNow: { en: "Call Now", bn: "কল করুন" }
+    }
   };
+
+  const socialProof = [
+    { label: t.socialProof.quantity[language], value: 1000, suffix: "+", icon: PiDropDuotone },
+    { label: t.socialProof.success[language], value: 1000, suffix: "+", icon: PiCheckCircleDuotone },
+    { label: t.socialProof.verified[language], value: t.socialProof.verifiedLabel[language], suffix: "", icon: PiShieldCheckDuotone },
+    { label: t.socialProof.responseTime[language], value: t.socialProof.responseTimeLabel[language], suffix: "", icon: PiClockDuotone },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-white border-b border-slate-100">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-red-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
+      {/* ── NEW HERO SECTION (Using Service Component Image) ── */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative mt-20 h-[450px] md:h-[550px] w-full overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/60 via-primary/40 to-slate-900/60 z-10" />
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1615461066159-fea0960485d5?auto=format&fit=crop&q=80')",
+          }}
+        />
+        <div className="relative z-20 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
+              {language === 'en' ? "Be a Hero in Someone's Story" : "কারো জীবনের গল্পে নায়ক হয়ে উঠুন"}
+            </h1>
+            <p className="text-lg md:text-xl text-white/95 mb-10 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
+              {t.subtitle[language]}
+            </p>
+
+            <Button
+              onClick={scrollToJoin}
+              className="h-16 px-10 bg-primary text-white hover:bg-primary/90 rounded-2xl font-black text-lg shadow-2xl gap-3 transition-transform hover:scale-105 active:scale-95"
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-red-50 text-red-600 font-bold text-xs mb-6 uppercase tracking-widest border border-red-100">
-                <Heart className="w-4 h-4 fill-current" />
-                Blood Donation Management
-              </div>
-              <h1 className="text-4xl md:text-6xl font-black text-slate-900 leading-tight mb-6">
-                {language === 'en' ? (
-                  <>Saving Lives with <span className="text-red-500">Every Drop</span> Counts</>
-                ) : (
-                  <>প্রতিটি রক্তবিন্দু দিয়ে <span className="text-red-500">জীবন</span> বাঁচান</>
-                )}
-              </h1>
-              <p className="text-lg text-slate-600 mb-10 max-w-xl">
-                {language === 'en' 
-                  ? "Access our extensive database of voluntary blood donors from all of Bangladesh. Fast, secure, and life-saving."
-                  : "সারা বাংলাদেশের স্বেচ্ছায় রক্তদাতাদের বিশাল ডাটাবেজ থেকে প্রয়োজনীয় রক্তদাতা খুঁজে নিন। দ্রুত, নিরাপদ এবং জীবন রক্ষাকারী।"}
-              </p>
-              
-              <div className="grid grid-cols-3 gap-6">
-                {t.stats.map((stat, i) => (
-                  <div key={i}>
-                    <p className="text-3xl font-black text-slate-900 mb-1">{stat.value}</p>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{stat.label[language as keyof typeof stat.label]}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+              {language === 'en' ? "Be a Donor" : "রক্তদাতা হোন"}
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </motion.div>
+        </div>
+      </motion.div>
 
+      {/* ── Social Proof Section (Using Primary Color) ── */}
+      <div className="relative z-30 -mt-16 md:-mt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {socialProof.map(({ value, suffix, label, icon: Icon }, index) => (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
-              className="relative"
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <Card className="p-8 rounded-[3rem] shadow-2xl border-none bg-white relative z-10">
-                <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-2">
-                  <Search className="w-6 h-6 text-red-500" />
-                  {t.title[language as keyof typeof t.title]}
-                </h3>
-
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
-                      {language === 'en' ? "Blood Group" : "রক্তের গ্রুপ"}
-                    </label>
-                    <div className="grid grid-cols-4 gap-2">
-                      {bloodGroups.map(group => (
-                        <button
-                          key={group}
-                          onClick={() => setSelectedGroup(group)}
-                          className={`h-12 rounded-xl font-bold flex items-center justify-center transition-all ${
-                            selectedGroup === group 
-                              ? "bg-red-500 text-white shadow-lg shadow-red-500/20" 
-                              : "bg-slate-50 text-slate-600 hover:bg-slate-100"
-                          }`}
-                        >
-                          {group}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
-                          {language === 'en' ? "Division" : "বিভাগ"}
-                        </label>
-                        <select 
-                          value={selectedDivision}
-                          onChange={(e) => setSelectedDivision(e.target.value)}
-                          className="w-full h-14 px-4 bg-slate-50 border-none rounded-xl font-medium focus:ring-2 focus:ring-red-500/20"
-                        >
-                          <option value="">{language === 'en' ? "Select Division" : "বিভাগ নির্বাচন করুন"}</option>
-                          {divisions.map((div) => (
-                            <option key={div._id} value={div._id}>
-                              {getLocalizedValue(div.name, div.nameBn, language)}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
-                          {language === 'en' ? "District" : "জেলা"}
-                        </label>
-                        <select 
-                          value={selectedDistrict}
-                          onChange={(e) => setSelectedDistrict(e.target.value)}
-                          disabled={!selectedDivision}
-                          className="w-full h-14 px-4 bg-slate-50 border-none rounded-xl font-medium focus:ring-2 focus:ring-red-500/20 disabled:opacity-50"
-                        >
-                          <option value="">{language === 'en' ? "Select District" : "জেলা নির্বাচন করুন"}</option>
-                          {districts.map((dist) => (
-                            <option key={dist._id} value={dist._id}>
-                              {getLocalizedValue(dist.name, dist.nameBn, language)}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    <Button 
-                      onClick={handleSearch}
-                      disabled={loading}
-                      className="w-full h-16 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-black text-lg shadow-xl shadow-red-500/20 gap-2"
-                    >
-                      {loading ? (
-                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
-                      ) : (
-                        <>
-                          <Search className="w-5 h-5" />
-                          {t.searchBtn[language as keyof typeof t.searchBtn]}
-                        </>
-                      )}
-                    </Button>
+              <div className="btn-slide group flex flex-col items-center text-center p-8 md:p-12 rounded-3xl transition-all duration-500 bg-[#002B2B] border border-slate-800 shadow-2xl min-h-[220px] h-full justify-center">
+                <div className="mb-4 text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
+                  <Icon size={56} height="duotone" />
                 </div>
-              </Card>
-
-              {/* Decorative elements */}
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-red-400/10 rounded-[3rem] -z-0" />
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-slate-100 rounded-full -z-0" />
+                <div className="text-[32px] md:text-[40px] font-bold text-white mb-1 leading-none">
+                  <Counter value={value} suffix={suffix} />
+                </div>
+                <div className="text-[14px] md:text-[16px] text-teal-100/70 font-bold uppercase tracking-wider">
+                  {label}
+                </div>
+              </div>
             </motion.div>
-          </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Original Search Section (Using Primary Color) */}
+      <section className="py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Card className="p-8 rounded-[3rem] shadow-2xl border-none bg-white mb-12">
+            <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-2">
+              <Search className="w-6 h-6 text-primary" />
+              {t.title[language]}
+            </h3>
+
+            <div className="space-y-6">
+              <div>
+                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
+                  {language === 'en' ? "Blood Group" : "রক্তের গ্রুপ"}
+                </label>
+                <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
+                  {bloodGroups.map(group => (
+                    <button
+                      key={group}
+                      onClick={() => setSelectedGroup(group === selectedGroup ? "" : group)}
+                      className={`h-12 rounded-xl font-bold flex items-center justify-center transition-all ${selectedGroup === group
+                        ? "bg-primary text-white shadow-lg shadow-primary/20"
+                        : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+                        }`}
+                    >
+                      {group}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
+                    {language === 'en' ? "Division" : "বিভাগ"}
+                  </label>
+                  <select
+                    value={selectedDivision}
+                    onChange={(e) => setSelectedDivision(e.target.value)}
+                    className="w-full h-14 px-4 bg-slate-50 border-none rounded-xl font-medium focus:ring-2 focus:ring-primary/20"
+                  >
+                    <option value="">{language === 'en' ? "Select Division" : "বিভাগ নির্বাচন করুন"}</option>
+                    {divisions.map((div) => (
+                      <option key={div._id} value={div._id}>
+                        {getLocalizedValue(div.name, div.nameBn, language)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
+                    {language === 'en' ? "District" : "জেলা"}
+                  </label>
+                  <select
+                    value={selectedDistrict}
+                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                    disabled={!selectedDivision}
+                    className="w-full h-14 px-4 bg-slate-50 border-none rounded-xl font-medium focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                  >
+                    <option value="">{language === 'en' ? "Select District" : "জেলা নির্বাচন করুন"}</option>
+                    {districts.map((dist) => (
+                      <option key={dist._id} value={dist._id}>
+                        {getLocalizedValue(dist.name, dist.nameBn, language)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <Button
+                onClick={handleSearch}
+                disabled={loading}
+                className="w-full h-16 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black text-lg shadow-xl shadow-primary/20 gap-2"
+              >
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Search className="w-5 h-5" /> {t.searchBtn[language]}</>}
+              </Button>
+            </div>
+          </Card>
+
+          {/* Results Grid */}
+          <AnimatePresence>
+            {hasSearched && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                id="results"
+                className="scroll-mt-24"
+              >
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-2xl font-black text-slate-900">
+                    {language === 'en' ? "Search Results" : "অনুসন্ধানের ফলাফল"}
+                    <span className="ml-3 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm">
+                      {donors.length}
+                    </span>
+                  </h2>
+                </div>
+
+                {donors.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {donors.map((donor) => (
+                      <motion.div key={donor._id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+                        <Card className="p-6 rounded-[2rem] border-none shadow-lg hover:shadow-xl transition-all bg-white relative overflow-hidden">
+                          <div className="flex items-center gap-4 mb-6">
+                            <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 ring-4 ring-slate-50 flex items-center justify-center">
+                              {donor.photo ? <Image src={donor.photo} alt={donor.name} fill className="object-cover" /> : <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary text-2xl font-black">{donor.bloodGroup}</div>}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <h3 className="font-bold text-lg text-slate-900 truncate">{getLocalizedValue(donor.name, donor.nameBn, language)}</h3>
+                                {donor.isApproved && (
+                                  <span className="text-[10px] font-bold text-primary uppercase bg-primary/5 px-2 py-0.5 rounded border border-primary/10">
+                                    {t.card.verified[language]}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 mt-1">
+                                <MapPin className="w-3 h-3 text-slate-400" />
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest truncate">{language === 'bn' ? [donor.thanaBn || donor.thana, donor.districtBn || donor.district].filter(Boolean).join(", ") : [donor.thana, donor.district].filter(Boolean).join(", ") || "Location N/A"}</p>
+                              </div>
+                            </div>
+                            <div className="ml-auto w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center font-black text-lg shadow-lg shadow-primary/20 shrink-0">{donor.bloodGroup}</div>
+                          </div>
+
+                          <div className="space-y-3 mb-6">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-slate-500 font-medium">{t.card.status[language]}</span>
+                              <span className={`font-bold ${donor.availabilityStatus === 'Available' ? 'text-green-500' : 'text-orange-500'}`}>
+                                {donor.availabilityStatus === 'Available' ? (language === 'bn' ? 'উপলব্ধ' : 'Available') : (language === 'bn' ? 'অনুপলব্ধ' : donor.availabilityStatus)}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-slate-500 font-medium">{language === 'en' ? "Last Donation" : "শেষ রক্তদান"}</span>
+                              <span className="font-bold text-slate-700">{donor.lastDonationDate ? new Date(donor.lastDonationDate).toLocaleDateString() : (language === 'bn' ? 'কখনো নয়' : 'Never')}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <a href={`tel:${donor.phoneNumber}`} className="flex-1 h-12 inline-flex items-center justify-center bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold gap-2 shadow-lg shadow-slate-200 transition-all active:scale-95">
+                              <Phone className="w-4 h-4 fill-white" />
+                              {t.card.callNow[language]}
+                            </a>
+                          </div>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-20 bg-white rounded-[3rem] border-2 border-dashed border-slate-200">
+                    <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-6"><Users className="w-10 h-10 text-slate-300" /></div>
+                    <h3 className="text-xl font-black text-slate-900 mb-2">{language === 'en' ? "No Donors Found" : "কোনো রক্তদাতা পাওয়া যায়নি"}</h3>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
 
-      {/* Results Section */}
-      <AnimatePresence>
-        {hasSearched && (
-          <motion.section 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            id="results"
-            className="py-12 bg-slate-50 scroll-mt-24"
-          >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-black text-slate-900">
-                  {language === 'en' ? "Search Results" : "অনুসন্ধানের ফলাফল"}
-                  <span className="ml-3 px-3 py-1 rounded-full bg-red-100 text-red-600 text-sm">
-                    {donors.length}
-                  </span>
-                </h2>
-              </div>
-
-              {donors.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {donors.map((donor) => (
-                    <motion.div
-                      key={donor._id}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="group"
-                    >
-                      <Card className="p-6 rounded-[2rem] border-none shadow-lg hover:shadow-xl transition-all bg-white relative overflow-hidden">
-                        <div className="flex items-center gap-4 mb-6">
-                          <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 ring-4 ring-slate-50">
-                            {donor.photo ? (
-                              <Image src={donor.photo} alt={donor.name} fill className="object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-red-50 text-red-500 text-2xl font-black">
-                                {donor.bloodGroup}
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <h3 className="font-bold text-lg text-slate-900 leading-tight">
-                              {getLocalizedValue(donor.name, donor.nameBn, language)}
-                            </h3>
-                            <div className="flex items-center gap-2 mt-1">
-                              <MapPin className="w-3 h-3 text-slate-400" />
-                              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                                {donor.district || donor.division || "Location N/A"}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="ml-auto w-12 h-12 rounded-xl bg-red-500 text-white flex items-center justify-center font-black text-lg shadow-lg shadow-red-500/20">
-                            {donor.bloodGroup}
-                          </div>
-                        </div>
-
-                        <div className="space-y-3 mb-6">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-slate-500 font-medium">Availability</span>
-                            <span className={`font-bold ${donor.availabilityStatus === 'Available' ? 'text-green-500' : 'text-orange-500'}`}>
-                              {donor.availabilityStatus}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-slate-500 font-medium">Last Donation</span>
-                            <span className="font-bold text-slate-700">
-                              {donor.lastDonationDate ? new Date(donor.lastDonationDate).toLocaleDateString() : 'Never'}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-2">
-                          <a 
-                            href={`tel:${donor.phoneNumber}`}
-                            className="flex-1 h-12 inline-flex items-center justify-center bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold gap-2 transition-all active:scale-95"
-                          >
-                            <Phone className="w-4 h-4" />
-                            {language === 'en' ? "Call Now" : "কল করুন"}
-                          </a>
-                        </div>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-20 bg-white rounded-[3rem] border-2 border-dashed border-slate-200">
-                  <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-6">
-                    <Users className="w-10 h-10 text-slate-300" />
-                  </div>
-                  <h3 className="text-xl font-black text-slate-900 mb-2">
-                    {language === 'en' ? "No Donors Found" : "কোনো রক্তদাতা পাওয়া যায়নি"}
-                  </h3>
-                  <p className="text-slate-400">
-                    {language === 'en' 
-                      ? "Try adjusting your filters to find more donors in nearby areas." 
-                      : "আপনার ফিল্টার পরিবর্তন করে নিকটস্থ এলাকার রক্তদাতাদের খুঁজুন।"}
-                  </p>
-                </div>
-              )}
-            </div>
-          </motion.section>
-        )}
-      </AnimatePresence>
-
-      {/* Why Blood Section */}
-      <section className="py-24">
+      {/* ── Join Section (Using Primary Color) ── */}
+      <section id="join-section" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="order-2 lg:order-1 relative">
+            <div className="relative">
               <div className="aspect-[4/5] relative rounded-[3rem] overflow-hidden shadow-2xl">
-                <Image 
-                  src="/images/blood_donor_hero.png" 
-                  alt="Blood Donation" 
-                  fill 
-                  className="object-cover" 
-                />
+                <Image src="/images/blood_donor_hero.png" alt="Blood Donation" fill className="object-cover" />
               </div>
               <div className="absolute bottom-10 -right-10 bg-white p-8 rounded-[2rem] shadow-2xl border border-slate-100 hidden md:block max-w-[280px]">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center">
-                    <CheckCircle2 className="w-6 h-6" />
-                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center"><CheckCircle2 className="w-6 h-6" /></div>
                   <p className="font-black text-slate-800">{language === 'en' ? "Free Service" : "ফ্রি সার্ভিস"}</p>
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed font-medium">
-                  {language === 'en' 
-                    ? "MediTime doesn't charge users for blood donor services. It's built for society."
-                    : "মেডিটাইম রক্তদাতার সেবার জন্য কোন চার্জ নেয় না। এটি সমাজের জন্য নির্মিত।"}
+                  {language === 'en' ? "MediTime doesn't charge users for blood donor services. It's built for society." : "মেডিটাইম রক্তদাতার সেবার জন্য কোন চার্জ নেয় না। এটি সমাজের জন্য নির্মিত।"}
                 </p>
               </div>
             </div>
 
-            <div className="order-1 lg:order-2">
+            <div>
               <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-8 leading-tight">
-                {language === 'en' 
-                  ? "Be a Hero in Someone's Story" 
-                  : "কারো জীবনের গল্পে নায়ক হয়ে উঠুন"}
+                {language === 'en' ? "Be a Hero in Someone's Story" : "কারো জীবনের গল্পে নায়ক হয়ে উঠুন"}
               </h2>
               <div className="space-y-10">
                 {[
-                  {
-                    icon: <Users className="w-6 h-6" />,
-                    title: { en: "Community Driven", bn: "কমিউনিটি ভিত্তিক" },
-                    desc: { en: "Our platform is built by the community for the community. Every donor is a verified hero.", bn: "আমাদের প্ল্যাটফর্মটি কমিউনিটির জন্য নির্মিত। প্রতিটি রক্তদাতা আমাদের কাছে নায়ক।" }
-                  },
-                  {
-                    icon: <ShieldCheck className="w-6 h-6" />,
-                    title: { en: "Secure Contact", bn: "নিরাপদ যোগাযোগ" },
-                    desc: { en: "We ensure that your contact information is protected and only shared with verified users in need.", bn: "আমরা নিশ্চিত করি আপনার যোগাযোগের তথ্য নিরাপদ এবং শুধুমাত্র প্রয়োজনে যাচাইকৃত ব্যক্তিদের সাথে শেয়ার করা হয়।" }
-                  }
+                  { icon: <Users className="w-6 h-6" />, title: { en: "Community Driven", bn: "কমিউনিটি ভিত্তিক" }, desc: { en: "Our platform is built by the community for the community. Every donor is a verified hero.", bn: "আমাদের প্ল্যাটফর্মটি কমিউনিটির জন্য নির্মিত। প্রতিটি রক্তদাতা আমাদের কাছে নায়ক।" } },
+                  { icon: <ShieldCheck className="w-6 h-6" />, title: { en: "Secure Contact", bn: "নিরাপদ যোগাযোগ" }, desc: { en: "We ensure that your contact information is protected and only shared with verified users in need.", bn: "আমরা নিশ্চিত করি আপনার যোগাযোগের তথ্য নিরাপদ এবং শুধুমাত্র প্রয়োজনে যাচাইকৃত ব্যক্তিদের সাথে শেয়ার করা হয়।" } }
                 ].map((item, i) => (
                   <div key={i} className="flex gap-6">
-                    <div className="w-14 h-14 rounded-2xl bg-slate-900 text-white flex items-center justify-center shrink-0">
-                      {item.icon}
-                    </div>
+                    <div className="w-14 h-14 rounded-2xl bg-slate-900 text-white flex items-center justify-center shrink-0">{item.icon}</div>
                     <div>
-                      <h4 className="text-xl font-bold text-slate-900 mb-2">{item.title[language as keyof typeof item.title]}</h4>
-                      <p className="text-slate-500 leading-relaxed">{item.desc[language as keyof typeof item.desc]}</p>
+                      <h4 className="text-xl font-bold text-slate-900 mb-2">{item.title[language]}</h4>
+                      <p className="text-slate-500 leading-relaxed">{item.desc[language]}</p>
                     </div>
                   </div>
                 ))}
 
                 <div className="pt-6">
-                   <Button 
-                    onClick={() => setShowRegisterModal(true)}
-                    className="h-16 px-10 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-black text-lg shadow-xl shadow-red-500/20 gap-3 group"
-                  >
-                    <PlusCircle className="w-6 h-6" />
-                    {t.becomeDonor[language as keyof typeof t.becomeDonor]}
-                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </Button>
+                  {/* MODAL TRIGGER BUTTON */}
+                  <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="h-16 px-10 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black text-lg shadow-xl shadow-primary/20 gap-3 group transition-transform hover:scale-105 active:scale-95">
+                        <PlusCircle className="w-6 h-6" />
+                        {t.becomeDonor[language]}
+                        <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="text-primary">{t.becomeDonor[language]}</DialogTitle>
+                        <DialogDescription>{language === 'bn' ? 'রক্তদাতা হিসেবে আবেদন করতে নিচের ফর্মটি পূরণ করুন।' : 'Fill out the form below to apply as a blood donor.'}</DialogDescription>
+                      </DialogHeader>
+                      <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2"><Label>{language === 'bn' ? 'পূর্ণ নাম (English)' : 'Full Name (English)'} *</Label><Input required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="John Doe" /></div>
+                          <div className="space-y-2"><Label>{language === 'bn' ? 'পূর্ণ নাম (বাংলা)' : 'Full Name (বাংলা)'}</Label><Input value={formData.nameBn} onChange={e => setFormData({ ...formData, nameBn: e.target.value })} placeholder="জন ডো" /></div>
+                          <div className="space-y-2"><Label>{language === 'bn' ? 'ফোন নম্বর' : 'Phone Number'} *</Label><Input required value={formData.phoneNumber} onChange={e => setFormData({ ...formData, phoneNumber: e.target.value })} placeholder="+880" /></div>
+                          <div className="space-y-2">
+                            <Label>{language === 'bn' ? 'রক্তের গ্রুপ' : 'Blood Group'} *</Label>
+                            <select required value={formData.bloodGroup} onChange={e => setFormData({ ...formData, bloodGroup: e.target.value })} className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white">{bloodGroups.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>{language === 'bn' ? 'বিভাগ' : 'Division'} *</Label>
+                            <select required value={formData.division} onChange={e => handleModalDivisionChange(e.target.value)} className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white">
+                              <option value="">{tH.selectDivision}</option>
+                              {divisions.map(d => <option key={d._id} value={d.name}>{d.name}</option>)}
+                            </select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>{language === 'bn' ? 'জেলা' : 'District'} *</Label>
+                            <select required value={formData.district} onChange={e => handleModalDistrictChange(e.target.value)} disabled={!formData.division} className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white disabled:opacity-50">
+                              <option value="">{tH.selectDistrict}</option>
+                              {modalDistricts.map(d => <option key={d._id} value={d.name}>{d.name}</option>)}
+                            </select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>{language === 'bn' ? 'থানা' : 'Thana'} *</Label>
+                            <select required value={formData.thana} onChange={e => setFormData({ ...formData, thana: e.target.value })} disabled={!formData.district} className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white disabled:opacity-50">
+                              <option value="">{tH.selectThana}</option>
+                              {modalThanas.map(d => <option key={d._id} value={d.name}>{d.name}</option>)}
+                            </select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>{language === 'bn' ? 'অবস্থা' : 'Status'} *</Label>
+                            <select required value={formData.availabilityStatus} onChange={e => setFormData({ ...formData, availabilityStatus: e.target.value })} className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white">
+                              <option value="Available">{language === 'bn' ? 'উপলব্ধ' : 'Available'}</option>
+                              <option value="Unavailable">{language === 'bn' ? 'অনুপলব্ধ' : 'Unavailable'}</option>
+                              <option value="Recently Donated">{language === 'bn' ? 'সম্প্রতি রক্ত দিয়েছেন' : 'Recently Donated'}</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="pt-4"><Button type="submit" disabled={isSubmitting} className="w-full bg-primary hover:bg-primary/90 text-white font-bold">{isSubmitting ? (language === 'bn' ? 'প্রক্রিয়াধীন...' : 'Submitting...') : (language === 'bn' ? 'আবেদন জমা দিন' : 'Submit Application')}</Button></div>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </div>
@@ -432,82 +584,20 @@ export default function BloodDonorPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20">
+      <section className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-red-500 rounded-[3.5rem] p-12 md:p-24 text-center relative overflow-hidden">
-             <div className="absolute top-0 left-1/2 w-full h-full bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-             <div className="relative z-10">
-              <h2 className="text-3xl md:text-6xl font-black text-white mb-8">
-                {language === 'en' ? "Emergency Need?" : "জরুরি প্রয়োজন?"}
-              </h2>
-              <p className="text-white/80 text-xl mb-12 max-w-2xl mx-auto font-medium">
-                {language === 'en' 
-                  ? "Our support team is available 24/7 to help you find blood in critical situations."
-                  : "আপনার জরুরি অবস্থায় রক্তদাতা খুঁজে পেতে আমাদের সাপোর্ট টিম ২৪/৭ প্রস্তুত।"}
-              </p>
-              <div className="flex flex-wrap justify-center gap-6">
-                <Button className="h-16 px-12 bg-white text-red-500 hover:bg-red-50 rounded-2xl font-black text-xl shadow-2xl">
-                  <Phone className="w-6 h-6 mr-3 fill-current" />
-                  +880 1234 567890
-                </Button>
-              </div>
-             </div>
+          <div className="bg-primary rounded-[3.5rem] p-12 md:p-24 text-center relative overflow-hidden">
+            <div className="absolute top-0 left-1/2 w-full h-full bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+            <div className="relative z-10">
+              <h2 className="text-3xl md:text-6xl font-black text-white mb-8">{language === 'en' ? "Emergency Need?" : "জরুরি প্রয়োজন?"}</h2>
+              <p className="text-white/80 text-xl mb-12 max-w-2xl mx-auto font-medium">{language === 'en' ? "Our support team is available 24/7 to help you find blood in critical situations." : "আপনার জরুরি অবস্থায় রক্তদাতা খুঁজে পেতে আমাদের সাপোর্ট টিম ২৪/৭ প্রস্তুত।"}</p>
+              <div className="flex flex-wrap justify-center gap-6"><Button className="h-16 px-12 bg-white text-primary hover:bg-primary/5 rounded-2xl font-black text-xl shadow-2xl transition-all active:scale-95"><Phone className="w-6 h-6 mr-3 fill-current" />+880 1234 567890</Button></div>
+            </div>
           </div>
         </div>
       </section>
 
       <Footer />
-
-      {/* Become a Donor Modal */}
-      <AnimatePresence>
-        {showRegisterModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowRegisterModal(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg bg-white rounded-[2.5rem] shadow-2xl p-8 md:p-12 overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-              
-              <div className="relative">
-                <div className="w-16 h-16 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center mb-6">
-                  <Heart className="w-8 h-8 fill-current" />
-                </div>
-                <h2 className="text-3xl font-black text-slate-900 mb-4">
-                  {language === 'en' ? "Join as a Donor" : "রক্তদাতা হিসেবে যুক্ত হোন"}
-                </h2>
-                <p className="text-slate-500 mb-8 leading-relaxed">
-                  {language === 'en' 
-                    ? "Thank you for your interest! Please contact our coordination team to verify your details and join our life-saving community." 
-                    : "আপনার আগ্রহের জন্য ধন্যবাদ! আপনার তথ্য যাচাই করতে এবং আমাদের জীবন রক্ষাকারী কমিউনিটিতে যোগ দিতে আমাদের টিমের সাথে যোগাযোগ করুন।"}
-                </p>
-
-                <div className="space-y-4">
-                  <Button className="w-full h-14 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold gap-3">
-                    <Phone className="w-5 h-5" />
-                    +880 1234 567890
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => setShowRegisterModal(false)}
-                    className="w-full h-14 border-slate-200 text-slate-600 rounded-xl font-bold"
-                  >
-                    {language === 'en' ? "Close" : "বন্ধ করুন"}
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

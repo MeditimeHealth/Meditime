@@ -321,3 +321,69 @@ html {
 .airport-light {
   animation: airport-pulse 2s infinite;
 }
+
+/* ── Reusable Left-to-Right Slide Animation ────────────────────────── */
+.btn-slide {
+  position: relative;
+  overflow: hidden;
+  transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.btn-slide::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+.btn-slide:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.btn-slide:hover {
+  color: white !important;
+}
+
+/* Group trigger variant */
+.group:hover .group-btn-slide::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Sharp Card Accent */
+.card-sharp {
+  border-radius: 4px;
+  border: 1px solid var(--gray-200);
+  border-bottom: 4px solid var(--primary);
+  transition: all 0.3s ease;
+}
+
+.card-sharp:hover {
+  border-bottom-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}

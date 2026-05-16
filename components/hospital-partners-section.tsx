@@ -1,26 +1,41 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import type { Swiper as SwiperType } from "swiper";
-import { Autoplay, Navigation } from "swiper/modules";
-import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { ChevronRight, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import "swiper/css";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
 
 interface Hospital {
   _id: string;
   name: string;
+  nameBn?: string;
   location?: string;
   photo?: string;
-  thana?: { name: string };
+  thana?: { name: string; nameBn?: string };
+}
+
+function HospitalCardImage({ src, alt, fallback }: { src: string; alt: string; fallback: string }) {
+  const [imgSrc, setImgSrc] = useState(src);
+
+  useEffect(() => {
+    setImgSrc(src);
+  }, [src]);
+
+  return (
+    <Image
+      src={imgSrc}
+      alt={alt}
+      fill
+      className="object-cover transition-transform duration-700 group-hover:scale-110"
+      onError={() => setImgSrc(fallback)}
+    />
+  );
 }
 
 export default function HospitalPartnersSection() {
-  const swiperRef = useRef<SwiperType | null>(null);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
   const { language } = useLanguage();
@@ -32,7 +47,7 @@ export default function HospitalPartnersSection() {
         const response = await fetch("/api/locations/hospitals");
         const data = await response.json();
         if (response.ok) {
-          setHospitals(data.hospitals.slice(0, 12));
+          setHospitals(data.hospitals);
         }
       } catch (error) {
         console.error("Error fetching hospitals:", error);
@@ -45,113 +60,89 @@ export default function HospitalPartnersSection() {
 
   if (loading) {
     return (
-      <div className="w-full py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-        </div>
+      <div className="w-full py-16 bg-white flex justify-center">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="w-full py-10 sm:py-14 bg-white">
+    <div className="w-full bg-[#002B2B] py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Header — plain black, centered */}
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2 sm:mb-3">
-            {t.title}
-          </h2>
-          <p className="text-sm sm:text-base text-slate-500 max-w-[500px] mx-auto">
-            {t.subtitle}
-          </p>
+        
+        {/* ── Header ── */}
+        <div className="text-center mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-white tracking-tight leading-snug uppercase">
+              {t.title}
+            </h2>
+            <div className="w-20 h-1.5 bg-primary mx-auto mb-6 shadow-[0_0_15px_rgba(13,148,136,0.5)]" />
+            <p className="text-[13px] sm:text-[14px] text-slate-400 max-w-sm mx-auto leading-relaxed font-medium">
+              {t.subtitle}
+            </p>
+          </motion.div>
         </div>
 
-        {/* Carousel */}
-        <div className="relative">
-          <Swiper
-            modules={[Autoplay, Navigation]}
-            spaceBetween={20}
-            slidesPerView={1}
-            breakpoints={{
-              640:  { slidesPerView: 2, spaceBetween: 16 },
-              1024: { slidesPerView: 3, spaceBetween: 20 },
-            }}
-            autoplay={{ delay: 3000, disableOnInteraction: false }}
-            loop={hospitals.length > 3}
-            onSwiper={(swiper) => { swiperRef.current = swiper; }}
-          >
-            {hospitals.map((hospital) => (
-              <SwiperSlide key={hospital._id}>
-                {/* Photo card — tall aspect ratio */}
-                <div className="relative rounded-2xl overflow-hidden aspect-[3/4] sm:aspect-[3/4] w-full group cursor-pointer">
-                  {/* Hospital photo or placeholder */}
-                  {hospital.photo ? (
-                    <Image
-                      src={hospital.photo}
-                      alt={hospital.name}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-300 to-slate-500">
-                      <Image
-                        src="/slide.jpg"
-                        alt={hospital.name}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                  )}
+        {/* ── Marquee Slider ── */}
+        <div className="relative w-full overflow-hidden py-10">
+          <div className="animate-marquee flex gap-8">
+            {hospitals.map((hospital, idx) => {
+              const medicalPlaceholders = [
+                "https://images.unsplash.com/photo-1587350859728-117622bc73cd", // Modern Hospital
+                "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d", // Interior
+                "https://images.unsplash.com/photo-1516549655169-df83a0774514", // Patient Care
+                "https://images.unsplash.com/photo-1581594693702-fbdc51b2763b", // Equipment
+                "https://images.unsplash.com/photo-1512678080530-7760d81faba6", // Medical center
+              ];
+              const placeholder = medicalPlaceholders[idx % medicalPlaceholders.length] + "?auto=format&fit=crop&w=800&q=80";
+              const staticFallback = "/slide.jpg";
 
-                  {/* Subtle dark gradient at bottom */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-
-                  {/* Frosted glass name pill at bottom */}
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl px-4 py-3">
-                      <p className="text-white font-bold text-base leading-tight truncate">
-                        {hospital.name}
-                      </p>
-                      <p className="text-white/80 text-xs mt-0.5 truncate">
-                        {hospital.location || hospital.thana?.name || "Savar, Dhaka"}
+              return (
+                <Link
+                  key={`${hospital._id}-${idx}`}
+                  href={`/hospital/${hospital._id}`}
+                  className="group relative w-[320px] h-[450px] shrink-0 overflow-hidden rounded-3xl border border-white/10 shadow-2xl"
+                >
+                  {/* Hospital Photo Cover with Fallback Logic */}
+                  <HospitalCardImage 
+                    src={hospital.photo || placeholder} 
+                    alt={hospital.name} 
+                    fallback={staticFallback} 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 group-hover:opacity-90" />
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 transition-all duration-300 group-hover:bg-white/20 group-hover:-translate-y-2">
+                      <h3 className="text-white font-bold text-[19px] leading-tight mb-1">
+                        {getLocalizedValue(hospital.name, hospital.nameBn, language)}
+                      </h3>
+                      <p className="text-white/70 text-[13px] font-medium flex items-center gap-1">
+                        {getLocalizedValue(
+                          hospital.location || hospital.thana?.name || "Savar, Dhaka",
+                          hospital.thana?.nameBn || "সাভার, ঢাকা",
+                          language
+                        )}
                       </p>
                     </div>
                   </div>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-
-          {/* Nav arrows — outside left/right */}
-          <button
-            onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
-            aria-label="Previous"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => swiperRef.current?.slideNext()}
-            className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all hidden sm:flex"
-            aria-label="Next"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+                  <div className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/50 transition-all duration-500 rounded-3xl pointer-events-none" />
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
-        {/* "See All" button */}
-        <div className="mt-8 flex justify-center">
-          <Link href="/hospital">
-            <div className="group/btn relative h-11 flex items-center">
-              <span className="inline-flex items-center h-11 px-8 rounded-full text-[14px] font-medium bg-primary text-white transition-all duration-200 group-hover/btn:opacity-0 group-hover/btn:scale-90 whitespace-nowrap">
-                {t.seeAll}
-              </span>
-              <span className="absolute left-0 top-0 inline-flex items-center gap-2 h-11 px-8 rounded-full text-[14px] font-semibold bg-primary-dark text-white whitespace-nowrap pointer-events-none opacity-0 scale-90 group-hover/btn:opacity-100 group-hover/btn:scale-100 transition-all duration-200">
-                {t.viewAll}
-                <ArrowUpRight className="w-4 h-4" />
-              </span>
-            </div>
+        {/* ── Bottom CTA ── */}
+        <div className="mt-16 flex justify-center">
+          <Link href="/hospital" className="btn-slide bg-white text-black px-10 py-4 rounded-none font-bold uppercase tracking-widest text-[13px] shadow-xl">
+            <span className="relative z-10 flex items-center gap-2">
+              {t.viewAll}
+              <ChevronRight className="w-4 h-4" />
+            </span>
           </Link>
         </div>
       </div>

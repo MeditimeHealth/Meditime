@@ -101,9 +101,9 @@ export default function BlogSection() {
             spaceBetween={20}
             slidesPerView={1}
             breakpoints={{
-              640:  { slidesPerView: 1.2, spaceBetween: 16 },
-              768:  { slidesPerView: 2,   spaceBetween: 20 },
-              1024: { slidesPerView: 2,   spaceBetween: 24 },
+              640: { slidesPerView: 1.2, spaceBetween: 16 },
+              768: { slidesPerView: 2, spaceBetween: 20 },
+              1024: { slidesPerView: 2, spaceBetween: 24 },
             }}
             autoplay={{ delay: 4500, disableOnInteraction: false }}
             loop={posts.length > 2}

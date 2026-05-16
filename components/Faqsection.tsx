@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, X } from "lucide-react";
+import { ArrowRight, Phone, Plus, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
 
@@ -11,152 +11,116 @@ export default function FaqSection() {
   const t = homepageTranslations[language].faq;
   const faqs = t.questions;
 
-  // Track which FAQ index is currently open (-1 means all closed)
-  const [openIndex, setOpenIndex] = useState<number>(-1);
+  const [openIndex, setOpenIndex] = useState<number>(0);
 
   const toggle = (index: number) => {
     setOpenIndex((prev) => (prev === index ? -1 : index));
   };
 
   return (
-    /* ── Section wrapper: dark background to match the design ── */
-    <section className="w-full py-16 sm:py-20 lg:py-24" style={{ backgroundColor: "#111827" }}>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* ── Section Header ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-10 sm:mb-14"
-        >
-          {/* Title in teal — matches the screenshot typography */}
-          <h2
-            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 sm:mb-5 leading-tight"
-            style={{ color: "#14b8a6" }}
+    <section className="w-full py-20 sm:py-32 bg-slate-50 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
+          
+          {/* LEFT: HEADER & CTA */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="lg:col-span-5 lg:sticky lg:top-32"
           >
-            {t.title}
-          </h2>
-          {/* Subtitle in muted white */}
-          <p className="text-sm sm:text-base leading-relaxed max-w-2xl mx-auto" style={{ color: "#94a3b8" }}>
-            {t.subtitle}{" "}
-            <a
-              href="tel:+8801610385555"
-              className="font-semibold underline underline-offset-2 transition-opacity hover:opacity-80"
-              style={{ color: "#14b8a6" }}
-            >
-              {t.callUsPrefix} {t.callUsNumber}
-            </a>
-            .
-          </p>
-        </motion.div>
+          
+            
+            <h2 className="text-4xl sm:text-5xl lg:text-[64px] font-bold text-slate-900 leading-[1.1] mb-8 tracking-tight">
+              {t.title}
+            </h2>
+            
+            <p className="text-lg text-slate-500 leading-relaxed mb-10 max-w-lg">
+              {t.subtitle} {language === 'bn' ? "আমরা আপনাকে সাহায্য করতে এখানে আছি।" : "We're here to help you navigate your healthcare journey."}
+            </p>
 
-        {/* ── Accordion List ── */}
-        <div className="flex flex-col gap-3 sm:gap-4">
-          {faqs.map((faq, i) => {
-            const isOpen = openIndex === i;
-
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.06 }}
-              >
-                {/* Card: slightly lighter dark with teal border on open */}
-                <div
-                  className="rounded-xl overflow-hidden transition-all duration-300"
-                  style={{
-                    backgroundColor: "#1e2d3d",
-                    border: `1px solid ${isOpen ? "#14b8a6" : "#2d3f52"}`,
-                  }}
+            <div className="flex flex-col gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-white shadow-xl flex items-center justify-center border border-slate-100">
+                  <Phone className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-400 font-medium">{t.callUsPrefix}</p>
+                  <p className="text-xl font-bold text-slate-900">{t.callUsNumber}</p>
+                </div>
+              </div>
+              
+              <div className="pt-4">
+                <a
+                  href="/contact"
+                  className="btn-slide group/btn bg-white border border-primary text-primary font-bold text-base py-4 px-10 shadow-lg transition-all inline-flex items-center gap-3 active:scale-95 overflow-hidden"
                 >
-                  {/* ── Question Row (clickable) ── */}
+                  <span className="relative z-10 flex items-center gap-3">
+                    {t.contactSupport}
+                    <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                  </span>
+                </a>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* RIGHT: ACCORDION */}
+          <div className="lg:col-span-7 flex flex-col gap-5">
+            {faqs.map((faq, i) => {
+              const isOpen = openIndex === i;
+
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className={`
+                    group rounded-[32px] transition-all duration-500 border
+                    ${isOpen ? 'bg-white border-primary shadow-[0_20px_50px_-20px_rgba(1,154,152,0.15)]' : 'bg-white/50 border-slate-200 hover:border-primary/40'}
+                  `}
+                >
                   <button
                     onClick={() => toggle(i)}
-                    className="w-full flex items-center justify-between gap-4 px-5 sm:px-7 py-5 sm:py-6 text-left group"
-                    aria-expanded={isOpen}
+                    className="w-full flex items-center justify-between gap-6 px-8 py-8 text-left"
                   >
-                    {/* Question text in teal */}
-                    <span
-                      className="text-sm sm:text-base font-semibold leading-snug flex-1 transition-colors duration-200"
-                      style={{ color: isOpen ? "#2dd4bf" : "#14b8a6" }}
-                    >
+                    <span className={`text-lg sm:text-xl font-bold transition-colors duration-300 ${isOpen ? 'text-primary' : 'text-slate-800'}`}>
                       {faq.question}
                     </span>
 
-                    {/* Toggle button: teal box with +/× icon */}
-                    <span
-                      className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all duration-300"
-                      style={{
-                        backgroundColor: isOpen ? "#0d9488" : "rgba(20,184,166,0.15)",
-                        border: "1px solid #14b8a6",
-                      }}
-                    >
-                      {isOpen ? (
-                        <X className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: "#ffffff" }} />
-                      ) : (
-                        <Plus className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: "#14b8a6" }} />
-                      )}
+                    <span className={`
+                      flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500
+                      ${isOpen ? 'bg-primary text-white rotate-45' : 'bg-slate-100 text-slate-400 group-hover:bg-primary/10 group-hover:text-primary'}
+                    `}>
+                      <Plus className="w-6 h-6" />
                     </span>
                   </button>
 
-                  {/* ── Answer: animated expand/collapse ── */}
-                  <AnimatePresence initial={false}>
+                  <AnimatePresence>
                     {isOpen && (
                       <motion.div
-                        key="answer"
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        style={{ overflow: "hidden" }}
+                        transition={{ duration: 0.4, ease: "circOut" }}
+                        className="overflow-hidden"
                       >
-                        {/* Divider line */}
-                        <div
-                          className="mx-5 sm:mx-7"
-                          style={{ height: "1px", backgroundColor: "#2d3f52" }}
-                        />
-                        <p
-                          className="px-5 sm:px-7 pt-4 pb-5 sm:pb-6 text-sm sm:text-base leading-relaxed"
-                          style={{ color: "#94a3b8" }}
-                        >
-                          {faq.answer}
-                        </p>
+                        <div className="px-8 pb-8">
+                          <div className="w-full h-px bg-slate-100 mb-6" />
+                          <p className="text-lg text-slate-500 leading-relaxed">
+                            {faq.answer}
+                          </p>
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
-              </motion.div>
-            );
-          })}
+                </motion.div>
+              );
+            })}
+          </div>
+
         </div>
-
-        {/* ── Bottom CTA ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-10 sm:mt-14 text-center"
-        >
-          <p className="text-sm sm:text-base mb-4" style={{ color: "#64748b" }}>
-            {t.noAnswerFound}
-          </p>
-          <a
-            href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm sm:text-base font-semibold transition-all duration-200 hover:opacity-90 hover:scale-105"
-            style={{
-              backgroundColor: "#0d9488",
-              color: "#ffffff",
-            }}
-          >
-            {t.contactSupport}
-          </a>
-        </motion.div>
-
       </div>
     </section>
   );

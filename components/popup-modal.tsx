@@ -7,21 +7,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
+import { useLanguage } from "@/contexts/LanguageContext";
+import { usePathname } from "next/navigation";
+
 interface PopupData {
   title: string;
+  titleBn: string;
   description: string;
+  descriptionBn: string;
   imageUrl: string;
   buttonText: string;
+  buttonTextBn: string;
   buttonLink: string;
   isActive: boolean;
 }
-
-import { usePathname } from "next/navigation";
 
 export default function PopupModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [popupData, setPopupData] = useState<PopupData | null>(null);
   const pathname = usePathname();
+  const { language } = useLanguage();
 
   useEffect(() => {
     // Only show popup on the home page
@@ -56,63 +61,72 @@ export default function PopupModal() {
 
   if (!popupData) return null;
 
+  const currentTitle = language === 'bn' ? (popupData.titleBn || popupData.title) : popupData.title;
+  const currentDesc = language === 'bn' ? (popupData.descriptionBn || popupData.description) : popupData.description;
+  const currentBtnText = language === 'bn' ? (popupData.buttonTextBn || popupData.buttonText) : popupData.buttonText;
+
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/70 backdrop-blur-md"
           />
 
           {/* Modal Content */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.9, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", duration: 0.5 }}
-            className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
+            exit={{ opacity: 0, scale: 0.9, y: 30 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="relative w-full max-w-4xl bg-white rounded-[32px] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
           >
             {/* Close Button */}
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 z-10 p-2 bg-white/80 hover:bg-white rounded-full transition-colors shadow-sm"
+              className="absolute top-6 right-6 z-20 p-2 bg-white/20 backdrop-blur-md hover:bg-white text-slate-800 rounded-full transition-all shadow-lg border border-white/30"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-5 h-5" />
             </button>
 
             {/* Image Section */}
-            <div className="w-full md:w-1/2 relative min-h-[250px] md:min-h-[400px]">
+            <div className="w-full md:w-5/12 relative min-h-[250px] md:min-h-[450px]">
               <Image
                 src={popupData.imageUrl}
-                alt={popupData.title}
+                alt={currentTitle}
                 fill
                 className="object-cover"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
             </div>
 
             {/* Content Section */}
-            <div className="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center bg-white">
+            <div className="w-full md:w-7/12 p-8 md:p-12 flex flex-col justify-center bg-white">
+              <div className="mb-2">
+                <span className="text-[#3DB5A0] font-bold text-xs uppercase tracking-[0.2em]">Latest Update</span>
+              </div>
+              
               <motion.h2 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight"
+                className="text-2xl md:text-4xl font-bold text-slate-900 mb-6 leading-tight"
               >
-                {popupData.title}
+                {currentTitle}
               </motion.h2>
               
               <motion.p 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-gray-600 mb-8 text-lg leading-relaxed"
+                className="text-slate-500 mb-10 text-lg leading-relaxed"
               >
-                {popupData.description}
+                {currentDesc}
               </motion.p>
 
               <motion.div
@@ -120,14 +134,13 @@ export default function PopupModal() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                <Link href={popupData.buttonLink} onClick={handleClose}>
-                  <Button 
-                    size="lg"
-                    className="bg-[#9c1c6b] hover:bg-[#85165a] text-white rounded-md px-8 h-12 text-base font-semibold transition-all shadow-lg hover:shadow-xl w-full sm:w-auto"
+                <Link href={popupData.buttonLink} onClick={handleClose} className="inline-block w-full sm:w-auto">
+                  <button 
+                    className="bg-[#3DB5A0] hover:bg-[#34a38f] text-white rounded-2xl px-10 h-14 text-base font-bold transition-all shadow-xl hover:shadow-2xl active:scale-95 flex items-center justify-center gap-3 w-full"
                   >
-                    {popupData.buttonText}
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
+                    {currentBtnText}
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
                 </Link>
               </motion.div>
             </div>

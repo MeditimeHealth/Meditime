@@ -29,9 +29,14 @@ export async function GET(request: NextRequest) {
       query.vehicleType = vehicleType;
     }
     
-    // Only show approved ambulances to public
+    // Handle approval status filtering
     const isAdmin = searchParams.get("admin") === "true";
-    if (!isAdmin) {
+    const isApprovedParam = searchParams.get("isApproved");
+
+    if (isApprovedParam !== null) {
+      query.isApproved = isApprovedParam === "true";
+    } else if (!isAdmin) {
+      // Default for public is only approved
       query.isApproved = true;
     }
 
@@ -85,7 +90,7 @@ export async function POST(request: NextRequest) {
       ambulanceNumber: ambulanceNumber || undefined,
       drivingLicence: drivingLicence || undefined,
       userId: userId || undefined,
-      isApproved: isApproved !== undefined ? isApproved : true, // Admin creates are auto-approved
+      isApproved: false, // Applications are pending by default
     });
 
     return NextResponse.json(

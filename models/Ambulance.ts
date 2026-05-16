@@ -69,7 +69,7 @@ const AmbulanceSchema: Schema = new Schema(
     vehicleType: {
       type: String,
       required: [true, 'Vehicle type is required'],
-      enum: ['Basic Life Support', 'Advanced Life Support', 'Critical Care', 'Air Ambulance'],
+      enum: ['AC Ambulance', 'Non AC Ambulance', 'ICU Ambulance', 'Freezing Ambulance', 'NICU Ambulance', 'Air Ambulance'],
       trim: true,
     },
     isApproved: {

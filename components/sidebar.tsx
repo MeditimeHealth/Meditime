@@ -26,6 +26,8 @@ import {
   DollarSign,
   CreditCard,
   Video,
+  Mail,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
@@ -104,10 +106,22 @@ const menuItems = [
   //   href: "/admin/doctor-hospitals",
   // },
   {
+    title: "Blood Donor Approvals",
+    titleBn: "রক্তদাতা অনুমোদন",
+    icon: ShieldCheck,
+    href: "/admin/blood-donors/approvals",
+  },
+  {
     title: "Blood Donors",
     titleBn: "রক্তদাতা",
     icon: Droplet,
     href: "/admin/blood-donors",
+  },
+  {
+    title: "Ambulance Approvals",
+    titleBn: "অ্যাম্বুলেন্স অনুমোদন",
+    icon: ShieldCheck,
+    href: "/admin/ambulances/approvals",
   },
   {
     title: "Ambulances",
@@ -198,6 +212,12 @@ const menuItems = [
     titleBn: "পপআপ ম্যানেজার",
     icon: Image,
     href: "/admin/popup",
+  },
+  {
+    title: "Contact Messages",
+    titleBn: "যোগাযোগ মেসেজ",
+    icon: Mail,
+    href: "/admin/contacts",
   },
 ];
 
