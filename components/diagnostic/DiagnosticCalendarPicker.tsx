@@ -157,7 +157,7 @@ export default function DiagnosticCalendarPicker({
                 }
               }}
               disabled={!isAvailable}
-              className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center ${isSelected
+              className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center text-base md:text-2xl ${isSelected
                   ? "text-white shadow-lg scale-110 ring-4 ring-orange-300 bg-[#FF6B00]"
                   : isAvailable
                     ? "bg-white text-slate-700 border border-slate-200 hover:border-[#FF6B00] hover:text-[#FF6B00] hover:shadow-md"

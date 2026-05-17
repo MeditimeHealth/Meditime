@@ -21,12 +21,13 @@ const doctorSchema = z.object({
   designation: z.string().optional(),
 
   hospital: z.string().optional(),
+  hospitalBn: z.string().optional(),
   division: z.string().optional(),
   district: z.string().optional(),
   thana: z.string().optional(),
 
   department: z.string().optional(),
-  oldPatientFee: z.coerce.number().min(0, "Old patient fee must be at least 0").optional(),
+  reportShowFee: z.coerce.number().min(0, "Report show fee must be at least 0").optional(),
   newPatientFee: z.coerce.number().min(0, "New patient fee must be at least 0").optional(),
   diseases: z.array(z.string()).optional(),
   bio: z.string().optional(),
@@ -41,6 +42,7 @@ const doctorSchema = z.object({
   image: z.string().optional(),
   availabilitySlots: z.array(z.object({
     days: z.array(z.string()).min(1, "Select at least one day"),
+    daysBn: z.array(z.string()).optional(),
     time: z.string().optional(),
     timeBn: z.string().optional(),
   })).min(1, "Add at least one availability slot"),
@@ -76,6 +78,7 @@ const banglaDays = [
 
 interface AvailabilitySlot {
   days: string[];
+  daysBn?: string[];
   time: string;
   timeBn?: string;
 }
@@ -143,11 +146,12 @@ export default function EditDoctorPage() {
       district: "",
       thana: "",
       department: "",
-      oldPatientFee: 0,
+      reportShowFee: 0,
       newPatientFee: 0,
       diseases: [],
       bio: "",
       bioBn: "",
+      hospitalBn: "",
       image: "",
       availabilitySlots: [{ days: [], time: "", timeBn: "" }],
     },
@@ -268,16 +272,31 @@ export default function EditDoctorPage() {
     };
   }, []);
 
+  // Update hospitalSearchTerm display when form language is toggled
+  useEffect(() => {
+    if (selectedHospitalName) {
+      const selectedHospital = availableHospitals.find(h => h.name === selectedHospitalName) || hospitals.find(h => h.name === selectedHospitalName);
+      const nameBn = selectedHospital?.nameBn || watch("hospitalBn");
+      if (language === 'bn' && nameBn) {
+        setHospitalSearchTerm(nameBn);
+      } else {
+        setHospitalSearchTerm(selectedHospitalName);
+      }
+    }
+  }, [language, selectedHospitalName, availableHospitals, hospitals]);
+
   // Handle hospital selection - auto-populate location
   const handleHospitalSelect = (hospitalName: string) => {
     setSelectedHospitalName(hospitalName);
     setValue("hospital", hospitalName);
     setShowHospitalDropdown(false);
-    setHospitalSearchTerm(hospitalName);
+
+    const selectedHospital = availableHospitals.find(h => h.name === hospitalName) || hospitals.find(h => h.name === hospitalName);
+    const hospitalBn = selectedHospital?.nameBn || "";
+    setValue("hospitalBn", hospitalBn);
+    setHospitalSearchTerm(language === 'bn' && hospitalBn ? hospitalBn : hospitalName);
 
     if (hospitalName) {
-      const selectedHospital = hospitals.find(h => h.name === hospitalName);
-
       if (selectedHospital && selectedHospital.thana) {
         const thana = selectedHospital.thana;
         const district = thana.district;
@@ -343,12 +362,14 @@ export default function EditDoctorPage() {
         if (Array.isArray(doctor.availability)) {
           availabilityArray = doctor.availability.map((slot: any) => ({
             days: Array.isArray(slot.days) ? slot.days : [],
+            daysBn: Array.isArray(slot.daysBn) ? slot.daysBn : [],
             time: slot.time || (slot.startTime && slot.endTime ? `${slot.startTime} - ${slot.endTime}` : "") || "",
             timeBn: slot.timeBn || "",
           }));
         } else if (doctor.availability) {
           availabilityArray = [{
             days: Array.isArray(doctor.availability.days) ? doctor.availability.days : [],
+            daysBn: Array.isArray(doctor.availability.daysBn) ? doctor.availability.daysBn : [],
             time: doctor.availability.time || (doctor.availability.startTime && doctor.availability.endTime ? `${doctor.availability.startTime} - ${doctor.availability.endTime}` : "") || "",
             timeBn: doctor.availability.timeBn || "",
           }];
@@ -377,12 +398,13 @@ export default function EditDoctorPage() {
           designationBn: doctor.designationBn || "",
 
           hospital: doctor.hospital || "",
+          hospitalBn: doctor.hospitalBn || "",
           division: doctor.division || "",
           district: doctor.district || "",
           thana: doctor.thana || "",
 
           department: doctor.department || "",
-          oldPatientFee: doctor.oldPatientFee || 0,
+          reportShowFee: doctor.reportShowFee || 0,
           newPatientFee: doctor.newPatientFee || 0,
           diseases: doctor.diseases || [],
           bio: doctor.bio || "",
@@ -399,8 +421,9 @@ export default function EditDoctorPage() {
         }
 
         if (doctor.hospital) {
-          setHospitalSearchTerm(doctor.hospital);
           setSelectedHospitalName(doctor.hospital);
+          const initialSearchTerm = language === 'bn' && doctor.hospitalBn ? doctor.hospitalBn : doctor.hospital;
+          setHospitalSearchTerm(initialSearchTerm);
         }
       } else {
         alert(data.error || "Failed to fetch doctor data");
@@ -530,13 +553,25 @@ export default function EditDoctorPage() {
 
       const { availabilitySlots, ...doctorData } = data;
 
+      const selectedHospital = hospitals.find(h => h.name === data.hospital);
+      const hospitalBn = selectedHospital?.nameBn || data.hospitalBn || "";
+
+      const availabilityWithDaysBn = availabilitySlots?.map(slot => {
+        const daysBn = slot.days.map(day => {
+          const index = daysOfWeek.indexOf(day);
+          return index !== -1 ? banglaDays[index] + 'বার' : day;
+        });
+        return { ...slot, daysBn };
+      });
+
       const response = await fetch(`/api/doctors/${doctorId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...doctorData,
+          hospitalBn,
           image: imageUrl || undefined,
-          availability: availabilitySlots,
+          availability: availabilityWithDaysBn,
 
           nameBn: data.nameBn,
           specialtyBn: data.specialtyBn,
@@ -613,7 +648,7 @@ export default function EditDoctorPage() {
             <div>
               <div className={language === 'en' ? 'block' : 'hidden'}>
                 <Label htmlFor="name">
-                  Name <span className="text-gray-400 text-sm">(Optional)</span>
+                  {t("name", language)} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="name"
@@ -627,7 +662,7 @@ export default function EditDoctorPage() {
               </div>
               <div className={language === 'bn' ? 'block' : 'hidden'}>
                 <Label htmlFor="nameBn">
-                  নাম (Name Bangla) <span className="text-gray-400 text-sm">(Optional)</span>
+                  {t("nameBn", language)} <span className="text-gray-400 text-sm">({t("optional", language)})</span>
                 </Label>
                 <Input
                   id="nameBn"
@@ -642,24 +677,40 @@ export default function EditDoctorPage() {
             </div>
 
             <div>
-              <Label htmlFor="specialty">
-                Specialty
-              </Label>
-              <Input
-                id="specialty"
-                {...register("specialty")}
-                placeholder="e.g. Cardiologist"
-                className="mt-1"
-              />
-              {errors.specialty && (
-                <p className="text-sm text-red-500 mt-1">{errors.specialty.message}</p>
-              )}
+              <div className={language === 'en' ? 'block' : 'hidden'}>
+                <Label htmlFor="specialty">
+                  {t("specialty", language)}
+                </Label>
+                <Input
+                  id="specialty"
+                  {...register("specialty")}
+                  placeholder="e.g. Cardiologist"
+                  className="mt-1"
+                />
+                {errors.specialty && (
+                  <p className="text-sm text-red-500 mt-1">{errors.specialty.message}</p>
+                )}
+              </div>
+              <div className={language === 'bn' ? 'block' : 'hidden'}>
+                <Label htmlFor="specialtyBn">
+                  {t("specialtyBn", language)}
+                </Label>
+                <Input
+                  id="specialtyBn"
+                  {...register("specialtyBn")}
+                  placeholder="হৃদরোগ বিশেষজ্ঞ"
+                  className="mt-1"
+                />
+                {errors.specialtyBn && (
+                  <p className="text-sm text-red-500 mt-1">{errors.specialtyBn.message}</p>
+                )}
+              </div>
             </div>
 
             <div>
               <div className={language === 'en' ? 'block' : 'hidden'}>
                 <Label htmlFor="qualification">
-                  Qualification <span className="text-red-500">*</span>
+                  {t("qualification", language)} <span className="text-red-500">*</span>
                 </Label>
                 <textarea
                   id="qualification"
@@ -674,7 +725,7 @@ export default function EditDoctorPage() {
               </div>
               <div className={language === 'bn' ? 'block' : 'hidden'}>
                 <Label htmlFor="qualificationBn">
-                  যোগ্যতা (Qualification Bangla) <span className="text-red-500">*</span>
+                  {t("qualificationBn", language)} <span className="text-red-500">*</span>
                 </Label>
                 <textarea
                   id="qualificationBn"
@@ -690,18 +741,34 @@ export default function EditDoctorPage() {
             </div>
 
             <div>
-              <Label htmlFor="designation">
-                Designation
-              </Label>
-              <Input
-                id="designation"
-                {...register("designation")}
-                placeholder="e.g. Senior Consultant"
-                className="mt-1"
-              />
-              {errors.designation && (
-                <p className="text-sm text-red-500 mt-1">{errors.designation.message}</p>
-              )}
+              <div className={language === 'en' ? 'block' : 'hidden'}>
+                <Label htmlFor="designation">
+                  {t("designation", language)}
+                </Label>
+                <Input
+                  id="designation"
+                  {...register("designation")}
+                  placeholder="e.g. Senior Consultant"
+                  className="mt-1"
+                />
+                {errors.designation && (
+                  <p className="text-sm text-red-500 mt-1">{errors.designation.message}</p>
+                )}
+              </div>
+              <div className={language === 'bn' ? 'block' : 'hidden'}>
+                <Label htmlFor="designationBn">
+                  {t("designationBn", language)}
+                </Label>
+                <Input
+                  id="designationBn"
+                  {...register("designationBn")}
+                  placeholder="সিনিয়র কনসালটেন্ট"
+                  className="mt-1"
+                />
+                {errors.designationBn && (
+                  <p className="text-sm text-red-500 mt-1">{errors.designationBn.message}</p>
+                )}
+              </div>
             </div>
 
 
@@ -800,7 +867,7 @@ export default function EditDoctorPage() {
 
             <div>
               <Label htmlFor="newPatientFee">
-                নতুন রোগীর ফি (New Patient Fee) <span className="text-red-500">*</span>
+                {t("newPatientFee", language)} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="newPatientFee"
@@ -816,26 +883,26 @@ export default function EditDoctorPage() {
             </div>
 
             <div>
-              <Label htmlFor="oldPatientFee">
-                পুরাতন রোগীর ফি (Old Patient Fee) <span className="text-gray-500 text-xs">(Optional)</span>
+              <Label htmlFor="reportShowFee">
+                {t("reportShowFee", language)} <span className="text-gray-500 text-xs">({t("optional", language)})</span>
               </Label>
               <Input
-                id="oldPatientFee"
+                id="reportShowFee"
                 type="number"
-                {...register("oldPatientFee")}
+                {...register("reportShowFee")}
                 placeholder="400"
                 className="mt-1"
 
               />
-              {errors.oldPatientFee && (
-                <p className="text-sm text-red-500 mt-1">{errors.oldPatientFee.message}</p>
+              {errors.reportShowFee && (
+                <p className="text-sm text-red-500 mt-1">{errors.reportShowFee.message}</p>
               )}
             </div>
 
             <div className="md:col-span-2">
               <div className="flex items-center justify-between mb-3">
                 <Label className="block font-semibold text-gray-900">
-                  {language === 'bn' ? 'যে সকল রোগের চিকিৎসা করা হয় (Diseases Treated)' : 'Diseases Treated'} <span className="text-gray-500 text-xs">(Optional)</span>
+                  {language === 'bn' ? 'যে সকল রোগের চিকিৎসা করা হয়' : 'Diseases Treated'} <span className="text-gray-500 text-xs">({t("optional", language)})</span>
                 </Label>
                 <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
                   {language === 'bn' ? 'বাংলা' : 'English'}
@@ -973,20 +1040,32 @@ export default function EditDoctorPage() {
           </div>
 
           <div>
-            <Label htmlFor="bio">Bio</Label>
-            <textarea
-              id="bio"
-              {...register("bio")}
-              rows={4}
-              className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-              placeholder="Doctor's biography..."
-            />
+            <div className={language === 'en' ? 'block' : 'hidden'}>
+              <Label htmlFor="bio">{t("bio", language)}</Label>
+              <textarea
+                id="bio"
+                {...register("bio")}
+                rows={4}
+                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                placeholder="Doctor's biography..."
+              />
+            </div>
+            <div className={language === 'bn' ? 'block' : 'hidden'}>
+              <Label htmlFor="bioBn">{t("bioBn", language)}</Label>
+              <textarea
+                id="bioBn"
+                {...register("bioBn")}
+                rows={4}
+                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                placeholder="ডাক্তারের জীবনী..."
+              />
+            </div>
           </div>
 
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <Label className="text-lg font-semibold">
-                উপলব্ধতা (Availability) <span className="text-red-500">*</span>
+                {t("availability", language)} <span className="text-red-500">*</span>
               </Label>
               <Button
                 type="button"
@@ -1022,7 +1101,7 @@ export default function EditDoctorPage() {
                 <div className="space-y-4">
                   <div>
                     <Label className="mb-2 block">
-                      {language === 'bn' ? 'দিন নির্বাচন করুন (Select Days)' : 'Select Days'} <span className="text-red-500">*</span>
+                      {t("selectDays", language)} <span className="text-red-500">*</span>
                     </Label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       {daysOfWeek.map((day, dayIndex) => (
@@ -1036,7 +1115,7 @@ export default function EditDoctorPage() {
                             }`}
 
                         >
-                          {day} ({banglaDays[dayIndex]})
+                          {language === 'bn' ? banglaDays[dayIndex] + 'বার' : day}
                         </button>
                       ))}
                       {(() => {
@@ -1064,7 +1143,7 @@ export default function EditDoctorPage() {
                                 : "bg-amber-100 text-amber-700 hover:bg-amber-200 border-amber-300"
                               }`}
                           >
-                            {language === 'bn' ? 'অন কল (On Call)' : 'On Call'}
+                            {t("onCall", language)}
                           </button>
                         );
                       })()}
@@ -1072,9 +1151,9 @@ export default function EditDoctorPage() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
+                    <div className={language === 'en' ? 'block' : 'hidden'}>
                       <Label htmlFor={`time-${slotIndex}`}>
-                        Time (English)
+                        {t("timeSlot", language)}
                       </Label>
                       <Input
                         id={`time-${slotIndex}`}
@@ -1085,9 +1164,9 @@ export default function EditDoctorPage() {
                         className="mt-1"
                       />
                     </div>
-                    <div>
+                    <div className={language === 'bn' ? 'block' : 'hidden'}>
                       <Label htmlFor={`timeBn-${slotIndex}`}>
-                        সময় (Bangla Slot)
+                        {t("timeSlot", language)}
                       </Label>
                       <Input
                         id={`timeBn-${slotIndex}`}

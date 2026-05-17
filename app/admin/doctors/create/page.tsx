@@ -20,6 +20,7 @@ const doctorSchema = z.object({
   name: z.string().optional(),
   nameBn: z.string().optional(),
   hospital: z.string().optional(),
+  hospitalBn: z.string().optional(),
   department: z.string().optional(),
   specialty: z.string().optional(),
   specialtyBn: z.string().optional(),
@@ -28,13 +29,14 @@ const doctorSchema = z.object({
   designation: z.string().optional(),
   designationBn: z.string().optional(),
   newPatientFee: z.number().min(0).optional(),
-  oldPatientFee: z.number().min(0).optional(),
+  reportShowFee: z.number().min(0).optional(),
   bio: z.string().optional(),
   bioBn: z.string().optional(),
   phone: z.string().optional(),
   experience: z.number().min(0).optional(),
   availability: z.array(z.object({
     days: z.array(z.string()),
+    daysBn: z.array(z.string()).optional(),
     time: z.string().optional(),
     timeBn: z.string().optional(),
   })).optional(),
@@ -86,6 +88,7 @@ export default function CreateDoctorPage() {
       name: "",
       nameBn: "",
       hospital: "",
+      hospitalBn: "",
       department: "",
       specialty: "",
       specialtyBn: "",
@@ -99,7 +102,7 @@ export default function CreateDoctorPage() {
       image: "",
       availability: [{ days: [], time: "", timeBn: "" }],
       newPatientFee: 0,
-      oldPatientFee: 0,
+      reportShowFee: 0,
       experience: 0,
     },
   });
@@ -164,11 +167,24 @@ export default function CreateDoctorPage() {
   const onSubmit = async (data: DoctorFormValues) => {
     setLoading(true);
     try {
+      const selectedHospital = hospitals.find(h => h.name === data.hospital);
+      const hospitalBn = selectedHospital?.nameBn || "";
+
+      const availabilityWithDaysBn = data.availability?.map(slot => {
+        const daysBn = slot.days.map(day => {
+          const index = daysOfWeek.indexOf(day);
+          return index !== -1 ? banglaDays[index] + 'বার' : day;
+        });
+        return { ...slot, daysBn };
+      });
+
       const response = await fetch("/api/doctors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
+          hospitalBn,
+          availability: availabilityWithDaysBn,
           diseases: selectedDiseases
         }),
       });
@@ -424,13 +440,13 @@ export default function CreateDoctorPage() {
             </div>
 
             <div>
-              <Label htmlFor="oldPatientFee">
-                {t("oldPatientFee", language)}
+              <Label htmlFor="reportShowFee">
+                {t("reportShowFee", language)}
               </Label>
               <Input
-                id="oldPatientFee"
+                id="reportShowFee"
                 type="number"
-                {...register("oldPatientFee", { valueAsNumber: true })}
+                {...register("reportShowFee", { valueAsNumber: true })}
                 placeholder="400"
                 className="mt-1"
               />
@@ -635,7 +651,7 @@ export default function CreateDoctorPage() {
                             }`}
                             
                           >
-                            {language === 'bn' ? banglaDays[dayIndex] + 'বার' : day}
+                            {formLanguage === 'bn' ? banglaDays[dayIndex] + 'বার' : day}
                           </button>
                         );
                       })}
@@ -665,7 +681,7 @@ export default function CreateDoctorPage() {
                                 : "bg-amber-100 text-amber-700 hover:bg-amber-200 border-amber-300"
                             }`}
                           >
-                            {language === 'bn' ? 'অন কল (On Call)' : 'On Call'}
+                            {formLanguage === 'bn' ? 'অন কল (On Call)' : 'On Call'}
                           </button>
                         );
                       })()}
@@ -673,9 +689,9 @@ export default function CreateDoctorPage() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
+                    <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
                       <Label htmlFor={`time-${slotIndex}`}>
-                        {t("timeSlot", language)} (English)
+                        {t("timeSlot", language)}
                       </Label>
                       <Input
                         id={`time-${slotIndex}`}
@@ -684,9 +700,9 @@ export default function CreateDoctorPage() {
                         className="mt-1"
                       />
                     </div>
-                    <div>
+                    <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
                       <Label htmlFor={`timeBn-${slotIndex}`}>
-                        সময় স্লট (Bangla Slot)
+                        {t("timeSlot", language)}
                       </Label>
                       <Input
                         id={`timeBn-${slotIndex}`}

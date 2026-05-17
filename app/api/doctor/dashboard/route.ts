@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     // 3. Payment history calculation
     const completedAppointments = allAppointments.filter((appt) => appt.status === "completed");
     
-    // If the schema had a paidAmount, we'd use it. For now, estimate based on consultationFee (or new/old fee).
+    // If the schema had a paidAmount, we'd use it. For now, estimate based on newPatientFee (or new/old fee).
     // Let's get the doctor's fee from live consultant or assume a standard fee if missing. 
     // We can just sum them up if recorded, but since Appointment doesn't store fee, we will just count and multiply or retrieve it from doctor obj.
     // Actually, we can return the count and the frontend can display metrics.

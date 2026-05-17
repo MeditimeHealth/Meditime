@@ -74,7 +74,7 @@ export default function BookAppointmentPage() {
   const [mobileNumber, setMobileNumber] = useState("");
   const [gender, setGender] = useState("");
   const [age, setAge] = useState("");
-  const [patientType, setPatientType] = useState<"old" | "new" | "report">("new");
+  const [patientType, setPatientType] = useState<"new" | "report">("new");
   const [affiliateCode, setAffiliateCode] = useState("");
 
   const fetchDoctor = useCallback(async () => {
@@ -496,7 +496,7 @@ export default function BookAppointmentPage() {
                     {banglaDays.map((day, index) => (
                       <div
                         key={index}
-                        className="text-center font-semibold text-gray-700 py-1 text-sm lg:text-base"
+                        className="text-center font-semibold text-gray-700 py-1 text-x lg:text-base"
 
                       >
                         {day}
@@ -505,7 +505,7 @@ export default function BookAppointmentPage() {
                   </div>
 
                   {/* Calendar Grid */}
-                  <div className="grid grid-cols-7 gap-1">
+                  <div className="grid grid-cols-7 gap-6">
                     {calendarDays.map((date, index) => {
                       if (!date) {
                         return <div key={index} className="aspect-square" />;
@@ -527,7 +527,7 @@ export default function BookAppointmentPage() {
                             }
                           }}
                           disabled={!isAvailable}
-                          className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center text-sm lg:text-base ${isSelected
+                          className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center md:text-2xl text-sm ${isSelected
                               ? "text-white shadow-lg scale-110 ring-4 ring-orange-300"
                               : isAvailable
                                 ? "bg-primary text-white border-2 border-primary hover:bg-primary/90 hover:shadow-md hover:scale-105"
@@ -691,7 +691,6 @@ export default function BookAppointmentPage() {
                   <div className="mt-2 space-y-2">
                     {[
                       { value: "new", label: "নতুন রোগী" },
-                      { value: "old", label: "পুরাতন রোগী" },
                       { value: "report", label: "রিপোর্ট দেখানো" },
                     ].map((type) => (
                       <label
@@ -706,10 +705,10 @@ export default function BookAppointmentPage() {
                           name="patientType"
                           value={type.value}
                           checked={patientType === type.value}
-                          onChange={(e) => setPatientType(e.target.value as "old" | "new" | "report")}
+                          onChange={(e) => setPatientType(e.target.value as "new" | "report")}
                           className="w-4 h-4 text-primary accent-primary"
                         />
-                        <span >
+                        <span>
                           {type.label}
                         </span>
                       </label>

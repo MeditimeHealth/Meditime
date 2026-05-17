@@ -74,13 +74,14 @@ export async function PUT(
       thana,
 
       department,
-      consultationFee,
-      oldPatientFee,
+
+      reportShowFee,
       newPatientFee,
       diseases,
       availability,
       bio,
       image,
+      hospitalBn,
     } = body;
 
     // Validate required fields - allow either English or Bangla versions
@@ -94,16 +95,9 @@ export async function PUT(
       );
     }
 
-    // Use newPatientFee as consultationFee if consultationFee is not provided
-    const finalConsultationFee = consultationFee !== undefined ? consultationFee : newPatientFee;
+
     
-    // Allow 0 as valid fee
-    if (finalConsultationFee === undefined) {
-      return NextResponse.json(
-        { error: "Consultation fee or new patient fee is required" },
-        { status: 400 }
-      );
-    }
+
 
     // Ensure availability is an array and validate structure
     const availabilityArray = Array.isArray(availability) ? availability : [availability];
@@ -122,7 +116,7 @@ export async function PUT(
     const doctorData: any = {
       name: name || "",
       qualification: qualification || "",
-      consultationFee: finalConsultationFee,
+
       availability: availabilityArray,
     };
 
@@ -149,13 +143,14 @@ export async function PUT(
     if (email) doctorData.email = email;
     if (phoneNumber) doctorData.phoneNumber = phoneNumber;
     if (hospital) doctorData.hospital = hospital;
+    if (hospitalBn) doctorData.hospitalBn = hospitalBn;
     if (division) doctorData.division = division;
     if (district) doctorData.district = district;
     if (thana) doctorData.thana = thana;
     if (department) doctorData.department = department;
     
     // Handle fees - allow 0
-    if (oldPatientFee !== undefined) doctorData.oldPatientFee = oldPatientFee;
+    if (reportShowFee !== undefined) doctorData.reportShowFee = reportShowFee;
     if (newPatientFee !== undefined) doctorData.newPatientFee = newPatientFee;
     
     if (diseases && Array.isArray(diseases)) doctorData.diseases = diseases;

@@ -19,8 +19,8 @@ export async function PUT(request: NextRequest) {
       specialty,
       qualification,
 
-      consultationFee,
-      oldPatientFee,
+
+      reportShowFee,
       newPatientFee,
       division,
       district,
@@ -89,8 +89,8 @@ export async function PUT(request: NextRequest) {
         if (specialty !== undefined) doctor.specialty = specialty;
         if (qualification !== undefined) doctor.qualification = qualification;
 
-        if (consultationFee !== undefined) doctor.consultationFee = consultationFee;
-        if (oldPatientFee !== undefined) doctor.oldPatientFee = oldPatientFee;
+
+        if (reportShowFee !== undefined) doctor.reportShowFee = reportShowFee;
         if (newPatientFee !== undefined) doctor.newPatientFee = newPatientFee;
         if (division !== undefined) doctor.division = division;
         if (district !== undefined) doctor.district = district;

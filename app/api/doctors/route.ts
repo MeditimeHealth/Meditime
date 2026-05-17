@@ -125,9 +125,7 @@ export async function GET(request: NextRequest) {
 
     // Range filters
     if (minFee || maxFee) {
-      query.consultationFee = {};
-      if (minFee) query.consultationFee.$gte = parseFloat(minFee);
-      if (maxFee) query.consultationFee.$lte = parseFloat(maxFee);
+
     }
 
     if (minRating) {
@@ -189,8 +187,8 @@ export async function POST(request: NextRequest) {
       thana,
 
       department,
-      consultationFee,
-      oldPatientFee,
+
+      reportShowFee,
       newPatientFee,
       diseases,
       availability,
@@ -201,6 +199,7 @@ export async function POST(request: NextRequest) {
       qualificationBn,
       designationBn,
       bioBn,
+      hospitalBn,
     } = body;
 
     // Validate required fields
@@ -212,8 +211,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Use newPatientFee as consultationFee if consultationFee is not provided
-    const finalConsultationFee = consultationFee !== undefined ? consultationFee : newPatientFee;
+
 
     // Ensure availability is an array and validate structure
     const availabilityArray = Array.isArray(availability) ? availability : [availability];
@@ -234,7 +232,7 @@ export async function POST(request: NextRequest) {
       specialty: specialty || "",
       qualification: qualification || "",
       designation: designation || "",
-      consultationFee: finalConsultationFee,
+
       availability: availabilityArray,
     };
 
@@ -242,13 +240,14 @@ export async function POST(request: NextRequest) {
     if (email) doctorData.email = email;
     if (phoneNumber) doctorData.phoneNumber = phoneNumber;
     if (hospital) doctorData.hospital = hospital;
+    if (hospitalBn) doctorData.hospitalBn = hospitalBn;
     if (division) doctorData.division = division;
     if (district) doctorData.district = district;
     if (thana) doctorData.thana = thana;
     if (department) doctorData.department = department;
 
     // Handle fees - allow 0
-    if (oldPatientFee !== undefined) doctorData.oldPatientFee = oldPatientFee;
+    if (reportShowFee !== undefined) doctorData.reportShowFee = reportShowFee;
     if (newPatientFee !== undefined) doctorData.newPatientFee = newPatientFee;
 
     if (diseases && Array.isArray(diseases)) doctorData.diseases = diseases;

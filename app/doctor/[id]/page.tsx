@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import DoctorCard from "@/components/doctor-card";
+import PageLoader from "@/components/page-loader";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 
 interface Doctor {
@@ -42,9 +43,8 @@ interface Doctor {
   district?: string;
   thana?: string;
   department?: string;
-  oldPatientFee?: number;
+  reportShowFee?: number;
   newPatientFee?: number;
-  consultationFee: number;
   diseases?: string[];
   availability: Array<{
     days: string[];
@@ -269,15 +269,7 @@ export default function DoctorProfilePage() {
   }, [doctor, language]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Navbar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-gray-500">Loading...</div>
-        </div>
-        <Footer />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   if (!doctor) {
@@ -302,16 +294,16 @@ export default function DoctorProfilePage() {
     : [doctor.availability];
 
   // Use nullish coalescing so a fee of 0 doesn't fall back incorrectly
-  const newPatientFee = doctor.newPatientFee ?? doctor.consultationFee;
-  const oldPatientFee = doctor.oldPatientFee;
+  const newPatientFee = doctor.newPatientFee;
+  const reportShowFee = doctor.reportShowFee;
 
   const enrichedDoctor = {
     ...doctor,
     hospitalBn: hospitals.find(h => h.name === doctor.hospital)?.nameBn || doctor.hospitalBn || ""
   };
 
-  const fees = [doctor.newPatientFee, doctor.oldPatientFee, doctor.consultationFee].filter(f => f !== undefined && f !== null && f > 0) as number[];
-  const minFee = fees.length > 0 ? Math.min(...fees) : (doctor.newPatientFee || doctor.consultationFee);
+  const fees = [doctor.newPatientFee, doctor.reportShowFee].filter(f => f !== undefined && f !== null && f > 0) as number[];
+  const minFee = fees.length > 0 ? Math.min(...fees) : doctor.newPatientFee;
 
 
   const enrichedRelatedDoctors = relatedDoctors.map(rd => ({
@@ -586,21 +578,7 @@ export default function DoctorProfilePage() {
                   {language === 'bn' ? 'যে সকল রোগের চিকিৎসা করা হয়' : 'Diseases Treated'}
                 </h2>
                 <div className="bg-white p-6 rounded-xl border-2 border-primary/10 shadow-md">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* First Column */}
-                    <ul className="space-y-3">
-                      {departmentDiseases.slice(0, Math.ceil(departmentDiseases.length / 2)).map((disease, index) => (
-                        <li
-                          key={index}
-                          className="flex items-start gap-3 text-base md:text-lg font-semibold text-gray-800"
-
-                        >
-                          <span className="text-primary mt-1">•</span>
-                          <span>{getLocalizedValue(disease.name, disease.bangla, language)}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    {/* Second Column */}
+                  <div className="grid grid-cols-1 gap-6">
                     <ul className="space-y-3">
                       {departmentDiseases.slice(Math.ceil(departmentDiseases.length / 2)).map((disease, index) => (
                         <li
@@ -683,14 +661,14 @@ export default function DoctorProfilePage() {
             {/* Fees Section */}
             <Card className="overflow-hidden border-2 border-primary/20 shadow-xl">
               <div className="bg-primary p-4 flex items-center justify-center gap-3">
-               
+
                 <h2 className="text-xl md:text-2xl font-bold text-white">
                   {language === 'bn' ? 'ডাক্তারের পরামর্শ ফি' : 'Consultation Fee'}
                 </h2>
               </div>
-              
+
               <div className="p-6 bg-white">
-                <div className="flex flex-col md:flex-row items-stretch justify-between gap-4 md:gap-0">
+                <div className="flex flex-col md:flex-row items-stretch justify-center gap-4 md:gap-0 max-w-2xl mx-auto">
                   {/* New Patient Fee */}
                   <div className="flex-1 text-center md:border-r border-primary/10 py-2">
                     <p className="text-sm text-gray-500 font-bold mb-1">
@@ -701,23 +679,13 @@ export default function DoctorProfilePage() {
                     </p>
                   </div>
 
-                  {/* Old Patient Fee */}
-                  <div className="flex-1 text-center md:border-r border-primary/10 py-2">
-                    <p className="text-sm text-gray-500 font-bold mb-1">
-                      {language === 'bn' ? 'পুরাতন রোগী:' : 'Old Patient:'}
-                    </p>
-                    <p className="text-xl font-bold text-gray-900">
-                      ৳{oldPatientFee || 0}
-                    </p>
-                  </div>
-
-                  {/* Consultation Fee */}
+                  {/* Report Show Fee */}
                   <div className="flex-1 text-center py-2">
                     <p className="text-sm text-gray-500 font-bold mb-1">
-                      {language === 'bn' ? 'কনসালটেশন:' : 'Consultation:'}
+                      {language === 'bn' ? 'রিপোর্ট দেখানো:' : 'Report Show:'}
                     </p>
                     <p className="text-xl font-bold text-gray-900">
-                      ৳{doctor.consultationFee || 0}
+                      ৳{reportShowFee ?? language === 'bn' ? 'তথ্য নেই' : 'N/A'}
                     </p>
                   </div>
                 </div>
@@ -847,35 +815,27 @@ export default function DoctorProfilePage() {
                   {language === 'bn' ? 'ডাক্তারের পরামর্শ ফি' : 'Consultation Fee'}
                 </h2>
               </div>
-              
+
               <div className="p-6 bg-white">
                 <div className="flex items-center justify-between gap-2">
-                  {/* Returning Patient */}
-                  <div className="flex-1 text-center border-r border-primary/10">
-                    <p className="text-[10px] text-gray-500 font-bold mb-1 h-8 flex items-center justify-center">
-                      {language === 'bn' ? 'পুরাতন রোগী' : 'Returning Patient'}
-                    </p>
-                    <p className="text-sm font-bold text-gray-900">
-                      ৳{oldPatientFee || newPatientFee}
-                    </p>
-                  </div>
-
                   {/* New Patient */}
                   <div className="flex-1 text-center border-r border-primary/10">
                     <p className="text-[10px] text-gray-500 font-bold mb-1 h-8 flex items-center justify-center">
                       {language === 'bn' ? 'নতুন রোগী' : 'New Patient'}
                     </p>
                     <p className="text-sm font-bold text-gray-900">
-                      ৳{newPatientFee}
+                      ৳{newPatientFee || 0}
                     </p>
                   </div>
 
-                  {/* Report Fee */}
+                  {/* Report Show */}
                   <div className="flex-1 text-center">
                     <p className="text-[10px] text-gray-500 font-bold mb-1 h-8 flex items-center justify-center">
-                      {language === 'bn' ? 'রিপোর্ট দেখানো' : 'Report Review'}
+                      {language === 'bn' ? 'রিপোর্ট দেখানো' : 'Report Show'}
                     </p>
-                    <p className="text-sm font-bold text-gray-900">৳200</p>
+                    <p className="text-sm font-bold text-gray-900">
+                      {reportShowFee != null ? `৳${reportShowFee}` : (language === 'bn' ? 'তথ্য নেই' : 'N/A')}
+                    </p>
                   </div>
                 </div>
               </div>

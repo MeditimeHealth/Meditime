@@ -32,11 +32,11 @@ export async function PUT(
     await dbConnect();
     const { id } = await params;
     const body = await request.json();
-    const { consultationFee, estimatedWaitTime, maxQueueSize, specialization, specializationBn, language } = body;
+    const { newPatientFee, estimatedWaitTime, maxQueueSize, specialization, specializationBn, language } = body;
 
     const consultant = await LiveConsultant.findByIdAndUpdate(
       id,
-      { consultationFee, estimatedWaitTime, maxQueueSize, specialization, specializationBn, language },
+      { newPatientFee, estimatedWaitTime, maxQueueSize, specialization, specializationBn, language },
       { new: true, runValidators: true }
     ).populate('doctorId', 'name nameBn specialty specialtyBn image qualification qualificationBn designation designationBn');
 

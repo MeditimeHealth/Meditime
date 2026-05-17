@@ -12,7 +12,9 @@ export async function GET(request: Request) {
       `${WORDPRESS_API}/posts?per_page=${per_page}&_embed=true&orderby=date&order=desc`, 
       {
         headers: {
-          "Accept": "application/json"
+          "Accept": "application/json, text/plain, */*",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept-Language": "en-US,en;q=0.9",
         },
         // Can adjust caching behavior if needed
         next: { revalidate: 3600 } // Cache for 1 hour

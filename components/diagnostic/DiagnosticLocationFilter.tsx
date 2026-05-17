@@ -50,7 +50,7 @@ export default function DiagnosticLocationFilter({
           <div className="p-1.5 bg-[#00B7B5]/10 text-[#00B7B5] rounded-lg">
             <MapPin className="h-4 w-4" />
           </div>
-           {language === 'en' ? "Find Local Centers" : "স্থানীয় সেন্টার খুঁজুন"}
+           {language === 'en' ? "Find Local Hospitals" : "স্থানীয় হাসপাতাল খুঁজুন"}
         </h3>
       </div>
       
@@ -136,7 +136,7 @@ export default function DiagnosticLocationFilter({
             {(selectedDivision && selectedDistrict && selectedThana) && (
               <div className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100 mt-4 h-auto">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-sm font-bold text-slate-900">{language === 'en' ? "Available Centers" : "সেন্টারসমূহ"}</h3>
+                  <h3 className="text-sm font-bold text-slate-900">{language === 'en' ? "Available Hospitals" : "হাসপাতালসমূহ"}</h3>
                   <span className="text-[10px] font-bold text-[#00B7B5] bg-[#00B7B5]/10 px-1.5 py-0.5 rounded-md">{filteredHospitals.length}</span>
                 </div>
                 
@@ -167,7 +167,7 @@ export default function DiagnosticLocationFilter({
                   
                   {filteredHospitals.length === 0 && (
                     <div className="text-center py-6">
-                      <p className="text-slate-500 text-xs font-medium">{language === 'en' ? "No centers found in this area." : "এই এলাকায় কোন সেন্টার পাওয়া যায়নি।"}</p>
+                      <p className="text-slate-500 text-xs font-medium">{language === 'en' ? "No hospitals found in this area." : "এই এলাকায় কোন হাসপাতাল পাওয়া যায়নি।"}</p>
                     </div>
                   )}
                 </div>

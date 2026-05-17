@@ -204,7 +204,7 @@ export default function DoctorDashboardPage() {
   };
 
   const calculateRevenue = () => {
-    const fee = data.liveConsultant?.consultationFee || doctorInfo?.doctor?.consultationFee || 500;
+    const fee = data.liveConsultant?.newPatientFee || doctorInfo?.doctor?.newPatientFee || 500;
     return (data.summary.totalCompleted || 0) * fee;
   };
 
@@ -411,7 +411,7 @@ export default function DoctorDashboardPage() {
                           </div>
                           <div className="p-3 border rounded-lg">
                             <span className="text-gray-500 block mb-1">Fee (৳)</span>
-                            <span className="text-gray-900 font-medium font-bold">৳{doctorInfo?.doctor?.consultationFee || data.liveConsultant?.consultationFee || 'N/A'}</span>
+                            <span className="text-gray-900 font-medium font-bold">৳{doctorInfo?.doctor?.newPatientFee || data.liveConsultant?.newPatientFee || 'N/A'}</span>
                           </div>
                         </div>
                       </div>

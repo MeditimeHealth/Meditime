@@ -115,7 +115,7 @@ export const generateDiagnosticBookingPDF = async (booking: DiagnosticBookingRec
     doc.setTextColor(130, 130, 130);
     doc.setFont('helvetica', 'normal');
     doc.text('DATE & TIME', M, y);
-    doc.text('CENTER LOCATION', col2, y);
+    doc.text('HOSPITAL LOCATION', col2, y);
     
     y += 5;
     doc.setFontSize(10);

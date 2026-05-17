@@ -41,6 +41,7 @@ export default function BlogSection() {
           `/api/blog/posts?per_page=8`
         );
         const data = await response.json();
+        console.log("Blog API Response:", data);
         if (Array.isArray(data)) setPosts(data);
       } catch (error) {
         console.error("Error fetching blog posts:", error);
@@ -142,7 +143,7 @@ export default function BlogSection() {
                     {stripHtml(post.excerpt.rendered)}
                   </p>
                   {/* Read More */}
-                  <div className="inline-flex items-center gap-1 text-primary text-sm font-semibold">
+                  <div className="inline-flex btn-slide items-center gap-1 text-primary text-sm font-semibold">
                     {t.readMore}
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </div>

@@ -32,10 +32,10 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { doctorId, consultationFee, estimatedWaitTime, maxQueueSize, specialization, specializationBn, language, email, password } = body;
+    const { doctorId, newPatientFee, estimatedWaitTime, maxQueueSize, specialization, specializationBn, language, email, password } = body;
 
-    if (!doctorId || consultationFee === undefined) {
-      return NextResponse.json({ error: 'doctorId and consultationFee are required' }, { status: 400 });
+    if (!doctorId || newPatientFee === undefined) {
+      return NextResponse.json({ error: 'doctorId and newPatientFee are required' }, { status: 400 });
     }
 
     // Check if doctor exists
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
 
     const consultant = await LiveConsultant.create({
       doctorId,
-      consultationFee,
+      newPatientFee,
       estimatedWaitTime: estimatedWaitTime || 15,
       maxQueueSize: maxQueueSize || 10,
       roomId,

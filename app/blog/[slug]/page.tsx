@@ -42,28 +42,19 @@ interface WordPressPost {
 
 const WORDPRESS_API = "https://wordpress.meditime.com.bd/wp-json/wp/v2";
 
-interface SidebarPhoto {
-  _id: string;
-  imageUrl: string;
-  linkUrl: string;
-  title?: string;
-  order: number;
-  isActive: boolean;
-}
+
 
 export default function BlogPostPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params?.slug as string;
   const [post, setPost] = useState<WordPressPost | null>(null);
-  const [sidebarPhotos, setSidebarPhotos] = useState<SidebarPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (slug) {
       fetchPost();
-      fetchSidebarPhotos();
     }
   }, [slug]);
 
@@ -88,17 +79,7 @@ export default function BlogPostPage() {
     }
   };
 
-  const fetchSidebarPhotos = async () => {
-    try {
-      const response = await fetch("/api/blog-sidebar");
-      const data = await response.json();
-      if (data.photos && Array.isArray(data.photos)) {
-        setSidebarPhotos(data.photos);
-      }
-    } catch (error) {
-      console.error("Error fetching sidebar photos:", error);
-    }
-  };
+
 
   const stripHtml = (html: string) => {
     return html.replace(/<[^>]*>/g, "").replace(/&[^;]+;/g, " ").trim();
@@ -126,20 +107,17 @@ export default function BlogPostPage() {
   const [recentPosts, setRecentPosts] = useState<WordPressPost[]>([]);
   
   useEffect(() => {
-    // Only fetch recent posts if no sidebar photos are available
-    if (sidebarPhotos.length === 0) {
-      fetchRecentPosts();
-    }
-  }, [sidebarPhotos.length]);
+    fetchRecentPosts();
+  }, [slug]);
 
   const fetchRecentPosts = async () => {
     try {
       const response = await fetch(
-        `${WORDPRESS_API}/posts?per_page=2&_embed=true&orderby=date&order=desc`
+        `/api/blog/posts?per_page=4`
       );
       const data = await response.json();
       if (Array.isArray(data)) {
-        const filtered = data.filter((p: WordPressPost) => p.slug !== slug);
+        const filtered = data.filter((p: WordPressPost) => p.slug !== slug).slice(0, 3);
         setRecentPosts(filtered);
       }
     } catch (error) {
@@ -250,15 +228,16 @@ export default function BlogPostPage() {
           {/* Sticky Right Sidebar with Admin Photos */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
-              {/* Display photos from database */}
-              {sidebarPhotos.length > 0 ? (
-                sidebarPhotos.map((photo) => (
-                  <Card key={photo._id} className="overflow-hidden border-0 shadow-lg">
-                    <Link href={photo.linkUrl}>
-                      <div className="relative h-64 w-full bg-gray-200 group cursor-pointer">
+              {/* Display Relevant Blogs */}
+              <h3 className="text-xl font-bold text-gray-900 mb-4 px-2">Related Articles</h3>
+              {recentPosts.length > 0 ? (
+                recentPosts.map((recentPost) => (
+                  <Card key={recentPost.id} className="overflow-hidden border-0 shadow-lg">
+                    <Link href={`/blog/${recentPost.slug}`}>
+                      <div className="relative h-48 w-full bg-gray-200 group cursor-pointer">
                         <Image
-                          src={photo.imageUrl}
-                          alt={photo.title || "Sidebar photo"}
+                          src={getFeaturedImage(recentPost)}
+                          alt={stripHtml(recentPost.title.rendered)}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
                           sizes="(max-width: 1024px) 100vw, 33vw"
@@ -267,45 +246,17 @@ export default function BlogPostPage() {
                             target.src = "/slide.jpg";
                           }}
                         />
-                        {photo.title && (
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <p className="text-white font-semibold text-sm px-4 text-center">
-                              {photo.title}
-                            </p>
-                          </div>
-                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4">
+                          <p className="text-white font-bold text-sm line-clamp-2">
+                            {stripHtml(recentPost.title.rendered)}
+                          </p>
+                        </div>
                       </div>
                     </Link>
                   </Card>
                 ))
               ) : (
-                // Fallback to recent posts if no admin photos
-                <>
-                  {recentPosts.length > 0 && (
-                    <Card className="overflow-hidden border-0 shadow-lg">
-                      <Link href={`/blog/${recentPosts[0]?.slug}`}>
-                        <div className="relative h-64 w-full bg-gray-200 group cursor-pointer">
-                          <Image
-                            src={getFeaturedImage(recentPosts[0])}
-                            alt={stripHtml(recentPosts[0].title.rendered)}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                            sizes="(max-width: 1024px) 100vw, 33vw"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = "/slide.jpg";
-                            }}
-                          />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <p className="text-white font-semibold text-sm px-4 text-center">
-                              {stripHtml(recentPosts[0].title.rendered)}
-                            </p>
-                          </div>
-                        </div>
-                      </Link>
-                    </Card>
-                  )}
-                </>
+                <div className="text-gray-500 p-4">No related articles found.</div>
               )}
             </div>
           </div>

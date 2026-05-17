@@ -27,7 +27,7 @@ interface LiveConsultant {
   _id: string;
   doctorId: Doctor;
   isLive: boolean;
-  consultationFee: number;
+  newPatientFee: number;
   estimatedWaitTime: number;
   maxQueueSize: number;
   currentQueue: QueueEntry[];
@@ -44,7 +44,7 @@ export default function AdminLiveConsultantsPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     doctorId: "",
-    consultationFee: 500,
+    newPatientFee: 500,
     estimatedWaitTime: 15,
     maxQueueSize: 10,
     language: "Bengali",
@@ -62,14 +62,14 @@ export default function AdminLiveConsultantsPage() {
     specialty: "",
     specialtyBn: "",
     language: "Bengali",
-    consultationFee: 500,
+    newPatientFee: 500,
     autoLiveConsultant: true,
   });
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingConsultant, setEditingConsultant] = useState<LiveConsultant | null>(null);
   const [editFormData, setEditFormData] = useState({
-    consultationFee: 0,
+    newPatientFee: 0,
     estimatedWaitTime: 0,
     maxQueueSize: 0,
     language: "Bengali",
@@ -124,7 +124,7 @@ export default function AdminLiveConsultantsPage() {
       if (res.ok) {
         toast.success("Live consultant added!");
         setShowAddForm(false);
-        setFormData({ doctorId: "", consultationFee: 500, estimatedWaitTime: 15, maxQueueSize: 10, language: "Bengali", email: "", password: "" });
+        setFormData({ doctorId: "", newPatientFee: 500, estimatedWaitTime: 15, maxQueueSize: 10, language: "Bengali", email: "", password: "" });
         fetchConsultants();
       } else {
         toast.error(data.error || "Failed to add");
@@ -149,7 +149,7 @@ export default function AdminLiveConsultantsPage() {
       if (res.ok) {
         toast.success("Doctor account created successfully!");
         setShowCreateDoctorForm(false);
-        setNewDoctorData({ name: "", nameBn: "", email: "", phone: "", password: "", specialty: "", specialtyBn: "", language: "Bengali", consultationFee: 500, autoLiveConsultant: true });
+        setNewDoctorData({ name: "", nameBn: "", email: "", phone: "", password: "", specialty: "", specialtyBn: "", language: "Bengali", newPatientFee: 500, autoLiveConsultant: true });
         fetchDoctors();
         if (newDoctorData.autoLiveConsultant) {
           fetchConsultants();
@@ -281,8 +281,8 @@ export default function AdminLiveConsultantsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "ফি (৳)" : "Fee (৳)"}</label>
               <input
                 type="number"
-                value={formData.consultationFee}
-                onChange={(e) => setFormData({ ...formData, consultationFee: Number(e.target.value) })}
+                value={formData.newPatientFee}
+                onChange={(e) => setFormData({ ...formData, newPatientFee: Number(e.target.value) })}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500"
               />
             </div>
@@ -417,8 +417,8 @@ export default function AdminLiveConsultantsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "ফি (৳)" : "Fee (৳)"}</label>
               <input
                 type="number"
-                value={newDoctorData.consultationFee}
-                onChange={(e) => setNewDoctorData({ ...newDoctorData, consultationFee: Number(e.target.value) })}
+                value={newDoctorData.newPatientFee}
+                onChange={(e) => setNewDoctorData({ ...newDoctorData, newPatientFee: Number(e.target.value) })}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -505,7 +505,7 @@ export default function AdminLiveConsultantsPage() {
                 <div className="grid grid-cols-3 gap-0 divide-x border-b">
                   <div className="p-3 text-center">
                     <DollarSign className="h-4 w-4 mx-auto text-gray-400 mb-1" />
-                    <p className="text-lg font-bold text-gray-900">৳{c.consultationFee}</p>
+                    <p className="text-lg font-bold text-gray-900">৳{c.newPatientFee}</p>
                     <p className="text-xs text-gray-500">{language === "bn" ? "ফি" : "Fee"}</p>
                   </div>
                   <div className="p-3 text-center">
@@ -526,7 +526,7 @@ export default function AdminLiveConsultantsPage() {
                     onClick={() => {
                       setEditingConsultant(c);
                       setEditFormData({
-                        consultationFee: c.consultationFee,
+                        newPatientFee: c.newPatientFee,
                         estimatedWaitTime: c.estimatedWaitTime,
                         maxQueueSize: c.maxQueueSize,
                         language: c.language || "Bengali",
@@ -561,8 +561,8 @@ export default function AdminLiveConsultantsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">{language === "bn" ? "ফি (৳)" : "Fee (৳)"}</label>
                 <input
                   type="number"
-                  value={editFormData.consultationFee}
-                  onChange={(e) => setEditFormData({ ...editFormData, consultationFee: Number(e.target.value) })}
+                  value={editFormData.newPatientFee}
+                  onChange={(e) => setEditFormData({ ...editFormData, newPatientFee: Number(e.target.value) })}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500"
                 />
               </div>

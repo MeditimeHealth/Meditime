@@ -11,18 +11,20 @@ export interface IDoctor extends Document {
   email?: string;
   phoneNumber?: string;
   hospital?: string;
+  hospitalBn?: string;
   division?: string;
   district?: string;
   thana?: string;
 
   department?: string;
-  consultationFee: number;
-  oldPatientFee?: number;
+
+  reportShowFee?: number;
   newPatientFee?: number;
   diseases?: string[];
   slotDuration?: number;
   availability: Array<{
     days: string[];
+    daysBn?: string[];
     time?: string;
     timeBn?: string;
   }>;
@@ -80,6 +82,10 @@ const DoctorSchema: Schema = new Schema(
       type: String,
       trim: true,
     },
+    hospitalBn: {
+      type: String,
+      trim: true,
+    },
     division: {
       type: String,
       trim: true,
@@ -97,13 +103,10 @@ const DoctorSchema: Schema = new Schema(
       type: String,
       trim: true,
     },
-    consultationFee: {
+
+    reportShowFee: {
       type: Number,
-      min: [0, 'Consultation fee must be at least 0'],
-    },
-    oldPatientFee: {
-      type: Number,
-      min: [0, 'Old patient fee must be at least 0'],
+      min: [0, 'Report show fee must be at least 0'],
     },
     newPatientFee: {
       type: Number,
@@ -133,6 +136,7 @@ const DoctorSchema: Schema = new Schema(
                 slot.days &&
                 Array.isArray(slot.days) &&
                 slot.days.length > 0 &&
+                (!slot.daysBn || Array.isArray(slot.daysBn)) &&
                 (!slot.time || typeof slot.time === 'string') &&
                 (!slot.timeBn || typeof slot.timeBn === 'string')
               );

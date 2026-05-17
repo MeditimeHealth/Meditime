@@ -14,7 +14,11 @@ import {
   Timer,
   MapPin,
   ChevronRight,
-  AlertCircle
+  AlertCircle,
+  Droplet,
+  HeartPulse,
+  Scan,
+  FlaskConical
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/navbar";
@@ -360,10 +364,10 @@ export default function DiagnosticPage() {
 
 
   const categories = [
-    { id: 'blood', backendId: 'Blood', icon: Activity, title: t.categories.blood, count: stats['Blood'] || 0, color: "bg-[#0088FF]" },
-    { id: 'cardio', backendId: 'Cardiology', icon: Heart, title: t.categories.cardio, count: stats['Cardiology'] || 0, color: "bg-[#00D084]" },
-    { id: 'imaging', backendId: 'Imaging', icon: Eye, title: t.categories.imaging, count: stats['Imaging'] || 0, color: "bg-[#FF6B00]" },
-    { id: 'pathology', backendId: 'Pathology', icon: Microscope, title: t.categories.pathology, count: stats['Pathology'] || 0, color: "bg-slate-200" },
+    { id: 'blood', backendId: 'Blood', icon: Droplet, title: t.categories.blood, count: stats['Blood'] || 0, color: "bg-[#0088FF]" },
+    { id: 'cardio', backendId: 'Cardiology', icon: HeartPulse, title: t.categories.cardio, count: stats['Cardiology'] || 0, color: "bg-[#00D084]" },
+    { id: 'imaging', backendId: 'Imaging', icon: Scan, title: t.categories.imaging, count: stats['Imaging'] || 0, color: "bg-[#FF6B00]" },
+    { id: 'pathology', backendId: 'Pathology', icon: FlaskConical, title: t.categories.pathology, count: stats['Pathology'] || 0, color: "bg-slate-200" },
   ];
 
 

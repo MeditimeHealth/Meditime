@@ -23,8 +23,7 @@ const profileSchema = z.object({
   qualification: z.string().optional(),
 
 
-  consultationFee: z.coerce.number().min(0, "Fee must be at least 0").optional(),
-  oldPatientFee: z.coerce.number().min(0, "Fee must be at least 0").optional(),
+  reportShowFee: z.coerce.number().min(0, "Fee must be at least 0").optional(),
   newPatientFee: z.coerce.number().min(0, "Fee must be at least 0").optional(),
   division: z.string().optional(),
   district: z.string().optional(),
@@ -80,8 +79,7 @@ export default function DoctorProfilePage() {
       qualification: "",
 
 
-      consultationFee: 0,
-      oldPatientFee: 0,
+      reportShowFee: 0,
       newPatientFee: 0,
       division: "",
       district: "",
@@ -250,8 +248,7 @@ export default function DoctorProfilePage() {
           setValue("qualification", foundDoctor.qualification || "");
 
 
-          setValue("consultationFee", foundDoctor.consultationFee || 0);
-          setValue("oldPatientFee", foundDoctor.oldPatientFee || 0);
+          setValue("reportShowFee", foundDoctor.reportShowFee || 0);
           setValue("newPatientFee", foundDoctor.newPatientFee || 0);
           setValue("division", foundDoctor.division || "");
           setValue("district", foundDoctor.district || "");
@@ -508,15 +505,7 @@ export default function DoctorProfilePage() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold border-b pb-2">Consultation Fees</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="consultationFee">Regular Fee</Label>
-                <Input
-                  id="consultationFee"
-                  type="number"
-                  {...register("consultationFee")}
-                  className="mt-1"
-                />
-              </div>
+
               <div>
                 <Label htmlFor="newPatientFee">New Patient Fee</Label>
                 <Input
@@ -527,11 +516,11 @@ export default function DoctorProfilePage() {
                 />
               </div>
               <div>
-                <Label htmlFor="oldPatientFee">Old Patient Fee</Label>
+                <Label htmlFor="reportShowFee">Report Show</Label>
                 <Input
-                  id="oldPatientFee"
+                  id="reportShowFee"
                   type="number"
-                  {...register("oldPatientFee")}
+                  {...register("reportShowFee")}
                   className="mt-1"
                 />
               </div>

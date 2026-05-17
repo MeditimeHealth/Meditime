@@ -7,7 +7,7 @@ export async function GET() {
   try {
     await dbConnect();
     const consultants = await LiveConsultant.find({ isLive: true })
-      .populate('doctorId', 'name nameBn specialty specialtyBn image qualification qualificationBn designation designationBn consultationFee')
+      .populate('doctorId', 'name nameBn specialty specialtyBn image qualification qualificationBn designation designationBn newPatientFee')
       .sort({ createdAt: -1 });
 
     // Add computed fields

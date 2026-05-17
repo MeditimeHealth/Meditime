@@ -13,7 +13,7 @@ export interface IQueueEntry {
 export interface ILiveConsultant extends Document {
   doctorId: mongoose.Types.ObjectId;
   isLive: boolean;
-  consultationFee: number;
+  newPatientFee: number;
   estimatedWaitTime: number; // minutes
   maxQueueSize: number;
   currentQueue: IQueueEntry[];
@@ -50,7 +50,7 @@ const LiveConsultantSchema: Schema = new Schema(
       type: Boolean,
       default: false,
     },
-    consultationFee: {
+    newPatientFee: {
       type: Number,
       required: true,
       min: [0, 'Fee must be at least 0'],

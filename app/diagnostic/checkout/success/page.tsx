@@ -203,35 +203,43 @@ export default function DiagnosticSuccessPage() {
 
           {/* Pay Later / Confirm */}
           {!bookingComplete && (
-            <Card className="p-6 border border-slate-200 shadow-sm">
-              <div className="flex flex-col items-end gap-5">
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <input 
-                    type="checkbox" 
-                    checked={payLater}
-                    onChange={(e) => setPayLater(e.target.checked)}
-                    className="w-5 h-5 rounded border-slate-300 text-[#00B7B5] focus:ring-[#00B7B5] accent-[#00B7B5]"
-                  />
-                  <span className="font-bold text-slate-700 group-hover:text-slate-900 transition-colors">I want to pay later at the hospital desk</span>
-                </label>
+            <Card className="p-6 border border-slate-200 shadow-sm bg-white">
+              <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+                {/* Left side */}
+                <div className="flex-1">
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <input 
+                      type="checkbox" 
+                      checked={payLater}
+                      onChange={(e) => setPayLater(e.target.checked)}
+                      className="w-5 h-5 rounded border-slate-300 text-[#00B7B5] focus:ring-[#00B7B5] accent-[#00B7B5]"
+                    />
+                    <span className="font-bold text-slate-700 group-hover:text-slate-900 transition-colors">
+                      I want to pay later at the hospital desk
+                    </span>
+                  </label>
+                </div>
 
-                {payLater ? (
-                  <Button 
-                    onClick={handleBook}
-                    disabled={submitting}
-                    className="w-full md:w-auto px-12 py-6 text-lg font-bold bg-[#00B7B5] hover:bg-[#009b9a] text-white rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
-                  >
-                    {submitting ? <Loader2 className="w-6 h-6 animate-spin mr-2" /> : <CheckCircle2 className="w-6 h-6 mr-2" />}
-                    Confirm Booking Now
-                  </Button>
-                ) : (
-                  <Button 
-                    disabled
-                    className="w-full md:w-auto px-12 py-6 text-lg font-bold bg-slate-800 text-white rounded-xl shadow-lg transition-all opacity-50"
-                  >
-                    Pay ৳{totalPrice}
-                  </Button>
-                )}
+                {/* Right side */}
+                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                  {payLater ? (
+                    <Button 
+                      onClick={handleBook}
+                      disabled={submitting}
+                      className="w-full sm:w-auto px-8 py-6 text-base md:text-lg font-bold bg-[#00B7B5] hover:bg-[#009b9a] text-white rounded-xl shadow-lg transition-all"
+                    >
+                      {submitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <CheckCircle2 className="w-5 h-5 mr-2" />}
+                      Confirm Booking
+                    </Button>
+                  ) : (
+                    <Button 
+                      disabled
+                      className="w-full sm:w-auto px-8 py-6 text-base md:text-lg font-bold bg-slate-800 text-white rounded-xl shadow-lg transition-all opacity-50 cursor-not-allowed"
+                    >
+                      Pay Now ৳{totalPrice}
+                    </Button>
+                  )}
+                </div>
               </div>
             </Card>
           )}

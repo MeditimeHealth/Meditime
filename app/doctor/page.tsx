@@ -82,8 +82,8 @@ interface Doctor {
   district?: string;
   thana?: string;
   department?: string;
-  consultationFee: number;
-  oldPatientFee?: number;
+
+  reportShowFee?: number;
   newPatientFee?: number;
   diseases?: string[];
   slotDuration?: number;
@@ -105,7 +105,7 @@ interface Doctor {
 
 type SortOption =
   | "name"
-  | "consultationFee"
+
   | "rating"
   | "specialty"
   | "hospital";
@@ -1313,7 +1313,7 @@ function DoctorListPageContent() {
                     <Label
                       className="mb-3 block text-base font-semibold text-gray-700"
                     >
-                      {t.consultationFee}
+
                     </Label>
                     <div className="flex gap-3">
                       <Input

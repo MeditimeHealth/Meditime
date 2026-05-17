@@ -64,12 +64,12 @@ const DiagnosticTestList = forwardRef<HTMLDivElement, DiagnosticTestListProps>(
                         {bookedTests.some(t => t._id === test._id) ? (
                           <>
                             <X className="w-4 h-4" />
-                            {language === 'en' ? "Remove from List" : "তালিকা থেকে মুছুন"}
+                            {language === 'en' ? "Remove from Cart" : "কার্ট থেকে মুছুন"}
                           </>
                         ) : (
                           <>
                             <Activity className="w-4 h-4" />
-                            {language === 'en' ? "Add to List" : "তালিকায় যুক্ত করুন"}
+                            {language === 'en' ? "Add to Cart" : "কার্টে যুক্ত করুন"}
                           </>
                         )}
                       </Button>

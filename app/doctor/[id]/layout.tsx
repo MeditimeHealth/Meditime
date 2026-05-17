@@ -46,8 +46,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   const specialtyBn = doctor.specialtyBn || specialty;
   const hospital = doctor.hospital || "";
   const hospitalBn = doctor.hospitalDetails?.nameBn || hospital;
-  const fees = [doctor.newPatientFee, doctor.oldPatientFee, doctor.consultationFee].filter(f => f !== undefined && f !== null && f > 0);
-  const minFee = fees.length > 0 ? Math.min(...fees) : (doctor.newPatientFee || doctor.consultationFee);
+  const fees = [doctor.newPatientFee, doctor.reportShowFee].filter(f => f !== undefined && f !== null && f > 0);
+  const minFee = fees.length > 0 ? Math.min(...fees) : doctor.newPatientFee;
 
   const title = `${name} - ${specialty} | Book Appointment | Meditime`;
   

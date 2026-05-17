@@ -21,8 +21,8 @@ export interface Doctor {
   district?: string;
   thana?: string;
   department?: string;
-  consultationFee: number;
-  oldPatientFee?: number;
+
+  reportShowFee?: number;
   newPatientFee?: number;
   diseases?: string[];
   slotDuration?: number;
@@ -112,11 +112,21 @@ const formatAvailability = (
     const consecutive = areDaysConsecutive(sortedDays);
 
     if (language === 'bn') {
-      if (sortedDays.length === 1) return `${getBengaliDay(sortedDays[0])} ${time}`;
+      const getBnDay = (d: string) => {
+        // If daysBn exists and matches the length of days, use it.
+        // We know slot.daysBn is a string array.
+        if ((slot as any).daysBn && Array.isArray((slot as any).daysBn) && (slot as any).daysBn.length === slot.days.length) {
+          const idx = slot.days.indexOf(d);
+          if (idx !== -1 && (slot as any).daysBn[idx]) return (slot as any).daysBn[idx] + 'বার';
+        }
+        return getBengaliDay(d);
+      };
+
+      if (sortedDays.length === 1) return `${getBnDay(sortedDays[0])} ${time}`;
       if (consecutive) {
-        return `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])} ${time}`;
+        return `${getBnDay(sortedDays[0])} থেকে ${getBnDay(sortedDays[sortedDays.length - 1])} ${time}`;
       }
-      return `${sortedDays.map(d => getBengaliDay(d)).join(", ")} ${time}`;
+      return `${sortedDays.map(d => getBnDay(d)).join(", ")} ${time}`;
     } else {
       if (sortedDays.length === 1) return `${sortedDays[0]} ${time}`;
       if (consecutive) {
@@ -193,7 +203,7 @@ export default function DoctorCard({
           <div className="flex items-start gap-2 text-xs text-gray-700">
             <Building2 className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
             <span className="font-semibold leading-relaxed">
-              {language === 'bn' ? doctor.hospitalBn : doctor.hospital}
+              {language === 'bn' ? (doctor.hospitalBn || doctor.hospital) : doctor.hospital}
             </span>
           </div>
         </div>
@@ -215,7 +225,7 @@ export default function DoctorCard({
             {language === 'bn' ? 'ভিজিট ফি' : 'Consultation Fee'}
           </span>
           <span className="text-lg font-bold text-primary">
-            {doctor.consultationFee}৳
+            {doctor.newPatientFee || 0}৳
           </span>
         </div> */}
 
@@ -227,7 +237,7 @@ export default function DoctorCard({
           </div>
         )}
         {actions && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
             {actions}
           </div>
         )}

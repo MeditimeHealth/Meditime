@@ -35,14 +35,14 @@ export async function POST(request: NextRequest) {
       specialty,
       specialtyBn,
       language,
-      consultationFee, 
+      newPatientFee, 
       autoLiveConsultant,
       estimatedWaitTime,
       maxQueueSize 
     } = body;
 
     // 1. Validation
-    if (!name || !email || !password || consultationFee === undefined) {
+    if (!name || !email || !password || newPatientFee === undefined) {
       return NextResponse.json(
         { error: 'Name, email, password, and consultation fee are required' }, 
         { status: 400 }
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       name,
       email: email.toLowerCase(),
       specialty: specialty || '',
-      consultationFee: Number(consultationFee) || 500,
+      newPatientFee: Number(newPatientFee) || 500,
       availability: [{ days: ['Monday'], time: '09:00 AM - 05:00 PM', timeBn: 'সকাল ০৯:০০ - বিকাল ০৫:০০' }],
     };
     if (nameBn) doctorObj.nameBn = nameBn;
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       const roomId = generateRoomId();
       liveConsultant = await LiveConsultant.create({
         doctorId: doctor._id,
-        consultationFee: Number(consultationFee) || 500,
+        newPatientFee: Number(newPatientFee) || 500,
         estimatedWaitTime: Number(estimatedWaitTime) || 15,
         maxQueueSize: Number(maxQueueSize) || 10,
         roomId,
