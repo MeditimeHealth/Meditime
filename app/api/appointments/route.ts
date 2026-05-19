@@ -4,12 +4,15 @@ import Appointment from '@/models/Appointment';
 import Doctor from '@/models/Doctor';
 import Affiliate from '@/models/Affiliate';
 import User from '@/models/User';
-import { getSession } from '@/lib/auth';
+import { getSession, getAdminSession } from '@/lib/auth';
 
 // GET - Fetch all appointments or filter by doctorId
 export async function GET(request: NextRequest) {
   try {
-    const session = await getSession(request);
+    let session = await getAdminSession(request);
+    if (!session) {
+      session = await getSession(request);
+    }
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized. Please login.' }, { status: 401 });
     }
@@ -39,14 +42,16 @@ export async function GET(request: NextRequest) {
     }
     if (userId) {
       // If not admin, they can only fetch their own appointments
-      if (session.role !== 'admin' && session.id !== userId) {
+      const isAdmin = session.role === 'admin' || session.role === 'superadmin';
+      if (!isAdmin && session.id !== userId) {
         return NextResponse.json({ error: 'Forbidden. You can only view your own appointments.' }, { status: 403 });
       }
       query.userId = userId;
     }
 
     // If no filters provided and not admin, don't allow fetching all
-    if (!doctorId && !userId && !status && session.role !== 'admin') {
+    const isAdmin = session.role === 'admin' || session.role === 'superadmin';
+    if (!doctorId && !userId && !status && !isAdmin) {
       return NextResponse.json({ error: 'Forbidden. Admin access required for global view.' }, { status: 403 });
     }
 
@@ -208,7 +213,10 @@ export async function POST(request: NextRequest) {
 // DELETE - Clear user appointment history
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getSession(request);
+    let session = await getAdminSession(request);
+    if (!session) {
+      session = await getSession(request);
+    }
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized. Please login.' }, { status: 401 });
     }
@@ -223,7 +231,8 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Security check: Users can only clear their own history
-    if (session.role !== 'admin' && session.id !== userId) {
+    const isAdmin = session.role === 'admin' || session.role === 'superadmin';
+    if (!isAdmin && session.id !== userId) {
       return NextResponse.json({ error: 'Forbidden. You can only clear your own history.' }, { status: 403 });
     }
 

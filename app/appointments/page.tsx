@@ -29,9 +29,13 @@ interface Appointment {
   doctorId: {
     _id: string;
     name: string;
+    nameBn?: string;
     qualification?: string;
+    qualificationBn?: string;
     department?: string;
+    departmentBn?: string;
     hospital?: string;
+    hospitalBn?: string;
     image?: string;
   };
   patientName: string;
@@ -323,8 +327,8 @@ export default function AppointmentsPage() {
                               className="object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-primary-light to-primary flex items-center justify-center text-white text-2xl font-bold">
-                              {appointment.doctorId.name.charAt(0)}
+                             <div className="w-full h-full bg-gradient-to-br from-primary-light to-primary flex items-center justify-center text-white text-2xl font-bold">
+                              {(appointment.doctorId.name || appointment.doctorId.nameBn || "?").charAt(0)}
                             </div>
                           )}
                         </div>
@@ -336,23 +340,23 @@ export default function AppointmentsPage() {
                       {/* Header */}
                       <div className="flex items-start justify-between">
                         <div>
-                          <Link href={`/doctor/${appointment.doctorId._id}`}>
+                           <Link href={`/doctor/${appointment.doctorId._id}`}>
                             <h3
                               className="text-xl font-bold text-gray-900 mb-1 hover:text-primary transition-colors cursor-pointer"
-
+ 
                             >
-                              {appointment.doctorId?.name || "Unknown Doctor"}
+                              {appointment.doctorId?.name || appointment.doctorId?.nameBn || "Unknown Doctor"}
                             </h3>
                           </Link>
-                          {appointment.doctorId?.qualification && (
+                          {(appointment.doctorId?.qualification || appointment.doctorId?.qualificationBn) && (
                             <p className="text-sm text-gray-600">
-                              {appointment.doctorId.qualification}
-                              {appointment.doctorId.department && `, ${appointment.doctorId.department}`}
+                              {appointment.doctorId.qualification || appointment.doctorId.qualificationBn}
+                              {(appointment.doctorId.department || appointment.doctorId.departmentBn) && `, ${appointment.doctorId.department || appointment.doctorId.departmentBn}`}
                             </p>
                           )}
-                          {appointment.doctorId?.hospital && (
+                          {(appointment.doctorId?.hospital || appointment.doctorId?.hospitalBn) && (
                             <p className="text-sm text-gray-500">
-                              {appointment.doctorId.hospital}
+                              {appointment.doctorId.hospital || appointment.doctorId.hospitalBn}
                             </p>
                           )}
                         </div>

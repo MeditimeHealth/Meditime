@@ -27,12 +27,15 @@ interface Appointment {
   doctorId: {
     _id: string;
     name: string;
+    nameBn?: string;
     qualification?: string;
+    qualificationBn?: string;
     department?: string;
     hospital?: string;
     availability?: Array<{
       days: string[];
       time: string;
+      timeBn?: string;
     }>;
   };
   serialNumber?: string;
@@ -494,14 +497,14 @@ export default function AppointmentsPage() {
                             className="font-bold text-gray-900"
                             
                           >
-                            {appointment.doctorId?.name || "Unknown Doctor"}
+                            {appointment.doctorId?.name || appointment.doctorId?.nameBn || "Unknown Doctor"}
                           </p>
                           <p
                             className="text-xs text-gray-600 mt-1"
                             
                           >
-                            {appointment.doctorId?.qualification &&
-                              `${appointment.doctorId.qualification}`}
+                            {(appointment.doctorId?.qualification || appointment.doctorId?.qualificationBn) &&
+                              `${appointment.doctorId.qualification || appointment.doctorId.qualificationBn}`}
                           </p>
                         </div>
                         {appointment.doctorId?._id && (
@@ -557,7 +560,7 @@ export default function AppointmentsPage() {
                             >
                               {appointment.doctorId.availability.map((slot, idx) => (
                                 <span key={idx}>
-                                  {slot.time}
+                                  {slot.time || slot.timeBn || ""}
                                   {idx < (appointment.doctorId?.availability?.length || 0) - 1 ? ", " : ""}
                                 </span>
                               ))}

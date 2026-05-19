@@ -47,19 +47,32 @@ export default function DoctorLayout({
       return;
     }
 
-    const checkUser = () => {
+    const checkUser = async () => {
       if (typeof window !== "undefined") {
         const userData = localStorage.getItem("user");
         if (userData) {
           try {
             const parsedUser = JSON.parse(userData);
             if (parsedUser.role === 'doctor') {
-              setUser(parsedUser);
+              // Verify session with the server
+              const verifyRes = await fetch("/api/auth/verify");
+              if (verifyRes.ok) {
+                setUser(parsedUser);
+              } else {
+                console.warn("Doctor session expired on backend");
+                localStorage.removeItem("user");
+                try {
+                  await fetch("/api/auth/logout", { method: "POST" });
+                } catch (err) {
+                  console.error("Logout error:", err);
+                }
+                router.push("/doctor/login");
+              }
             } else {
               router.push("/doctor/login");
             }
           } catch (error) {
-            console.error("Error parsing user data:", error);
+            console.error("Error parsing user data or verifying session:", error);
             localStorage.removeItem("user");
             router.push("/doctor/login");
           }

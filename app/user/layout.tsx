@@ -22,19 +22,33 @@ export default function UserLayout({
   const router = useRouter();
 
   useEffect(() => {
-    const checkUser = () => {
+    const checkUser = async () => {
       if (typeof window !== "undefined") {
         const userData = localStorage.getItem("user");
         if (userData) {
           try {
             const parsedUser = JSON.parse(userData);
             if (parsedUser.role === 'user' || !parsedUser.role) {
-              setUser(parsedUser);
+              // Verify session with the server
+              const verifyRes = await fetch("/api/auth/verify");
+              if (verifyRes.ok) {
+                setUser(parsedUser);
+              } else {
+                console.warn("Session expired on backend");
+                localStorage.removeItem("user");
+                localStorage.removeItem("myDiagnosticBookings");
+                try {
+                  await fetch("/api/auth/logout", { method: "POST" });
+                } catch (err) {
+                  console.error("Logout error:", err);
+                }
+                router.push("/login");
+              }
             } else {
               router.push("/");
             }
           } catch (error) {
-            console.error("Error parsing user data:", error);
+            console.error("Error parsing user data or verifying session:", error);
             localStorage.removeItem("user");
             router.push("/login");
           }
