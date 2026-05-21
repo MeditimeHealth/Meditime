@@ -14,6 +14,7 @@ import { showToast } from "@/lib/toast";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
+import { convertToBengaliNumber, convertToEnglishNumber } from "@/lib/utils";
 
 
 const doctorSchema = z.object({
@@ -22,14 +23,23 @@ const doctorSchema = z.object({
   hospital: z.string().optional(),
   hospitalBn: z.string().optional(),
   department: z.string().optional(),
+  departmentBn: z.string().optional(),
   specialty: z.string().optional(),
   specialtyBn: z.string().optional(),
   qualification: z.string().optional(),
   qualificationBn: z.string().optional(),
   designation: z.string().optional(),
   designationBn: z.string().optional(),
+  division: z.string().optional(),
+  divisionBn: z.string().optional(),
+  district: z.string().optional(),
+  districtBn: z.string().optional(),
+  thana: z.string().optional(),
+  thanaBn: z.string().optional(),
   newPatientFee: z.number().min(0).optional(),
+  newPatientFeeBn: z.string().optional(),
   reportShowFee: z.number().min(0).optional(),
+  reportShowFeeBn: z.string().optional(),
   bio: z.string().optional(),
   bioBn: z.string().optional(),
   phone: z.string().optional(),
@@ -74,6 +84,12 @@ export default function CreateDoctorPage() {
   const [diseases, setDiseases] = useState<any[]>([]);
   const [filteredDiseases, setFilteredDiseases] = useState<any[]>([]);
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
+  
+  const [divisions, setDivisions] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [thanas, setThanas] = useState<any[]>([]);
+  const [filteredDistricts, setFilteredDistricts] = useState<any[]>([]);
+  const [filteredThanas, setFilteredThanas] = useState<any[]>([]);
 
   const {
     register,
@@ -90,19 +106,28 @@ export default function CreateDoctorPage() {
       hospital: "",
       hospitalBn: "",
       department: "",
+      departmentBn: "",
       specialty: "",
       specialtyBn: "",
       qualification: "",
       qualificationBn: "",
       designation: "",
       designationBn: "",
+      division: "",
+      divisionBn: "",
+      district: "",
+      districtBn: "",
+      thana: "",
+      thanaBn: "",
       bio: "",
       bioBn: "",
       phone: "",
       image: "",
       availability: [{ days: [], time: "", timeBn: "" }],
       newPatientFee: 0,
+      newPatientFeeBn: "",
       reportShowFee: 0,
+      reportShowFeeBn: "",
       experience: 0,
     },
   });
@@ -117,9 +142,13 @@ export default function CreateDoctorPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [deptsRes, hospsRes] = await Promise.all([
+        const [deptsRes, hospsRes, divsRes, distsRes, thanasRes, diseasesRes] = await Promise.all([
           fetch("/api/departments"),
-          fetch("/api/locations/hospitals?limit=1000")
+          fetch("/api/locations/hospitals?limit=1000"),
+          fetch("/api/locations/divisions"),
+          fetch("/api/locations/districts"),
+          fetch("/api/locations/thanas"),
+          fetch("/api/diseases")
         ]);
         
         if (deptsRes.ok) {
@@ -132,7 +161,21 @@ export default function CreateDoctorPage() {
           setHospitals(hospsData.hospitals || []);
         }
 
-        const diseasesRes = await fetch("/api/diseases");
+        if (divsRes.ok) {
+          const data = await divsRes.json();
+          setDivisions(data.divisions || []);
+        }
+        
+        if (distsRes.ok) {
+          const data = await distsRes.json();
+          setDistricts(data.districts || []);
+        }
+        
+        if (thanasRes.ok) {
+          const data = await thanasRes.json();
+          setThanas(data.thanas || []);
+        }
+
         if (diseasesRes.ok) {
           const diseasesData = await diseasesRes.json();
           setDiseases(diseasesData.diseases || []);
@@ -164,6 +207,62 @@ export default function CreateDoctorPage() {
     }
   }, [selectedDepartment, diseases, departments]);
 
+  const selectedDivision = watch("division");
+  const selectedDistrict = watch("district");
+  const selectedHospital = watch("hospital");
+
+  useEffect(() => {
+    if (selectedDivision) {
+      const division = divisions.find(d => d.name === selectedDivision);
+      if (division) {
+        setFilteredDistricts(districts.filter(d => d.division?._id === division._id || d.division === division._id));
+      } else {
+        setFilteredDistricts([]);
+      }
+    } else {
+      setFilteredDistricts(districts);
+    }
+  }, [selectedDivision, divisions, districts]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      const district = districts.find(d => d.name === selectedDistrict);
+      if (district) {
+        setFilteredThanas(thanas.filter(t => t.district?._id === district._id || t.district === district._id));
+      } else {
+        setFilteredThanas([]);
+      }
+    } else {
+      setFilteredThanas(thanas);
+    }
+  }, [selectedDistrict, districts, thanas]);
+
+  // Handle hospital selection auto-populating location
+  useEffect(() => {
+    if (selectedHospital) {
+      const hospitalObj = hospitals.find(h => h.name === selectedHospital);
+      if (hospitalObj && hospitalObj.thana) {
+        const thana = thanas.find(t => t._id === (hospitalObj.thana?._id || hospitalObj.thana));
+        if (thana) {
+          setValue("thana", thana.name || "");
+          setValue("thanaBn", thana.nameBn || "");
+          
+          const district = districts.find(d => d._id === (thana.district?._id || thana.district));
+          if (district) {
+            setValue("district", district.name || "");
+            setValue("districtBn", district.nameBn || "");
+            
+            const division = divisions.find(d => d._id === (district.division?._id || district.division));
+            if (division) {
+              setValue("division", division.name || "");
+              setValue("divisionBn", division.nameBn || "");
+            }
+          }
+        }
+      }
+    }
+  }, [selectedHospital, hospitals, thanas, districts, divisions, setValue]);
+
   const onSubmit = async (data: DoctorFormValues) => {
     setLoading(true);
     try {
@@ -185,7 +284,7 @@ export default function CreateDoctorPage() {
           ...data,
           hospitalBn,
           availability: availabilityWithDaysBn,
-          diseases: selectedDiseases
+          diseases: selectedDiseases,
         }),
       });
 
@@ -275,7 +374,7 @@ export default function CreateDoctorPage() {
             <div>
               <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
                   <Label htmlFor="name">
-                    {t("name", language)} <span className="text-red-500">*</span>
+                    {t("name", "en")} <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="name"
@@ -291,7 +390,7 @@ export default function CreateDoctorPage() {
               </div>
               <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
                   <Label htmlFor="nameBn">
-                    {t("nameBn", language)}
+                    {t("nameBn", "bn")}
                   </Label>
                   <Input
                     id="nameBn"
@@ -310,7 +409,7 @@ export default function CreateDoctorPage() {
             <div>
               <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
                   <Label htmlFor="specialty">
-                    {t("specialty", language)}
+                    {t("specialty", "en")}
                   </Label>
                   <Input
                     id="specialty"
@@ -321,7 +420,7 @@ export default function CreateDoctorPage() {
               </div>
               <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
                   <Label htmlFor="specialtyBn">
-                    {t("specialtyBn", language)}
+                    {t("specialtyBn", "bn")}
                   </Label>
                   <Input
                     id="specialtyBn"
@@ -335,7 +434,7 @@ export default function CreateDoctorPage() {
             <div>
               <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
                   <Label htmlFor="qualification">
-                    {t("qualification", language)} <span className="text-red-500">*</span>
+                    {t("qualification", "en")} <span className="text-red-500">*</span>
                   </Label>
                   <Textarea
                     id="qualification"
@@ -352,7 +451,7 @@ export default function CreateDoctorPage() {
               </div>
               <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
                   <Label htmlFor="qualificationBn">
-                    {t("qualificationBn", language)}
+                    {t("qualificationBn", "bn")}
                   </Label>
                   <Textarea
                     id="qualificationBn"
@@ -371,7 +470,7 @@ export default function CreateDoctorPage() {
 
             <div>
               <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
-                  <Label htmlFor="designation">{t("designation", language)}</Label>
+                  <Label htmlFor="designation">{t("designation", "en")}</Label>
                   <Input
                     id="designation"
                     {...register("designation")}
@@ -380,7 +479,7 @@ export default function CreateDoctorPage() {
                   />
               </div>
               <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
-                  <Label htmlFor="designationBn">{t("designationBn", language)}</Label>
+                  <Label htmlFor="designationBn">{t("designationBn", "bn")}</Label>
                   <Input
                     id="designationBn"
                     {...register("designationBn")}
@@ -398,11 +497,111 @@ export default function CreateDoctorPage() {
                 id="hospital"
                 {...register("hospital")}
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                onChange={(e) => {
+                  setValue("hospital", e.target.value);
+                  const h = hospitals.find(hosp => hosp.name === e.target.value);
+                  if (h) {
+                    setValue("hospitalBn", h.nameBn || "");
+                  } else {
+                    setValue("hospitalBn", "");
+                  }
+                }}
               >
                 <option value="">{t("selectHospital", formLanguage)}</option>
                 {hospitals.map((h) => (
                   <option key={h._id} value={h.name}>
                     {formLanguage === 'bn' && h.nameBn ? h.nameBn : h.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <Label htmlFor="division">
+                {formLanguage === 'bn' ? 'বিভাগ' : 'Division'}
+              </Label>
+              <select
+                id="division"
+                {...register("division")}
+                onChange={(e) => {
+                  setValue("division", e.target.value);
+                  const div = divisions.find(d => d.name === e.target.value);
+                  if (div) {
+                    setValue("divisionBn", div.nameBn || "");
+                  } else {
+                    setValue("divisionBn", "");
+                  }
+                  // Reset child fields
+                  setValue("district", "");
+                  setValue("districtBn", "");
+                  setValue("thana", "");
+                  setValue("thanaBn", "");
+                }}
+                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+              >
+                <option value="">{formLanguage === 'bn' ? 'বিভাগ নির্বাচন করুন' : 'Select Division'}</option>
+                {divisions.map((d) => (
+                  <option key={d._id} value={d.name}>
+                    {formLanguage === 'bn' && d.nameBn ? d.nameBn : d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <Label htmlFor="district">
+                {formLanguage === 'bn' ? 'জেলা' : 'District'}
+              </Label>
+              <select
+                id="district"
+                {...register("district")}
+                onChange={(e) => {
+                  setValue("district", e.target.value);
+                  const dist = districts.find(d => d.name === e.target.value);
+                  if (dist) {
+                    setValue("districtBn", dist.nameBn || "");
+                  } else {
+                    setValue("districtBn", "");
+                  }
+                  // Reset child field
+                  setValue("thana", "");
+                  setValue("thanaBn", "");
+                }}
+                disabled={!selectedDivision}
+                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+              >
+                <option value="">{formLanguage === 'bn' ? 'জেলা নির্বাচন করুন' : 'Select District'}</option>
+                {filteredDistricts.map((d) => (
+                  <option key={d._id} value={d.name}>
+                    {formLanguage === 'bn' && d.nameBn ? d.nameBn : d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <Label htmlFor="thana">
+                {formLanguage === 'bn' ? 'উপজেলা/থানা' : 'Thana/Upazila'}
+              </Label>
+              <select
+                id="thana"
+                {...register("thana")}
+                onChange={(e) => {
+                  setValue("thana", e.target.value);
+                  const thanaObj = thanas.find(t => t.name === e.target.value);
+                  if (thanaObj) {
+                    setValue("thanaBn", thanaObj.nameBn || "");
+                  } else {
+                    setValue("thanaBn", "");
+                  }
+                }}
+                disabled={!selectedDistrict}
+                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+              >
+                <option value="">{formLanguage === 'bn' ? 'থানা নির্বাচন করুন' : 'Select Thana'}</option>
+                {filteredThanas.map((t) => (
+                  <option key={t._id} value={t.name}>
+                    {formLanguage === 'bn' && t.nameBn ? t.nameBn : t.name}
                   </option>
                 ))}
               </select>
@@ -415,6 +614,15 @@ export default function CreateDoctorPage() {
               <select
                 id="department"
                 {...register("department")}
+                onChange={(e) => {
+                  setValue("department", e.target.value);
+                  const dept = departments.find(d => d.name === e.target.value);
+                  if (dept) {
+                    setValue("departmentBn", dept.nameBn || "");
+                  } else {
+                    setValue("departmentBn", "");
+                  }
+                }}
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
               >
                 <option value="">{t("selectDepartment", formLanguage)}</option>
@@ -427,35 +635,87 @@ export default function CreateDoctorPage() {
             </div>
 
             <div>
-              <Label htmlFor="newPatientFee">
-                {t("newPatientFee", language)}
-              </Label>
-              <Input
-                id="newPatientFee"
-                type="number"
-                {...register("newPatientFee", { valueAsNumber: true })}
-                placeholder="500"
-                className="mt-1"
-              />
+              <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
+                <Label htmlFor="newPatientFee">
+                  {t("newPatientFee", "en")}
+                </Label>
+                <Input
+                  id="newPatientFee"
+                  type="number"
+                  {...register("newPatientFee", { 
+                    valueAsNumber: true,
+                    onChange: (e) => {
+                      const val = e.target.value;
+                      setValue("newPatientFeeBn", convertToBengaliNumber(val));
+                    }
+                  })}
+                  placeholder="500"
+                  className="mt-1"
+                />
+              </div>
+              <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
+                <Label htmlFor="newPatientFeeBn">
+                  {t("newPatientFee", "bn")}
+                </Label>
+                <Input
+                  id="newPatientFeeBn"
+                  type="text"
+                  {...register("newPatientFeeBn", {
+                    onChange: (e) => {
+                      const engVal = convertToEnglishNumber(e.target.value);
+                      const num = engVal ? Number(engVal) : 0;
+                      setValue("newPatientFee", num);
+                    }
+                  })}
+                  placeholder="৫০০"
+                  className="mt-1"
+                />
+              </div>
             </div>
 
             <div>
-              <Label htmlFor="reportShowFee">
-                {t("reportShowFee", language)}
-              </Label>
-              <Input
-                id="reportShowFee"
-                type="number"
-                {...register("reportShowFee", { valueAsNumber: true })}
-                placeholder="400"
-                className="mt-1"
-              />
+              <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
+                <Label htmlFor="reportShowFee">
+                  {t("reportShowFee", "en")}
+                </Label>
+                <Input
+                  id="reportShowFee"
+                  type="number"
+                  {...register("reportShowFee", { 
+                    valueAsNumber: true,
+                    onChange: (e) => {
+                      const val = e.target.value;
+                      setValue("reportShowFeeBn", convertToBengaliNumber(val));
+                    }
+                  })}
+                  placeholder="400"
+                  className="mt-1"
+                />
+              </div>
+              <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
+                <Label htmlFor="reportShowFeeBn">
+                  {t("reportShowFee", "bn")}
+                </Label>
+                <Input
+                  id="reportShowFeeBn"
+                  type="text"
+                  {...register("reportShowFeeBn", {
+                    onChange: (e) => {
+                      const engVal = convertToEnglishNumber(e.target.value);
+                      const num = engVal ? Number(engVal) : 0;
+                      setValue("reportShowFee", num);
+                    }
+                  })}
+                  placeholder="৪০০"
+                  className="mt-1"
+                />
+              </div>
             </div>
 
             <div className="md:col-span-2">
               <div className="flex items-center justify-between mb-3">
                 <Label className="block font-semibold text-gray-900">
-                  {language === 'bn' ? 'যে সকল রোগের চিকিৎসা করা হয় (Diseases Treated)' : 'Diseases Treated'}
+                  {formLanguage === 'bn' ? 'যে সকল রোগের চিকিৎসা করা হয়' : 'Diseases Treated'}
                 </Label>
                 <div className="flex gap-2">
                   <Button
@@ -521,7 +781,7 @@ export default function CreateDoctorPage() {
             </div>
 
             <div className="md:col-span-2">
-              <Label htmlFor="image">{t("profileImage", language)}</Label>
+              <Label htmlFor="image">{t("profileImage", formLanguage)}</Label>
               <div className="mt-1 space-y-3">
                 <div className="flex items-center gap-4">
                   <Input
@@ -540,7 +800,7 @@ export default function CreateDoctorPage() {
                     {uploading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
-                      t(imageUrl ? "changeImage" : "selectImage", language)
+                      t(imageUrl ? "changeImage" : "selectImage", formLanguage)
                     )}
                   </Button>
                   {imageUrl && (
@@ -565,7 +825,7 @@ export default function CreateDoctorPage() {
           <div>
             <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
                 <Label htmlFor="bio">
-                  {t("bio", language)} <span className="text-gray-500 text-xs">(Optional)</span>
+                  {t("bio", "en")} <span className="text-gray-500 text-xs">(Optional)</span>
                 </Label>
                 <Textarea
                   id="bio"
@@ -577,7 +837,7 @@ export default function CreateDoctorPage() {
             </div>
             <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
                 <Label htmlFor="bioBn">
-                  {t("bioBn", language)} <span className="text-gray-500 text-xs">(Optional)</span>
+                  {t("bioBn", "bn")} <span className="text-gray-500 text-xs">(Optional)</span>
                 </Label>
                 <Textarea
                   id="bioBn"
@@ -592,7 +852,7 @@ export default function CreateDoctorPage() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <Label className="text-lg font-semibold">
-                {t("availability", language)} <span className="text-red-500">*</span>
+                {t("availability", formLanguage)} <span className="text-red-500">*</span>
               </Label>
               <Button
                 type="button"
@@ -602,7 +862,7 @@ export default function CreateDoctorPage() {
                 className="flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
-                {t("addSlot", language)}
+                {t("addSlot", formLanguage)}
               </Button>
             </div>
 
@@ -610,7 +870,7 @@ export default function CreateDoctorPage() {
               <Card key={field.id} className="p-4 border-2 border-gray-200">
                 <div className="flex items-center justify-between mb-4">
                   <Label className="text-base font-semibold">
-                    {language === 'bn' ? 'স্লট' : 'Slot'} {slotIndex + 1}
+                    {formLanguage === 'bn' ? 'স্লট' : 'Slot'} {slotIndex + 1}
                   </Label>
                   {fields.length > 1 && (
                     <Button
@@ -628,7 +888,7 @@ export default function CreateDoctorPage() {
                 <div className="space-y-4">
                   <div>
                     <Label className="mb-2 block">
-                      {t("selectDays", language)} <span className="text-red-500">*</span>
+                      {t("selectDays", formLanguage)} <span className="text-red-500">*</span>
                     </Label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       {daysOfWeek.map((day, dayIndex) => {
@@ -691,7 +951,7 @@ export default function CreateDoctorPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className={formLanguage === 'en' ? 'block' : 'hidden'}>
                       <Label htmlFor={`time-${slotIndex}`}>
-                        {t("timeSlot", language)}
+                        {t("timeSlot", "en")}
                       </Label>
                       <Input
                         id={`time-${slotIndex}`}
@@ -702,7 +962,7 @@ export default function CreateDoctorPage() {
                     </div>
                     <div className={formLanguage === 'bn' ? 'block' : 'hidden'}>
                       <Label htmlFor={`timeBn-${slotIndex}`}>
-                        {t("timeSlot", language)}
+                        {t("timeSlot", "bn")}
                       </Label>
                       <Input
                         id={`timeBn-${slotIndex}`}
@@ -724,10 +984,10 @@ export default function CreateDoctorPage() {
               className="flex-1 h-12 text-lg font-bold bg-primary hover:bg-primary/90 shadow-md rounded-xl transition-all active:scale-95"
             >
               {uploading
-                ? t("uploading", language)
+                ? t("uploading", formLanguage)
                 : loading
-                ? (language === 'bn' ? 'তৈরি করা হচ্ছে...' : 'Creating...')
-                : t("create", language)}
+                ? (formLanguage === 'bn' ? 'তৈরি করা হচ্ছে...' : 'Creating...')
+                : t("create", formLanguage)}
             </Button>
             <Button
               type="button"
@@ -735,7 +995,7 @@ export default function CreateDoctorPage() {
               onClick={() => router.back()}
               className="flex-1 h-12 text-lg font-bold border-2 rounded-xl transition-all"
             >
-              {t("cancel", language)}
+              {t("cancel", formLanguage)}
             </Button>
           </div>
         </form>

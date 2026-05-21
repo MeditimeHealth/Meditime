@@ -80,8 +80,9 @@ export async function POST(request: NextRequest) {
     if (specialtyBn) doctorObj.specialtyBn = specialtyBn;
     if (phone) doctorObj.phoneNumber = phone;
 
-    // Auto-generate slug from name, fallback to nameBn
+    // Auto-generate English slug (slug) and Bangla slug (slugBn)
     doctorObj.slug = await generateUniqueSlug(name || nameBn || 'doctor', Doctor);
+    doctorObj.slugBn = await generateUniqueSlug(nameBn || name || 'doctor', Doctor, undefined, 'slugBn');
     
     const doctor = await Doctor.create(doctorObj);
 

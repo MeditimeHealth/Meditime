@@ -186,7 +186,7 @@ export default function AppointmentCard({
               {language === 'bn' ? 'বিস্তারিত' : 'Details'}
             </Button>
           </Link>
-  <Link href={`/doctor/${appointment.doctorId._id}`} className="flex-1 lg:flex-none">
+  <Link href={`/doctor/${(language === 'bn' ? (appointment.doctorId.slugBn || appointment.doctorId.slug) : (appointment.doctorId.slug || appointment.doctorId.slugBn)) || appointment.doctorId._id}`} className="flex-1 lg:flex-none">
             <Button variant="outline" size="sm" className="w-full h-9 md:h-10 px-3 md:px-4 rounded-xl font-bold border-slate-200 text-xs md:text-sm">
               <ExternalLink className="h-4 w-4 mr-2" />
               {language === 'bn' ? 'ডাক্তার' : 'Doctor'}

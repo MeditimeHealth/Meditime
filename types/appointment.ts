@@ -13,6 +13,8 @@ export interface Appointment {
     hospital?: string;
     hospitalBn?: string;
     image?: string;
+    slug?: string;
+    slugBn?: string;
   };
   patientName: string;
   mobileNumber: string;

@@ -15,6 +15,7 @@ export interface Doctor {
   designation?: string;
   phoneNumber: string;
   slug?: string;
+  slugBn?: string;
   email?: string;
   hospital?: string;
   division?: string;
@@ -250,7 +251,7 @@ export default function DoctorCard({
       whileHover={!disableLink ? { y: -3 } : {}}
     >
       {!disableLink ? (
-        <Link href={`/doctor/${doctor.slug || doctor._id}`}>
+        <Link href={`/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`}>
           {CardContent}
         </Link>
       ) : (

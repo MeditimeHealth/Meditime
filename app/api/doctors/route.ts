@@ -178,14 +178,12 @@ export async function POST(request: NextRequest) {
       qualification,
       designation,
 
-
       email,
       phoneNumber,
       hospital,
       division,
       district,
       thana,
-
       department,
 
       reportShowFee,
@@ -194,12 +192,24 @@ export async function POST(request: NextRequest) {
       availability,
       bio,
       image,
+
+      // Bangla fields
       nameBn,
       specialtyBn,
       qualificationBn,
       designationBn,
       bioBn,
       hospitalBn,
+      divisionBn,
+      districtBn,
+      thanaBn,
+      departmentBn,
+      reportShowFeeBn,
+      newPatientFeeBn,
+
+      // English counterparts for fields stored in Bangla
+      slugBn,
+      diseasesEn,
     } = body;
 
     // Validate required fields
@@ -251,6 +261,7 @@ export async function POST(request: NextRequest) {
     if (newPatientFee !== undefined) doctorData.newPatientFee = newPatientFee;
 
     if (diseases && Array.isArray(diseases)) doctorData.diseases = diseases;
+    if (diseasesEn && Array.isArray(diseasesEn)) doctorData.diseasesEn = diseasesEn;
     if (bio) doctorData.bio = bio;
     if (image) doctorData.image = image;
 
@@ -260,9 +271,20 @@ export async function POST(request: NextRequest) {
     if (qualificationBn) doctorData.qualificationBn = qualificationBn;
     if (designationBn) doctorData.designationBn = designationBn;
     if (bioBn) doctorData.bioBn = bioBn;
+    if (divisionBn) doctorData.divisionBn = divisionBn;
+    if (districtBn) doctorData.districtBn = districtBn;
+    if (thanaBn) doctorData.thanaBn = thanaBn;
+    if (departmentBn) doctorData.departmentBn = departmentBn;
+    if (reportShowFeeBn) doctorData.reportShowFeeBn = reportShowFeeBn;
+    if (newPatientFeeBn) doctorData.newPatientFeeBn = newPatientFeeBn;
 
-    // Generate slug
+    // Generate slugs
     doctorData.slug = await generateUniqueSlug(doctorData.name || doctorData.nameBn || "doctor", Doctor);
+    if (slugBn) {
+      doctorData.slugBn = slugBn;
+    } else {
+      doctorData.slugBn = await generateUniqueSlug(doctorData.nameBn || doctorData.name || "doctor", Doctor, undefined, 'slugBn');
+    }
 
     // Log the data being sent for debugging
     console.log('Creating doctor with data:', JSON.stringify(doctorData, null, 2));

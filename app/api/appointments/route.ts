@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       if (doctorId.match(/^[0-9a-fA-F]{24}$/)) {
         query.doctorId = doctorId;
       } else {
-        const doctor = await Doctor.findOne({ slug: doctorId });
+        const doctor = await Doctor.findOne({ $or: [{ slug: doctorId }, { slugBn: doctorId }] });
         if (doctor) {
           query.doctorId = doctor._id;
         } else {
@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
     
     // 2. Fallback to finding by slug if not found by ID or not a valid ObjectId
     if (!doctor) {
-      doctor = await Doctor.findOne({ slug: trimmedDoctorId });
+      doctor = await Doctor.findOne({ $or: [{ slug: trimmedDoctorId }, { slugBn: trimmedDoctorId }] });
     }
 
     if (!doctor) {

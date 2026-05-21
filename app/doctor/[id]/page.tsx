@@ -25,41 +25,8 @@ import { motion } from "framer-motion";
 import DoctorCard from "@/components/doctor-card";
 import PageLoader from "@/components/page-loader";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
+import { IDoctor } from "@/models/Doctor";
 
-interface Doctor {
-  slug: string;
-  _id: string;
-  name: string;
-  nameBn?: string;
-  qualification: string;
-  qualificationBn?: string;
-  specialty?: string;
-  specialtyBn?: string;
-  designation?: string;
-  designationBn?: string;
-  hospital?: string;
-  hospitalBn?: string;
-  division?: string;
-  district?: string;
-  thana?: string;
-  department?: string;
-  reportShowFee?: number;
-  newPatientFee?: number;
-  diseases?: string[];
-  availability: Array<{
-    days: string[];
-    time: string;
-    timeBn?: string;
-  }> | {
-    days: string[];
-    time: string;
-    timeBn?: string;
-  };
-  bio?: string;
-  bioBn?: string;
-  image?: string;
-  rating?: number;
-}
 
 
 
@@ -92,8 +59,8 @@ export default function DoctorProfilePage() {
   const params = useParams();
   const router = useRouter();
   const doctorId = params?.id as string;
-  const [doctor, setDoctor] = useState<Doctor | null>(null);
-  const [relatedDoctors, setRelatedDoctors] = useState<Doctor[]>([]);
+  const [doctor, setDoctor] = useState<IDoctor | null>(null);
+  const [relatedDoctors, setRelatedDoctors] = useState<IDoctor[]>([]);
   const [hospitals, setHospitals] = useState<{ name: string, nameBn?: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -201,7 +168,7 @@ export default function DoctorProfilePage() {
   };
 
   // Helper to calculate similarity score
-  const calculateRelevanceScore = (currentDoc: Doctor, otherDoc: Doctor): number => {
+  const calculateRelevanceScore = (currentDoc: IDoctor, otherDoc: IDoctor): number => {
     let score = 0;
     if (otherDoc.department === currentDoc.department) score += 10;
     if (otherDoc.hospital === currentDoc.hospital) score += 5;
@@ -219,17 +186,17 @@ export default function DoctorProfilePage() {
       const data = await response.json();
       if (response.ok && data.doctors) {
         // Filter out current doctor
-        let filtered = data.doctors.filter((d: Doctor) => d._id !== doctorId);
+        let filtered = data.doctors.filter((d: IDoctor) => d._id !== doctorId);
 
         // If in Bangla mode, prioritize/filter doctors with Bangla names to avoid mixing
         if (language === 'bn') {
-          const withBn = filtered.filter((d: Doctor) => d.nameBn);
+          const withBn = filtered.filter((d: IDoctor) => d.nameBn);
           // If we have enough Bangla doctors, use only them. Otherwise, keep original to show something.
           if (withBn.length >= 4) {
             filtered = withBn;
           } else {
             // Sort so Bangla ones come first
-            filtered = filtered.sort((a: Doctor, b: Doctor) => {
+            filtered = filtered.sort((a: IDoctor, b: IDoctor) => {
               if (a.nameBn && !b.nameBn) return -1;
               if (!a.nameBn && b.nameBn) return 1;
               return 0;
@@ -238,7 +205,7 @@ export default function DoctorProfilePage() {
         }
 
         // Sort by relevance score
-        const sorted = filtered.sort((a: Doctor, b: Doctor) => {
+        const sorted = filtered.sort((a: IDoctor, b: IDoctor) => {
           const relevanceA = calculateRelevanceScore(doctor, a);
           const relevanceB = calculateRelevanceScore(doctor, b);
 
@@ -293,9 +260,7 @@ export default function DoctorProfilePage() {
     ? doctor.availability
     : [doctor.availability];
 
-  // Use nullish coalescing so a fee of 0 doesn't fall back incorrectly
-  const newPatientFee = doctor.newPatientFee;
-  const reportShowFee = doctor.reportShowFee;
+
 
   const enrichedDoctor = {
     ...doctor,
@@ -311,13 +276,7 @@ export default function DoctorProfilePage() {
     hospitalBn: hospitals.find(h => h.name === rd.hospital)?.nameBn || rd.hospitalBn || ""
   }));
 
-  // Hospital address for schedule section (thana + district)
-  const hospitalObj = hospitals.find((h: any) => h.name === doctor.hospital) as any;
 
-  const thanaName = hospitalObj?.thana ? (language === 'bn' && hospitalObj.thana.nameBn ? hospitalObj.thana.nameBn : hospitalObj.thana.name) : null;
-  const districtName = hospitalObj?.thana?.district ? (language === 'bn' && hospitalObj.thana.district.nameBn ? hospitalObj.thana.district.nameBn : hospitalObj.thana.district.name) : null;
-
-  const hospitalAddress = [thanaName, districtName].filter(Boolean).join(', ');
 
   // Dynamic JSON-LD Schema Markup for SEO
   const baseUrl = "https://meditime.com.bd";
@@ -362,7 +321,6 @@ export default function DoctorProfilePage() {
         "priceRange": minFee ? `৳${minFee}` : undefined,
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": hospitalAddress || doctor.hospital,
           "addressLocality": doctor.thana || "",
           "addressRegion": doctor.district || "",
           "addressCountry": "BD"
@@ -457,7 +415,7 @@ export default function DoctorProfilePage() {
       <Navbar />
 
       {/* Breadcrumbs */}
-      <div className="bg-gradient-to-r from-gray-50 to-white border-b-2 border-gray-200 py-4">
+      {/* <div className="bg-gradient-to-r from-gray-50 to-white border-b-2 border-gray-200 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 text-base md:text-lg font-semibold text-gray-700">
             <Link href="/" className="hover:text-primary transition-colors" >{language === 'bn' ? 'হোম' : 'Home'}</Link>
@@ -467,10 +425,10 @@ export default function DoctorProfilePage() {
             <span className="text-gray-900" >{getLocalizedValue(doctor.name, doctor.nameBn, language)}</span>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Facebook-style Cover Photo - Fixed Static */}
-      <div className="relative w-full h-[350px] md:h-[450px] overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-primary">
+      <div className="relative mt-20 w-full h-[350px] md:h-[450px] overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-primary">
         {/* Static Cover Image */}
         <div className="absolute inset-0">
           <Image
@@ -628,7 +586,7 @@ export default function DoctorProfilePage() {
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {enrichedRelatedDoctors.map((relatedDoctor, index) => (
-                      <DoctorCard key={relatedDoctor._id} doctor={relatedDoctor as any} index={index} />
+                      <DoctorCard key={relatedDoctor._id as string} doctor={relatedDoctor as any} index={index} />
                     ))}
                   </div>
                 </Card>
@@ -675,7 +633,7 @@ export default function DoctorProfilePage() {
                       {language === 'bn' ? 'নতুন রোগী:' : 'New Patient:'}
                     </p>
                     <p className="text-xl font-bold text-gray-900">
-                      ৳{newPatientFee || 0}
+                      {language === 'bn' ? (doctor.newPatientFeeBn !== undefined && doctor.newPatientFeeBn !== null ? doctor.newPatientFeeBn : '0') : (doctor.newPatientFee !== undefined && doctor.newPatientFee !== null ? doctor.newPatientFee : '0')} ৳
                     </p>
                   </div>
 
@@ -685,7 +643,7 @@ export default function DoctorProfilePage() {
                       {language === 'bn' ? 'রিপোর্ট দেখানো:' : 'Report Show:'}
                     </p>
                     <p className="text-xl font-bold text-gray-900">
-                      ৳{reportShowFee ?? language === 'bn' ? 'তথ্য নেই' : 'N/A'}
+                      {language === 'bn' ? (doctor.reportShowFeeBn !== undefined && doctor.reportShowFeeBn !== null ? doctor.reportShowFeeBn : '0') : (doctor.reportShowFee !== undefined && doctor.reportShowFee !== null ? doctor.reportShowFee : '0')} ৳
                     </p>
                   </div>
                 </div>
@@ -713,9 +671,10 @@ export default function DoctorProfilePage() {
                           {getLocalizedValue(enrichedDoctor.hospital, enrichedDoctor.hospitalBn, language)}
                         </p>
                       </div>
-                      {hospitalAddress && (
+                      {doctor.district && (
                         <p className="text-sm text-gray-500 mt-1 ml-7" >
-                          {hospitalAddress}
+                          {language === 'bn' ? `${doctor.thanaBn ? doctor.thanaBn + ', ' : ''}${doctor.districtBn}` : `${doctor.thana ? doctor.thana + ', ' : ''}${doctor.district}`}
+                          {language === 'bn' ? `${doctor.districtBn}` : `${doctor.district}`}
                         </p>
                       )}
                     </div>
@@ -808,9 +767,7 @@ export default function DoctorProfilePage() {
             {/* Fees Section - Mobile */}
             <Card className="overflow-hidden border-2 border-primary/20 shadow-xl">
               <div className="bg-primary p-4 flex items-center justify-center gap-3">
-                <div className="bg-white/20 p-2 rounded-lg">
-                  <Stethoscope className="h-6 w-6 text-white" />
-                </div>
+          
                 <h2 className="text-xl md:text-2xl font-bold text-white">
                   {language === 'bn' ? 'ডাক্তারের পরামর্শ ফি' : 'Consultation Fee'}
                 </h2>
@@ -823,8 +780,8 @@ export default function DoctorProfilePage() {
                     <p className="text-[10px] text-gray-500 font-bold mb-1 h-8 flex items-center justify-center">
                       {language === 'bn' ? 'নতুন রোগী' : 'New Patient'}
                     </p>
-                    <p className="text-sm font-bold text-gray-900">
-                      ৳{newPatientFee || 0}
+                    <p className="text-lg font-bold text-gray-900">
+                      {language === 'bn' ? (doctor.newPatientFeeBn !== undefined && doctor.newPatientFeeBn !== null ? doctor.newPatientFeeBn : '0') : (doctor.newPatientFee !== undefined && doctor.newPatientFee !== null ? doctor.newPatientFee : '0')} ৳
                     </p>
                   </div>
 
@@ -833,9 +790,8 @@ export default function DoctorProfilePage() {
                     <p className="text-[10px] text-gray-500 font-bold mb-1 h-8 flex items-center justify-center">
                       {language === 'bn' ? 'রিপোর্ট দেখানো' : 'Report Show'}
                     </p>
-                    <p className="text-sm font-bold text-gray-900">
-                      {reportShowFee != null ? `৳${reportShowFee}` : (language === 'bn' ? 'তথ্য নেই' : 'N/A')}
-                    </p>
+                    <p className="text-lg font-bold text-gray-900">
+                      {language === 'bn' ? (doctor.reportShowFeeBn !== undefined && doctor.reportShowFeeBn !== null ? doctor.reportShowFeeBn : '0') : (doctor.reportShowFee !== undefined && doctor.reportShowFee !== null ? doctor.reportShowFee : '0')} ৳                    </p>
                   </div>
                 </div>
               </div>
@@ -862,11 +818,11 @@ export default function DoctorProfilePage() {
                           {getLocalizedValue(enrichedDoctor.hospital, enrichedDoctor.hospitalBn, language)}
                         </p>
                       </div>
-                      {hospitalAddress && (
-                        <p className="text-sm text-gray-500 mt-1 ml-7" >
-                          {hospitalAddress}
+
+                       <p className="text-sm text-gray-500 mt-1 ml-7" >
+                          {language === 'bn' ? `${doctor.thanaBn ? doctor.thanaBn + ', ' : ''}${doctor.districtBn}` : `${doctor.thana ? doctor.thana + ', ' : ''}${doctor.district}`}
+                          {language === 'bn' ? `${doctor.districtBn}` : `${doctor.district}`}
                         </p>
-                      )}
                     </div>
                   )}
                   <div className="space-y-2">
@@ -922,7 +878,7 @@ export default function DoctorProfilePage() {
                 </h2>
                 <div className="grid grid-cols-1 gap-5">
                   {enrichedRelatedDoctors.map((relatedDoctor, index) => (
-                    <DoctorCard key={relatedDoctor._id} doctor={relatedDoctor as any} index={index} />
+                    <DoctorCard key={relatedDoctor._id as string} doctor={relatedDoctor as any} index={index} />
                   ))}
                 </div>
               </Card>

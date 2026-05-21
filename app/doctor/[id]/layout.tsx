@@ -1,3 +1,4 @@
+
 import { Metadata } from "next";
 import dbConnect from "@/lib/mongodb";
 import Doctor from "@/models/Doctor";
@@ -6,8 +7,11 @@ import Hospital from "@/models/Hospital";
 async function getDoctorData(id: string) {
   try {
     await dbConnect();
-    // Try to find by slug first
+    // Try to find by slug (English) or slugBn (Bangla) first
     let doctor = await Doctor.findOne({ slug: id });
+    if (!doctor) {
+      doctor = await Doctor.findOne({ slugBn: id });
+    }
     if (!doctor) {
       // Fallback to ID if not found by slug
       try {
@@ -16,6 +20,8 @@ async function getDoctorData(id: string) {
         return null;
       }
     }
+
+    console.log(doctor)
     
     if (doctor && doctor.hospital) {
       // Fetch hospital details separately since it's not a reference in the schema
@@ -40,12 +46,12 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     };
   }
 
-  const name = doctor.name;
+  const name = doctor.name || doctor.nameBn || "Doctor";
   const nameBn = doctor.nameBn || name;
   const specialty = doctor.specialty || "";
   const specialtyBn = doctor.specialtyBn || specialty;
   const hospital = doctor.hospital || "";
-  const hospitalBn = doctor.hospitalDetails?.nameBn || hospital;
+  const hospitalBn = doctor.hospitalBn || hospital;
   const fees = [doctor.newPatientFee, doctor.reportShowFee].filter(f => f !== undefined && f !== null && f > 0);
   const minFee = fees.length > 0 ? Math.min(...fees) : doctor.newPatientFee;
 
@@ -70,7 +76,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     title,
     description: finalDescription,
     alternates: {
-      canonical: `https://meditime.com.bd/doctor/${doctor.slug || doctor._id}`,
+      canonical: `https://meditime.com.bd/doctor/${doctor.slug || doctor.slugBn || doctor._id}`,
     },
     openGraph: {
       title,

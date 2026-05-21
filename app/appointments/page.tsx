@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { showToast } from "@/lib/toast";
 import Link from "next/link";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Appointment {
   _id: string;
@@ -37,6 +38,8 @@ interface Appointment {
     hospital?: string;
     hospitalBn?: string;
     image?: string;
+    slug?: string;
+    slugBn?: string;
   };
   patientName: string;
   mobileNumber: string;
@@ -123,6 +126,7 @@ const getPatientTypeLabel = (type: string) => {
 };
 
 export default function AppointmentsPage() {
+  const { language } = useLanguage();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
@@ -317,7 +321,7 @@ export default function AppointmentsPage() {
                   <div className="flex flex-col lg:flex-row gap-6">
                     {/* Left Side - Doctor Info */}
                     <div className="flex-shrink-0">
-                      <Link href={`/doctor/${appointment.doctorId._id}`}>
+                      <Link href={`/doctor/${(language === 'bn' ? (appointment.doctorId.slugBn || appointment.doctorId.slug) : (appointment.doctorId.slug || appointment.doctorId.slugBn)) || appointment.doctorId._id}`}>
                         <div className="relative w-24 h-24 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-primary transition-colors cursor-pointer">
                           {appointment.doctorId.image ? (
                             <Image
@@ -340,7 +344,7 @@ export default function AppointmentsPage() {
                       {/* Header */}
                       <div className="flex items-start justify-between">
                         <div>
-                           <Link href={`/doctor/${appointment.doctorId._id}`}>
+                           <Link href={`/doctor/${(language === 'bn' ? (appointment.doctorId.slugBn || appointment.doctorId.slug) : (appointment.doctorId.slug || appointment.doctorId.slugBn)) || appointment.doctorId._id}`}>
                             <h3
                               className="text-xl font-bold text-gray-900 mb-1 hover:text-primary transition-colors cursor-pointer"
  
@@ -472,7 +476,7 @@ export default function AppointmentsPage() {
                           )}
                         </Button>
                       )}
-                      <Link href={`/doctor/${appointment.doctorId._id}`}>
+                      <Link href={`/doctor/${(language === 'bn' ? (appointment.doctorId.slugBn || appointment.doctorId.slug) : (appointment.doctorId.slug || appointment.doctorId.slugBn)) || appointment.doctorId._id}`}>
                         <Button
                           variant="outline"
                           className="w-full"

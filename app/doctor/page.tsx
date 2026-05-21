@@ -16,8 +16,7 @@ import { Label } from "@/components/ui/label";
 import Footer from "@/components/footer";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
+
 import {
   Search,
   X,
@@ -65,6 +64,7 @@ interface Department {
 
 interface Doctor {
   slug: string;
+  slugBn?: string;
   _id: string;
   name: string;
   nameBn?: string;
@@ -563,7 +563,7 @@ function DoctorListPageContent() {
             typeBn: 'ডাক্তার', 
             value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name, 
             doctor,
-            link: `/doctor/${doctor?.slug || doctor._id}`
+            link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
           });
         } else if (
           specialtyMatches &&
@@ -582,7 +582,7 @@ function DoctorListPageContent() {
             typeBn: 'ডাক্তার', 
             value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name, 
             doctor,
-            link: `/doctor/${doctor.slug || doctor._id}`
+            link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
           });
         }
       });
@@ -721,7 +721,7 @@ function DoctorListPageContent() {
       "@type": "ListItem",
       "position": index + 1,
       "name": getLocalizedValue(doctor.name, doctor.nameBn, language),
-      "url": `https://meditime.com.bd/doctor/${doctor.slug || doctor._id}`
+      "url": `https://meditime.com.bd/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
     }))
   };
 

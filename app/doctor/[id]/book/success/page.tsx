@@ -227,9 +227,16 @@ function BookingSuccessContent() {
           >
             {/* Slip Header */}
             <div className="bg-gradient-to-r from-[#00B7B5] to-teal-600 px-6 py-6 text-center">
-              <h3 className="font-bold text-2xl text-white tracking-tight" >
-                MediTime
-              </h3>
+             <div className="p-2 bg-white w-fit h-fit rounded-full mx-auto justify-center items-center flex h-16 w-16">
+                <Image
+                src="/logo.png"
+                alt="Meditime Logo"
+                width={100}
+                height={100}
+                className="mx-auto"
+              />
+             </div>
+            
               <p className="text-white/80 text-sm font-bold uppercase tracking-wider mt-1">
                 Appointment Slip
               </p>

@@ -13,6 +13,7 @@ interface Doctor {
   name: string;
   nameBn?: string;
   slug?: string;
+  slugEn?: string;
   specialty?: string;
   specialtyBn?: string;
   department?: string;
@@ -121,7 +122,7 @@ export default function SearchSection() {
           type: "Doctor",
           value: language === 'bn' ? (doctor.nameBn || doctor.name) : doctor.name,
           doctor,
-          link: `/doctor/${doctor.slug || doctor._id}`,
+          link: `/doctor/${(language === 'bn' ? doctor.slug : (doctor.slugEn || doctor.slug)) || doctor._id}`,
           score: maxScore
         });
       }

@@ -22,15 +22,29 @@ export async function POST(request: NextRequest) {
     let doctorUpdated = 0;
 
     for (const doctor of doctors) {
-      const slugSource = doctor.name || doctor.nameBn || "doctor";
-      const newSlug = await generateUniqueSlug(
-        slugSource,
+      // English slug: slug
+      const slugSourceEn = doctor.name || doctor.nameBn || "doctor";
+      const newSlugEn = await generateUniqueSlug(
+        slugSourceEn,
         Doctor,
         doctor._id.toString(),
-        "doctor"
+        "slug"
       );
-      if (doctor.slug !== newSlug) {
-        await Doctor.updateOne({ _id: doctor._id }, { $set: { slug: newSlug } });
+
+      // Bangla slug: slugBn
+      const slugSourceBn = doctor.nameBn || doctor.name || "doctor";
+      const newSlugBn = await generateUniqueSlug(
+        slugSourceBn,
+        Doctor,
+        doctor._id.toString(),
+        "slugBn"
+      );
+
+      if (doctor.slug !== newSlugEn || doctor.slugBn !== newSlugBn) {
+        await Doctor.updateOne(
+          { _id: doctor._id },
+          { $set: { slug: newSlugEn, slugBn: newSlugBn } }
+        );
         doctorUpdated++;
       }
     }
@@ -45,7 +59,7 @@ export async function POST(request: NextRequest) {
         slugSource,
         Hospital,
         hospital._id.toString(),
-        "hospital"
+        "slug"
       );
       if (hospital.slug !== newSlug) {
         await Hospital.updateOne(

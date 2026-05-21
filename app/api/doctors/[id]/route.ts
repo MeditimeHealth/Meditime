@@ -18,10 +18,12 @@ export async function GET(
     if (decodedId.match(/^[0-9a-fA-F]{24}$/)) {
       doctor = await Doctor.findById(decodedId);
     }
-    
     // If not found by ID or not a valid ObjectId, try finding by slug
     if (!doctor) {
       doctor = await Doctor.findOne({ slug: decodedId });
+    }
+    if (!doctor) {
+      doctor = await Doctor.findOne({ slugBn: decodedId });
     }
     
     if (!doctor) {
@@ -63,8 +65,8 @@ export async function PUT(
       specialty,
       qualification,
       designation,
-      slug, // Optional manual slug override
-
+      slug,       // Optional manual English slug override
+      slugBn,     // Optional manual Bangla slug override
 
       email,
       phoneNumber,
@@ -72,16 +74,24 @@ export async function PUT(
       division,
       district,
       thana,
-
       department,
 
       reportShowFee,
       newPatientFee,
       diseases,
+      diseasesEn,
       availability,
       bio,
       image,
+
+      // Bangla fields
       hospitalBn,
+      divisionBn,
+      districtBn,
+      thanaBn,
+      departmentBn,
+      reportShowFeeBn,
+      newPatientFeeBn,
     } = body;
 
     // Validate required fields - allow either English or Bangla versions
@@ -121,19 +131,33 @@ export async function PUT(
     };
 
     // Handle Slug Logic
+    const existingDoctor = await Doctor.findById(id);
+    
+    // 1. English slug (slug)
     if (slug) {
-      doctorData.slug = slug; // Use provided slug if any
+      doctorData.slug = slug; // Use provided English slug if any
     } else {
-      const existingDoctor = await Doctor.findById(id);
-      const newName = name || body.nameBn;
-      const oldName = existingDoctor?.name || existingDoctor?.nameBn;
+      const newNameEn = name || body.nameBn;
+      const oldNameEn = existingDoctor?.name || existingDoctor?.nameBn;
 
-      if (existingDoctor && !existingDoctor.slug && (newName || oldName)) {
-        // Generate if missing
-        doctorData.slug = await generateUniqueSlug(newName || oldName || 'doctor', Doctor, id);
-      } else if (existingDoctor && newName && newName !== oldName) {
-        // Regenerate slug if name changed and no manual slug provided
-        doctorData.slug = await generateUniqueSlug(newName, Doctor, id);
+      if (existingDoctor && !existingDoctor.slug && (newNameEn || oldNameEn)) {
+        doctorData.slug = await generateUniqueSlug(newNameEn || oldNameEn || 'doctor', Doctor, id);
+      } else if (existingDoctor && newNameEn && newNameEn !== oldNameEn) {
+        doctorData.slug = await generateUniqueSlug(newNameEn, Doctor, id);
+      }
+    }
+
+    // 2. Bangla slug (slugBn)
+    if (slugBn) {
+      doctorData.slugBn = slugBn; // Use provided Bangla slug if any
+    } else {
+      const newNameBn = body.nameBn || name;
+      const oldNameBn = existingDoctor?.nameBn || existingDoctor?.name;
+
+      if (existingDoctor && !existingDoctor.slugBn && (newNameBn || oldNameBn)) {
+        doctorData.slugBn = await generateUniqueSlug(newNameBn || oldNameBn || 'doctor', Doctor, id, 'slugBn');
+      } else if (existingDoctor && newNameBn && newNameBn !== oldNameBn) {
+        doctorData.slugBn = await generateUniqueSlug(newNameBn, Doctor, id, 'slugBn');
       }
     }
 
@@ -154,6 +178,7 @@ export async function PUT(
     if (newPatientFee !== undefined) doctorData.newPatientFee = newPatientFee;
     
     if (diseases && Array.isArray(diseases)) doctorData.diseases = diseases;
+    if (diseasesEn && Array.isArray(diseasesEn)) doctorData.diseasesEn = diseasesEn;
     if (bio) doctorData.bio = bio;
     if (image) doctorData.image = image;
 
@@ -163,6 +188,13 @@ export async function PUT(
     if (body.qualificationBn) doctorData.qualificationBn = body.qualificationBn;
     if (body.designationBn) doctorData.designationBn = body.designationBn;
     if (body.bioBn) doctorData.bioBn = body.bioBn;
+    if (divisionBn) doctorData.divisionBn = divisionBn;
+    if (districtBn) doctorData.districtBn = districtBn;
+    if (thanaBn) doctorData.thanaBn = thanaBn;
+    if (departmentBn) doctorData.departmentBn = departmentBn;
+    if (reportShowFeeBn) doctorData.reportShowFeeBn = reportShowFeeBn;
+    if (newPatientFeeBn) doctorData.newPatientFeeBn = newPatientFeeBn;
+    if (slugBn) doctorData.slugBn = slugBn;
 
     const doctor = await Doctor.findByIdAndUpdate(
       id,

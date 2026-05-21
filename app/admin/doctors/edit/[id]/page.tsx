@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { showToast } from "@/lib/toast";
+import { convertToBengaliNumber, convertToEnglishNumber } from "@/lib/utils";
 import * as z from "zod";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -23,13 +25,23 @@ const doctorSchema = z.object({
   hospital: z.string().optional(),
   hospitalBn: z.string().optional(),
   division: z.string().optional(),
+  divisionBn: z.string().optional(),
   district: z.string().optional(),
+  districtBn: z.string().optional(),
   thana: z.string().optional(),
+  thanaBn: z.string().optional(),
 
   department: z.string().optional(),
+  departmentBn: z.string().optional(),
+
   reportShowFee: z.coerce.number().min(0, "Report show fee must be at least 0").optional(),
+  reportShowFeeBn: z.string().optional(),
   newPatientFee: z.coerce.number().min(0, "New patient fee must be at least 0").optional(),
+  newPatientFeeBn: z.string().optional(),
+
   diseases: z.array(z.string()).optional(),
+  diseasesEn: z.array(z.string()).optional(),
+
   bio: z.string().optional(),
 
   // Bangla Fields
@@ -119,6 +131,12 @@ export default function EditDoctorPage() {
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
   const [filteredDiseases, setFilteredDiseases] = useState<Array<{ _id: string; name: string; bangla: string; department?: { _id: string; name: string } | string }>>([]);
 
+  const [divisions, setDivisions] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [thanas, setThanas] = useState<any[]>([]);
+  const [filteredDistricts, setFilteredDistricts] = useState<any[]>([]);
+  const [filteredThanas, setFilteredThanas] = useState<any[]>([]);
+
   const [availabilitySlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>([
     { days: [], time: "" },
   ]);
@@ -142,16 +160,23 @@ export default function EditDoctorPage() {
       designation: "",
       designationBn: "",
       hospital: "",
+      hospitalBn: "",
       division: "",
+      divisionBn: "",
       district: "",
+      districtBn: "",
       thana: "",
+      thanaBn: "",
       department: "",
+      departmentBn: "",
       reportShowFee: 0,
+      reportShowFeeBn: "",
       newPatientFee: 0,
+      newPatientFeeBn: "",
       diseases: [],
+      diseasesEn: [],
       bio: "",
       bioBn: "",
-      hospitalBn: "",
       image: "",
       availabilitySlots: [{ days: [], time: "", timeBn: "" }],
     },
@@ -272,18 +297,7 @@ export default function EditDoctorPage() {
     };
   }, []);
 
-  // Update hospitalSearchTerm display when form language is toggled
-  useEffect(() => {
-    if (selectedHospitalName) {
-      const selectedHospital = availableHospitals.find(h => h.name === selectedHospitalName) || hospitals.find(h => h.name === selectedHospitalName);
-      const nameBn = selectedHospital?.nameBn || watch("hospitalBn");
-      if (language === 'bn' && nameBn) {
-        setHospitalSearchTerm(nameBn);
-      } else {
-        setHospitalSearchTerm(selectedHospitalName);
-      }
-    }
-  }, [language, selectedHospitalName, availableHospitals, hospitals]);
+  // Removed buggy hospitalSearchTerm update on language toggle
 
   // Handle hospital selection - auto-populate location
   const handleHospitalSelect = (hospitalName: string) => {
@@ -323,19 +337,43 @@ export default function EditDoctorPage() {
 
   useEffect(() => {
     const loadInitialData = async () => {
-      // Load departments
-      const deptsRes = await fetch("/api/departments");
-      const deptsData = await deptsRes.json();
-      if (deptsData.departments) {
-        setDepartments(deptsData.departments);
+      // Fetch all required data in parallel
+      const [deptsRes, diseasesRes, divsRes, distsRes, thanasRes] = await Promise.all([
+        fetch("/api/departments"),
+        fetch("/api/diseases"),
+        fetch("/api/locations/divisions"),
+        fetch("/api/locations/districts"),
+        fetch("/api/locations/thanas")
+      ]);
+
+      if (deptsRes.ok) {
+        const deptsData = await deptsRes.json();
+        if (deptsData.departments) {
+          setDepartments(deptsData.departments);
+        }
       }
 
-      // Load diseases
-      const diseasesRes = await fetch("/api/diseases");
-      const diseasesData = await diseasesRes.json();
-      if (diseasesData.diseases) {
-        setDiseases(diseasesData.diseases);
-        setFilteredDiseases(diseasesData.diseases);
+      if (diseasesRes.ok) {
+        const diseasesData = await diseasesRes.json();
+        if (diseasesData.diseases) {
+          setDiseases(diseasesData.diseases);
+          setFilteredDiseases(diseasesData.diseases);
+        }
+      }
+
+      if (divsRes.ok) {
+        const data = await divsRes.json();
+        setDivisions(data.divisions || []);
+      }
+      
+      if (distsRes.ok) {
+        const data = await distsRes.json();
+        setDistricts(data.districts || []);
+      }
+      
+      if (thanasRes.ok) {
+        const data = await thanasRes.json();
+        setThanas(data.thanas || []);
       }
 
       // Load doctor data
@@ -347,6 +385,35 @@ export default function EditDoctorPage() {
     loadInitialData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doctorId]);
+
+  const selectedDivision = watch("division");
+  const selectedDistrict = watch("district");
+
+  useEffect(() => {
+    if (selectedDivision) {
+      const division = divisions.find(d => d.name === selectedDivision);
+      if (division) {
+        setFilteredDistricts(districts.filter(d => d.division?._id === division._id || d.division === division._id));
+      } else {
+        setFilteredDistricts([]);
+      }
+    } else {
+      setFilteredDistricts(districts);
+    }
+  }, [selectedDivision, divisions, districts]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      const district = districts.find(d => d.name === selectedDistrict);
+      if (district) {
+        setFilteredThanas(thanas.filter(t => t.district?._id === district._id || t.district === district._id));
+      } else {
+        setFilteredThanas([]);
+      }
+    } else {
+      setFilteredThanas(thanas);
+    }
+  }, [selectedDistrict, districts, thanas]);
 
   const fetchDoctor = async () => {
     try {
@@ -400,13 +467,21 @@ export default function EditDoctorPage() {
           hospital: doctor.hospital || "",
           hospitalBn: doctor.hospitalBn || "",
           division: doctor.division || "",
+          divisionBn: doctor.divisionBn || "",
           district: doctor.district || "",
+          districtBn: doctor.districtBn || "",
           thana: doctor.thana || "",
+          thanaBn: doctor.thanaBn || "",
 
           department: doctor.department || "",
+          departmentBn: doctor.departmentBn || "",
           reportShowFee: doctor.reportShowFee || 0,
+          reportShowFeeBn: doctor.reportShowFeeBn || "",
           newPatientFee: doctor.newPatientFee || 0,
+          newPatientFeeBn: doctor.newPatientFeeBn || "",
+
           diseases: doctor.diseases || [],
+          diseasesEn: doctor.diseasesEn || [],
           bio: doctor.bio || "",
           bioBn: doctor.bioBn || "",
           image: doctor.image || "",
@@ -578,6 +653,15 @@ export default function EditDoctorPage() {
           qualificationBn: data.qualificationBn,
           designationBn: data.designationBn,
           bioBn: data.bioBn,
+          divisionBn: data.divisionBn,
+          districtBn: data.districtBn,
+          thanaBn: data.thanaBn,
+          departmentBn: data.departmentBn,
+          reportShowFeeBn: data.reportShowFeeBn,
+          newPatientFeeBn: data.newPatientFeeBn,
+          diseasesEn: data.diseasesEn,
+
+          diseases: selectedDiseases,
         }),
       });
 
@@ -844,7 +928,96 @@ export default function EditDoctorPage() {
               )}
             </div>
 
+            <div>
+              <Label htmlFor="division">
+                {language === 'bn' ? 'বিভাগ' : 'Division'}
+              </Label>
+              <select
+                id="division"
+                {...register("division")}
+                onChange={(e) => {
+                  setValue("division", e.target.value);
+                  const div = divisions.find(d => d.name === e.target.value);
+                  if (div) {
+                    setValue("divisionBn", div.nameBn || "");
+                  } else {
+                    setValue("divisionBn", "");
+                  }
+                  // Reset child fields
+                  setValue("district", "");
+                  setValue("districtBn", "");
+                  setValue("thana", "");
+                  setValue("thanaBn", "");
+                }}
+                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+              >
+                <option value="">{language === 'bn' ? 'বিভাগ নির্বাচন করুন' : 'Select Division'}</option>
+                {divisions.map((d) => (
+                  <option key={d._id} value={d.name}>
+                    {language === 'bn' && d.nameBn ? d.nameBn : d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
+            <div>
+              <Label htmlFor="district">
+                {language === 'bn' ? 'জেলা' : 'District'}
+              </Label>
+              <select
+                id="district"
+                {...register("district")}
+                onChange={(e) => {
+                  setValue("district", e.target.value);
+                  const dist = districts.find(d => d.name === e.target.value);
+                  if (dist) {
+                    setValue("districtBn", dist.nameBn || "");
+                  } else {
+                    setValue("districtBn", "");
+                  }
+                  // Reset child field
+                  setValue("thana", "");
+                  setValue("thanaBn", "");
+                }}
+                disabled={!selectedDivision}
+                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+              >
+                <option value="">{language === 'bn' ? 'জেলা নির্বাচন করুন' : 'Select District'}</option>
+                {filteredDistricts.map((d) => (
+                  <option key={d._id} value={d.name}>
+                    {language === 'bn' && d.nameBn ? d.nameBn : d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <Label htmlFor="thana">
+                {language === 'bn' ? 'উপজেলা/থানা' : 'Thana/Upazila'}
+              </Label>
+              <select
+                id="thana"
+                {...register("thana")}
+                onChange={(e) => {
+                  setValue("thana", e.target.value);
+                  const thanaObj = thanas.find(t => t.name === e.target.value);
+                  if (thanaObj) {
+                    setValue("thanaBn", thanaObj.nameBn || "");
+                  } else {
+                    setValue("thanaBn", "");
+                  }
+                }}
+                disabled={!selectedDistrict}
+                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+              >
+                <option value="">{language === 'bn' ? 'থানা নির্বাচন করুন' : 'Select Thana'}</option>
+                {filteredThanas.map((t) => (
+                  <option key={t._id} value={t.name}>
+                    {language === 'bn' && t.nameBn ? t.nameBn : t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <div>
               <Label htmlFor="department">
@@ -853,6 +1026,15 @@ export default function EditDoctorPage() {
               <select
                 id="department"
                 {...register("department")}
+                onChange={(e) => {
+                  setValue("department", e.target.value);
+                  const dept = departments.find(d => d.name === e.target.value);
+                  if (dept) {
+                    setValue("departmentBn", dept.nameBn || "");
+                  } else {
+                    setValue("departmentBn", "");
+                  }
+                }}
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
 
               >
@@ -866,37 +1048,93 @@ export default function EditDoctorPage() {
             </div>
 
             <div>
-              <Label htmlFor="newPatientFee">
-                {t("newPatientFee", language)} <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="newPatientFee"
-                type="number"
-                {...register("newPatientFee")}
-                placeholder="500"
-                className="mt-1"
-
-              />
-              {errors.newPatientFee && (
-                <p className="text-sm text-red-500 mt-1">{errors.newPatientFee.message}</p>
-              )}
+              <div className={language === 'en' ? 'block' : 'hidden'}>
+                <Label htmlFor="newPatientFee">
+                  {t("newPatientFee", language)} <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="newPatientFee"
+                  type="number"
+                  {...register("newPatientFee", {
+                    valueAsNumber: true,
+                    onChange: (e) => {
+                      const val = e.target.value;
+                      setValue("newPatientFeeBn", convertToBengaliNumber(val));
+                    }
+                  })}
+                  placeholder="500"
+                  className="mt-1"
+                />
+                {errors.newPatientFee && (
+                  <p className="text-sm text-red-500 mt-1">{errors.newPatientFee.message}</p>
+                )}
+              </div>
+              <div className={language === 'bn' ? 'block' : 'hidden'}>
+                <Label htmlFor="newPatientFeeBn">
+                  {t("newPatientFee", language)} <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="newPatientFeeBn"
+                  type="text"
+                  {...register("newPatientFeeBn", {
+                    onChange: (e) => {
+                      const engVal = convertToEnglishNumber(e.target.value);
+                      const num = engVal ? Number(engVal) : 0;
+                      setValue("newPatientFee", num);
+                    }
+                  })}
+                  placeholder="৫০০"
+                  className="mt-1"
+                />
+                {errors.newPatientFeeBn && (
+                  <p className="text-sm text-red-500 mt-1">{errors.newPatientFeeBn.message}</p>
+                )}
+              </div>
             </div>
 
             <div>
-              <Label htmlFor="reportShowFee">
-                {t("reportShowFee", language)} <span className="text-gray-500 text-xs">({t("optional", language)})</span>
-              </Label>
-              <Input
-                id="reportShowFee"
-                type="number"
-                {...register("reportShowFee")}
-                placeholder="400"
-                className="mt-1"
-
-              />
-              {errors.reportShowFee && (
-                <p className="text-sm text-red-500 mt-1">{errors.reportShowFee.message}</p>
-              )}
+              <div className={language === 'en' ? 'block' : 'hidden'}>
+                <Label htmlFor="reportShowFee">
+                  {t("reportShowFee", language)} <span className="text-gray-500 text-xs">({t("optional", language)})</span>
+                </Label>
+                <Input
+                  id="reportShowFee"
+                  type="number"
+                  {...register("reportShowFee", {
+                    valueAsNumber: true,
+                    onChange: (e) => {
+                      const val = e.target.value;
+                      setValue("reportShowFeeBn", convertToBengaliNumber(val));
+                    }
+                  })}
+                  placeholder="400"
+                  className="mt-1"
+                />
+                {errors.reportShowFee && (
+                  <p className="text-sm text-red-500 mt-1">{errors.reportShowFee.message}</p>
+                )}
+              </div>
+              <div className={language === 'bn' ? 'block' : 'hidden'}>
+                <Label htmlFor="reportShowFeeBn">
+                  {t("reportShowFee", language)} <span className="text-gray-500 text-xs">({t("optional", language)})</span>
+                </Label>
+                <Input
+                  id="reportShowFeeBn"
+                  type="text"
+                  {...register("reportShowFeeBn", {
+                    onChange: (e) => {
+                      const engVal = convertToEnglishNumber(e.target.value);
+                      const num = engVal ? Number(engVal) : 0;
+                      setValue("reportShowFee", num);
+                    }
+                  })}
+                  placeholder="৪০০"
+                  className="mt-1"
+                />
+                {errors.reportShowFeeBn && (
+                  <p className="text-sm text-red-500 mt-1">{errors.reportShowFeeBn.message}</p>
+                )}
+              </div>
             </div>
 
             <div className="md:col-span-2">
