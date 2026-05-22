@@ -161,7 +161,7 @@ export default function ServicePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative h-[450px] md:h-[550px] w-full overflow-hidden"
+        className="relative h-[450px] md:h-[650px] w-full overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-[#002B2B]/90 via-[#002B2B]/70 to-[#002B2B]/90 z-10" />
         <div

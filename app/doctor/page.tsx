@@ -738,7 +738,7 @@ function DoctorListPageContent() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative  h-[450px] md:h-[550px] w-full overflow-hidden"
+        className="relative  h-[450px] md:h-[650px] w-full overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-[#1a365d]/90 via-[#2C5282]/80 to-primary/60 z-10" />
         <div
