@@ -137,7 +137,11 @@ export default function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-white shadow-md py-4 sm:py-5"
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-4 sm:py-5 ${
+          scrolled 
+            ? "bg-white shadow-md" 
+            : "bg-transparent"
+        }`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
@@ -182,8 +186,8 @@ export default function Navbar() {
                             : "text-[11px] xl:text-[13px] font-semibold"
                         } uppercase tracking-wider transition-all duration-300 whitespace-nowrap text-center ${
                           isActive
-                            ? "text-primary"
-                            : "text-slate-700 group-hover:text-primary"
+                            ? scrolled ? "text-primary" : "text-white"
+                            : scrolled ? "text-slate-700 group-hover:text-primary" : "text-white group-hover:text-yellow-300"
                         }`}
                       >
                         {link.label}
@@ -191,14 +195,18 @@ export default function Navbar() {
                       {isActive && (
                         <motion.div
                           layoutId="navbar-indicator"
-                          className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full"
+                          className={`absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full`}
                           initial={false}
                           transition={{ type: "spring", stiffness: 380, damping: 30 }}
                         />
                       )}
                       {!isActive && (
                         <motion.div
-                          className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary/0 group-hover:bg-primary/50 rounded-full"
+                          className={`absolute -bottom-1 left-0 right-0 h-0.5 rounded-full ${
+                            scrolled 
+                              ? "bg-primary/0 group-hover:bg-primary/50" 
+                              : "bg-white/0 group-hover:bg-white/50"
+                          }`}
                           initial={{ scaleX: 0 }}
                           whileHover={{ scaleX: 1 }}
                           transition={{ duration: 0.3 }}
@@ -217,7 +225,11 @@ export default function Navbar() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleLanguage}
-                className="flex items-center justify-center w-[75px] h-[54px] p-[16px] gap-[4px] rounded-[8px] bg-[#019A981A] text-primary hover:bg-primary/20 transition-all text-xs font-medium shrink-0"
+                className={`flex items-center justify-center w-[75px] h-[54px] p-[16px] gap-[4px] rounded-[8px] text-xs font-medium shrink-0 transition-all ${
+                  scrolled
+                    ? "bg-[#019A981A] text-primary hover:bg-primary/20"
+                    : "bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
+                }`}
                 title={language === 'en' ? 'Switch to Bangla' : 'Switch to English'}
               >
                 {language === 'en' ? 'বাংলা' : 'English'}
@@ -246,7 +258,11 @@ export default function Navbar() {
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link
                       href="/login"
-                      className="text-sm font-semibold text-gray-700 hover:text-primary transition-colors duration-300 px-3 py-2 rounded-lg hover:bg-primary/5"
+                      className={`text-sm font-semibold px-3 py-2 rounded-lg transition-colors duration-300 ${
+                        scrolled
+                          ? "text-gray-700 hover:text-primary hover:bg-primary/5"
+                          : "text-white hover:text-yellow-300 hover:bg-white/10"
+                      }`}
                     >
                       {t.login}
                     </Link>
@@ -254,7 +270,11 @@ export default function Navbar() {
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link
                       href="/signup"
-                      className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-white text-sm font-semibold transition-all duration-300"
+                      className={`px-6 py-2.5 rounded-full text-white text-sm font-semibold transition-all duration-300 ${
+                        scrolled
+                          ? "bg-primary hover:bg-primary/90"
+                          : "bg-white/25 hover:bg-white/35 backdrop-blur-sm"
+                      }`}
                     >
                       {t.signup}
                     </Link>
@@ -266,7 +286,11 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2.5 rounded-lg bg-primary text-white shadow-sm transition-all active:scale-95"
+              className={`lg:hidden p-2.5 rounded-lg text-white shadow-sm transition-all active:scale-95 ${
+                scrolled
+                  ? "bg-primary"
+                  : "bg-white/25 backdrop-blur-sm hover:bg-white/35"
+              }`}
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (

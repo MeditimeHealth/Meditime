@@ -69,7 +69,7 @@ export default function WhyChooseSection() {
               className="h-full"
             >
               <Card
-                className="btn-slide rounded-2xl md:rounded-none group p-8 sm:p-10 border h-full flex flex-col items-start text-left  shadow-xl transition-all duration-300 hover:shadow-2xl bg-[#F8F9FA] border-slate-100 md:min-h-[420px]"
+                className="btn-slide rounded-2xl md:rounded-none group p-8 sm:p-10 hover:border-none border h-full flex flex-col items-start text-left  shadow-xl transition-all duration-300 hover:shadow-2xl bg-[#F8F9FA] border-slate-100 md:min-h-[420px]"
               >
                 {/* Icon Container */}
                 <div className="mb-10 shrink-0 relative">

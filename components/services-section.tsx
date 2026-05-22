@@ -62,21 +62,7 @@ export default function ServicesSection() {
       href: "/diagnostic",
       description: t.diagnosticDesc,
       image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80",
-    },
-    {
-      title: t.bloodDonorTitle,
-      cta: t.findDonorBtn,
-      href: "/blood-donor",
-      description: t.bloodDonorDesc,
-      image: "https://images.unsplash.com/photo-1615461066159-fea0960485d5?auto=format&fit=crop&q=80",
-    },
-    {
-      title: t.ambulanceTitle,
-      cta: t.callNowBtn,
-      href: "/ambulance",
-      description: t.ambulanceDesc,
-      image: "https://images.unsplash.com/photo-1554734867-bf3c00a49371?auto=format&fit=crop&q=80",
-    },
+    }
   ];
 
   return (

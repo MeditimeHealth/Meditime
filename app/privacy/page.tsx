@@ -15,7 +15,7 @@ export default function PrivacyPolicyPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative mt-20 h-[300px] md:h-[350px] w-full overflow-hidden"
+        className="relative  h-[300px] md:h-[350px] w-full overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/50 to-primary-dark/60 z-10" />
         <div

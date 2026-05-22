@@ -113,7 +113,7 @@ export default function MembershipDetailPage({ params }: { params: Promise<{ pla
     return (
       <div className="min-h-screen bg-white">
         <Navbar />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center ">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Plan not found</h1>
           <button
             onClick={() => router.push("/membership")}
@@ -191,7 +191,7 @@ export default function MembershipDetailPage({ params }: { params: Promise<{ pla
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative mt-20 h-[350px] md:h-[400px] w-full overflow-hidden"
+        className="relative  h-[350px] md:h-[400px] w-full overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/50 to-primary-dark/60 z-10" />
         <div

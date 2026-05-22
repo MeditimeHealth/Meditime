@@ -428,7 +428,7 @@ export default function DoctorProfilePage() {
       </div> */}
 
       {/* Facebook-style Cover Photo - Fixed Static */}
-      <div className="relative mt-20 w-full h-[350px] md:h-[450px] overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-primary">
+      <div className="relative  w-full h-[350px] md:h-[450px] overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-primary">
         {/* Static Cover Image */}
         <div className="absolute inset-0">
           <Image

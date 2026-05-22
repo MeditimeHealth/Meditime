@@ -110,7 +110,7 @@ export default function MembershipPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative mt-20 h-[400px] md:h-[500px] w-full overflow-hidden"
+        className="relative  h-[400px] md:h-[500px] w-full overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/50 to-primary-dark/60 z-10" />
         <div

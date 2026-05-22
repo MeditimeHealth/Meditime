@@ -22,6 +22,8 @@ export default function HeroSection() {
       image: "/slide.jpg",
       ctaText: t.slide1.cta,
       ctaLink: "/service",
+      ctaText2: "Live Consultation",
+      ctaLink2: "/",
     },
     {
       title: t.slide2.title,
@@ -104,20 +106,30 @@ export default function HeroSection() {
 
                 {/* ── Text: vertically & horizontally centered ── */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                  <h1 className="text-4xl sm:text-5xl font-bold leading-tight text-white mb-6 max-w-[320px] tracking-tight">
+                  <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight text-white mb-6 max-w-[320px] tracking-tight">
                     {slide.title}
                   </h1>
                   <p className="text-[15px] sm:text-base text-white/90 leading-relaxed mb-10 max-w-[300px]">
                     {slide.description}
                   </p>
-                  <Link
-                    href={slide.ctaLink}
-                    target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
-                  >
-                    <button className="btn-slide bg-white text-slate-900 font-bold text-[16px] px-10 py-4 rounded-full shadow-lg active:scale-95">
-                      <span className="relative z-10">{slide.ctaText}</span>
-                    </button>
-                  </Link>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Link
+                      href={slide.ctaLink}
+                      target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
+                    >
+                      <button className="btn-slide bg-white text-slate-900 font-bold text-[16px] px-10 py-4 rounded-full shadow-lg active:scale-95">
+                        <span className="relative z-10">{slide.ctaText}</span>
+                      </button>
+                    </Link>
+                    <Link
+                      href={slide?.ctaLink2 ? slide.ctaLink2 : "#"}
+                      target={slide?.ctaLink2?.startsWith("http") ? "_blank" : "_self"}
+                    >
+                      <button className="btn-slide bg-orange-500 text-white font-bold text-[16px] px-10 py-4 rounded-full shadow-lg active:scale-95 hover:bg-orange-600">
+                        <span className="relative z-10">{slide.ctaText2}</span>
+                      </button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </SwiperSlide>
@@ -126,7 +138,7 @@ export default function HeroSection() {
       </div>
 
       {/* ── DESKTOP ─────────────────────────────────────────────────────── */}
-      <div className="hidden lg:block mx-auto max-w-[1920px] w-full h-[855px] relative mt-[64px]">
+      <div className="hidden lg:block mx-auto max-w-[1920px] w-full h-[855px] relative ">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}
@@ -159,14 +171,30 @@ export default function HeroSection() {
                     <p className="text-[14px] leading-relaxed text-white/85 mb-6 max-w-[420px]">
                       {slide.description}
                     </p>
-                    <Link
-                      href={slide.ctaLink}
-                      target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
-                    >
-                      <button className="btn-slide bg-white text-slate-900 font-medium text-[15px] px-7 py-3 ">
-                        <span className="relative z-10">{slide.ctaText}</span>
-                      </button>
-                    </Link>
+                    <div className="flex gap-4">
+                      <Link
+                        href={slide.ctaLink}
+                        target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
+                      >
+                        <button className="btn-slide bg-white text-slate-900 font-medium text-[15px] px-7 py-3 ">
+                          <span className="relative z-10">{slide.ctaText}</span>
+                        </button>
+                      </Link>
+
+                      {
+                        slide.ctaLink2 && slide.ctaText2 && (
+                          <Link
+                            href={slide.ctaLink2}
+                            target={slide.ctaLink2?.startsWith("http") ? "_blank" : "_self"}
+                          >
+                            <button className="btn-slide bg-orange-500 text-white font-medium text-[15px] px-7 py-3 hover:bg-orange-600">
+                              <span className="relative z-10">{slide.ctaText2}</span>
+                            </button>
+                          </Link>
+                        )
+                      }
+        
+                    </div>
                   </div>
                 </div>
               </div>

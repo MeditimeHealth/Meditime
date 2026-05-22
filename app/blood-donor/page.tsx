@@ -264,7 +264,7 @@ export default function BloodDonorPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative mt-20 h-[450px] md:h-[550px] w-full overflow-hidden"
+        className="relative  h-[450px] md:h-[550px] w-full overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900/60 via-primary/40 to-slate-900/60 z-10" />
         <div

@@ -136,7 +136,7 @@ export default function HealthTipsPage() {
       <Navbar />
       
       {/* Hero Section - 70% of homepage height */}
-      <div className="relative mt-20 px-4 sm:px-6 lg:px-8">
+      <div className="relative  px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto">
           <div className="h-[350px] sm:h-[385px] lg:h-[420px] rounded-2xl overflow-hidden">
             <div className="relative h-full w-full">
