@@ -240,62 +240,80 @@ export default function CreateDoctorPage() {
   // Handle hospital selection auto-populating location
   useEffect(() => {
     const autoPopulateLocation = async () => {
-      if (selectedHospital) {
-        const hospitalObj = hospitals.find(h => h.name === selectedHospital);
-        if (hospitalObj && hospitalObj.thana) {
-          try {
-            const thanaId = hospitalObj.thana?._id || hospitalObj.thana;
+      if (!selectedHospital) return;
+      
+      const hospitalObj = hospitals.find(h => h.name === selectedHospital);
+      if (!hospitalObj || !hospitalObj.thana) return;
+      
+      try {
+        const thanaId = hospitalObj.thana?._id || hospitalObj.thana;
+        
+        // First try to find in already-loaded data
+        let thana = thanas.find(t => t._id === thanaId);
+        if (!thana) {
+          // Fetch thana data if not in loaded data
+          const thanaRes = await fetch(`/api/locations/thanas/${thanaId}`);
+          if (!thanaRes.ok) throw new Error(`Failed to fetch thana: ${thanaRes.status}`);
+          const thanaData = await thanaRes.json();
+          thana = thanaData.thana || thanaData;
+        }
+        
+        if (!thana) return;
+        
+        const thanaName = thana.name || "";
+        const thanaBnName = thana.nameBn || thana.bangla || thanaName;
+        
+        setValue("thana", thanaName);
+        setValue("thanaBn", thanaBnName);
+        
+        // Get district
+        const districtId = thana.district?._id || thana.district;
+        if (districtId) {
+          let district = districts.find(d => d._id === districtId);
+          if (!district) {
+            // Fetch district data if not in loaded data
+            const districtRes = await fetch(`/api/locations/districts/${districtId}`);
+            if (!districtRes.ok) throw new Error(`Failed to fetch district: ${districtRes.status}`);
+            const districtData = await districtRes.json();
+            district = districtData.district || districtData;
+          }
+          
+          if (district) {
+            const districtName = district.name || "";
+            const districtBnName = district.nameBn || district.bangla || districtName;
             
-            // Fetch thana data to get complete information with Bangla fields
-            const thanaRes = await fetch(`/api/locations/thanas/${thanaId}`);
-            if (thanaRes.ok) {
-              const thanaData = await thanaRes.json();
-              const thana = thanaData.thana || thanaData;
+            setValue("district", districtName);
+            setValue("districtBn", districtBnName);
+            
+            // Get division
+            const divisionId = district.division?._id || district.division;
+            if (divisionId) {
+              let division = divisions.find(d => d._id === divisionId);
+              if (!division) {
+                // Fetch division data if not in loaded data
+                const divisionRes = await fetch(`/api/locations/divisions/${divisionId}`);
+                if (!divisionRes.ok) throw new Error(`Failed to fetch division: ${divisionRes.status}`);
+                const divisionData = await divisionRes.json();
+                division = divisionData.division || divisionData;
+              }
               
-              if (thana) {
-                setValue("thana", thana.name || "");
-                setValue("thanaBn", thana.nameBn || "");
+              if (division) {
+                const divisionName = division.name || "";
+                const divisionBnName = division.nameBn || division.bangla || divisionName;
                 
-                // Fetch district data
-                const districtId = thana.district?._id || thana.district;
-                if (districtId) {
-                  const districtRes = await fetch(`/api/locations/districts/${districtId}`);
-                  if (districtRes.ok) {
-                    const districtData = await districtRes.json();
-                    const district = districtData.district || districtData;
-                    
-                    if (district) {
-                      setValue("district", district.name || "");
-                      setValue("districtBn", district.nameBn || "");
-                      
-                      // Fetch division data
-                      const divisionId = district.division?._id || district.division;
-                      if (divisionId) {
-                        const divisionRes = await fetch(`/api/locations/divisions/${divisionId}`);
-                        if (divisionRes.ok) {
-                          const divisionData = await divisionRes.json();
-                          const division = divisionData.division || divisionData;
-                          
-                          if (division) {
-                            setValue("division", division.name || "");
-                            setValue("divisionBn", division.nameBn || "");
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
+                setValue("division", divisionName);
+                setValue("divisionBn", divisionBnName);
               }
             }
-          } catch (error) {
-            console.error("Error fetching location data:", error);
           }
         }
+      } catch (error) {
+        console.error("Error auto-populating location:", error);
       }
     };
     
     autoPopulateLocation();
-  }, [selectedHospital, hospitals, setValue]);
+  }, [selectedHospital, hospitals, thanas, districts, divisions, setValue]);
 
   const onSubmit = async (data: DoctorFormValues) => {
     setLoading(true);

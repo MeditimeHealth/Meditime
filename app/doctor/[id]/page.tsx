@@ -673,8 +673,9 @@ export default function DoctorProfilePage() {
                       </div>
                       {doctor.district && (
                         <p className="text-sm text-gray-500 mt-1 ml-7" >
-                          {language === 'bn' ? `${doctor.thanaBn ? doctor.thanaBn + ', ' : ''}${doctor.districtBn}` : `${doctor.thana ? doctor.thana + ', ' : ''}${doctor.district}`}
-                          {language === 'bn' ? `${doctor.districtBn}` : `${doctor.district}`}
+                          {language === 'bn' 
+                            ? `${doctor.thanaBn || doctor.thana ? (doctor.thanaBn || doctor.thana) + ', ' : ''}${doctor.districtBn || doctor.district}` 
+                            : `${doctor.thana ? doctor.thana + ', ' : ''}${doctor.district}`}
                         </p>
                       )}
                     </div>
@@ -820,8 +821,9 @@ export default function DoctorProfilePage() {
                       </div>
 
                        <p className="text-sm text-gray-500 mt-1 ml-7" >
-                          {language === 'bn' ? `${doctor.thanaBn ? doctor.thanaBn + ', ' : ''}${doctor.districtBn}` : `${doctor.thana ? doctor.thana + ', ' : ''}${doctor.district}`}
-                          {language === 'bn' ? `${doctor.districtBn}` : `${doctor.district}`}
+                          {language === 'bn' 
+                            ? `${doctor.thanaBn || doctor.thana ? (doctor.thanaBn || doctor.thana) + ', ' : ''}${doctor.districtBn || doctor.district}` 
+                            : `${doctor.thana ? doctor.thana + ', ' : ''}${doctor.district}`}
                         </p>
                     </div>
                   )}
