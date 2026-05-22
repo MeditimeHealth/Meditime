@@ -300,7 +300,7 @@ export default function EditDoctorPage() {
   // Removed buggy hospitalSearchTerm update on language toggle
 
   // Handle hospital selection - auto-populate location
-  const handleHospitalSelect = (hospitalName: string) => {
+  const handleHospitalSelect = async (hospitalName: string) => {
     setSelectedHospitalName(hospitalName);
     setValue("hospital", hospitalName);
     setShowHospitalDropdown(false);
@@ -310,22 +310,53 @@ export default function EditDoctorPage() {
     setValue("hospitalBn", hospitalBn);
     setHospitalSearchTerm(language === 'bn' && hospitalBn ? hospitalBn : hospitalName);
 
-    if (hospitalName) {
-      if (selectedHospital && selectedHospital.thana) {
-        const thana = selectedHospital.thana;
-        const district = thana.district;
-        const division = district?.division;
-
-        // Auto-populate location fields
-        if (division && division.name) {
-          setValue("division", division.name);
+    if (hospitalName && selectedHospital && selectedHospital.thana) {
+      try {
+        const thanaId = selectedHospital.thana?._id || selectedHospital.thana;
+        
+        // Fetch thana data to get complete information with Bangla fields
+        const thanaRes = await fetch(`/api/locations/thanas/${thanaId}`);
+        if (thanaRes.ok) {
+          const thanaData = await thanaRes.json();
+          const thana = thanaData.thana || thanaData;
+          
+          if (thana) {
+            setValue("thana", thana.name || "");
+            setValue("thanaBn", thana.nameBn || "");
+            
+            // Fetch district data
+            const districtId = thana.district?._id || thana.district;
+            if (districtId) {
+              const districtRes = await fetch(`/api/locations/districts/${districtId}`);
+              if (districtRes.ok) {
+                const districtData = await districtRes.json();
+                const district = districtData.district || districtData;
+                
+                if (district) {
+                  setValue("district", district.name || "");
+                  setValue("districtBn", district.nameBn || "");
+                  
+                  // Fetch division data
+                  const divisionId = district.division?._id || district.division;
+                  if (divisionId) {
+                    const divisionRes = await fetch(`/api/locations/divisions/${divisionId}`);
+                    if (divisionRes.ok) {
+                      const divisionData = await divisionRes.json();
+                      const division = divisionData.division || divisionData;
+                      
+                      if (division) {
+                        setValue("division", division.name || "");
+                        setValue("divisionBn", division.nameBn || "");
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-        if (district && district.name) {
-          setValue("district", district.name);
-        }
-        if (thana.name) {
-          setValue("thana", thana.name);
-        }
+      } catch (error) {
+        console.error("Error fetching location data:", error);
       }
     }
   };

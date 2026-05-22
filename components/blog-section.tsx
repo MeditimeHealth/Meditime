@@ -143,7 +143,7 @@ export default function BlogSection() {
                     {stripHtml(post.excerpt.rendered)}
                   </p>
                   {/* Read More */}
-                  <div className="inline-flex btn-slide items-center gap-1 text-primary text-sm font-semibold">
+                  <div className="inline-flex  p-2 border border-primary rounded-2xl btn-slide items-center gap-1 text-primary text-sm font-semibold">
                     {t.readMore}
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </div>
