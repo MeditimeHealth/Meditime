@@ -1,0 +1,137 @@
+app\admin\ambulances\approvals\page.tsx:153: [ambulance.thanaBn || ambulance.thana, ambulance.districtBn || ambulance.district, ambulance.divisionBn || ambulance.division].filter(Boolean).join(", ") :
+app\admin\ambulances\page.tsx:183: [ambulance.thanaBn || ambulance.thana, ambulance.districtBn || ambulance.district, ambulance.divisionBn || ambulance.division].filter(Boolean).join(", ") :
+app\admin\blood-donors\approvals\page.tsx:151: [donor.thanaBn || donor.thana, donor.districtBn || donor.district, donor.divisionBn || donor.division].filter(Boolean).join(", ") :
+app\admin\blood-donors\page.tsx:199: language === 'bn' ? donor.thanaBn || donor.thana : donor.thana,
+app\admin\blood-donors\page.tsx:199: language === 'bn' ? donor.thanaBn || donor.thana : donor.thana,
+app\admin\blood-donors\page.tsx:200: language === 'bn' ? donor.districtBn || donor.district : donor.district,
+app\admin\blood-donors\page.tsx:200: language === 'bn' ? donor.districtBn || donor.district : donor.district,
+app\admin\blood-donors\page.tsx:201: language === 'bn' ? donor.divisionBn || donor.division : donor.division,
+app\admin\blood-donors\page.tsx:201: language === 'bn' ? donor.divisionBn || donor.division : donor.division,
+app\admin\diagnostic\abandoned-carts\page.tsx:220: {language === 'bn' ? (test.nameBn || test.name) : test.name}
+app\admin\diagnostic\abandoned-carts\page.tsx:220: {language === 'bn' ? (test.nameBn || test.name) : test.name}
+app\admin\diagnostic\centers\page.tsx:146: language === 'bn' ? center.divisionBn || center.division : center.division,
+app\admin\diagnostic\centers\page.tsx:146: language === 'bn' ? center.divisionBn || center.division : center.division,
+app\admin\diagnostic\centers\page.tsx:147: language === 'bn' ? center.districtBn || center.district : center.district,
+app\admin\diagnostic\centers\page.tsx:147: language === 'bn' ? center.districtBn || center.district : center.district,
+app\admin\diagnostic\centers\page.tsx:148: language === 'bn' ? center.thanaBn || center.thana : center.thana
+app\admin\diagnostic\centers\page.tsx:148: language === 'bn' ? center.thanaBn || center.thana : center.thana
+app\admin\diagnostic\tests\create\page.tsx:187: descriptionBn: formData.descriptionBn || undefined,
+app\admin\diagnostic\tests\edit\[id]\page.tsx:237: descriptionBn: formData.descriptionBn || undefined,
+app\admin\diagnostic\tests\page.tsx:344: ? `আপনি কি নিশ্চিত যে "${testToDelete?.nameBn || testToDelete?.name}" টেস্টটি মুছে ফেলতে চান? এটি আর ফিরিয়ে আনা যাবে না।`
+app\admin\diseases\page.tsx:364: {formLanguage === "bn" ? (dept.nameBn || dept.name) : dept.name}
+app\admin\diseases\page.tsx:364: {formLanguage === "bn" ? (dept.nameBn || dept.name) : dept.name}
+app\admin\diseases\page.tsx:517: <span>{language === 'bn' ? (disease.department.nameBn || disease.department.name) : disease.department.name}</span>
+app\admin\diseases\page.tsx:517: <span>{language === 'bn' ? (disease.department.nameBn || disease.department.name) : disease.department.name}</span>
+app\admin\doctors\create\page.tsx:264: const thanaBnName = thana.nameBn || thana.bangla || thanaName;
+app\admin\doctors\create\page.tsx:283: const districtBnName = district.nameBn || district.bangla || districtName;
+app\admin\doctors\create\page.tsx:302: const divisionBnName = division.nameBn || division.bangla || divisionName;
+app\admin\doctors\edit\[id]\page.tsx:331: const thanaBnName = thana.nameBn || thana.bangla || thanaName;
+app\admin\doctors\edit\[id]\page.tsx:350: const districtBnName = district.nameBn || district.bangla || districtName;
+app\admin\doctors\edit\[id]\page.tsx:369: const divisionBnName = division.nameBn || division.bangla || divisionName;
+app\admin\doctors\edit\[id]\page.tsx:687: const hospitalBn = selectedHospital?.nameBn || data.hospitalBn || "";
+app\admin\doctors\edit\[id]\page.tsx:1214: ? `বিভাগ অনুযায়ী রোগসমূহ দেখানো হচ্ছে: ${departments.find(d => d.name === selectedDepartment)?.nameBn || selectedDepartment}`
+app\admin\doctors\page.tsx:242: hospitalBn: matchedHospital?.nameBn || doctor.hospitalBn || ""
+app\admin\hospitals\page.tsx:103: parts.push(isBn ? (hospital.thana.nameBn || hospital.thana.name) : hospital.thana.name);
+app\admin\hospitals\page.tsx:103: parts.push(isBn ? (hospital.thana.nameBn || hospital.thana.name) : hospital.thana.name);
+app\admin\hospitals\page.tsx:105: parts.push(isBn ? (hospital.thana.district.nameBn || hospital.thana.district.name) : hospital.thana.district.name);
+app\admin\hospitals\page.tsx:105: parts.push(isBn ? (hospital.thana.district.nameBn || hospital.thana.district.name) : hospital.thana.district.name);
+app\admin\hospitals\page.tsx:107: parts.push(isBn ? (hospital.thana.district.division.nameBn || hospital.thana.district.division.name) : hospital.thana.district.division.name);
+app\admin\hospitals\page.tsx:107: parts.push(isBn ? (hospital.thana.district.division.nameBn || hospital.thana.district.division.name) : hospital.thana.district.division.name);
+app\ambulance\page.tsx:545: [ambulance.thanaBn || ambulance.thana, ambulance.districtBn || ambulance.district, ambulance.divisionBn || ambulance.division].filter(Boolean).join(", ") :
+app\api\admin\doctors\create-with-account\route.ts:84: doctorObj.slug = await generateUniqueSlug(name || nameBn || 'doctor', Doctor);
+app\api\admin\doctors\create-with-account\route.ts:85: doctorObj.slugBn = await generateUniqueSlug(nameBn || name || 'doctor', Doctor, undefined, 'slugBn');
+app\api\admin\live-consultants\route.ts:90: specializationBn: specializationBn || doctor.specialtyBn,
+app\api\admin\migrate-slugs\route.ts:35: const slugSourceBn = doctor.nameBn || doctor.name || "doctor";
+app\api\diagnostic\tests\route.ts:72: descriptionBn: descriptionBn || undefined,
+app\api\diagnostic\tests\route.ts:111: descriptionBn: descriptionBn || undefined,
+app\api\doctors\route.ts:286: doctorData.slugBn = await generateUniqueSlug(doctorData.nameBn || doctorData.name || "doctor", Doctor, undefined, 'slugBn');
+app\api\doctors\[id]\route.ts:154: const newNameBn = body.nameBn || name;
+app\api\doctors\[id]\route.ts:155: const oldNameBn = existingDoctor?.nameBn || existingDoctor?.name;
+app\api\doctors\[id]\route.ts:157: if (existingDoctor && !existingDoctor.slugBn && (newNameBn || oldNameBn)) {
+app\api\doctors\[id]\route.ts:157: if (existingDoctor && !existingDoctor.slugBn && (newNameBn || oldNameBn)) {
+app\api\doctors\[id]\route.ts:158: doctorData.slugBn = await generateUniqueSlug(newNameBn || oldNameBn || 'doctor', Doctor, id, 'slugBn');
+app\api\doctors\[id]\route.ts:158: doctorData.slugBn = await generateUniqueSlug(newNameBn || oldNameBn || 'doctor', Doctor, id, 'slugBn');
+app\api\locations\hospitals\route.ts:97: const slug = await generateUniqueSlug(name || nameBn || 'hospital', Hospital, undefined, 'hospital');
+app\api\locations\hospitals\route.ts:108: nameBn: body.nameBn || undefined,
+app\api\locations\hospitals\route.ts:109: addressBn: body.addressBn || undefined,
+app\appointments\page.tsx:324: <Link href={`/doctor/${(language === 'bn' ? (appointment.doctorId.slugBn || appointment.doctorId.slug) : (appointment.doctorId.slug || appointment.doctorId.slugBn)) || appointment.doctorId._id}`}>
+app\appointments\page.tsx:324: <Link href={`/doctor/${(language === 'bn' ? (appointment.doctorId.slugBn || appointment.doctorId.slug) : (appointment.doctorId.slug || appointment.doctorId.slugBn)) || appointment.doctorId._id}`}>
+app\appointments\page.tsx:347: <Link href={`/doctor/${(language === 'bn' ? (appointment.doctorId.slugBn || appointment.doctorId.slug) : (appointment.doctorId.slug || appointment.doctorId.slugBn)) || appointment.doctorId._id}`}>
+app\appointments\page.tsx:347: <Link href={`/doctor/${(language === 'bn' ? (appointment.doctorId.slugBn || appointment.doctorId.slug) : (appointment.doctorId.slug || appointment.doctorId.slugBn)) || appointment.doctorId._id}`}>
+app\appointments\page.tsx:479: <Link href={`/doctor/${(language === 'bn' ? (appointment.doctorId.slugBn || appointment.doctorId.slug) : (appointment.doctorId.slug || appointment.doctorId.slugBn)) || appointment.doctorId._id}`}>
+app\appointments\page.tsx:479: <Link href={`/doctor/${(language === 'bn' ? (appointment.doctorId.slugBn || appointment.doctorId.slug) : (appointment.doctorId.slug || appointment.doctorId.slugBn)) || appointment.doctorId._id}`}>
+app\blood-donor\page.tsx:443: <p className="text-xs font-bold text-slate-400 uppercase tracking-widest truncate">{language === 'bn' ? [donor.thanaBn || donor.thana, donor.districtBn || donor.district].filter(Boolean).join(", ") : [donor.thana, donor.district].filter(Boolean).join(", ") || "Location N/A"}</p>
+app\doctor\page.tsx:566: link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
+app\doctor\page.tsx:566: link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
+app\doctor\page.tsx:585: link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
+app\doctor\page.tsx:585: link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
+app\doctor\page.tsx:724: "url": `https://meditime.com.bd/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
+app\doctor\page.tsx:724: "url": `https://meditime.com.bd/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
+app\doctor\page.tsx:1175: {language === 'en' ? dept : (departments.find(d => d.name === dept)?.nameBn || dept)}
+app\doctor\[id]\book\checkout\page.tsx:310: {language === "bn" ? (doctor.nameBn || doctor.name) : (doctor.name || doctor.nameBn)}
+app\doctor\[id]\book\checkout\page.tsx:310: {language === "bn" ? (doctor.nameBn || doctor.name) : (doctor.name || doctor.nameBn)}
+app\doctor\[id]\book\checkout\page.tsx:312: {(doctor.specialtyBn || doctor.specialty) && (
+app\doctor\[id]\book\checkout\page.tsx:314: {language === "bn" ? (doctor.specialtyBn || doctor.specialty) : (doctor.specialty || doctor.specialtyBn)}
+app\doctor\[id]\book\checkout\page.tsx:314: {language === "bn" ? (doctor.specialtyBn || doctor.specialty) : (doctor.specialty || doctor.specialtyBn)}
+app\doctor\[id]\book\checkout\page.tsx:317: {(doctor.qualificationBn || doctor.qualification) && (
+app\doctor\[id]\book\checkout\page.tsx:319: {language === "bn" ? (doctor.qualificationBn || doctor.qualification) : (doctor.qualification || doctor.qualificationBn)}
+app\doctor\[id]\book\checkout\page.tsx:319: {language === "bn" ? (doctor.qualificationBn || doctor.qualification) : (doctor.qualification || doctor.qualificationBn)}
+app\doctor\[id]\book\checkout\page.tsx:322: {(doctor.designationBn || doctor.designation) && (
+app\doctor\[id]\book\success\page.tsx:267: {(doc.specialtyBn || doc.specialty) && (
+app\doctor\[id]\book\success\page.tsx:269: {doc.specialtyBn || doc.specialty}
+app\doctor\[id]\book\success\page.tsx:272: {(doc.qualificationBn || doc.qualification) && (
+app\doctor\[id]\book\success\page.tsx:274: {doc.qualificationBn || doc.qualification}
+app\doctor\[id]\book\success\page.tsx:277: {(doc.designationBn || doc.designation) && (
+app\doctor\[id]\layout.tsx:50: const nameBn = doctor.nameBn || name;
+app\doctor\[id]\layout.tsx:52: const specialtyBn = doctor.specialtyBn || specialty;
+app\doctor\[id]\layout.tsx:54: const hospitalBn = doctor.hospitalBn || hospital;
+app\doctor\[id]\layout.tsx:79: canonical: `https://meditime.com.bd/doctor/${doctor.slug || doctor.slugBn || doctor._id}`,
+app\doctor\[id]\page.tsx:267: hospitalBn: hospitals.find(h => h.name === doctor.hospital)?.nameBn || doctor.hospitalBn || ""
+app\doctor\[id]\page.tsx:276: hospitalBn: hospitals.find(h => h.name === rd.hospital)?.nameBn || rd.hospitalBn || ""
+app\doctor\[id]\page.tsx:673: ? `${doctor.thanaBn || doctor.thana ? (doctor.thanaBn || doctor.thana) + ', ' : ''}${doctor.districtBn || doctor.district}`
+app\doctor\[id]\page.tsx:673: ? `${doctor.thanaBn || doctor.thana ? (doctor.thanaBn || doctor.thana) + ', ' : ''}${doctor.districtBn || doctor.district}`
+app\doctor\[id]\page.tsx:821: ? `${doctor.thanaBn || doctor.thana ? (doctor.thanaBn || doctor.thana) + ', ' : ''}${doctor.districtBn || doctor.district}`
+app\doctor\[id]\page.tsx:821: ? `${doctor.thanaBn || doctor.thana ? (doctor.thanaBn || doctor.thana) + ', ' : ''}${doctor.districtBn || doctor.district}`
+app\hospital\page.tsx:231: const aExact = aName === trimmedQuery || aNameBn === trimmedQuery;
+app\hospital\page.tsx:232: const bExact = bName === trimmedQuery || bNameBn === trimmedQuery;
+app\hospital\page.tsx:342: const aExact = aName === query || aNameBn === query;
+app\hospital\page.tsx:343: const bExact = bName === query || bNameBn === query;
+app\hospital\[slug]\layout.tsx:42: const nameBn = hospital.nameBn || name;
+app\hospital\[slug]\layout.tsx:44: const districtBn = hospital.thana?.district?.nameBn || district;
+app\user\appointments\[id]\page.tsx:207: {(doc.specialtyBn || doc.specialty) && (
+app\user\appointments\[id]\page.tsx:209: {language === 'bn' ? (doc.specialtyBn || doc.specialty) : (doc.specialty || doc.specialtyBn)}
+app\user\appointments\[id]\page.tsx:209: {language === 'bn' ? (doc.specialtyBn || doc.specialty) : (doc.specialty || doc.specialtyBn)}
+app\user\appointments\[id]\page.tsx:212: {(doc.qualificationBn || doc.qualification) && (
+app\user\appointments\[id]\page.tsx:214: {language === 'bn' ? (doc.qualificationBn || doc.qualification) : (doc.qualification || doc.qualificationBn)}
+app\user\appointments\[id]\page.tsx:214: {language === 'bn' ? (doc.qualificationBn || doc.qualification) : (doc.qualification || doc.qualificationBn)}
+app\user\appointments\[id]\page.tsx:217: {(doc.designationBn || doc.designation) && (
+app\user\profile\page.tsx:532: ? (appointment.doctorId?.nameBn || appointment.doctorId?.name || 'ডাক্তার')
+app\user\profile\page.tsx:537: {language === 'bn' ? (appointment.doctorId?.hospitalBn || appointment.hospitalName) : appointment.hospitalName}
+app\user\profile\page.tsx:537: {language === 'bn' ? (appointment.doctorId?.hospitalBn || appointment.hospitalName) : appointment.hospitalName}
+components\appointment\AppointmentDetailsModal.tsx:152: ? (doc.specialtyBn || doc.specialty)
+components\appointment\AppointmentDetailsModal.tsx:157: ? (doc.qualificationBn || doc.qualification)
+components\dashboard\AppointmentCard.tsx:110: ? (appointment.doctorId?.qualificationBn || appointment.doctorId?.qualification)
+components\dashboard\AppointmentCard.tsx:124: ? (appointment.doctorId?.nameBn || appointment.doctorId?.name || 'ডাক্তার')
+components\dashboard\AppointmentCard.tsx:129: ? (appointment.doctorId?.specialtyBn || appointment.doctorId?.specialty)
+components\dashboard\AppointmentCard.tsx:134: ? (appointment.doctorId?.qualificationBn || appointment.doctorId?.qualification)
+components\dashboard\AppointmentCard.tsx:137: ? ((appointment.doctorId?.departmentBn || appointment.doctorId?.department) && ` • ${appointment.doctorId.departmentBn || appointment.doctorId.department}`)
+components\dashboard\AppointmentCard.tsx:189: <Link href={`/doctor/${(language === 'bn' ? (appointment.doctorId.slugBn || appointment.doctorId.slug) : (appointment.doctorId.slug || appointment.doctorId.slugBn)) || appointment.doctorId._id}`} className="flex-1 lg:flex-none">
+components\dashboard\AppointmentCard.tsx:189: <Link href={`/doctor/${(language === 'bn' ? (appointment.doctorId.slugBn || appointment.doctorId.slug) : (appointment.doctorId.slug || appointment.doctorId.slugBn)) || appointment.doctorId._id}`} className="flex-1 lg:flex-none">
+components\doctor-card.tsx:207: {language === 'bn' ? (doctor.hospitalBn || '') : (doctor.hospital || '')}
+components\doctor-card.tsx:254: <Link href={`/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`}>
+components\doctor-card.tsx:254: <Link href={`/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`}>
+components\popup-modal.tsx:64: const currentTitle = language === 'bn' ? (popupData.titleBn || popupData.title) : popupData.title;
+components\popup-modal.tsx:64: const currentTitle = language === 'bn' ? (popupData.titleBn || popupData.title) : popupData.title;
+components\popup-modal.tsx:65: const currentDesc = language === 'bn' ? (popupData.descriptionBn || popupData.description) : popupData.description;
+components\popup-modal.tsx:65: const currentDesc = language === 'bn' ? (popupData.descriptionBn || popupData.description) : popupData.description;
+components\popup-modal.tsx:66: const currentBtnText = language === 'bn' ? (popupData.buttonTextBn || popupData.buttonText) : popupData.buttonText;
+components\popup-modal.tsx:66: const currentBtnText = language === 'bn' ? (popupData.buttonTextBn || popupData.buttonText) : popupData.buttonText;
+components\search-section.tsx:94: if (name === query || nameBn === query) maxScore = 100;
+components\search-section.tsx:106: value: language === 'bn' ? (doctor.specialtyBn || doctor.specialty || "") : (doctor.specialty || ""),
+components\search-section.tsx:123: value: language === 'bn' ? (doctor.nameBn || doctor.name) : doctor.name,
+components\search-section.tsx:123: value: language === 'bn' ? (doctor.nameBn || doctor.name) : doctor.name,
+components\search-section.tsx:125: link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`,
+components\search-section.tsx:125: link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`,
+components\search-section.tsx:137: if (name === query || nameBn === query) hScore = 95; // Slightly below doctor exact match to keep mixture
+components\search-section.tsx:146: value: language === 'bn' ? (hospital.nameBn || hospital.name) : hospital.name,
+components\search-section.tsx:146: value: language === 'bn' ? (hospital.nameBn || hospital.name) : hospital.name,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,25 +11,11 @@ import Footer from "@/components/footer";
 import { ArrowLeft, MapPin, Loader2, RotateCcw, Ticket, Building2 } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "@/lib/toast";
+import { translations } from "@/lib/translations";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { IDoctor } from "@/models/Doctor";
 
-interface Doctor {
-  _id: string;
-  name: string;
-  nameBn?: string;
-  specialty?: string;
-  specialtyBn?: string;
-  qualification: string;
-  qualificationBn?: string;
-  designation?: string;
-  designationBn?: string;
-  hospital?: string;
-  image?: string;
-  availability: Array<{
-    days: string[];
-    startTime: string;
-    endTime: string;
-  }>;
-}
+
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const banglaDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -59,9 +45,12 @@ const getDayName = (date: Date): string => {
 export default function BookAppointmentPage() {
   const params = useParams();
   const router = useRouter();
+
+ const { language } = useLanguage();
+  const t = (key: keyof typeof translations.en) => translations[language][key] || translations.en[key];
   const doctorId = params?.id as string;
 
-  const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const [doctor, setDoctor] = useState<IDoctor | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -286,7 +275,7 @@ export default function BookAppointmentPage() {
       setSelectedDate(date);
     } else {
       // Show toast notification if trying to select a date that's not in the latest 2
-      showToast.error("You can only book the latest 2 available dates");
+      showToast.error(t('canOnlyBookLatestTwo'));
     }
   };
 
@@ -397,8 +386,8 @@ export default function BookAppointmentPage() {
             <Link href={`/doctor/${doctorId}`}>
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                <span >
-                  ফিরে যান
+                <span>
+                  {t('back')}
                 </span>
               </Button>
             </Link>
@@ -414,32 +403,23 @@ export default function BookAppointmentPage() {
             <Card className="p-6 bg-gradient-to-br from-white to-blue-50 border-2 border-primary/20 shadow-xl">
               <h2
                 className="text-2xl font-bold text-gray-900 mb-5"
-
               >
-                হাসপাতাল
+                {t('hospital')}
               </h2>
               <div className="relative">
-                {doctor.hospital ? (
+                {doctor.hospital || doctor.hospitalBn ? (
                   <div className="p-4 bg-primary text-white rounded-xl border-2 border-primary shadow-lg">
                     <p className="text-lg font-semibold flex items-center gap-2" >
                       <Building2 className="h-5 w-5" />
-                      {doctor.hospital}
+                      {language === 'bn' ? (doctor.hospitalBn || doctor.hospital) : doctor.hospital}
                     </p>
                   </div>
                 ) : (
                   <p className="text-gray-500 p-4 bg-gray-50 rounded-xl" >
-                    কোন হাসপাতাল নির্ধারিত নেই
+                    {t('noHospitalAssigned')}
                   </p>
                 )}
               </div>
-              {/* {doctor.hospital && (
-                <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-xl">
-                  <p className="text-green-700 font-medium flex items-center gap-2" >
-                    <MapPin className="h-4 w-4" />
-                    অ্যাপয়েন্টমেন্ট হবে: {doctor.hospital}
-                  </p>
-                </div>
-              )} */}
             </Card>
 
             {/* Calendar */}
@@ -447,9 +427,8 @@ export default function BookAppointmentPage() {
               <Card className="p-6 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
                 <h2
                   className="text-2xl font-bold text-gray-900 mb-5"
-
                 >
-                  Select Date
+                  {t('selectDate')}
                 </h2>
 
                 {/* Calendar - smaller on desktop, larger text */}
@@ -484,9 +463,8 @@ export default function BookAppointmentPage() {
                       <button
                         onClick={() => setSelectedDate(null)}
                         className="text-sm text-red-500 hover:text-red-700 font-medium flex items-center gap-1 transition-colors"
-
                       >
-                        ✕ তারিখ বাতিল করুন
+                        {t('unSelectDate')}
                       </button>
                     </div>
                   )}
@@ -523,7 +501,7 @@ export default function BookAppointmentPage() {
                             if (isAvailable) {
                               handleDateSelect(date);
                             } else if (isInScheduleButNotAvailable) {
-                              showToast.error("Please select from the first 2 available dates");
+                              showToast.error(t('pleaseSelectLatestTwo'));
                             }
                           }}
                           disabled={!isAvailable}
@@ -549,9 +527,8 @@ export default function BookAppointmentPage() {
                     <div className="mt-5 p-4 bg-primary/10 rounded-xl border-2 border-primary/20">
                       <p
                         className="text-base font-semibold text-gray-900"
-
                       >
-                        Selected Date: {getDayName(selectedDate)}, {selectedDate.getDate()} {banglaMonths[selectedDate.getMonth()]}, {selectedDate.getFullYear()}
+                        {t('selectedDate')}: {getDayName(selectedDate)}, {selectedDate.getDate()} {banglaMonths[selectedDate.getMonth()]}, {selectedDate.getFullYear()}
                       </p>
                     </div>
                   )}
@@ -566,9 +543,8 @@ export default function BookAppointmentPage() {
               <div className="flex items-center justify-between mb-5">
                 <h2
                   className="text-2xl font-bold text-gray-900"
-
                 >
-                  রোগীর তথ্য
+                  {t('patientInfo')}
                 </h2>
                 <Button
                   type="button"
@@ -583,10 +559,9 @@ export default function BookAppointmentPage() {
                     setAffiliateCode("");
                   }}
                   className="flex items-center gap-2 text-gray-600 hover:text-primary hover:border-primary"
-
                 >
                   <RotateCcw className="h-4 w-4" />
-                  মুছুন
+                  {t('resetForm')}
                 </Button>
               </div>
 
@@ -594,7 +569,7 @@ export default function BookAppointmentPage() {
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-sm text-red-600 flex items-center gap-2" >
                   <span className="text-red-500 font-bold">*</span>
-                  চিহ্নিত ঘরগুলো অবশ্যই পূরণ করতে হবে
+                  {t('requiredFieldsNotice')}
                 </p>
               </div>
 
@@ -602,14 +577,14 @@ export default function BookAppointmentPage() {
                 {/* Patient Name - Required */}
                 <div>
                   <Label htmlFor="patientName" className="flex items-center gap-1" >
-                    রোগীর নাম <span className="text-red-500 font-bold">*</span>
+                    {t('patientName')} <span className="text-red-500 font-bold">*</span>
                   </Label>
                   <Input
                     id="patientName"
                     value={patientName}
                     onChange={(e) => setPatientName(e.target.value)}
                     required
-                    placeholder="রোগীর নাম লিখুন"
+                    placeholder={t('patientNamePlaceholder')}
                     className={`mt-1 border-2 ${!patientName ? 'border-red-300 bg-red-50/50' : 'border-green-300 bg-green-50/30'}`}
                   />
                 </div>
@@ -617,7 +592,7 @@ export default function BookAppointmentPage() {
                 {/* Mobile Number - Required */}
                 <div>
                   <Label htmlFor="mobileNumber" className="flex items-center gap-1" >
-                    মোবাইল নম্বর <span className="text-red-500 font-bold">*</span>
+                    {t('mobileNumber')} <span className="text-red-500 font-bold">*</span>
                   </Label>
                   <Input
                     id="mobileNumber"
@@ -625,7 +600,7 @@ export default function BookAppointmentPage() {
                     value={mobileNumber}
                     onChange={(e) => setMobileNumber(e.target.value)}
                     required
-                    placeholder="মোবাইল নম্বর লিখুন"
+                    placeholder={t('mobileNumberPlaceholder')}
                     className={`mt-1 border-2 ${!mobileNumber ? 'border-red-300 bg-red-50/50' : 'border-green-300 bg-green-50/30'}`}
                   />
                 </div>
@@ -633,33 +608,31 @@ export default function BookAppointmentPage() {
                 {/* Gender - Optional */}
                 <div>
                   <Label htmlFor="gender" >
-                    লিঙ্গ
+                    {t('gender')}
                   </Label>
                   <select
                     id="gender"
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
                     className="mt-1 w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white"
-
                   >
-                    <option value="">লিঙ্গ নির্বাচন করুন</option>
-                    <option value="male">পুরুষ</option>
-                    <option value="female">মহিলা</option>
-
+                    <option value="">{t('selectGenderOption')}</option>
+                    <option value="male">{t('male')}</option>
+                    <option value="female">{t('female')}</option>
                   </select>
                 </div>
 
                 {/* Age - Optional */}
                 <div>
                   <Label htmlFor="age" >
-                    বয়স
+                    {t('age')}
                   </Label>
                   <Input
                     id="age"
                     type="number"
                     value={age}
                     onChange={(e) => setAge(e.target.value)}
-                    placeholder="বয়স লিখুন"
+                    placeholder={t('agePlaceholder')}
                     className="mt-1 border-2 border-gray-200"
                     min="0"
                   />
@@ -669,29 +642,29 @@ export default function BookAppointmentPage() {
                 <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200">
                   <Label htmlFor="affiliateCode" className="flex items-center gap-2 text-purple-700" >
                     <Ticket className="h-4 w-4" />
-                    সিরিয়াল/অ্যাফিলিয়েট কোড (ঐচ্ছিক)
+                    {t('serialAffiliateCodeLabel')}
                   </Label>
                   <Input
                     id="affiliateCode"
                     value={affiliateCode}
                     onChange={(e) => setAffiliateCode(e.target.value.toUpperCase())}
-                    placeholder="সিরিয়াল বা অ্যাফিলিয়েট কোড লিখুন"
+                    placeholder={t('serialAffiliateCodePlaceholder')}
                     className="mt-2 border-2 border-purple-300 focus:border-purple-500 bg-white"
                   />
                   <p className="mt-2 text-xs text-purple-600" >
-                    রেফারেল কোড থাকলে এখানে লিখুন
+                    {t('enterReferralCode')}
                   </p>
                 </div>
 
                 {/* Patient Type - Required */}
                 <div>
                   <Label className="flex items-center gap-1" >
-                    রোগীর ধরন <span className="text-red-500 font-bold">*</span>
+                    {t('patientType')} <span className="text-red-500 font-bold">*</span>
                   </Label>
                   <div className="mt-2 space-y-2">
                     {[
-                      { value: "new", label: "নতুন রোগী" },
-                      { value: "report", label: "রিপোর্ট দেখানো" },
+                      { value: "new", label: t('newPatient') },
+                      { value: "report", label: t('reportShowing') },
                     ].map((type) => (
                       <label
                         key={type.value}
@@ -720,9 +693,9 @@ export default function BookAppointmentPage() {
                 {(!doctor.hospital || !selectedDate) && (
                   <div className="p-3 bg-yellow-50 border border-yellow-300 rounded-lg">
                     <p className="text-sm text-yellow-700" >
-                      {!doctor.hospital && "⚠️ হাসপাতাল নির্ধারিত নেই"}
-                      {!doctor.hospital && !selectedDate && " এবং "}
-                      {!selectedDate && "⚠️ তারিখ নির্বাচন করুন"}
+                      {!doctor.hospital && "⚠️ " + t('noHospitalAssigned')}
+                      {!doctor.hospital && !selectedDate && " " + (language === 'en' ? "and" : "এবং") + " "}
+                      {!selectedDate && "⚠️ " + t('selectDateRequired')}
                     </p>
                   </div>
                 )}
@@ -731,15 +704,14 @@ export default function BookAppointmentPage() {
                   type="submit"
                   disabled={!doctor.hospital || !selectedDate || !patientName || !mobileNumber || submitting}
                   className="w-full bg-gradient-to-r from-primary to-orange-600 hover:from-orange-600 hover:to-primary text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-
                 >
                   {submitting ? (
                     <>
                       <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                      অপেক্ষা করুন...
+                      {language === 'en' ? 'Waiting...' : 'অপেক্ষা করুন...'}
                     </>
                   ) : (
-                    "পরবর্তী ধাপ →"
+                    t('nextStep')
                   )}
                 </Button>
               </form>

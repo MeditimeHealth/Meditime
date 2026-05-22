@@ -149,13 +149,13 @@ export default function AppointmentDetailsModal({
                     </p>
                     <p className="text-sm text-primary font-semibold mb-1">
                       {language === 'bn' 
-                        ? (doc.specialtyBn || doc.specialty) 
-                        : (doc.specialty || doc.specialtyBn)}
+                        ? (doc.specialtyBn || '') 
+                        : (doc.specialty || '')}
                     </p>
                     <p className="text-xs text-slate-600 font-medium">
                       {language === 'bn' 
-                        ? (doc.qualificationBn || doc.qualification) 
-                        : (doc.qualification || doc.qualificationBn)}
+                        ? (doc.qualificationBn || '') 
+                        : (doc.qualification || '')}
                     </p>
                   </div>
                 </div>

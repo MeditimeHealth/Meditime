@@ -307,19 +307,19 @@ function CheckoutContent() {
                   {/* Doctor Info */}
                   <div>
                     <p className="font-bold text-slate-900 text-lg leading-tight" style={fontStyle}>
-                      {language === "bn" ? (doctor.nameBn || doctor.name) : (doctor.name || doctor.nameBn)}
+                      {language === "bn" ? (doctor.nameBn || "") : (doctor.name || "")}
                     </p>
-                    {(doctor.specialtyBn || doctor.specialty) && (
+                    {(language === "bn" ? doctor.specialtyBn : doctor.specialty) && (
                       <p className="text-sm text-[#00B7B5] font-semibold mt-0.5" style={fontStyle}>
-                        {language === "bn" ? (doctor.specialtyBn || doctor.specialty) : (doctor.specialty || doctor.specialtyBn)}
+                        {language === "bn" ? (doctor.specialtyBn || "") : (doctor.specialty || "")}
                       </p>
                     )}
-                    {(doctor.qualificationBn || doctor.qualification) && (
+                    {(language === "bn" ? doctor.qualificationBn : doctor.qualification) && (
                       <p className="text-xs text-slate-500 mt-0.5" style={fontStyle}>
-                        {language === "bn" ? (doctor.qualificationBn || doctor.qualification) : (doctor.qualification || doctor.qualificationBn)}
+                        {language === "bn" ? (doctor.qualificationBn || "") : (doctor.qualification || "")}
                       </p>
                     )}
-                    {(doctor.designationBn || doctor.designation) && (
+                    {(language === "bn" ? doctor.designationBn : doctor.designation) && (
                       <p className="text-xs text-slate-400 mt-0.5" style={fontStyle}>
                         {language === "bn" && doctor.designationBn
                           ? doctor.designationBn

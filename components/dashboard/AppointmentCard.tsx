@@ -107,8 +107,8 @@ export default function AppointmentCard({
             </p>
             <p className="text-[10px] md:text-xs text-gray-500 font-medium line-clamp-1">
               {language === 'bn' 
-                ? (appointment.doctorId?.qualificationBn || appointment.doctorId?.qualification) 
-                : (appointment.doctorId?.qualification || appointment.doctorId?.qualificationBn)}
+                ? (appointment.doctorId?.qualificationBn || '') 
+                : (appointment.doctorId?.qualification || '')}
             </p>
           </div>
           <div className="lg:hidden shrink-0">
@@ -121,21 +121,21 @@ export default function AppointmentCard({
             <div>
               <h3 className="text-lg font-bold text-gray-900">
                 {language === 'bn' 
-                  ? (appointment.doctorId?.nameBn || appointment.doctorId?.name || 'ডাক্তার') 
-                  : (appointment.doctorId?.name || appointment.doctorId?.nameBn || 'Doctor')}
+                  ? (appointment.doctorId?.nameBn || '') 
+                  : (appointment.doctorId?.name || '')}
               </h3>
               <p className="text-sm text-primary font-bold">
                 {language === 'bn' 
-                  ? (appointment.doctorId?.specialtyBn || appointment.doctorId?.specialty) 
-                  : (appointment.doctorId?.specialty || appointment.doctorId?.specialtyBn)}
+                  ? (appointment.doctorId?.specialtyBn || '') 
+                  : (appointment.doctorId?.specialty || '')}
               </p>
               <p className="text-xs text-gray-500 font-medium">
                 {language === 'bn' 
-                  ? (appointment.doctorId?.qualificationBn || appointment.doctorId?.qualification) 
-                  : (appointment.doctorId?.qualification || appointment.doctorId?.qualificationBn)}
+                  ? (appointment.doctorId?.qualificationBn || '') 
+                  : (appointment.doctorId?.qualification || '')}
                 {language === 'bn' 
-                  ? ((appointment.doctorId?.departmentBn || appointment.doctorId?.department) && ` • ${appointment.doctorId.departmentBn || appointment.doctorId.department}`)
-                  : ((appointment.doctorId?.department || appointment.doctorId?.departmentBn) && ` • ${appointment.doctorId.department || appointment.doctorId.departmentBn}`)}
+                  ? (appointment.doctorId?.departmentBn && ` • ${appointment.doctorId.departmentBn}`)
+                  : (appointment.doctorId?.department && ` • ${appointment.doctorId.department}`)}
               </p>
             </div>
             {getStatusBadge(appointment.status, language)}

@@ -1172,7 +1172,7 @@ function DoctorListPageContent() {
                   <option value="">{t.allDepartments}</option>
                   {departmentNames.map((dept) => (
                     <option key={dept} value={dept}>
-                      {language === 'en' ? dept : (departments.find(d => d.name === dept)?.nameBn || dept)}
+                      {language === 'en' ? dept : (departments.find(d => d.name === dept)?.nameBn || '')}
                     </option>
                   ))}
                 </select>

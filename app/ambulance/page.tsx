@@ -542,7 +542,7 @@ export default function AmbulancePage() {
                           <MapPin className="h-4 w-4 shrink-0 mt-0.5" />
                           <span>
                             <strong>{t.card.address}:</strong> {language === 'bn' ? 
-                              [ambulance.thanaBn || ambulance.thana, ambulance.districtBn || ambulance.district, ambulance.divisionBn || ambulance.division].filter(Boolean).join(", ") :
+                              [ambulance.thanaBn, ambulance.districtBn, ambulance.divisionBn].filter(Boolean).join(", ") :
                               [ambulance.thana, ambulance.district, ambulance.division].filter(Boolean).join(", ")
                             }
                           </span>

@@ -47,8 +47,8 @@ export interface IDoctor extends Document {
 
   // ── Diseases / Conditions ───────────────────────────────────────
   /**
-   * diseases: Bangla disease/condition names for Bangla pages.
-   * diseasesEn: English disease/condition names for English pages.
+   * diseases: Bangla disease/condition names (matches existing database).
+   * diseasesEn: English disease/condition names.
    */
   diseases?: string[];
   diseasesEn?: string[];
@@ -65,9 +65,6 @@ export interface IDoctor extends Document {
     timeBn?: string;
   }>;
 
-  // ── Contact (internal use only, not shown to visitors) ───────────
-  email?: string;
-  phoneNumber?: string;
 
   // ── UI-only / no Bangla needed ──────────────────────────────────
   slotDuration?: number;
@@ -96,7 +93,6 @@ const DoctorSchema: Schema = new Schema(
     // slug (English) + slugBn (Bangla)
     slug: {
       type: String,
-      unique: true,
       index: true,
       trim: true,
     },
@@ -138,7 +134,7 @@ const DoctorSchema: Schema = new Schema(
     newPatientFeeBn: { type: String, trim: true },
 
     // ── Diseases / Conditions ─────────────────────────────────────
-    diseases: { type: [String], default: [] },   // Bangla names
+    diseases: { type: [String], default: [] },   // Bangla names (matches existing database)
     diseasesEn: { type: [String], default: [] }, // English names
 
     // ── Bio ───────────────────────────────────────────────────────

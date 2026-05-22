@@ -128,7 +128,7 @@ export default function EditDoctorPage() {
   const hospitalSearchInitialized = useRef(false);
   const [departments, setDepartments] = useState<Array<{ _id: string; name: string; nameBn?: string; image?: string }>>([]);
   const [diseases, setDiseases] = useState<Array<{ _id: string; name: string; bangla: string; department?: { _id: string; name: string } | string }>>([]);
-  const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
+  const [selectedDiseaseIds, setSelectedDiseaseIds] = useState<string[]>([]);
   const [filteredDiseases, setFilteredDiseases] = useState<Array<{ _id: string; name: string; bangla: string; department?: { _id: string; name: string } | string }>>([]);
 
   const [divisions, setDivisions] = useState<any[]>([]);
@@ -402,11 +402,13 @@ export default function EditDoctorPage() {
         }
       }
 
+      let loadedDiseasesList: any[] = [];
       if (diseasesRes.ok) {
         const diseasesData = await diseasesRes.json();
         if (diseasesData.diseases) {
           setDiseases(diseasesData.diseases);
           setFilteredDiseases(diseasesData.diseases);
+          loadedDiseasesList = diseasesData.diseases;
         }
       }
 
@@ -427,7 +429,7 @@ export default function EditDoctorPage() {
 
       // Load doctor data
       if (doctorId) {
-        await fetchDoctor();
+        await fetchDoctor(loadedDiseasesList);
       }
     };
 
@@ -464,7 +466,7 @@ export default function EditDoctorPage() {
     }
   }, [selectedDistrict, districts, thanas]);
 
-  const fetchDoctor = async () => {
+  const fetchDoctor = async (loadedDiseases?: any[]) => {
     try {
       setIsFetching(true);
       const response = await fetch(`/api/doctors/${doctorId}`);
@@ -497,9 +499,13 @@ export default function EditDoctorPage() {
 
         setAvailabilitySlots(availabilityArray);
 
-        // Set diseases
-        if (doctor.diseases && Array.isArray(doctor.diseases)) {
-          setSelectedDiseases(doctor.diseases);
+        // Set diseases — match existing Bangla (or fallback English) names back to IDs
+        const activeDiseases = loadedDiseases || diseases;
+        if (doctor.diseases && Array.isArray(doctor.diseases) && activeDiseases.length > 0) {
+          const matchedIds = activeDiseases
+            .filter(d => doctor.diseases!.includes(d.bangla) || doctor.diseases!.includes(d.name))
+            .map(d => d._id);
+          setSelectedDiseaseIds(matchedIds);
         }
 
         // Set form values
@@ -688,6 +694,14 @@ export default function EditDoctorPage() {
         return { ...slot, daysBn };
       });
 
+      // Extract English and Bangla disease names from selected IDs
+      const diseasesEn = selectedDiseaseIds
+        .map(id => diseases.find(d => d._id === id)?.name)
+        .filter((d): d is string => !!d);
+      const diseasesBn = selectedDiseaseIds
+        .map(id => diseases.find(d => d._id === id)?.bangla)
+        .filter((d): d is string => !!d);
+
       const response = await fetch(`/api/doctors/${doctorId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -708,9 +722,8 @@ export default function EditDoctorPage() {
           departmentBn: data.departmentBn,
           reportShowFeeBn: data.reportShowFeeBn,
           newPatientFeeBn: data.newPatientFeeBn,
-          diseasesEn: data.diseasesEn,
-
-          diseases: selectedDiseases,
+          diseases: diseasesBn,
+          diseasesEn: diseasesEn,
         }),
       });
 
@@ -1216,35 +1229,9 @@ export default function EditDoctorPage() {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2" key={`diseases-${language}`}>
                     {filteredDiseases.map((disease) => {
-                      // Get raw values - handle null, undefined, empty string
-                      const rawBangla = disease.bangla;
-                      const rawEnglish = disease.name;
-
-                      // Convert to strings and trim
-                      const banglaValue = rawBangla ? String(rawBangla).trim() : '';
-                      const englishValue = rawEnglish ? String(rawEnglish).trim() : '';
-
-                      // Check if bangla is actually different from English (not just a copy)
-                      const banglaIsDifferent = banglaValue !== '' && banglaValue !== englishValue;
-
-                      // Determine display name based on language
-                      let diseaseName: string;
-                      if (language === 'bn') {
-                        // For Bangla language: show bangla if it exists and is different from English
-                        // If bangla is same as English (no translation), still show it but it will be English text
-                        diseaseName = banglaValue || englishValue;
-                      } else {
-                        // For English language: always show English name
-                        diseaseName = englishValue || banglaValue;
-                      }
-
-                      // Debug: log first disease to verify language is working
-                      if (filteredDiseases.indexOf(disease) === 0) {
-                        console.log(`[DEBUG] Language: ${language}, Disease: ${diseaseName}, Bangla: ${banglaValue}, English: ${englishValue}, BanglaIsDifferent: ${banglaIsDifferent}`);
-                      }
-
-                      // Use bangla for form value if available and different, otherwise use name
-                      const diseaseValue = banglaIsDifferent ? banglaValue : englishValue;
+                      const diseaseName = language === 'bn'
+                        ? (disease.bangla || disease.name)
+                        : (disease.name || disease.bangla);
 
                       return (
                         <label
@@ -1253,35 +1240,25 @@ export default function EditDoctorPage() {
                         >
                           <input
                             type="checkbox"
-                            checked={selectedDiseases.includes(diseaseValue)}
+                            checked={selectedDiseaseIds.includes(disease._id)}
                             onChange={(e) => {
-                              if (e.target.checked) {
-                                const updated = [...selectedDiseases, diseaseValue];
-                                setSelectedDiseases(updated);
-                                setValue("diseases", updated);
-                              } else {
-                                const updated = selectedDiseases.filter(d => d !== diseaseValue);
-                                setSelectedDiseases(updated);
-                                setValue("diseases", updated);
-                              }
+                              const updated = e.target.checked
+                                ? [...selectedDiseaseIds, disease._id]
+                                : selectedDiseaseIds.filter(id => id !== disease._id);
+                              setSelectedDiseaseIds(updated);
                             }}
                             className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
                           />
-                          <span
-                            className="text-sm"
-                       
-                          >
-                            {diseaseName}
-                          </span>
+                          <span className="text-sm">{diseaseName}</span>
                         </label>
                       );
                     })}
                   </div>
                 )}
               </div>
-              {selectedDiseases.length > 0 && (
+              {selectedDiseaseIds.length > 0 && (
                 <p className="text-xs text-gray-500 mt-2">
-                  {selectedDiseases.length} {language === 'bn' ? 'টি রোগ নির্বাচিত হয়েছে' : 'disease(s) selected'}
+                  {selectedDiseaseIds.length} {language === 'bn' ? 'টি রোগ নির্বাচিত হয়েছে' : 'disease(s) selected'}
                 </p>
               )}
             </div>

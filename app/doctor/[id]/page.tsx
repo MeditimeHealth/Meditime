@@ -97,10 +97,10 @@ export default function DoctorProfilePage() {
         setDoctor(data.doctor);
         console.log("Fetched doctor data:", data.doctor);
 
-        // Populate diseases from doctor's specific list first
+        // Populate diseases from doctor's specific list (diseases = BN, diseasesEn = EN)
         if (data.doctor.diseases && data.doctor.diseases.length > 0) {
-          const mappedDiseases = data.doctor.diseases.map((d: string) => ({
-            name: d,
+          const mappedDiseases = data.doctor.diseases.map((d: string, i: number) => ({
+            name: (data.doctor.diseasesEn && data.doctor.diseasesEn[i]) || d,
             bangla: d
           }));
           setDepartmentDiseases(mappedDiseases);
@@ -531,25 +531,21 @@ export default function DoctorProfilePage() {
               <Card className="p-8 bg-gradient-to-br from-white to-blue-50 border-2 border-primary/20 shadow-xl">
                 <h2
                   className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
-
                 >
                   {language === 'bn' ? 'যে সকল রোগের চিকিৎসা করা হয়' : 'Diseases Treated'}
                 </h2>
                 <div className="bg-white p-6 rounded-xl border-2 border-primary/10 shadow-md">
-                  <div className="grid grid-cols-1 gap-6">
-                    <ul className="space-y-3">
-                      {departmentDiseases.slice(Math.ceil(departmentDiseases.length / 2)).map((disease, index) => (
-                        <li
-                          key={index}
-                          className="flex items-start gap-3 text-base md:text-lg font-semibold text-gray-800"
-
-                        >
-                          <span className="text-primary mt-1">•</span>
-                          <span>{getLocalizedValue(disease.name, disease.bangla, language)}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+                    {departmentDiseases.map((disease, index) => (
+                      <li
+                        key={index}
+                        className="flex items-start gap-3 text-base md:text-lg font-semibold text-gray-800"
+                      >
+                        <span className="text-primary mt-1">•</span>
+                        <span>{getLocalizedValue(disease.name, disease.bangla, language)}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </Card>
             )}
@@ -674,7 +670,7 @@ export default function DoctorProfilePage() {
                       {doctor.district && (
                         <p className="text-sm text-gray-500 mt-1 ml-7" >
                           {language === 'bn' 
-                            ? `${doctor.thanaBn || doctor.thana ? (doctor.thanaBn || doctor.thana) + ', ' : ''}${doctor.districtBn || doctor.district}` 
+                            ? `${doctor.thanaBn ? doctor.thanaBn + ', ' : ''}${doctor.districtBn || ''}` 
                             : `${doctor.thana ? doctor.thana + ', ' : ''}${doctor.district}`}
                         </p>
                       )}
@@ -822,7 +818,7 @@ export default function DoctorProfilePage() {
 
                        <p className="text-sm text-gray-500 mt-1 ml-7" >
                           {language === 'bn' 
-                            ? `${doctor.thanaBn || doctor.thana ? (doctor.thanaBn || doctor.thana) + ', ' : ''}${doctor.districtBn || doctor.district}` 
+                            ? `${doctor.thanaBn ? doctor.thanaBn + ', ' : ''}${doctor.districtBn || ''}` 
                             : `${doctor.thana ? doctor.thana + ', ' : ''}${doctor.district}`}
                         </p>
                     </div>

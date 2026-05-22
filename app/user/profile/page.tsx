@@ -529,12 +529,12 @@ export default function UserProfilePage() {
                           <div>
                             <h4 className="text-lg font-black text-gray-900 group-hover:text-primary transition-colors" >
                               {language === 'bn' 
-                                ? (appointment.doctorId?.nameBn || appointment.doctorId?.name || 'ডাক্তার') 
+                                ? (appointment.doctorId?.nameBn || '') 
                                 : (appointment.doctorId?.name || 'Doctor')}
                             </h4>
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-tighter flex items-center gap-1" >
                               <MapPin className="h-3 w-3" />
-                              {language === 'bn' ? (appointment.doctorId?.hospitalBn || appointment.hospitalName) : appointment.hospitalName}
+                              {language === 'bn' ? (appointment.doctorId?.hospitalBn || '') : (appointment.hospitalName || '')}
                             </p>
                           </div>
                         </div>

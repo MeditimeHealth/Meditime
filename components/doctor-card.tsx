@@ -204,7 +204,7 @@ export default function DoctorCard({
           <div className="flex items-start gap-2 text-xs text-gray-700">
             <Building2 className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
             <span className="font-semibold leading-relaxed">
-              {language === 'bn' ? (doctor.hospitalBn || doctor.hospital) : doctor.hospital}
+              {language === 'bn' ? (doctor.hospitalBn || '') : (doctor.hospital || '')}
             </span>
           </div>
         </div>

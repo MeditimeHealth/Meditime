@@ -13,7 +13,7 @@ interface Doctor {
   name: string;
   nameBn?: string;
   slug?: string;
-  slugEn?: string;
+  slugBn?: string;
   specialty?: string;
   specialtyBn?: string;
   department?: string;
@@ -103,7 +103,7 @@ export default function SearchSection() {
           if (!results.some(r => r.type === "Specialty" && r.value.toLowerCase() === specialty)) {
             results.push({
               type: "Specialty",
-              value: language === 'bn' ? (doctor.specialtyBn || doctor.specialty || "") : (doctor.specialty || ""),
+              value: language === 'bn' ? (doctor.specialtyBn || "") : (doctor.specialty || ""),
               link: `/doctor?search=${encodeURIComponent(doctor.specialty || "")}`,
               score: specScore + 5 // Slightly higher than individual doctor specialty score
             });
@@ -120,9 +120,9 @@ export default function SearchSection() {
       if (maxScore > 0) {
         results.push({
           type: "Doctor",
-          value: language === 'bn' ? (doctor.nameBn || doctor.name) : doctor.name,
+          value: language === 'bn' ? (doctor.nameBn || '') : (doctor.name || ''),
           doctor,
-          link: `/doctor/${(language === 'bn' ? doctor.slug : (doctor.slugEn || doctor.slug)) || doctor._id}`,
+          link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`,
           score: maxScore
         });
       }
@@ -143,7 +143,7 @@ export default function SearchSection() {
         if (!results.some(r => r.type === "Hospital" && r.hospital?._id === hospital._id)) {
           results.push({
             type: "Hospital",
-            value: language === 'bn' ? (hospital.nameBn || hospital.name) : hospital.name,
+            value: language === 'bn' ? (hospital.nameBn || '') : (hospital.name || ''),
             hospital,
             link: `/hospital/${hospital.slug || encodeURIComponent(hospital.name)}`,
             score: hScore

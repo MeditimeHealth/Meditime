@@ -264,17 +264,17 @@ function BookingSuccessContent() {
                     <p className="font-bold text-slate-900 text-xl leading-tight mb-0.5" >
                       {getLocalizedValue(doc.name, doc.nameBn, language)}
                     </p>
-                    {(doc.specialtyBn || doc.specialty) && (
+                    {(language === 'bn' ? doc.specialtyBn : doc.specialty) && (
                       <p className="text-sm text-[#00B7B5] font-semibold mb-0.5" >
-                        {doc.specialtyBn || doc.specialty}
+                        {language === 'bn' ? (doc.specialtyBn || '') : (doc.specialty || '')}
                       </p>
                     )}
-                    {(doc.qualificationBn || doc.qualification) && (
+                    {(language === 'bn' ? doc.qualificationBn : doc.qualification) && (
                       <p className="text-sm text-slate-600 font-medium mb-0.5" >
-                        {doc.qualificationBn || doc.qualification}
+                        {language === 'bn' ? (doc.qualificationBn || '') : (doc.qualification || '')}
                       </p>
                     )}
-                    {(doc.designationBn || doc.designation) && (
+                    {(language === 'bn' ? doc.designationBn : doc.designation) && (
                       <p className="text-xs text-slate-400 font-medium" >
                         {getLocalizedValue(doc.designation, doc.designationBn, language)}
                       </p>

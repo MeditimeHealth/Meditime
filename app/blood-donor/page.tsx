@@ -440,7 +440,7 @@ export default function BloodDonorPage() {
                               </div>
                               <div className="flex items-center gap-2 mt-1">
                                 <MapPin className="w-3 h-3 text-slate-400" />
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest truncate">{language === 'bn' ? [donor.thanaBn || donor.thana, donor.districtBn || donor.district].filter(Boolean).join(", ") : [donor.thana, donor.district].filter(Boolean).join(", ") || "Location N/A"}</p>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest truncate">{language === 'bn' ? [donor.thanaBn, donor.districtBn].filter(Boolean).join(", ") : [donor.thana, donor.district].filter(Boolean).join(", ") || "Location N/A"}</p>
                               </div>
                             </div>
                             <div className="ml-auto w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center font-black text-lg shadow-lg shadow-primary/20 shrink-0">{donor.bloodGroup}</div>

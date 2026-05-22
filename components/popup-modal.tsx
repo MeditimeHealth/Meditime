@@ -61,9 +61,9 @@ export default function PopupModal() {
 
   if (!popupData) return null;
 
-  const currentTitle = language === 'bn' ? (popupData.titleBn || popupData.title) : popupData.title;
-  const currentDesc = language === 'bn' ? (popupData.descriptionBn || popupData.description) : popupData.description;
-  const currentBtnText = language === 'bn' ? (popupData.buttonTextBn || popupData.buttonText) : popupData.buttonText;
+  const currentTitle = language === 'bn' ? (popupData.titleBn || '') : (popupData.title || '');
+  const currentDesc = language === 'bn' ? (popupData.descriptionBn || '') : (popupData.description || '');
+  const currentBtnText = language === 'bn' ? (popupData.buttonTextBn || '') : (popupData.buttonText || '');
 
   return (
     <AnimatePresence>

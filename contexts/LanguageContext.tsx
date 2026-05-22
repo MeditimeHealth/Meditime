@@ -65,7 +65,7 @@ export function getLocalizedValue(
   language: Language
 ): string {
   if (language === 'bn') {
-    return banglaValue || englishValue || '';
+    return banglaValue || '';
   }
-  return englishValue || banglaValue || '';
+  return englishValue || '';
 }

@@ -83,7 +83,7 @@ export default function CreateDoctorPage() {
   const [hospitals, setHospitals] = useState<any[]>([]);
   const [diseases, setDiseases] = useState<any[]>([]);
   const [filteredDiseases, setFilteredDiseases] = useState<any[]>([]);
-  const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
+  const [selectedDiseaseIds, setSelectedDiseaseIds] = useState<string[]>([]);
   
   const [divisions, setDivisions] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
@@ -329,6 +329,14 @@ export default function CreateDoctorPage() {
         return { ...slot, daysBn };
       });
 
+      // Extract English and Bangla disease names from selected disease IDs
+      const diseasesBn = selectedDiseaseIds
+        .map(id => diseases.find(d => d._id === id)?.bangla)
+        .filter((d): d is string => !!d);
+      const diseasesEn = selectedDiseaseIds
+        .map(id => diseases.find(d => d._id === id)?.name)
+        .filter((d): d is string => !!d);
+
       const response = await fetch("/api/doctors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -336,7 +344,8 @@ export default function CreateDoctorPage() {
           ...data,
           hospitalBn,
           availability: availabilityWithDaysBn,
-          diseases: selectedDiseases,
+          diseases: diseasesBn,
+          diseasesEn: diseasesEn,
         }),
       });
 
@@ -775,17 +784,10 @@ export default function CreateDoctorPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      const visibleValues = filteredDiseases.map(d => {
-                        const rawBangla = d.bangla;
-                        const rawEnglish = d.name;
-                        const banglaValue = rawBangla ? String(rawBangla).trim() : '';
-                        const englishValue = rawEnglish ? String(rawEnglish).trim() : '';
-                        return (banglaValue !== '' && banglaValue !== englishValue) ? banglaValue : englishValue;
-                      });
-                      const updated = Array.from(new Set([...selectedDiseases, ...visibleValues]));
-                      setSelectedDiseases(updated);
+                      const visibleIds = filteredDiseases.map(d => d._id);
+                      const updated = Array.from(new Set([...selectedDiseaseIds, ...visibleIds]));
+                      setSelectedDiseaseIds(updated);
                       setValue("availability", watch("availability")); // Dummy trigger
-                      // Actually we need to set diseases in form
                     }}
                     className="h-8 text-xs"
                   >
@@ -796,18 +798,17 @@ export default function CreateDoctorPage() {
               <div className="max-h-60 overflow-y-auto border-2 border-gray-300 rounded-lg p-4 bg-white grid grid-cols-1 md:grid-cols-2 gap-2">
                 {filteredDiseases.map((disease) => {
                   const diseaseName = formLanguage === 'bn' ? (disease.bangla || disease.name) : (disease.name || disease.bangla);
-                  const diseaseValue = (disease.bangla && disease.bangla !== disease.name) ? disease.bangla : disease.name;
                   
                   return (
                     <label key={disease._id} className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={selectedDiseases.includes(diseaseValue)}
+                        checked={selectedDiseaseIds.includes(disease._id)}
                         onChange={(e) => {
                           const updated = e.target.checked 
-                            ? [...selectedDiseases, diseaseValue]
-                            : selectedDiseases.filter(d => d !== diseaseValue);
-                          setSelectedDiseases(updated);
+                            ? [...selectedDiseaseIds, disease._id]
+                            : selectedDiseaseIds.filter(id => id !== disease._id);
+                          setSelectedDiseaseIds(updated);
                         }}
                         className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
                       />
