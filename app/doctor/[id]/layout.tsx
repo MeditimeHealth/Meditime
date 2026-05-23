@@ -1,34 +1,54 @@
-
 import { Metadata } from "next";
 import dbConnect from "@/lib/mongodb";
 import Doctor from "@/models/Doctor";
 import Hospital from "@/models/Hospital";
 
-async function getDoctorData(id: string) {
+async function getDoctorData(slug: string) {
   try {
     await dbConnect();
-    // Try to find by slug (English) or slugBn (Bangla) first
-    let doctor = await Doctor.findOne({ slug: id });
+
+    const decodedSlug = decodeURIComponent(slug);
+
+    // Find by English slug
+    let doctor = await Doctor.findOne({
+      slug: decodedSlug,
+    });
+
+    // Find by Bangla slug
     if (!doctor) {
-      doctor = await Doctor.findOne({ slugBn: id });
+      doctor = await Doctor.findOne({
+        slugBn: decodedSlug,
+      });
     }
+
+    // Fallback to Mongo ID
     if (!doctor) {
-      // Fallback to ID if not found by slug
       try {
-        doctor = await Doctor.findById(id);
-      } catch (e) {
-        return null;
+        doctor = await Doctor.findById(decodedSlug);
+      } catch (error) {
+        console.error("Invalid doctor ID");
       }
     }
 
-    console.log(doctor)
-    
-    if (doctor && doctor.hospital) {
-      // Fetch hospital details separately since it's not a reference in the schema
-      const hospitalDoc = await Hospital.findOne({ name: doctor.hospital });
-      doctor.hospitalDetails = hospitalDoc;
+    if (!doctor) {
+      return null;
     }
-    
+
+    // Fetch hospital separately
+    if (doctor.hospital) {
+      const hospitalDoc = await Hospital.findOne({
+        name: doctor.hospital,
+      }).populate({
+        path: "thana",
+        populate: {
+          path: "district",
+        },
+      });
+
+      // attach manually
+      (doctor as any).hospitalDetails = hospitalDoc;
+    }
+
     return doctor;
   } catch (error) {
     console.error("Error fetching doctor for metadata:", error);
@@ -36,57 +56,79 @@ async function getDoctorData(id: string) {
   }
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const doctor = await getDoctorData(params.id);
-  
+export async function generateMetadata(
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Metadata> {
+
+  const resolvedParams = await params;
+
+  const doctor = await getDoctorData(resolvedParams.id);
+
   if (!doctor) {
     return {
       title: "Doctor Profile | Meditime",
-      description: "View doctor profile and book appointments on Meditime."
+      description:
+        "View doctor profile and book appointments on Meditime.",
     };
   }
 
-  const name = doctor.name || doctor.nameBn || "Doctor";
-  const nameBn = doctor.nameBn || name;
-  const specialty = doctor.specialty || "";
-  const specialtyBn = doctor.specialtyBn || specialty;
-  const hospital = doctor.hospital || "";
-  const hospitalBn = doctor.hospitalBn || hospital;
-  const fees = [doctor.newPatientFee, doctor.reportShowFee].filter(f => f !== undefined && f !== null && f > 0);
-  const minFee = fees.length > 0 ? Math.min(...fees) : doctor.newPatientFee;
+  const name =
+    doctor.name ||
+    doctor.nameBn ||
+    "Unknown Doctor";
 
-  const title = `${name} - ${specialty} | Book Appointment | Meditime`;
-  
-  // Construct Bengali description
-  let descriptionBn = `অনলাইনে ${nameBn}-এর সিরিয়াল দিন। উনি একজন ${specialtyBn}`;
-  if (hospitalBn) {
-    descriptionBn += `, চেম্বার: ${hospitalBn}`;
-  }
-  if (minFee) {
-    descriptionBn += `। ভিজিট ফি: ${minFee} টাকা`;
-  }
-  descriptionBn += `। Book appointment now on Meditime.`;
+  const specialty =
+    doctor.specialty ||
+    doctor.specialtyBn ||
+    "Specialist";
 
-  // Limit to 155 characters for SEO
-  const finalDescription = descriptionBn.length > 155 
-    ? descriptionBn.substring(0, 152) + "..." 
-    : descriptionBn;
+  const hospital =
+    doctor.hospital ||
+    doctor.hospitalBn ||
+    "Unknown Hospital";
+
+  const location =
+    (doctor as any)?.hospitalDetails?.thana?.district?.name ||
+    doctor.district ||
+    "Dhaka";
+
+  const title = `${name} - ${specialty} in ${location} | Meditime`;
+
+  const description = `Book an appointment with ${name}, ${specialty} specialist at ${hospital}. সহজে অনলাইনে সিরিয়াল বুক করুন Meditime-এ।`;
 
   return {
     title,
-    description: finalDescription,
+
+    description: description.substring(0, 155),
+
     alternates: {
-      canonical: `https://meditime.com.bd/doctor/${doctor.slug || doctor.slugBn || doctor._id}`,
+      canonical: `https://meditime.com.bd/doctor/${
+        doctor.slug ||
+        doctor.slugBn ||
+        doctor._id
+      }`,
     },
+
     openGraph: {
       title,
-      description: finalDescription,
+      description,
       images: [doctor.image || "/logo.png"],
       type: "profile",
-    }
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [doctor.image || "/logo.png"],
+    },
   };
 }
 
-export default function DoctorLayout({ children }: { children: React.ReactNode }) {
+export default function DoctorLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return <>{children}</>;
 }

@@ -21,7 +21,7 @@ export default function HeroSection() {
       description: t.slide1.description,
       image: "/slide.jpg",
       ctaText: t.slide1.cta,
-      ctaLink: "/service",
+      ctaLink: "/doctor",
       ctaText2: "Live Consultation",
       ctaLink2: "/",
     },
