@@ -44,7 +44,7 @@ export default function Home() {
   };
 
   return (
-    <div className="overflow-x-hidden relative">
+    <div className="overflow-x-hidden relative space-y-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -59,7 +59,7 @@ export default function Home() {
 
       <StatsSection />
       <PatientReviewSection />
-      <ContactSection />
+      {/* <ContactSection /> */}
       <HospitalPartnersSection />
       {/* <BookAppointmentSection /> */}
       <BlogSection />

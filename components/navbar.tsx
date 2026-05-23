@@ -165,7 +165,7 @@ export default function Navbar() {
             </motion.div>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden lg:flex items-center gap-4 xl:gap-6 flex-1 justify-center px-4">
+            <div className="hidden xl:flex items-center gap-4 xl:gap-6 flex-1 justify-center px-4">
               {navLinks.map((link, index) => {
                 const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
                 return (
@@ -177,7 +177,7 @@ export default function Navbar() {
                   >
                     <Link
                       href={link.href}
-                      className="relative group min-w-[85px] xl:min-w-[110px] flex items-center justify-center"
+                      className="relative group min-w-[85px] flex items-center justify-center"
                     >
                       <span
                         className={`${
@@ -219,7 +219,7 @@ export default function Navbar() {
             </div>
 
             {/* Desktop Right Side Actions */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden xl:flex items-center gap-3">
               {/* Language Toggle */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -286,7 +286,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`lg:hidden p-2.5 rounded-lg text-white shadow-sm transition-all active:scale-95 ${
+              className={`xl:hidden p-2.5 rounded-lg text-white shadow-sm transition-all active:scale-95 ${
                 scrolled
                   ? "bg-primary"
                   : "bg-white/25 backdrop-blur-sm hover:bg-white/35"
@@ -321,7 +321,7 @@ export default function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl z-50 lg:hidden overflow-y-auto"
+              className="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl z-50 xl:hidden overflow-y-auto"
             >
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between p-4 border-b border-gray-200">

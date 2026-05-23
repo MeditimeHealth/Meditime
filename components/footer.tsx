@@ -85,13 +85,13 @@ export default function Footer() {
                   width={180}
                   height={40}
                   priority
-                  className="h-10 w-auto object-contain brightness-0 invert"
+                  className="h-8 w-auto object-contain brightness-0 invert"
                 />
               </Link>
                <p className="text-[16px] text-slate-400 leading-relaxed">
                 {t.tagline}
               </p>
-              <p className="text-[13px] leading-relaxed text-slate-400 max-w-[240px]">
+              <p className="text-[11px] leading-relaxed text-slate-400 max-w-[240px]">
                 {t.slogan}
               </p>
             </div>

@@ -53,7 +53,7 @@ export default function StatsSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <div className="btn-slide group flex flex-col items-center text-center p-12 sm:p-16 rounded-none transition-all duration-500 bg-[#002B2B] border border-slate-800 shadow-xl min-h-[280px] h-full justify-center">
+              <div className="btn-slide group flex flex-col items-center text-center p-12 sm:p-16 rounded-none transition-all duration-500 bg-[#002B2B] shadow-xl min-h-[280px] h-full justify-center">
                 {/* Icon */}
                 <div className="mb-6 text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
                   <Icon size={72} height="duotone" />

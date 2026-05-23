@@ -131,11 +131,11 @@ export default function ContactPage() {
         </div>
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-20 -mt-24 relative z-30">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-30">
         <div className="grid lg:grid-cols-12 gap-8 items-start">
           
           {/* Left Column: Info Cards */}
-          <div className="lg:col-span-4 space-y-6">
+          <div className="lg:col-span-4 relative space-y-6 h-full">
             {/* Emergency Hotline Card */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -167,7 +167,7 @@ export default function ContactPage() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-[32px] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100"
+              className="bg-white rounded-[32px] p-7 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100"
             >
               <h3 className="text-3xl font-bold text-slate-900 mb-10">
                 {language === 'bn' ? "যোগাযোগের মাধ্যম" : "Get in Touch"}
@@ -233,9 +233,9 @@ export default function ContactPage() {
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-8"
           >
-            <Card className="bg-white rounded-[40px] p-8 md:p-14 shadow-[0_40px_80px_rgba(0,0,0,0.06)] border border-slate-50">
+            <Card className="bg-white rounded-[40px] p-8 shadow-[0_40px_80px_rgba(0,0,0,0.06)] border border-slate-50">
               <div className="text-center mb-12">
-                <h3 className="text-[32px] md:text-[42px] font-bold text-[#1a1a1a] mb-3">
+                <h3 className="text-[32px] md:text-[42px] font-bold text-[#1a1a1a] ">
                   {language === 'bn' ? "আমাদের কাছে কি কোনো প্রশ্ন আছে?" : "Have a question for us?"}
                 </h3>
                 <p className="text-slate-500 text-lg">

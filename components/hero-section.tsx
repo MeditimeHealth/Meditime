@@ -79,7 +79,7 @@ export default function HeroSection() {
       `}</style>
 
       {/* ── MOBILE ──────────────────────────────────────────────────────── */}
-      <div className="lg:hidden w-full h-[65vh] min-h-[500px] relative mt-[72px]">
+      <div className="lg:hidden w-full h-[65vh] min-h-[500px] relative">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}

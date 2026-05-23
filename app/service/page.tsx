@@ -187,7 +187,7 @@ export default function ServicePage() {
       </motion.div>
 
       {/* ── Social Proof Section (Matches Homepage StatsSection) ── */}
-      <div className="relative z-30 -mt-16 md:-mt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-30 max-w-7xl mx-auto px-4 mt-10 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {socialProof.map(({ value, suffix, label, icon: Icon }, index) => (
             <motion.div

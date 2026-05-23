@@ -134,7 +134,7 @@ export default function DepartmentSection() {
               <Link
                 key={`${dept._id}-${idx}`}
                 href={`/departments/${encodeURIComponent(slug)}`}
-                className="btn-slide group  w-[260px] h-[320px] bg-white flex flex-col items-center justify-between shrink-0 rounded-3xl p-8 border border-slate-800/10 shadow-lg"
+                className="btn-slide group  w-[260px] h-[320px] bg-white flex flex-col items-center justify-between shrink-0 rounded-3xl p-8 "
               >
                 {/* Large Icon centerpiece */}
                 <div className="relative z-10 w-full flex-grow flex items-center justify-center p-2">
