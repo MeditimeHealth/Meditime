@@ -26,18 +26,18 @@ export default function HeroSection() {
       ctaLink2: "/",
     },
     {
-      title: t.slide2.title,
-      description: t.slide2.description,
-      image: "/slide2.jpg",
-      ctaText: t.slide2.cta,
-      ctaLink: "/membership",
-    },
-    {
       title: t.slide3.title,
       description: t.slide3.description,
       image: "/slide3.jpg",
       ctaText: t.slide3.cta,
       ctaLink: "https://play.google.com/store",
+    },
+     {
+      title: t.slide2.title,
+      description: t.slide2.description,
+      image: "/slide2.jpg",
+      ctaText: t.slide2.cta,
+      ctaLink: "/membership",
     },
     {
       title: t.slide4.title,
@@ -117,18 +117,23 @@ export default function HeroSection() {
                       href={slide.ctaLink}
                       target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
                     >
-                      <button className="btn-slide bg-white text-slate-900 font-bold text-[16px] px-10 py-4 rounded-full shadow-lg active:scale-95">
+                      <button className="btn-slide btn-primary">
                         <span className="relative z-10">{slide.ctaText}</span>
                       </button>
                     </Link>
-                    <Link
-                      href={slide?.ctaLink2 ? slide.ctaLink2 : "#"}
-                      target={slide?.ctaLink2?.startsWith("http") ? "_blank" : "_self"}
-                    >
-                      <button className="btn-slide bg-orange-500 text-white font-bold text-[16px] px-10 py-4 rounded-full shadow-lg active:scale-95 hover:bg-orange-600">
-                        <span className="relative z-10">{slide.ctaText2}</span>
-                      </button>
-                    </Link>
+
+                    {
+                      slide.ctaText2 && slide.ctaLink2 && (
+                        <Link
+                          href={slide.ctaLink2}
+                          target={slide.ctaLink2.startsWith("http") ? "_blank" : "_self"}
+                        >
+                          <button className="btn-slide btn-primary">
+                            <span className="relative z-10">{slide.ctaText2}</span>
+                          </button>
+                        </Link>
+                      )
+                    }
                   </div>
                 </div>
               </div>
@@ -138,7 +143,7 @@ export default function HeroSection() {
       </div>
 
       {/* ── DESKTOP ─────────────────────────────────────────────────────── */}
-      <div className="hidden lg:block mx-auto max-w-[1920px] w-full h-[855px] relative ">
+      <div className="hidden lg:block mx-auto  w-full h-[855px] relative ">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}
@@ -176,7 +181,7 @@ export default function HeroSection() {
                         href={slide.ctaLink}
                         target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
                       >
-                        <button className="btn-slide bg-white text-slate-900 font-medium text-[15px] px-7 py-3 ">
+                        <button className="btn-slide btn-primary font-medium text-[15px] px-7 py-3 ">
                           <span className="relative z-10">{slide.ctaText}</span>
                         </button>
                       </Link>
@@ -187,7 +192,7 @@ export default function HeroSection() {
                             href={slide.ctaLink2}
                             target={slide.ctaLink2?.startsWith("http") ? "_blank" : "_self"}
                           >
-                            <button className="btn-slide bg-orange-500 text-white font-medium text-[15px] px-7 py-3 hover:bg-orange-600">
+                            <button className="btn-slide btn-primary  font-medium text-[15px] px-7 py-3 ">
                               <span className="relative z-10">{slide.ctaText2}</span>
                             </button>
                           </Link>

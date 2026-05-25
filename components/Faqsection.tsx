@@ -53,7 +53,7 @@ export default function FaqSection() {
               <div className="pt-4">
                 <a
                   href="/contact"
-                  className="btn-slide group/btn bg-white border border-primary text-primary font-bold text-base py-4 px-10 shadow-lg transition-all inline-flex items-center gap-3 active:scale-95 overflow-hidden"
+                  className="btn-slide group/btn btn-primary  font-bold text-base py-4 px-10 shadow-lg transition-all inline-flex items-center gap-3 active:scale-95 overflow-hidden"
                 >
                   <span className="relative z-10 flex items-center gap-3">
                     {t.contactSupport}

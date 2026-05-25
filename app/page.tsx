@@ -157,7 +157,7 @@ export default function Home() {
   };
 
   return (
-    <div className="overflow-x-hidden relative space-y-10">
+    <div className="overflow-x-hidden relative">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}

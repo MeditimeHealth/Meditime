@@ -43,19 +43,20 @@ export default function ServicesSection() {
       image: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528",
     },
     {
-      title: t.hospitalsTitle,
-      cta: t.hospitalListBtn,
-      href: "/hospital",
-      description: t.hospitalsDesc,
-      image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d",
-    },
-    {
       title: t.videoConsultTitle,
       cta: t.bookConsultationBtn,
       href: "/",
       description: t.videoConsultDesc,
       image: "https://plus.unsplash.com/premium_photo-1661775601929-8c775187bea6?auto=format&fit=crop&q=80",
     },
+    {
+      title: t.hospitalsTitle,
+      cta: t.hospitalListBtn,
+      href: "/hospital",
+      description: t.hospitalsDesc,
+      image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d",
+    },
+
     {
       title: t.diagnosticTitle,
       cta: t.comparePriceBtn,
@@ -80,7 +81,7 @@ export default function ServicesSection() {
           <h2 className="text-[28px] sm:text-[48px] font-bold mb-4 text-slate-900 tracking-tight max-w-[804px] mx-auto leading-[1.1]">
             {t.title}
           </h2>
-          <p className="text-[14px] sm:text-[16px] text-slate-500 max-w-[650px] mx-auto leading-relaxed">
+          <p className="text-[14px] sm:text-[16px]  max-w-[650px] mx-auto leading-relaxed">
             {t.subtitle}
           </p>
         </motion.div>
@@ -99,13 +100,13 @@ export default function ServicesSection() {
                 className="bg-white rounded-[24px] p-4 shadow-md overflow-hidden group border border-slate-100"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-2">
-                  
+
                   {/* IMAGE SIDE */}
                   <div className={`relative h-64 sm:h-80 lg:h-[480px] rounded-2xl overflow-hidden ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
-                    <ServiceImage 
-                      src={service.image} 
-                      alt={service.title} 
-                      fallback="/slide.jpg" 
+                    <ServiceImage
+                      src={service.image}
+                      alt={service.title}
+                      fallback="/slide.jpg"
                     />
                     <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all duration-300" />
                   </div>
@@ -116,13 +117,13 @@ export default function ServicesSection() {
                       {service.title}
                     </h3>
 
-                    <p className="text-slate-500 text-sm sm:text-lg leading-relaxed mb-8 lg:mb-12 max-w-xl">
+                    <p className=" text-sm sm:text-lg leading-relaxed mb-8 lg:mb-12 max-w-xl">
                       {service.description}
                     </p>
 
                     <div>
                       <Link href={service.href}>
-                        <button className="btn-slide group/btn bg-white rounded-none border border-primary text-primary font-bold text-sm sm:text-base py-4 px-8 sm:px-10 shadow-lg transition-all inline-flex items-center gap-3 active:scale-95 overflow-hidden">
+                        <button className="btn-slide btn-primary group/btn rounded-none border border-primary text-primary font-bold text-sm sm:text-base py-4 px-8 sm:px-10 shadow-lg transition-all inline-flex items-center gap-3 active:scale-95 overflow-hidden">
                           <span className="relative z-10 flex items-center gap-3">
                             {service.cta}
                             <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />

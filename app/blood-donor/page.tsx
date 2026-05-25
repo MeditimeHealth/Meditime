@@ -288,7 +288,7 @@ export default function BloodDonorPage() {
 
             <Button
               onClick={scrollToJoin}
-              className="h-16 px-10 bg-primary text-white hover:bg-primary/90 rounded-2xl font-black text-lg shadow-2xl gap-3 transition-transform hover:scale-105 active:scale-95"
+              className="btn-primary btn-slide h-14 text-md md:text-lg"
             >
               {language === 'en' ? "Be a Donor" : "রক্তদাতা হোন"}
               <ChevronRight className="w-5 h-5" />
@@ -298,7 +298,7 @@ export default function BloodDonorPage() {
       </motion.div>
 
       {/* ── Social Proof Section (Using Primary Color) ── */}
-      <div className="relative z-30 -mt-16 md:-mt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <div className="relative mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {socialProof.map(({ value, suffix, label, icon: Icon }, index) => (
             <motion.div
@@ -308,11 +308,11 @@ export default function BloodDonorPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <div className="btn-slide group flex flex-col items-center text-center p-8 md:p-12 rounded-3xl transition-all duration-500 bg-[#002B2B] border border-slate-800 shadow-2xl min-h-[220px] h-full justify-center">
-                <div className="mb-4 text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
+              <div className="btn-slide group flex flex-col items-center text-center btn-primary rounded-2xl min-h-[220px] h-full justify-center">
+                <div className="mb-4  transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
                   <Icon size={56} height="duotone" />
                 </div>
-                <div className="text-[32px] md:text-[40px] font-bold text-white mb-1 leading-none">
+                <div className="text-[32px] md:text-[30px] font-bold text-white mb-1 leading-none">
                   <Counter value={value} suffix={suffix} />
                 </div>
                 <div className="text-[14px] md:text-[16px] text-teal-100/70 font-bold uppercase tracking-wider">
@@ -522,7 +522,7 @@ export default function BloodDonorPage() {
                   {/* MODAL TRIGGER BUTTON */}
                   <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                     <DialogTrigger asChild>
-                      <Button className="h-16 px-10 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black text-lg shadow-xl shadow-primary/20 gap-3 group transition-transform hover:scale-105 active:scale-95">
+                      <Button className="h-16 px-10 btn-primary btn-slide">
                         <PlusCircle className="w-6 h-6" />
                         {t.becomeDonor[language]}
                         <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -584,14 +584,22 @@ export default function BloodDonorPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-20">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-primary rounded-[3.5rem] p-12 md:p-24 text-center relative overflow-hidden">
-            <div className="absolute top-0 left-1/2 w-full h-full bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+          <div className="bg-[var(--background-dark)] rounded-[3.5rem] p-12 md:p-24 text-center relative overflow-hidden">
+            <div className="absolute top-0 left-1/2 w-full h-full " />
             <div className="relative z-10">
               <h2 className="text-3xl md:text-6xl font-black text-white mb-8">{language === 'en' ? "Emergency Need?" : "জরুরি প্রয়োজন?"}</h2>
               <p className="text-white/80 text-xl mb-12 max-w-2xl mx-auto font-medium">{language === 'en' ? "Our support team is available 24/7 to help you find blood in critical situations." : "আপনার জরুরি অবস্থায় রক্তদাতা খুঁজে পেতে আমাদের সাপোর্ট টিম ২৪/৭ প্রস্তুত।"}</p>
-              <div className="flex flex-wrap justify-center gap-6"><Button className="h-16 px-12 bg-white text-primary hover:bg-primary/5 rounded-2xl font-black text-xl shadow-2xl transition-all active:scale-95"><Phone className="w-6 h-6 mr-3 fill-current" />+880 1234 567890</Button></div>
+              <div className="flex flex-wrap justify-center gap-6">
+                <a href={`tel:${"+880 1234 567890"}`}>
+
+                   <Button className="h-16 px-12 bg-white text-primary text-xl shadow-2xl transition-all active:scale-95">
+                  <Phone className="w-6 h-6 mr-3 fill-current" />+880 1234 567890
+                </Button>
+                </a>
+               
+              </div>
             </div>
           </div>
         </div>

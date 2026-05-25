@@ -43,7 +43,7 @@ export default function MembershipSection() {
               {/* Button — hidden on mobile here, shown below video instead */}
               <div className="hidden lg:block">
                 <Link href="/membership">
-                  <button className="btn-slide group/btn bg-white rounded-none border border-primary text-primary font-bold text-sm sm:text-base py-3 px-8 sm:px-10 shadow-lg transition-all inline-flex items-center gap-3 active:scale-95 overflow-hidden">
+                  <button className="btn-slide group/btn btn-primary rounded-none border border-primary text-primary font-bold text-sm sm:text-base py-3 px-8 sm:px-10 shadow-lg transition-all inline-flex items-center gap-3 active:scale-95 overflow-hidden">
                     <span className="relative z-10 flex items-center gap-3">
                       {t.availBtn}
                       <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
@@ -90,7 +90,7 @@ export default function MembershipSection() {
             {/* BUTTON — Shown ONLY on mobile, after the video */}
             <div className="lg:hidden flex justify-center order-3 mt-4">
               <Link href="/membership">
-                <button className="bg-primary hover:bg-primary/90 text-white font-semibold text-sm py-3 px-10 rounded-full shadow-sm transition-all inline-flex items-center gap-2">
+                <button className="btn-primary btn-slide">
                   {t.availBtn}
                 </button>
               </Link>

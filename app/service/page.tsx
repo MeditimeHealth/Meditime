@@ -17,13 +17,13 @@ import { homepageTranslations } from "@/lib/homepage-translations";
 function Counter({ value, suffix = "" }: { value: number; suffix?: string }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.5 });
-  
+
   const spring = useSpring(0, {
     stiffness: 40,
     damping: 20,
     restDelta: 0.001
   });
-  
+
   const displayValue = useTransform(spring, (current) => Math.floor(current));
 
   useEffect(() => {
@@ -109,19 +109,20 @@ export default function ServicePage() {
       image: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528",
     },
     {
-      title: t.hospitalTitle,
-      cta: t.hospitalBtn,
-      href: "/hospital",
-      description: t.hospitalDesc,
-      image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d",
-    },
-    {
       title: t.videoTitle,
       cta: t.videoBtn,
       href: "/live-consultation",
       description: t.videoDesc,
       image: "https://plus.unsplash.com/premium_photo-1661775601929-8c775187bea6?auto=format&fit=crop&q=80",
     },
+    {
+      title: t.hospitalTitle,
+      cta: t.hospitalBtn,
+      href: "/hospital",
+      description: t.hospitalDesc,
+      image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d",
+    },
+
     {
       title: t.diagnosticTitle,
       cta: t.diagnosticBtn,
@@ -155,7 +156,7 @@ export default function ServicePage() {
   return (
     <div className="min-h-screen bg-[#F5F6F8] overflow-x-hidden">
       <Navbar />
-      
+
       {/* ── Cover Hero Section ── */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -163,26 +164,28 @@ export default function ServicePage() {
         transition={{ duration: 0.8 }}
         className="relative h-[450px] md:h-[650px] w-full overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-[#002B2B]/90 via-[#002B2B]/70 to-[#002B2B]/90 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-primary/90 z-10" />
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: "url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1920&q=80')",
           }}
         />
-        <div className="relative z-20 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 text-center mt-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-              {t.heroTitle}
-            </h1>
-            <p className="text-lg md:text-xl text-teal-50 max-w-3xl mx-auto leading-relaxed">
-              {t.heroDesc}
-            </p>
-          </motion.div>
+        <div className="relative z-20 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pb-20">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
+                {t.heroTitle}
+              </h1>
+              <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8 font-light">
+                {t.heroDesc}
+              </p>
+            </motion.div>
+          </div>
         </div>
       </motion.div>
 
@@ -197,7 +200,7 @@ export default function ServicePage() {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <div className="btn-slide group flex flex-col items-center text-center p-12 sm:p-16 rounded-3xl transition-all duration-500 bg-[#002B2B] border border-slate-800 shadow-2xl min-h-[280px] h-full justify-center">
+              <div className="btn-slide group flex flex-col items-center text-center p-12 sm:p-16 rounded-3xl btn-primary min-h-[280px] h-full justify-center">
                 {/* Icon */}
                 <div className="mb-6 text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
                   <Icon size={72} height="duotone" />
@@ -227,10 +230,10 @@ export default function ServicePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4">
+            {/* <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4">
               Meditime Service Section
-            </h2>
-            <div className="h-1.5 w-24 bg-[#20E7E7] mx-auto rounded-full" />
+            </h2> */}
+            {/* <div className="h-1.5 w-24 bg-[#20E7E7] mx-auto rounded-full" /> */}
           </motion.div>
 
           {services.map((service, index) => {
@@ -247,10 +250,10 @@ export default function ServicePage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2">
                   {/* IMAGE SIDE */}
                   <div className={`relative h-64 sm:h-80 lg:h-[480px] rounded-2xl overflow-hidden ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
-                    <ServiceImage 
-                      src={service.image} 
-                      alt={service.title} 
-                      fallback="/slide.jpg" 
+                    <ServiceImage
+                      src={service.image}
+                      alt={service.title}
+                      fallback="/slide.jpg"
                     />
                     <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all duration-300" />
                   </div>
@@ -265,7 +268,7 @@ export default function ServicePage() {
                     </p>
                     <div>
                       <Link href={service.href}>
-                        <button className="btn-slide group/btn bg-white rounded-none border border-primary text-primary font-bold text-sm sm:text-base py-4 px-8 sm:px-10 shadow-lg transition-all inline-flex items-center gap-3 active:scale-95 overflow-hidden">
+                        <button className="btn-slide group/btn btn-primary overflow-hidden">
                           <span className="relative z-10 flex items-center gap-3">
                             {service.cta}
                             <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
@@ -288,7 +291,7 @@ export default function ServicePage() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold  mb-4">
               {t.faq.title}
             </h2>
             <div className="h-1.5 w-24 bg-[#20E7E7] mx-auto rounded-full mb-8" />

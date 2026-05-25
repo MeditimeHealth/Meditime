@@ -67,7 +67,7 @@ export default function SearchSection() {
   const suggestions = useMemo(() => {
     if (!searchQuery || searchQuery.length < 1) return [];
     const query = searchQuery.toLowerCase().trim();
-    
+
     interface ScoredSuggestion {
       type: string;
       value: string;
@@ -191,7 +191,7 @@ export default function SearchSection() {
       >
         <div className="relative">
           {/* Pill container — matches Figma exactly */}
-          <div className="flex items-center bg-white border border-gray-200 rounded-full shadow-md px-3 sm:px-5 py-2 gap-2 sm:gap-3 focus-within:border-primary focus-within:shadow-lg transition-all">
+          <div className="flex items-center bg-white border border-gray-200 rounded-2xl shadow-md px-3 sm:px-5 py-2 gap-2 sm:gap-3 focus-within:border-primary focus-within:shadow-lg transition-all">
             <Search className="text-gray-400 h-5 w-5 shrink-0" />
             <Input
               type="text"
@@ -228,7 +228,7 @@ export default function SearchSection() {
             {/* Teal embedded button */}
             <button
               onClick={handleSearch}
-              className="shrink-0 bg-primary hover:bg-primary/90 text-white text-xs sm:text-sm font-semibold px-4 sm:px-6 py-2 sm:py-2.5 rounded-full transition-all whitespace-nowrap shadow-sm"
+              className="shrink-0  btn-primary btn-slide text-xs sm:text-sm font-semibold rounded-xl"
 
             >
               {t.button}
@@ -258,16 +258,14 @@ export default function SearchSection() {
                             className="text-sm text-gray-500 mt-1"
 
                           >
-                            {suggestion.doctor.specialty}
-                            {suggestion.doctor.hospital && ` • ${suggestion.doctor.hospital}`}
+                            {language === 'bn' ? suggestion.doctor.specialtyBn && suggestion.doctor.specialtyBn : suggestion.doctor.specialty}
                           </div>
                         )}
                         {suggestion.hospital && (
                           <div
                             className="text-sm text-gray-500 mt-1"
-
                           >
-                            {t.hospitalSubtitle}
+                            {language === 'bn' ? suggestion.hospital.nameBn && suggestion.hospital.nameBn : suggestion.hospital.name}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
                           </div>
                         )}
                       </div>

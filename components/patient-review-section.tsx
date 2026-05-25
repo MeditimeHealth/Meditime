@@ -23,7 +23,7 @@ function Counter({ value, duration = 2 }: { value: string; duration?: number }) 
 
   const numericValue = parseFloat(normalizedValue.replace(/[^0-9.]/g, "")) || 0;
   const suffix = normalizedValue.replace(/[0-9.]/g, "");
-  
+
   const count = useMotionValue(0);
   const rounded = useTransform(count, (latest) => {
     let numStr = "";
@@ -32,11 +32,11 @@ function Counter({ value, duration = 2 }: { value: string; duration?: number }) 
     } else {
       numStr = latest.toFixed(1);
     }
-    
+
     const result = numStr + suffix;
     return isBengali ? enToBn(result) : result;
   });
-  
+
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -64,8 +64,8 @@ export default function PatientReviewSection() {
 
   const formTranslations = {
     title: language === 'bn' ? "যোগাযোগ করুন" : "Get In Touch",
-    subtitle: language === 'bn' 
-      ? "আপনার স্বাস্থ্য বিষয়ক যেকোনো জিজ্ঞাসা বা প্রয়োজনে সহায়তা করতে আমরা আপনার পাশে আছি।" 
+    subtitle: language === 'bn'
+      ? "আপনার স্বাস্থ্য বিষয়ক যেকোনো জিজ্ঞাসা বা প্রয়োজনে সহায়তা করতে আমরা আপনার পাশে আছি।"
       : "We are here to assist you with any medical concerns.",
     name: language === 'bn' ? "আপনার নাম" : "Your Name",
     email: language === 'bn' ? "ইমেইল ঠিকানা" : "Email Address",
@@ -94,7 +94,7 @@ export default function PatientReviewSection() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     const phoneRegex = /^(?:\+8801|01|8801)[3-9]\d{8}$/;
     if (!phoneRegex.test(formData.phone)) {
@@ -134,173 +134,175 @@ export default function PatientReviewSection() {
   return (
     <div className="relative w-full mx-auto min-h-[300px] py-16 overflow-hidden flex items-center">
 
-      <div className="absolute inset-0 bg-[#002B2B]" />
+      <div className="absolute inset-0 bg-[var(--background-dark)]" />
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 ">
-         <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">
-           {language === 'bn' ? 'বিশ্বজুড়ে সন্তুষ্ট ব্যবহারকারী' : 'Satisfied Users Over The Globe'}
-         </h2>
-         <p className="text-lg text-slate-400 max-w-lg leading-relaxed mb-8">
-           {language === 'bn' ? 'আমাদের রোগীরা আমাদের সেবা সম্পর্কে কী বলছেন তা শুনুন' : 'Hear what our patients have to say about our services'}
-         </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-20 mb-12">
+          <div>
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-bold mb-2">
+                {language === 'bn' ? 'আমাদের সেবা নিয়ে রোগীদের মতামত' : 'What Our Patients Say About Us'}
+              </h2>
+              <p className="text-lg max-w-lg leading-relaxed mb-8">
+                {language === 'bn' ? 'মেডিটাইম কীভাবে রোগীদের সঠিক বিশেষজ্ঞ ডাক্তারের সাথে যুক্ত হতে সাহায্য করে, তা নিজেই দেখে নিন।' : 'See how Meditime helps patients connect with the right specialists.'}
+              </p>
+            </div>
 
-      
-          {/* CAROUSEL SECTION (FULL WIDTH CONTROL) */}
-          <div className="relative group px-4 md:px-0">
-            <Swiper
-              modules={[Autoplay, Pagination, Navigation]}
-              slidesPerView={1}
-              spaceBetween={20}
-              speed={800}
-              centeredSlides={true}
-              loop={true}
+            {/* CAROUSEL SECTION (FULL WIDTH CONTROL) */}
+            <div className="relative group px-4 md:px-0">
+              <Swiper
+                modules={[Autoplay, Pagination, Navigation]}
+                slidesPerView={1}
+                spaceBetween={20}
+                speed={800}
+                centeredSlides={true}
+                loop={true}
 
-              autoplay={{ delay: 5000, disableOnInteraction: false }}
-          
-              // pagination={{
-              //   el: ".review-pagination-custom",
-              //   bulletClass: "review-bullet-custom",
-              //   bulletActiveClass: "review-bullet-active-custom",
-              // }}
-              className=""
-            >
-              {[...t.items, ...t.items].map((review, idx) => (
-                <SwiperSlide key={idx} className="transition-all duration-500 py-10 text-white">
-                  {({ isActive }) => (
-                    <div className={`
+                autoplay={{ delay: 5000, disableOnInteraction: false }}
+
+                // pagination={{
+                //   el: ".review-pagination-custom",
+                //   bulletClass: "review-bullet-custom",
+                //   bulletActiveClass: "review-bullet-active-custom",
+                // }}
+                className=""
+              >
+                {[...t.items, ...t.items].map((review, idx) => (
+                  <SwiperSlide key={idx} className="transition-all duration-500">
+                    {({ isActive }) => (
+                      <div className={`
                       relative p-8 sm:p-12 rounded-[40px] transition-all duration-700 h-full
                     `}>
-                      <div className="flex flex-col h-full">
-                        {/* Quote mark */}
-                        <div className={`text-6xl font-serif leading-none mb-4`}>"</div>
-                        
-                        {/* Review text */}
-                        <p className={`text-lg sm:text-xl font-medium leading-relaxed mb-10 `}>
-                          {review.text}
-                        </p>
+                        <div className="flex flex-col h-full">
+                          {/* Quote mark */}
+                          <div className={`text-6xl font-serif leading-none mb-4`}>"</div>
 
-                        <div className="mt-auto pt-8 border-t border-slate-100/10 flex items-center gap-20">
-                          <div className={`w-16 h-16 rounded-full overflow-hidden border-2 `}>
-                            {review.avatar ? (
-                              <img src={review.avatar} alt={review.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full bg-primary flex items-center justify-center text-white text-xl font-bold">
-                                {review.name.charAt(0)}
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <p className={`font-bold text-lg `}>{review.name}</p>
-                             <p className={`text-sm`}>
+                          {/* Review text */}
+                          <h1 className={`text-lg sm:text-xl font-bold leading-relaxed mb-10 `}>
+                            {review.text}
+                          </h1>
+
+                          <div className="mt-auto pt-8 border-t border-slate-100/10 flex items-center gap-20">
+                            <div className={`w-16 h-16 rounded-full overflow-hidden `}>
+                              {review.avatar ? (
+                                <img src={review.avatar} alt={review.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full bg-primary flex items-center justify-center text-white text-xl font-bold">
+                                  {review.name.charAt(0)}
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              <p className={`font-bold text-lg `}>{review.name}</p>
+                              <p className={`text-sm`}>
                                 <span className="font-semibold text-primary">{review.time}</span>
-                             </p>
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                </SwiperSlide>
-              ))}
-            </Swiper>
-
-       
-
-            {/* Custom Pagination */}
+                    )}
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
           </div>
-
-          <div className="flex flex-col justify-center py-4 px-4 sm:px-8 bg-white rounded-xl" >
-            <div className="mb-4">  
-              <h2 className="text-[32px] font-bold text-slate-900 leading-tight mb-4">
+          <div className="mb-4">
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-bold mb-2">
                 {formTranslations.title}
               </h2>
-              <p className="text-lg text-slate-500 max-w-lg leading-relaxed">
+              <p className="text-lg max-w-lg leading-relaxed mb-8">
                 {formTranslations.subtitle}
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 ml-1">{formTranslations.name}</label>
-                  <input
-                    type="text"
-                    required
-                    className="w-full px-6 py-2 rounded-2xl bg-slate-50 border border-slate-200 focus:border-[#3DB5A0] focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none"
-                    placeholder="John Doe"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 ml-1">{formTranslations.email}</label>
-                  <input
-                    type="email"
-                    required
-                    className="w-full px-6 py-2 rounded-2xl bg-slate-50 border border-slate-200 focus:border-[#3DB5A0] focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none"
-                    placeholder="example@mail.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  />
-                </div>
-              </div>
+            <div className="flex flex-col justify-center py-4 px-4 sm:px-8 bg-white rounded-xl" >
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+              <form onSubmit={handleSubmit} className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700 ml-1">{formTranslations.name}</label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full px-6 py-2 rounded-2xl bg-slate-50 border border-slate-200 focus:border-[#3DB5A0] focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none"
+                      placeholder="John Doe"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700 ml-1">{formTranslations.email}</label>
+                    <input
+                      type="email"
+                      required
+                      className="w-full px-6 py-2 rounded-2xl bg-slate-50 border border-slate-200 focus:border-[#3DB5A0] focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none"
+                      placeholder="example@mail.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700 ml-1">{formTranslations.phone}</label>
+                    <input
+                      type="tel"
+                      required
+                      className="w-full px-6 py-2 rounded-2xl bg-slate-50 border border-slate-200 focus:border-[#3DB5A0] focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none"
+                      placeholder="01XXXXXXXXX"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700 ml-1">{formTranslations.subject}</label>
+                    <select
+                      required
+                      className="w-full px-6 py-2 rounded-2xl bg-slate-50 border border-slate-200 focus:border-[#3DB5A0] focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none appearance-none"
+                      value={formData.subject}
+                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    >
+                      <option value="">{formTranslations.selectSubject}</option>
+                      {SUBJECTS.map((sub, idx) => (
+                        <option key={idx} value={sub.en}>
+                          {language === 'bn' ? sub.bn : sub.en}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 ml-1">{formTranslations.phone}</label>
-                  <input
-                    type="tel"
+                  <label className="text-sm font-semibold text-slate-700 ml-1">{formTranslations.message}</label>
+                  <textarea
+                    rows={2}
                     required
-                    className="w-full px-6 py-2 rounded-2xl bg-slate-50 border border-slate-200 focus:border-[#3DB5A0] focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none"
-                    placeholder="01XXXXXXXXX"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full px-6 py-2 rounded-2xl bg-slate-50 border border-slate-200 focus:border-[#3DB5A0] focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none resize-none"
+                    placeholder={language === 'bn' ? "আপনি কী জানতে চান?" : "How can we help you?"}
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 ml-1">{formTranslations.subject}</label>
-                  <select
-                    required
-                    className="w-full px-6 py-2 rounded-2xl bg-slate-50 border border-slate-200 focus:border-[#3DB5A0] focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none appearance-none"
-                    value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+
+                <div className="pt-4">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-fit h-10 btn-slide btn-primary"
                   >
-                    <option value="">{formTranslations.selectSubject}</option>
-                    {SUBJECTS.map((sub, idx) => (
-                      <option key={idx} value={sub.en}>
-                        {language === 'bn' ? sub.bn : sub.en}
-                      </option>
-                    ))}
-                  </select>
+                    {loading ? formTranslations.sending : formTranslations.submit}
+                    <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-2" />
+                  </button>
                 </div>
-              </div>
+              </form>
+            </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700 ml-1">{formTranslations.message}</label>
-                <textarea
-                  rows={2}
-                  required
-                  className="w-full px-6 py-2 rounded-2xl bg-slate-50 border border-slate-200 focus:border-[#3DB5A0] focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none resize-none"
-                  placeholder={language === 'bn' ? "আপনি কী জানতে চান?" : "How can we help you?"}
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                />
-              </div>
-
-              <div className="pt-4">
-                <button 
-                  type="submit"
-                  disabled={loading}
-                  className="w-fit h-10 btn-slide bg-white text-primary border border-primary px-12 text-lg font-bold shadow-lg shadow-[#3DB5A0]/20 transition-all active:scale-95 flex items-center justify-center gap-3 group/btn overflow-hidden"
-                >
-                  {loading ? formTranslations.sending : formTranslations.submit}
-                  <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-2" />
-                </button>
-              </div>
-            </form>
           </div>
-
         </div>
       </div>
 

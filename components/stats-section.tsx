@@ -42,8 +42,8 @@ const stats = [
 
 export default function StatsSection() {
   return (
-    <div className="w-full mx-auto my-6 sm:my-10 py-12 sm:py-20 bg-white relative overflow-hidden max-w-7xl mx-auto rounded-none sm:rounded-[40px] shadow-sm border-y sm:border border-slate-100">
-      <div className="relative z-10 max-w-[1760px] mx-auto px-6 sm:px-10 lg:px-12">
+    <div className="w-full mx-auto my-6 sm:my-10 py-12 sm:py-20 bg-white relative overflow-hidden mx-auto rounded-none sm:rounded-[40px] shadow-sm border-y sm:border border-slate-100">
+      <div className="relative z-10 container mx-auto px-6 sm:px-10 lg:px-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map(({ value, suffix, label, icon: Icon }, index) => (
             <motion.div
@@ -53,7 +53,7 @@ export default function StatsSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <div className="btn-slide group flex flex-col items-center text-center p-12 sm:p-16 rounded-none transition-all duration-500 bg-[#002B2B] shadow-xl min-h-[280px] h-full justify-center">
+              <div className="btn-slide group flex flex-col items-center text-center p-12 sm:p-16 rounded-none transition-all duration-500 btn-primary shadow-xl min-h-[280px] h-full justify-center">
                 {/* Icon */}
                 <div className="mb-6 text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
                   <Icon size={72} height="duotone" />
@@ -65,7 +65,7 @@ export default function StatsSection() {
                 </div>
 
                 {/* Label */}
-                <div className="text-[16px] sm:text-[18px] text-teal-100/70 font-bold uppercase tracking-widest transition-colors duration-300">
+                <div className="text-[16px] text-teal-100/70 font-bold uppercase tracking-widest transition-colors duration-300">
                   {label}
                 </div>
               </div>

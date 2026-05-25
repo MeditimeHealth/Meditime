@@ -126,7 +126,7 @@ export const homepageTranslations = {
     },
     partners: {
       title: "Our Hospital Partners:",
-      subtitle: "We’ve teamed up with the best hospitals in Savar to bring you reliable care when you need it most. Tap a hospital to see more.",
+      subtitle: "We have partnered with the best hospitals to ensure your reliable medical care. Choose your doctor from any of the hospitals below.",
       seeAll: "See All",
       viewAll: "View All",
     },
@@ -689,7 +689,7 @@ export const homepageTranslations = {
       availBtn: "কার্ডটি সংগ্রহ করুন",
     },
     reviews: {
-      title: "পেশেন্ট রিভিউ",
+      title: "আমাদের সেবা নিয়ে রোগীদের মতামত",
       stats: {
         rating: "৪.৯",
         ratingLabel: "সর্বমোট রেটিং",
@@ -722,7 +722,7 @@ export const homepageTranslations = {
     },
     partners: {
       title: "আমাদের পার্টনার হাসপাতালসমূহ",
-      subtitle: "সাভার ও এর আশেপাশের সেরা হাসপাতালগুলোর সাথে মেডিটাইম-এর পার্টনারশিপ নিশ্চিত করে আপনার জন্য উন্নত স্বাস্থ্যসেবা। বিস্তারিত দেখতে হাসপাতালের ওপর ট্যাপ করুন।",
+      subtitle: "আপনার নির্ভরযোগ্য চিকিৎসা সেবা নিশ্চিত করতে আমরা সেরা হাসপাতালগুলোর সাথে যুক্ত হয়েছি। নিচের যেকোনো একটি হাসপাতাল থেকে আপনার ডাক্তার বেছে নিন।",
       seeAll: "সবগুলো দেখুন",
       viewAll: "সবগুলো দেখুন",
     },

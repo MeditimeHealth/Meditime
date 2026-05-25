@@ -137,9 +137,9 @@ export default function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-4 sm:py-5 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b border-primary py-4 sm:py-5 ${
           scrolled 
-            ? "bg-white shadow-md" 
+            ? "bg-[#017991] shadow-md border-none" 
             : "bg-transparent"
         }`}
       >
@@ -184,10 +184,10 @@ export default function Navbar() {
                           language === 'bn' 
                             ? "text-[13px] xl:text-[15px] font-bold" 
                             : "text-[11px] xl:text-[13px] font-semibold"
-                        } uppercase tracking-wider transition-all duration-300 whitespace-nowrap text-center ${
+                        } uppercase  transition-all duration-300 whitespace-nowrap text-center ${
                           isActive
-                            ? scrolled ? "text-primary" : "text-white"
-                            : scrolled ? "text-slate-700 group-hover:text-primary" : "text-white group-hover:text-yellow-300"
+                            ? scrolled ? "text-primary" : "text-primary"
+                            : scrolled ? "text-white   group-hover:text-primary" : "text-white group-hover:text-yellow-300"
                         }`}
                       >
                         {link.label}
@@ -225,9 +225,9 @@ export default function Navbar() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleLanguage}
-                className={`flex items-center justify-center w-[75px] h-[54px] p-[16px] gap-[4px] rounded-[8px] text-xs font-medium shrink-0 transition-all ${
+                className={`flex items-center justify-center w-[75px] px-5 py-2.5 gap-[4px] rounded-[8px] text-xs font-medium shrink-0 transition-all ${
                   scrolled
-                    ? "bg-[#019A981A] text-primary hover:bg-primary/20"
+                    ? "bg-white text-primary hover:bg-primary/20"
                     : "bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
                 }`}
                 title={language === 'en' ? 'Switch to Bangla' : 'Switch to English'}
@@ -258,10 +258,10 @@ export default function Navbar() {
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link
                       href="/login"
-                      className={`text-sm font-semibold px-3 py-2 rounded-lg transition-colors duration-300 ${
+                      className={`text-sm font-semibold px-3 py-2 rounded-lg h-[54px] border border-primary h-full transition-colors duration-300 ${
                         scrolled
-                          ? "text-gray-700 hover:text-primary hover:bg-primary/5"
-                          : "text-white hover:text-yellow-300 hover:bg-white/10"
+                          ? "text-white hover:text-primary hover:bg-primary/5"
+                          : "text-white hover:text-primary hover:bg-white/10"
                       }`}
                     >
                       {t.login}
@@ -270,7 +270,7 @@ export default function Navbar() {
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link
                       href="/signup"
-                      className={`px-6 py-2.5 rounded-full text-white text-sm font-semibold transition-all duration-300 ${
+                      className={`px-6 py-2.5 rounded-lg text-white text-sm font-semibold transition-all duration-300 ${
                         scrolled
                           ? "bg-primary hover:bg-primary/90"
                           : "bg-white/25 hover:bg-white/35 backdrop-blur-sm"

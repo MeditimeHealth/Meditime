@@ -41,7 +41,7 @@ export default function Footer() {
   // body-text: #9CA3AF  |  input-bg: #1F2937
 
   return (
-    <footer className="w-full" style={{ backgroundColor: "#111827", color: "#9CA3AF" }}>
+    <footer className="w-full" style={{ backgroundColor: "#193252", color: "#9CA3AF" }}>
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-14">
 
         {/* ── TOP ROW ─────────────────────────────────────────────────── */}
@@ -215,7 +215,7 @@ export default function Footer() {
         <div
           className="flex flex-col md:flex-row items-center justify-between gap-3 py-6"
         >
-          <p className="text-sm" style={{ color: "#6B7280" }}>
+          <p className="text-sm" style={{ color: "#6B7280", opacity: 0.7 }}>
             {t.copyRight}
           </p>
           <div className="flex items-center gap-4 sm:gap-8 flex-wrap">

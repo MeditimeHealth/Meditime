@@ -104,7 +104,7 @@ export default function DepartmentSection() {
   }
 
   return (
-    <div className="w-full my-4 sm:my-10 px-0 sm:px-6 lg:px-8 py-12 sm:py-20 bg-[#002B2B] overflow-hidden max-w-[1760px] mx-auto rounded-none sm:rounded-[40px] shadow-2xl border-y sm:border border-slate-800">
+    <div className="w-full px-0 sm:px-6 lg:px-0 py-12 sm:py-20 bg-[var(--background-dark)] overflow-hidden  mx-auto rounded-none shadow-2xl">
       <div className="mb-12 text-center max-w-7xl mx-auto px-4 sm:px-0">
         {/* ── Header ── */}
         <motion.div
@@ -113,19 +113,19 @@ export default function DepartmentSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-white tracking-tight leading-snug uppercase">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-3  tracking-tight leading-snug ">
             {t.title}
           </h2>
           <div className="w-20 h-1.5 bg-primary mx-auto mb-6 shadow-[0_0_15px_rgba(13,148,136,0.5)]" />
-          <p className="text-[13px] sm:text-[14px] text-slate-400 max-w-sm mx-auto leading-relaxed font-medium">
+          <p className="text-[13px] sm:text-[14px] max-w-sm mx-auto leading-relaxed font-medium">
             {t.subtitle}
           </p>
         </motion.div>
       </div>
 
       {/* ── Marquee Slider ── */}
-      <div className="relative w-full overflow-hidden py-10  max-w-7xl mx-auto">
-        <div className="animate-marquee flex gap-8">
+      <div className="relative w-full overflow-hidden py-10  container mx-auto">
+        <div className="animate-marquee flex gap-8 mt-20">
           {[...departments].map((dept, idx) => {
             const iconPath = getIconPath(dept.name);
             const slug = dept.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
@@ -134,7 +134,7 @@ export default function DepartmentSection() {
               <Link
                 key={`${dept._id}-${idx}`}
                 href={`/departments/${encodeURIComponent(slug)}`}
-                className="btn-slide group  w-[260px] h-[320px] bg-white flex flex-col items-center justify-between shrink-0 rounded-3xl p-8 "
+                className="btn-slide group  w-[260px] h-[320px] border border-primary bg-white flex flex-col items-center justify-between shrink-0 rounded-3xl p-8 "
               >
                 {/* Large Icon centerpiece */}
                 <div className="relative z-10 w-full flex-grow flex items-center justify-center p-2">
@@ -161,7 +161,7 @@ export default function DepartmentSection() {
 
       {/* ── Bottom CTA ── */}
       <div className="mt-16 flex justify-center px-4">
-        <Link href="/departments" className="btn-slide bg-white text-black px-10 py-4 rounded-none font-bold uppercase tracking-widest text-[13px] shadow-xl">
+        <Link href="/departments" className="btn-slide btn-primary text-black px-10 py-4 rounded-none font-bold uppercase tracking-widest text-[13px] shadow-xl">
           <span className="relative z-10 flex items-center gap-2">
             {t.viewAll}
             <ChevronRight className="w-4 h-4" />

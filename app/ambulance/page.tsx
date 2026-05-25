@@ -307,7 +307,7 @@ export default function AmbulancePage() {
       </motion.div>
 
       {/* ── Social Proof Section ── */}
-      <div className="relative z-30 -mt-16 md:-mt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <div className="relative mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {socialProof.map(({ value, suffix, label, icon: Icon }, index) => (
             <motion.div
@@ -317,7 +317,7 @@ export default function AmbulancePage() {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <div className="btn-slide group flex flex-col items-center text-center p-8 md:p-12 rounded-3xl transition-all duration-500 bg-[#002B2B] border border-slate-800 shadow-2xl min-h-[220px] h-full justify-center">
+              <div className="btn-slide group flex flex-col items-center text-center p-8 md:p-12 rounded-3xl btn-primary min-h-[220px] h-full justify-center">
                 <div className="mb-4 text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
                   <Icon size={56} height="duotone" />
                 </div>
@@ -342,7 +342,7 @@ export default function AmbulancePage() {
               <h2 className="text-xl font-bold text-[#009A98]">{t.findByLocation}</h2>
               <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-[#009A98] hover:bg-[#00817e] text-white font-semibold">
+                  <Button className="btn-primary btn-slide font-semibold">
                     {t.becomePartnerBtn}
                   </Button>
                 </DialogTrigger>
@@ -523,13 +523,17 @@ export default function AmbulancePage() {
                           <Car className="h-8 w-8 text-primary" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-xl font-semibold text-[#009A98] truncate">
+                          <div className="grid grid-cols-4 justify-between gap-2">
+                            <h3 className="text-xl col-span-3 font-semibold wrap">
                               {getLocalizedValue(ambulance.name, ambulance.nameBn, language)}
                             </h3>
                             {ambulance.isApproved && (
-                              <span className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-2 py-0.5 rounded">
-                                {t.card.verified}
+                              <span className="text-[10px] font-bold text-primary uppercase
+                                flex justify-end w-full h-fit">
+                                <p className="flex items-center bg-primary/10 p-2 w-fit gap-1 rounded-md">
+                                   {t.card.verified}
+                                </p>
+                               
                               </span>
                             )}
                           </div>

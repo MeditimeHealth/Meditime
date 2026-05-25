@@ -3,13 +3,14 @@
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
+import Image from "next/image";
 
 export default function AppDownloadSection() {
   const { language } = useLanguage();
   const t = homepageTranslations[language].mobileApp;
 
   return (
-    <div className="w-full bg-[#00B7B5] py-8 sm:py-12 overflow-hidden">
+    <div className="w-full bg-[var(--background-dark)] py-8 sm:py-12 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
 
@@ -71,33 +72,12 @@ export default function AppDownloadSection() {
             className="flex flex-col items-center justify-center relative order-2"
           >
             {/* Phone Image — increased size */}
-            <div
+            {/* <div
               className="relative z-10 w-64 md:w-72 drop-shadow-2xl lg:-mb-12"
               style={{ transform: "rotate(-8deg)" }}
             >
-              <div className="w-full bg-slate-900 rounded-[2rem] p-1.5 shadow-2xl">
-                <div className="bg-white rounded-[1.7rem] overflow-hidden">
-                  <div className="bg-primary px-4 py-1.5 flex justify-between items-center">
-                    <span className="text-white text-[10px] font-bold">9:41</span>
-                    <span className="text-white text-[10px] font-bold">MEDI TIME</span>
-                    <div className="w-6 h-2.5 border border-white rounded-sm" />
-                  </div>
-                  <div className="p-3 space-y-2 bg-gray-50">
-                    {[
-                      { label: "ডাক্তার অ্যাপয়েন্টমেন্ট", sub: "Doctor Appointment", color: "bg-primary",    text: "text-white" },
-                      { label: "হাসপাতাল",                  sub: "Hospital",           color: "bg-blue-50",   text: "text-gray-800" },
-                      { label: "ভিডিও কনসালটেশন",          sub: "Video Consultation", color: "bg-purple-50", text: "text-gray-800" },
-                      { label: "ডায়াগনস্টিক ও টেস্ট",    sub: "Diagnostic & Tests", color: "bg-red-50",    text: "text-gray-800" },
-                    ].map((item, i) => (
-                      <div key={i} className={`${item.color} rounded-lg px-3 py-2`}>
-                        <p className={`text-[10px] font-bold ${item.text}`}>{item.label}</p>
-                        <p className={`text-[9px] ${item.text} opacity-70`}>{item.sub}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+              <Image src="/image.png" alt="App preview" width={200} height={400} className="w-full h-auto" />
+            </div> */}
 
             {/* QR code: MOBILE ONLY — sits below image on mobile */}
             <div className="flex items-center gap-4 lg:hidden mt-10">

@@ -67,8 +67,8 @@ export default function HospitalPartnersSection() {
   }
 
   return (
-    <div className="w-full bg-[#002B2B] py-20 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="w-full bg-[var(--background-dark)] py-20 overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* ── Header ── */}
         <div className="text-center mb-12">
@@ -78,7 +78,7 @@ export default function HospitalPartnersSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-white tracking-tight leading-snug uppercase">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-3  tracking-tight leading-snug ">
               {t.title}
             </h2>
             <div className="w-20 h-1.5 bg-primary mx-auto mb-6 shadow-[0_0_15px_rgba(13,148,136,0.5)]" />
@@ -138,7 +138,7 @@ export default function HospitalPartnersSection() {
 
         {/* ── Bottom CTA ── */}
         <div className="mt-16 flex justify-center">
-          <Link href="/hospital" className="btn-slide bg-white text-black px-10 py-4 rounded-none font-bold uppercase tracking-widest text-[13px] shadow-xl">
+          <Link href="/hospital" className="btn-slide btn-primary px-10 py-4 rounded-none font-bold uppercase tracking-widest text-[13px] shadow-xl">
             <span className="relative z-10 flex items-center gap-2">
               {t.viewAll}
               <ChevronRight className="w-4 h-4" />

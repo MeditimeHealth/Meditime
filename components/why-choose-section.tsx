@@ -38,7 +38,7 @@ export default function WhyChooseSection() {
   ];
 
   return (
-    <div className="bg-[#002B2B] py-12 max-w-[1920px] w-full mx-auto sm:py-24">
+    <div className="bg-primary py-12 w-full mx-auto sm:py-24">
       <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8">
 
         {/* ── Header ── */}
@@ -49,10 +49,10 @@ export default function WhyChooseSection() {
           transition={{ duration: 0.5 }}
           className="mb-16 text-center"
         >
-          <h2 className="text-[28px] sm:text-[48px] font-bold mb-4 text-white tracking-tight max-w-[804px] mx-auto leading-[1.1]">
+          <h2 className="text-[28px] sm:text-[48px] font-bold mb-4 tracking-tight max-w-[804px] mx-auto leading-[1.1]">
             {t.title}
           </h2>
-          <p className="text-[14px] sm:text-[16px] text-teal-100/70 max-w-[650px] mx-auto leading-relaxed">
+          <p className="text-[14px] sm:text-[16px] max-w-[650px] mx-auto leading-relaxed">
             {t.subtitle}
           </p>
         </motion.div>
@@ -69,7 +69,7 @@ export default function WhyChooseSection() {
               className="h-full"
             >
               <Card
-                className="btn-slide rounded-2xl md:rounded-none group p-8 sm:p-10 hover:border-none border h-full flex flex-col items-start text-left  shadow-xl transition-all duration-300 hover:shadow-2xl bg-[#F8F9FA] border-slate-100 md:min-h-[420px]"
+                className="btn-slide border-l-6 border-[var(--primary)] rounded-2xl md:rounded-none group p-8 sm:p-10 h-full flex flex-col items-start text-left  shadow-xl transition-all duration-300 hover:shadow-2xl hover:border-[var(--background-dark)] md:min-h-[420px]"
               >
                 {/* Icon Container */}
                 <div className="mb-10 shrink-0 relative">
