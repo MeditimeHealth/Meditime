@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
+import Nav_for_details from "@/components/nav_for_details";
 
 const banglaMonths = [
   "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
@@ -127,7 +128,7 @@ function BookingSuccessContent() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <Navbar />
+        <Nav_for_details />
         <div className="flex items-center justify-center min-h-[80vh]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-14 w-14 border-b-2 border-primary mx-auto mb-3" />
@@ -170,7 +171,7 @@ function BookingSuccessContent() {
   if (!appointment) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <Navbar />
+        <Nav_for_details />
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-24 text-center">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-slate-800 mb-2" >
@@ -203,7 +204,7 @@ function BookingSuccessContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-green-50">
-      <Navbar />
+      <Nav_for_details />
 
       <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-24 pb-16">
         {/* Success Header */}

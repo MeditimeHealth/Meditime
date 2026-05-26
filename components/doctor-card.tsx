@@ -232,7 +232,7 @@ export default function DoctorCard({
 
         {/* Action Button */}
         {!disableLink && (
-          <div className="w-full py-2.5 bg-gray-900 group-hover:bg-primary text-white text-sm font-bold text-center rounded-xl transition-all shadow-md group-hover:shadow-primary/30 flex items-center justify-center gap-2">
+          <div className="w-full py-2.5 bg-primary text-white text-sm font-bold text-center rounded-xl transition-all shadow-md group-hover:shadow-primary/30 flex items-center justify-center gap-2">
             {language === 'bn' ? 'অ্যাপয়েন্টমেন্ট নিন' : 'Book Appointment'}
             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </div>

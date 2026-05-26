@@ -997,7 +997,7 @@ function DoctorListPageContent() {
                       }}
                       className={`flex flex-col items-center justify-center gap-2 p-3 md:p-5 rounded-lg w-full h-[120px] md:h-[160px] transition-all duration-300 ${
                         selectedDept === dept.name
-                          ? "bg-[#3DB5A0] text-white shadow-md"
+                          ? "bg-primary text-white shadow-md"
                           : "bg-white text-gray-700 border border-gray-200"
                       }`}
                     >

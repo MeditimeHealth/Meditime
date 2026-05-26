@@ -103,6 +103,7 @@ export const homepageTranslations = {
       items: [
         {
           name: "Motiur Rahman",
+          prof: "Teacher",
           location: "Ex Army Personnel, Home Owner in Gazipur",
           text: "Found the best Diabetic Specialist in Savar I have ever met in the last 7 years. Recommended",
           avatar: null,
@@ -110,6 +111,7 @@ export const homepageTranslations = {
         },
         {
           name: "Asma Jannat Noyon",
+          prof: "House Wife",
           location: "House Wife, Ashulia, Savar DOHS",
           text: "Easily Booked doctor appointment in Ibn sina for My 80 Year Old Mother Suffering from Kidney complications.",
           avatar: null,
@@ -117,6 +119,7 @@ export const homepageTranslations = {
         },
         {
           name: "SM Jahidul Islam",
+          prof: "Merchandise Manager",
           location: "Merchandise Manager at ABA Group, Tongi",
           text: "Tested My lipid panel found the platform useful, enjoyed a 15% discount using my corporate membership card.",
           avatar: null,
@@ -699,6 +702,7 @@ export const homepageTranslations = {
       items: [
         {
           name: "মতিউর রহমান",
+          prof: "শিক্ষক",
           location: "সাবেক সেনাসদস্য, গাজীপুরের বাসিন্দা",
           text: "সাভারে গত ৭ বছরের মধ্যে দেখা সেরা ডায়াবেটিক বিশেষজ্ঞের খোঁজ পেলাম। আমি সত্যিই সন্তুষ্ট এবং অন্যদেরও পরামর্শ দেব।",
           avatar: null,
@@ -706,6 +710,7 @@ export const homepageTranslations = {
         },
         {
           name: "আসমা জান্নাত নয়ন",
+          prof: "গৃহিণী",
           location: "গৃহিণী, আশুলিয়া, সাভার ডিওএইচএস",
           text: "আমার ৮০ বছর বয়সী মা কিডনি জটিলতায় ভুগছিলেন। ইবনে সিনায় খুব সহজেই ওনার জন্য ভালো ডাক্তার বুক করতে পেরেছি।",
           avatar: null,
@@ -713,6 +718,7 @@ export const homepageTranslations = {
         },
         {
           name: "এস এম জাহিদুল ইসলাম",
+          prof: "মার্চেন্ডাইজ ম্যানেজার",
           location: "মার্চেন্ডাইজ ম্যানেজার, এবিএ গ্রুপ, টঙ্গী",
           text: "লিপিড প্যানেল টেস্ট করলাম এবং আমার কর্পোরেট মেম্বারশিপ কার্ড ব্যবহার করে ১৫% ডিসকাউন্ট পেলাম। প্লাটফর্মটি সত্যিই কাজের।",
           avatar: null,

@@ -38,7 +38,7 @@ export default function WhyChooseSection() {
   ];
 
   return (
-    <div className="bg-primary py-12 w-full mx-auto sm:py-24">
+    <div className="bg-[var(--background-dark)] py-12 w-full mx-auto sm:py-24">
       <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8">
 
         {/* ── Header ── */}

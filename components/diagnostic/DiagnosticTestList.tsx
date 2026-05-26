@@ -59,7 +59,7 @@ const DiagnosticTestList = forwardRef<HTMLDivElement, DiagnosticTestListProps>(
                       </div>
                       <Button 
                         onClick={() => handleBooking(test)}
-                        className={`w-full ${bookedTests.some(t => t._id === test._id) ? 'bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 border border-red-200' : 'bg-[#0088FF] hover:bg-[#0088FF]/90 text-white'} font-bold rounded-xl gap-2 h-11 transition-all`}
+                        className={`w-full ${bookedTests.some(t => t._id === test._id) ? 'bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 border border-red-200' : 'bg-primary text-white'} font-bold rounded-xl gap-2 h-11 transition-all`}
                       >
                         {bookedTests.some(t => t._id === test._id) ? (
                           <>

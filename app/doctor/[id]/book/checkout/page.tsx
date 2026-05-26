@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
+import Nav_for_details from "@/components/nav_for_details";
 
 const banglaMonths = [
   "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
@@ -207,7 +208,7 @@ function CheckoutContent() {
   if (!booking) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <Navbar />
+        <Nav_for_details />
         <div className="flex items-center justify-center min-h-[80vh]">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -217,26 +218,11 @@ function CheckoutContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <Navbar />
+      <Nav_for_details />
 
-      {/* Breadcrumb */}
-      <div className="bg-white border-b border-slate-200 pt-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 text-sm text-slate-500">
-          <Link
-            href={`/doctor/${doctorId}/book`}
-            className="hover:text-primary transition-colors flex items-center gap-1"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span style={fontStyle}>{txt.back}</span>
-          </Link>
-          <span>/</span>
-          <span className="text-slate-800 font-medium" style={fontStyle}>
-            {txt.checkoutTitle}
-          </span>
-        </div>
-      </div>
+   
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-16">
+      <div className="max-w-3xl mt-16 mx-auto px-4 sm:px-6 py-8 pb-16">
         {/* Page heading */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-3 border-2 border-primary/20">

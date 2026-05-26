@@ -65,7 +65,7 @@ export default function Footer() {
               className="flex-1 bg-transparent border-none focus:ring-0 outline-none text-[15px] px-6 py-2 text-white placeholder:text-slate-500 min-w-0"
             />
             <button
-              className="shrink-0 bg-[#3DB5A0] hover:bg-[#34a38f] text-[13px] font-bold text-white px-8 py-3 rounded-full transition-all shadow-lg active:scale-95"
+              className="shrink-0 bg-primary hover:bg-[#34a38f] text-[13px] font-bold text-white px-8 py-3 rounded-full transition-all shadow-lg active:scale-95"
             >
               {t.sendEmail}
             </button>

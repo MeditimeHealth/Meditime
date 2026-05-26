@@ -194,7 +194,8 @@ export default function PatientReviewSection() {
                               )}
                             </div>
                             <div>
-                              <p className={`font-bold text-lg `}>{review.name}</p>
+                              <p className={` text-lg `}>{review.name}</p>
+                              <p className={`font-bold text-lg `}>{review.prof}</p>
                               <p className={`text-sm`}>
                                 <span className="font-semibold text-primary">{review.time}</span>
                               </p>
