@@ -214,6 +214,12 @@ const menuItems = [
     href: "/admin/popup",
   },
   {
+    title: "App Image Manager",
+    titleBn: "অ্যাপ ছবি ম্যানেজার",
+    icon: Image,
+    href: "/admin/app-image",
+  },
+  {
     title: "Contact Messages",
     titleBn: "যোগাযোগ মেসেজ",
     icon: Mail,

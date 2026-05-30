@@ -794,10 +794,10 @@ function DoctorListPageContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
+              <h1 className="text-2xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
                 {t.heroTitle}
               </h1>
-              <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8 font-light">
+              <p className="text-sm text-white/90 max-w-2xl mx-auto lg:mb-8 font-light">
                 {t.heroDesc}
               </p>
             </motion.div>
@@ -811,12 +811,12 @@ function DoctorListPageContent() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-16"
+          className="mb-20"
         >
           <div className="relative max-w-3xl mx-auto">
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-primary to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-              <div className="relative relative bg-white rounded-2xl shadow-xl flex items-center p-2">
+              <div className="relative relative bg-white rounded-2xl shadow-xl flex items-center px-2">
                 <Search className="absolute left-4 md:left-6 top-1/2 transform -translate-y-1/2 text-primary h-5 w-5 md:h-6 md:w-6 z-10" />
                 <Input
                   type="text"
@@ -853,7 +853,7 @@ function DoctorListPageContent() {
                       setShowSuggestions(false);
                     }
                   }}
-                  className="w-full pl-12 md:pl-14 pr-4 py-2.5 md:py-7 text-sm md:text-lg border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent placeholder:text-gray-400"
+                  className="w-full pl-12 md:pl-14 pr-4  md:py-7 text-sm md:text-lg border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent placeholder:text-gray-400"
                 />
                 <Button
                   onClick={() => { setShowSuggestions(false); resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}

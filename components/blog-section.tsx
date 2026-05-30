@@ -10,6 +10,7 @@ import Image from "next/image";
 import "swiper/css";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
+import { formatBlogDate } from "@/lib/time-utils";
 
 interface WordPressPost {
   id: number;
@@ -36,9 +37,10 @@ export default function BlogSection() {
 
   useEffect(() => {
     const fetchPosts = async () => {
+      setLoading(true);
       try {
         const response = await fetch(
-          `/api/blog/posts?per_page=8`
+          `/api/blog/posts?per_page=8&lang=${language}`
         );
         const data = await response.json();
         console.log("Blog API Response:", data);
@@ -50,15 +52,12 @@ export default function BlogSection() {
       }
     };
     fetchPosts();
-  }, []);
+  }, [language]);
 
   const stripHtml = (html: string) =>
     html.replace(/<[^>]*>/g, "").replace(/&[^;]+;/g, " ").trim();
 
-  const formatDate = (dateString: string) =>
-    new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric", month: "long", day: "numeric",
-    });
+  const formatDate = (dateString: string) => formatBlogDate(dateString, language);
 
   const getFeaturedImage = (post: WordPressPost) =>
     post._embedded?.["wp:featuredmedia"]?.[0]?.source_url || "/slide.jpg";
@@ -78,7 +77,7 @@ export default function BlogSection() {
       <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header — two columns */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
+        <div className="flex flex-col gap-4 sm:gap-6 mb-8 sm:mb-12">
           <h2 className="text-[24px] sm:text-[32px] lg:text-[42px] font-bold text-slate-900 leading-[1.2] lg:max-w-xl">
             {t.title}
           </h2>
@@ -88,7 +87,7 @@ export default function BlogSection() {
             </p>
             <Link
               href="/blog"
-              className="inline-flex items-center px-8 py-3 bg-primary hover:bg-primary/95 text-white text-[15px] font-bold rounded-full transition-all shadow-md hover:shadow-primary/20"
+              className="btn-slide btn-primary"
             >
               {t.viewMore}
             </Link>
@@ -126,7 +125,7 @@ export default function BlogSection() {
                   {/* Meta */}
                   <div className="flex items-center gap-3 mb-2">
                     <span className="inline-flex items-center px-3 py-0.5 bg-primary text-white text-xs font-semibold rounded-full">
-                      Health
+                      {language === 'bn' ? 'স্বাস্থ্য' : 'Health'}
                     </span>
                     <span className="text-xs text-slate-400 flex items-center gap-1">
                       <Calendar className="w-3 h-3" />

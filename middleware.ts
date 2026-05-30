@@ -25,6 +25,7 @@ export async function middleware(request: NextRequest) {
     '/api/thana',
     '/api/district',
     '/api/division',
+    '/api/app-image',
     '/api/popup',
     '/api/service-sections',
     '/api/blog',

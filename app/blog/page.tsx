@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/navbar";
 import { Calendar, Clock, Filter, Loader2, ChevronRight, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
+import { formatBlogDate, toBengaliNumber } from "@/lib/time-utils";
 
 interface WordPressPost {
   id: number;
@@ -56,19 +59,20 @@ export default function HealthTipsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [featuredPost, setFeaturedPost] = useState<WordPressPost | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const { language } = useLanguage();
+  const t = homepageTranslations[language];
 
   useEffect(() => {
     fetchCategories();
-    fetchPosts();
-  }, []);
+  }, [language]);
 
   useEffect(() => {
     fetchPosts();
-  }, [selectedCategory]);
+  }, [selectedCategory, language]);
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${WORDPRESS_API}/categories?per_page=100`);
+      const response = await fetch(`${WORDPRESS_API}/categories?per_page=100&lang=${language}`);
       const data = await response.json();
       if (Array.isArray(data)) {
         setCategories(data.filter((cat: Category) => cat.count > 0));
@@ -81,7 +85,7 @@ export default function HealthTipsPage() {
   const fetchPosts = async () => {
     setLoading(true);
     try {
-      let url = `${WORDPRESS_API}/posts?per_page=100&_embed=true`;
+      let url = `${WORDPRESS_API}/posts?per_page=100&_embed=true&lang=${language}`;
       if (selectedCategory) {
         url += `&categories=${selectedCategory}`;
       }
@@ -114,12 +118,7 @@ export default function HealthTipsPage() {
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    return formatBlogDate(dateString, language);
   };
 
   const getFeaturedImage = (post: WordPressPost) => {
@@ -128,7 +127,7 @@ export default function HealthTipsPage() {
   };
 
   const getAuthorName = (post: WordPressPost) => {
-    return post._embedded?.author?.[0]?.name || "Admin";
+    return post._embedded?.author?.[0]?.name || t.blogPage.authorAdmin;
   };
 
   return (
@@ -136,9 +135,9 @@ export default function HealthTipsPage() {
       <Navbar />
       
       {/* Hero Section - 70% of homepage height */}
-      <div className="relative  px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto">
-          <div className="h-[350px] sm:h-[385px] lg:h-[420px] rounded-2xl overflow-hidden">
+      <div className="relative px-0">
+        <div className=" mx-auto">
+          <div className="h-[650px] rounded-none overflow-hidden">
             <div className="relative h-full w-full">
               {/* Background Image */}
               <div
@@ -156,10 +155,10 @@ export default function HealthTipsPage() {
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
                   <div className="mx-auto max-w-3xl text-center text-white">
                     <h1 className="mb-6 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-                      স্বাস্থ্য টিপস
+                      {t.blogPage.heroTitle}
                     </h1>
                     <p className="mb-8 text-base leading-relaxed sm:text-lg lg:text-xl">
-                      Expert advice and insights to help you live a healthier life
+                      {t.blogPage.heroDesc}
                     </p>
                   </div>
                 </div>
@@ -175,14 +174,14 @@ export default function HealthTipsPage() {
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2 text-gray-700">
               <Filter className="h-5 w-5" />
-              <span className="font-semibold">Filter by Category:</span>
+              <span className="font-semibold">{t.blogPage.filterCategory}</span>
             </div>
             <Button
               variant={selectedCategory === "" ? "default" : "outline"}
               onClick={() => setSelectedCategory("")}
               className="rounded-full"
             >
-              All Posts
+              {t.blogPage.allPosts}
             </Button>
             {categories.map((category) => (
               <Button
@@ -221,7 +220,7 @@ export default function HealthTipsPage() {
                       <div className="p-8 md:p-12 flex flex-col justify-center bg-gradient-to-br from-gray-50 to-white">
                         <div className="mb-4">
                           <span className="text-xs font-bold text-primary uppercase tracking-[0.15em] letter-spacing-wide">
-                            Featured Article
+                            {t.blogPage.featuredArticle}
                           </span>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-bold text-primary mb-6 leading-[1.1] transition-colors tracking-tight">
@@ -241,7 +240,7 @@ export default function HealthTipsPage() {
                           {stripHtml(featuredPost.excerpt.rendered)}
                         </p>
                         <div className="flex items-center text-primary font-bold text-sm uppercase tracking-wide group-hover:gap-2 transition-all">
-                          Read Full Story
+                          {t.blogPage.readFullStory}
                           <ChevronRight className="h-5 w-5 ml-1" />
                         </div>
                       </div>
@@ -327,7 +326,7 @@ export default function HealthTipsPage() {
                               {stripHtml(post.excerpt.rendered)}
                             </p>
                             <div className="mt-4 flex items-center text-primary font-semibold text-xs uppercase tracking-wide group-hover:gap-2 transition-all">
-                              Read More
+                              {t.blogPage.readMore}
                               <ChevronRight className="h-4 w-4 ml-1" />
                             </div>
                           </div>
@@ -339,7 +338,7 @@ export default function HealthTipsPage() {
               </div>
             ) : (
               <Card className="p-12 text-center">
-                <p className="text-gray-500 text-lg">No posts found in this category.</p>
+                <p className="text-gray-500 text-lg">{t.blogPage.noPosts}</p>
               </Card>
             )}
           </>
@@ -347,10 +346,9 @@ export default function HealthTipsPage() {
 
         {/* Footer Info */}
         <div className="mt-16 pt-8 border-t border-gray-200 text-center text-gray-600">
-          <p>Showing {posts.length} {posts.length === 1 ? "post" : "posts"}</p>
+          <p>{t.blogPage.showing} {language === 'bn' ? toBengaliNumber(posts.length) : posts.length} {posts.length === 1 ? t.blogPage.post : t.blogPage.posts}</p>
         </div>
       </div>
     </div>
   );
 }
-

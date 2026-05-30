@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
-import Image from "next/image";
+import Nav_for_details from "@/components/nav_for_details";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
@@ -180,7 +180,7 @@ export default function HospitalDetailPage() {
   if (!hospital) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <Navbar />
+        <Nav_for_details />
         <div className="max-w-7xl mt-28 mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <Card className="p-12 text-center shadow-xl">
@@ -253,23 +253,12 @@ export default function HospitalDetailPage() {
           />
         </>
       )}
-      <Navbar />
+      <Nav_for_details />
       <div className="max-w-7xl mt-28 mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Main Content */}
           <div className="flex-1">
-            {/* Back Button */}
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-6">
-              <Button
-                variant="outline"
-                onClick={() => router.push("/hospital")}
-                className="text-base px-5 py-2.5 shadow-md hover:shadow-lg transition-all"
-              >
-                <ArrowLeft className="h-5 w-5 mr-2" />
-                {language === 'bn' ? banglaLabels.back : "Back to Hospitals"}
-              </Button>
-            </motion.div>
-
+    
             {/* Hospital Header */}
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
               <Card className="p-8 md:p-10 bg-gradient-to-br from-primary/10 via-primary/5 to-white border-2 border-primary/20 shadow-xl">

@@ -22,7 +22,7 @@ export default function HeroSection() {
       image: "/slide.jpg",
       ctaText: t.slide1.cta,
       ctaLink: "/doctor",
-      ctaText2: "Live Consultation",
+      ctaText2: t.slide1.cta2,
       ctaLink2: "/",
     },
     {
@@ -79,7 +79,7 @@ export default function HeroSection() {
       `}</style>
 
       {/* ── MOBILE ──────────────────────────────────────────────────────── */}
-      <div className="lg:hidden w-full h-[65vh] min-h-[500px] relative">
+      <div className="lg:hidden w-full h-[95vh] min-h-[500px] relative">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}
@@ -117,7 +117,7 @@ export default function HeroSection() {
                       href={slide.ctaLink}
                       target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
                     >
-                      <button className="btn-slide btn-primary">
+                      <button className="btn-slide btn-primary w-full md:w-fit">
                         <span className="relative z-10">{slide.ctaText}</span>
                       </button>
                     </Link>
@@ -128,7 +128,7 @@ export default function HeroSection() {
                           href={slide.ctaLink2}
                           target={slide.ctaLink2.startsWith("http") ? "_blank" : "_self"}
                         >
-                          <button className="btn-slide btn-primary">
+                          <button className="btn-slide btn-primary w-full md:w-fit">
                             <span className="relative z-10">{slide.ctaText2}</span>
                           </button>
                         </Link>

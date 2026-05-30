@@ -149,3 +149,21 @@ export const formatBengaliTime = (timeString?: string, language: string = 'bn'):
   if (!timeString) return language === 'bn' ? "সময় নির্ধারিত হয়নি" : "Time not scheduled";
   return timeString;
 };
+
+export const formatBlogDate = (dateString: string, language: 'en' | 'bn'): string => {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "";
+
+  if (language === 'bn') {
+    const dayNum = date.getDate();
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    return `${toBengaliNumber(dayNum)} ${banglaMonths[month]}, ${toBengaliNumber(year)}`;
+  } else {
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
+};

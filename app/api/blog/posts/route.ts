@@ -6,10 +6,16 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const per_page = searchParams.get("per_page") || "8";
+    const lang = searchParams.get("lang");
+    
+    let url = `${WORDPRESS_API}/posts?per_page=${per_page}&_embed=true&orderby=date&order=desc`;
+    if (lang) {
+      url += `&lang=${lang}`;
+    }
     
     // Server-side request bypasses browser CORS restrictions
     const response = await fetch(
-      `${WORDPRESS_API}/posts?per_page=${per_page}&_embed=true&orderby=date&order=desc`, 
+      url, 
       {
         headers: {
           "Accept": "application/json, text/plain, */*",

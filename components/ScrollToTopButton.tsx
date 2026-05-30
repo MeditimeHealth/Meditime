@@ -32,7 +32,7 @@ export default function ScrollToTopButton() {
     <button
       type="button"
       aria-label="Scroll to top"
-      className={`${styles.scrollTopButton} ${show ? styles.show : ''}`}
+      className={`fixed bottom-10 print:hidden right-8 z-50 w-12 h-12 bg-[var(--background-dark)] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 group text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 print:hidden`}
       onClick={scrollToTop}
     >
       {/* Simple upward arrow – you can replace with an SVG icon if desired */}

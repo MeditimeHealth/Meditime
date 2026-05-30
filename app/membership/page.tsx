@@ -110,7 +110,7 @@ export default function MembershipPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative  h-[400px] md:h-[500px] w-full overflow-hidden"
+        className="relative  h-[450px] md:h-[650px] w-full overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/50 to-primary-dark/60 z-10" />
         <div
@@ -128,10 +128,10 @@ export default function MembershipPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 drop-shadow-2xl leading-tight">
+              <h1 className="text-2xl md:text-5xl lg:text-7xl font-bold text-white mb-4 drop-shadow-2xl leading-tight">
                 {t.headerTitle}
               </h1>
-              <p className="text-lg md:text-xl text-white/90 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
+              <p className="text-sm md:text-xl text-white/90 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
                 {t.desc}
               </p>
             </motion.div>

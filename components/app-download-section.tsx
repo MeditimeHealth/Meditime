@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
@@ -8,11 +9,27 @@ import Image from "next/image";
 export default function AppDownloadSection() {
   const { language } = useLanguage();
   const t = homepageTranslations[language].mobileApp;
+  const [imageUrl, setImageUrl] = useState("/image.png");
+
+  useEffect(() => {
+    const fetchAppImage = async () => {
+      try {
+        const response = await fetch("/api/app-image");
+        const data = await response.json();
+        if (data.success && data.appImage && data.appImage.imageUrl) {
+          setImageUrl(data.appImage.imageUrl);
+        }
+      } catch (error) {
+        console.error("Error fetching app image:", error);
+      }
+    };
+    fetchAppImage();
+  }, []);
 
   return (
     <div className="w-full bg-[var(--background-dark)] py-8 sm:py-12 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center justify-center">
 
           {/* LEFT — Title + description */}
           <motion.div
@@ -72,16 +89,24 @@ export default function AppDownloadSection() {
             className="flex flex-col items-center justify-center relative order-2"
           >
             {/* Phone Image — increased size */}
-            {/* <div
-              className="relative z-10 w-64 md:w-72 drop-shadow-2xl lg:-mb-12"
+            <div
+              className="relative z-10 w-64 md:w-72 drop-shadow-2xl lg:-mb-12 "
               style={{ transform: "rotate(-8deg)" }}
             >
-              <Image src="/image.png" alt="App preview" width={200} height={400} className="w-full h-auto" />
-            </div> */}
+              <Image 
+                src={imageUrl} 
+                alt="App preview" 
+                width={0} 
+                height={100} 
+                className="w-full h-[250px] md:h-[350px] object-contain" 
+                priority
+                unoptimized
+              />
+            </div>
 
             {/* QR code: MOBILE ONLY — sits below image on mobile */}
-            <div className="flex items-center gap-4 lg:hidden mt-10">
-              <div className="w-24 h-24 bg-white border-4 border-slate-900 rounded-xl overflow-hidden shadow-lg shrink-0">
+            <div className="flex items-center gap-4 lg:hidden mt-10 flex-col">
+              <div className="w-30 h-30 bg-white border-4 border-slate-900 rounded-xl overflow-hidden shadow-lg shrink-0">
                 <img
                   src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://meditime.com.bd"
                   alt="Scan to download"

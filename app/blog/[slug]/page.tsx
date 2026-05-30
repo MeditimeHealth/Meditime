@@ -6,8 +6,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Navbar from "@/components/navbar";
 import { Calendar, Clock, ArrowLeft, Loader2 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { homepageTranslations } from "@/lib/homepage-translations";
+import { formatBlogDate } from "@/lib/time-utils";
+import Nav_for_details from "@/components/nav_for_details";
 
 interface WordPressPost {
   id: number;
@@ -51,29 +54,31 @@ export default function BlogPostPage() {
   const [post, setPost] = useState<WordPressPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { language } = useLanguage();
+  const t = homepageTranslations[language];
 
   useEffect(() => {
     if (slug) {
       fetchPost();
     }
-  }, [slug]);
+  }, [slug, language]);
 
   const fetchPost = async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(
-        `${WORDPRESS_API}/posts?slug=${slug}&_embed=true`
+        `${WORDPRESS_API}/posts?slug=${slug}&_embed=true&lang=${language}`
       );
       const data = await response.json();
       if (Array.isArray(data) && data.length > 0) {
         setPost(data[0]);
       } else {
-        setError("Post not found");
+        setError(t.blogPage.postNotFound);
       }
     } catch (error) {
       console.error("Error fetching post:", error);
-      setError("Failed to load post");
+      setError(t.blogPage.failedLoad);
     } finally {
       setLoading(false);
     }
@@ -86,12 +91,7 @@ export default function BlogPostPage() {
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    return formatBlogDate(dateString, language);
   };
 
   const getFeaturedImage = (post: WordPressPost) => {
@@ -100,7 +100,7 @@ export default function BlogPostPage() {
   };
 
   const getAuthorName = (post: WordPressPost) => {
-    return post._embedded?.author?.[0]?.name || "Admin";
+    return post._embedded?.author?.[0]?.name || t.blogPage.authorAdmin;
   };
 
   // Keep recentPosts for fallback (but we'll remove the fetch)
@@ -108,12 +108,12 @@ export default function BlogPostPage() {
   
   useEffect(() => {
     fetchRecentPosts();
-  }, [slug]);
+  }, [slug, language]);
 
   const fetchRecentPosts = async () => {
     try {
       const response = await fetch(
-        `/api/blog/posts?per_page=4`
+        `/api/blog/posts?per_page=4&lang=${language}`
       );
       const data = await response.json();
       if (Array.isArray(data)) {
@@ -128,7 +128,7 @@ export default function BlogPostPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <Navbar />
+        <Nav_for_details />
         <div className="flex items-center justify-center py-40">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -139,13 +139,13 @@ export default function BlogPostPage() {
   if (error || !post) {
     return (
       <div className="min-h-screen bg-white">
-        <Navbar />
+        <Nav_for_details />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
           <Card className="p-12 text-center">
-            <p className="text-gray-500 text-lg mb-4">{error || "Post not found"}</p>
+            <p className="text-gray-500 text-lg mb-4">{error || t.blogPage.postNotFound}</p>
             <Button onClick={() => router.push("/blog")} variant="outline">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Blog
+              {t.blogPage.backToBlog}
             </Button>
           </Card>
         </div>
@@ -155,7 +155,7 @@ export default function BlogPostPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      <Nav_for_details />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -166,20 +166,20 @@ export default function BlogPostPage() {
               <Button
                 onClick={() => router.push("/blog")}
                 variant="ghost"
-                className="text-gray-600 hover:text-gray-900"
+                className="btn-slide btn-primary"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Blog
+                {t.blogPage.backToBlog}
               </Button>
             </div>
 
             {/* Featured Image */}
-            <div className="relative h-96 w-full mb-8 rounded-lg overflow-hidden">
+            <div className="relative min-h-[200px] md:min-h-[400px] w-full mb-8 rounded-lg overflow-hidden">
               <Image
                 src={getFeaturedImage(post)}
                 alt={stripHtml(post.title.rendered)}
                 fill
-                className="object-cover"
+                className=" w-full h-auto object-cover"
                 sizes="(max-width: 1024px) 100vw, 66vw"
                 priority
               />
@@ -188,7 +188,7 @@ export default function BlogPostPage() {
             {/* Article Header */}
             <div className="mb-8">
               <h1
-                className="text-4xl md:text-5xl font-bold text-primary mb-6 leading-tight tracking-tight"
+                className="text-[32px] sm:text-5xl md:text-6xl lg:text-[56px] font-extrabold text-primary mb-6 leading-tight tracking-tight"
                 dangerouslySetInnerHTML={{ __html: post.title.rendered }}
               />
               
@@ -207,7 +207,7 @@ export default function BlogPostPage() {
             {/* Article Content */}
             <article className="prose prose-lg max-w-none">
               <div
-                className="text-gray-700 leading-relaxed"
+                className="  leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: post.content.rendered }}
               />
             </article>
@@ -217,10 +217,10 @@ export default function BlogPostPage() {
               <Button
                 onClick={() => router.push("/blog")}
                 variant="outline"
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto btn-slide btn-primary"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to All Posts
+                {t.blogPage.backToAll}
               </Button>
             </div>
           </div>
@@ -229,7 +229,7 @@ export default function BlogPostPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
               {/* Display Relevant Blogs */}
-              <h3 className="text-xl font-bold text-gray-900 mb-4 px-2">Related Articles</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 px-2">{t.blogPage.relatedArticles}</h3>
               {recentPosts.length > 0 ? (
                 recentPosts.map((recentPost) => (
                   <Card key={recentPost.id} className="overflow-hidden border-0 shadow-lg">
@@ -256,7 +256,7 @@ export default function BlogPostPage() {
                   </Card>
                 ))
               ) : (
-                <div className="text-gray-500 p-4">No related articles found.</div>
+                <div className="text-gray-500 p-4">{t.blogPage.noRelated}</div>
               )}
             </div>
           </div>

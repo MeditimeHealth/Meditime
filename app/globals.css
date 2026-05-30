@@ -124,7 +124,8 @@ input, textarea, [contenteditable] {
   font-family: 'Google Sans Flex', sans-serif !important;
 }
 
-[data-language="en"] p {
+[data-language="en"] p, [data-language="en"] li, [data-language="en"] span, 
+[data-language="en"] a, [data-language="en"] button {
   font-family: 'Roboto', sans-serif !important;
 }
 

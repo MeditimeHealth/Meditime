@@ -15,6 +15,7 @@ export const homepageTranslations = {
         title: "Book a Doctor Appointment in Minutes!",
         description: "Your health, our priority. Find trusted doctors near Savar and book your visit-- fast, simple, and stress-free.",
         cta: "Book Appointment",
+        cta2: "Live Consultation"
       },
       slide2: {
         title: "Meditime Card: Save on Every Medical Bill",
@@ -596,6 +597,27 @@ export const homepageTranslations = {
       submitSignup: "Sign Up",
       noAccount: "Don't have an account?",
       hasAccount: "Already have an account?",
+    },
+    blogPage: {
+      heroTitle: "Health Tips & Medical Blog",
+      heroDesc: "Expert advice and insights to help you live a healthier life",
+      filterCategory: "Filter by Category:",
+      allPosts: "All Posts",
+      featuredArticle: "Featured Article",
+      readFullStory: "Read Full Story",
+      readMore: "Read More",
+      noPosts: "No posts found in this category.",
+      showing: "Showing",
+      post: "post",
+      posts: "posts",
+      backToBlog: "Back to Blog",
+      backToAll: "Back to All Posts",
+      relatedArticles: "Related Articles",
+      noRelated: "No related articles found.",
+      loading: "Loading articles...",
+      postNotFound: "Post not found",
+      failedLoad: "Failed to load post",
+      authorAdmin: "Admin",
     }
   },
   bn: {
@@ -614,6 +636,7 @@ export const homepageTranslations = {
         title: "বিশেষজ্ঞ ডাক্তারদের সিরিয়াল এখন এক ক্লিকেই!",
         description: "সেরা চিকিৎসকের পরামর্শ এখন আপনার হাতের মুঠোয়! সাভার ও এর আশেপাশে বিশেষজ্ঞ ডাক্তারদের সিরিয়াল নিন ঝামেলাহীনভাবে।",
         cta: "ডাক্তার বুক করুন",
+        cta2: "সরাসরি পরামর্শ"
       },
       slide2: {
         title: "মেডিটাইম কার্ড: প্রতি মেডিকেল বিলে নিশ্চিত সাশ্রয়",
@@ -1195,6 +1218,27 @@ export const homepageTranslations = {
       submitSignup: "সাইন আপ",
       noAccount: "অ্যাকাউন্ট নেই?",
       hasAccount: "ইতিমধ্যে অ্যাকাউন্ট আছে?",
+    },
+    blogPage: {
+      heroTitle: "স্বাস্থ্য টিপস ও মেডিকেল ব্লগ",
+      heroDesc: "আপনাকে এবং আপনার প্রিয়জনদের সুস্থ রাখতে আমাদের বিশেষজ্ঞদের পরামর্শ ও স্বাস্থ্য সচেতনতা বিষয়ক ব্লগ",
+      filterCategory: "ক্যাটাগরি অনুযায়ী খুঁজুন:",
+      allPosts: "সব পোস্ট",
+      featuredArticle: "বিশেষ আর্টিকেল",
+      readFullStory: "সম্পূর্ণ পড়ুন",
+      readMore: "বিস্তারিত পড়ুন",
+      noPosts: "এই ক্যাটাগরিতে কোনো পোস্ট পাওয়া যায়নি।",
+      showing: "প্রদর্শিত হচ্ছে",
+      post: "টি পোস্ট",
+      posts: "টি পোস্ট",
+      backToBlog: "ব্লগে ফিরে যান",
+      backToAll: "সব পোস্টে ফিরে যান",
+      relatedArticles: "সম্পর্কিত আর্টিকেলসমূহ",
+      noRelated: "কোনো সম্পর্কিত আর্টিকেল পাওয়া যায়নি।",
+      loading: "আর্টিকেল লোড হচ্ছে...",
+      postNotFound: "পোস্টটি পাওয়া যায়নি",
+      failedLoad: "পোস্ট লোড করতে ব্যর্থ হয়েছে",
+      authorAdmin: "এডমিন",
     }
   }
 };

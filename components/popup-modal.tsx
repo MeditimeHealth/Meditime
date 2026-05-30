@@ -108,7 +108,7 @@ export default function PopupModal() {
             {/* Content Section */}
             <div className="w-full md:w-7/12 p-8 md:p-12 flex flex-col justify-center bg-white">
               <div className="mb-2">
-                <span className="text-[#3DB5A0] font-bold text-xs uppercase tracking-[0.2em]">Latest Update</span>
+                <span className="text-[var(--primary)] font-bold text-xs uppercase tracking-[0.2em]">Latest Update</span>
               </div>
               
               <motion.h2 
@@ -136,7 +136,7 @@ export default function PopupModal() {
               >
                 <Link href={popupData.buttonLink} onClick={handleClose} className="inline-block w-full sm:w-auto">
                   <button 
-                    className="bg-[#3DB5A0] hover:bg-[#34a38f] text-white rounded-2xl px-10 h-14 text-base font-bold transition-all shadow-xl hover:shadow-2xl active:scale-95 flex items-center justify-center gap-3 w-full"
+                    className="btn-primary btn-slide flex items-center justify-center gap-3 w-full"
                   >
                     {currentBtnText}
                     <ArrowRight className="w-5 h-5" />

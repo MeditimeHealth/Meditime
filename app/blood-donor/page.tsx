@@ -430,8 +430,8 @@ export default function BloodDonorPage() {
                               {donor.photo ? <Image src={donor.photo} alt={donor.name} fill className="object-cover" /> : <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary text-2xl font-black">{donor.bloodGroup}</div>}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <h3 className="font-bold text-lg text-slate-900 truncate">{getLocalizedValue(donor.name, donor.nameBn, language)}</h3>
+                              <div className="flex items-start gap-2">
+                                <h3 className="font-bold text-lg text-slate-900 ">{getLocalizedValue(donor.name, donor.nameBn, language)}</h3>
                                 {donor.isApproved && (
                                   <span className="text-[10px] font-bold text-primary uppercase bg-primary/5 px-2 py-0.5 rounded border border-primary/10">
                                     {t.card.verified[language]}
@@ -460,7 +460,7 @@ export default function BloodDonorPage() {
                           </div>
 
                           <div className="flex gap-2">
-                            <a href={`tel:${donor.phoneNumber}`} className="flex-1 h-12 inline-flex items-center justify-center bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold gap-2 shadow-lg shadow-slate-200 transition-all active:scale-95">
+                            <a href={`tel:${donor.phoneNumber}`} className="btn-primary btn-slide h-10 flex-1 flex items-center justify-center gap-2 text-sm rounded-xl">
                               <Phone className="w-4 h-4 fill-white" />
                               {t.card.callNow[language]}
                             </a>

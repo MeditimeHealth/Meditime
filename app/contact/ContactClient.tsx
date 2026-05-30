@@ -95,45 +95,44 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      
-      {/* Hero / Cover Section */}
-      <div className="relative h-[400px] md:h-[500px] overflow-hidden flex items-center justify-center pt-20">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[#111827]/80 z-10" />
-          <img 
-            src="https://images.unsplash.com/photo-1516549655169-df83a0774514?q=80&w=2070&auto=format&fit=crop" 
-            alt="Contact Cover" 
-            className="w-full h-full object-cover transition-opacity duration-700"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1516387933901-8266440cda54?w=1920&q=80";
-            }}
-          />
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative  h-[450px] md:h-[650px] w-full overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/50 to-primary-dark/60 z-10" />
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1920&q=80')",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+          }}
+        />
+        <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <h1 className="text-2xl md:text-5xl lg:text-7xl font-bold text-white mb-4 drop-shadow-2xl leading-tight">
+                {language === 'bn' ? "আমাদের সাথে যোগাযোগ করুন" : "Contact Us"}              </h1>
+              <p className="text-sm md:text-xl text-white/90 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
+                {language === 'bn'
+                  ? "আপনার যেকোনো জিজ্ঞাসা বা সাহায্যের জন্য আমরা ২৪/৭ নিয়োজিত আছি।"
+                  : "Have questions or need help? Our support team is here for you 24/7."}
+              </p>
+            </motion.div>
+          </div>
         </div>
-        
-        <div className="relative z-20 text-center px-4 max-w-4xl">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 tracking-tight"
-          >
-            {language === 'bn' ? "আমাদের সাথে যোগাযোগ করুন" : "Contact Us"}
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-xl text-slate-300 font-light max-w-2xl mx-auto"
-          >
-            {language === 'bn' 
-              ? "আপনার যেকোনো জিজ্ঞাসা বা সাহায্যের জন্য আমরা ২৪/৭ নিয়োজিত আছি।" 
-              : "Have questions or need help? Our support team is here for you 24/7."}
-          </motion.p>
-        </div>
-      </div>
+      </motion.div>
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-30">
         <div className="grid lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* Left Column: Info Cards */}
           <div className="lg:col-span-4 relative space-y-6 h-full">
             {/* Emergency Hotline Card */}
@@ -152,8 +151,8 @@ export default function ContactPage() {
                 <h2 className="text-3xl font-bold mb-6">
                   {language === 'bn' ? "আমাদের কাছে কি কোনো প্রশ্ন আছে?" : "Have a Question For Us?"}
                 </h2>
-                <a 
-                  href="tel:+8801610384444" 
+                <a
+                  href="tel:+8801610384444"
                   className="inline-flex items-center gap-4 bg-white text-[#ff5e29] px-8 py-4 rounded-2xl font-bold text-2xl shadow-lg hover:bg-orange-50 transition-all active:scale-95"
                 >
                   <Phone className="w-6 h-6" />
@@ -172,7 +171,7 @@ export default function ContactPage() {
               <h3 className="text-3xl font-bold text-slate-900 mb-10">
                 {language === 'bn' ? "যোগাযোগের মাধ্যম" : "Get in Touch"}
               </h3>
-              
+
               <div className="space-y-8">
                 <div className="flex gap-6">
                   <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-[#3DB5A0] shrink-0 border border-slate-100">
@@ -180,7 +179,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-1">Email</p>
-                    <a href="mailto:support@meditime.com.bd" className="text-xl font-bold text-slate-900 hover:text-[#3DB5A0] transition-colors">
+                    <a href="mailto:support@meditime.com.bd" className="text-lg font-bold text-slate-900 hover:text-[#3DB5A0] transition-colors">
                       support@meditime.com.bd
                     </a>
                   </div>
@@ -192,7 +191,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-1">Phone</p>
-                    <a href="tel:+8801610384444" className="text-xl font-bold text-slate-900 hover:text-[#3DB5A0] transition-colors">
+                    <a href="tel:+8801610384444" className="text-lg font-bold text-slate-900 hover:text-[#3DB5A0] transition-colors">
                       +880 1610-384444
                     </a>
                   </div>
@@ -204,7 +203,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-1">Facebook</p>
-                    <a href="https://www.facebook.com/meditime.health" target="_blank" className="text-xl font-bold text-slate-900 hover:text-[#3DB5A0] transition-colors">
+                    <a href="https://www.facebook.com/meditime.health" target="_blank" className="text-lg font-bold text-slate-900 hover:text-[#3DB5A0] transition-colors">
                       meditime.health
                     </a>
                   </div>
@@ -216,9 +215,9 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-1">Address</p>
-                    <p className="text-xl font-bold text-slate-900 leading-relaxed">
-                      {language === 'bn' 
-                        ? 'সাভার ডিওএইচএস, ঢাকা, বাংলাদেশ, ১৩৪৯' 
+                    <p className="text-lg font-bold text-slate-900 leading-relaxed">
+                      {language === 'bn'
+                        ? 'সাভার ডিওএইচএস, ঢাকা, বাংলাদেশ, ১৩৪৯'
                         : 'Savar DOHS, Dhaka, Bangladesh, 1349'}
                     </p>
                   </div>
@@ -231,9 +230,9 @@ export default function ContactPage() {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-8"
+            className="lg:col-span-8 h-full"
           >
-            <Card className="bg-white rounded-[40px] p-8 shadow-[0_40px_80px_rgba(0,0,0,0.06)] border border-slate-50">
+            <Card className="bg-white rounded-[40px] p-8 shadow-[0_40px_80px_rgba(0,0,0,0.06)] border border-slate-50 h-full">
               <div className="text-center mb-12">
                 <h3 className="text-[32px] md:text-[42px] font-bold text-[#1a1a1a] ">
                   {language === 'bn' ? "আমাদের কাছে কি কোনো প্রশ্ন আছে?" : "Have a question for us?"}
@@ -244,7 +243,7 @@ export default function ContactPage() {
               </div>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                <div className="grid md:grid-cols-2 gap-x-8 gap-y-6">
+                <div className="grid md:grid-cols-2 gap-x-8 gap-y-6 h-full">
                   {/* Full Name */}
                   <div className="space-y-2.5">
                     <Label htmlFor="name" className="text-[15px] font-semibold text-[#1a1a1a]">
@@ -331,7 +330,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-               
+
 
                 {/* Message */}
                 <div className="space-y-2.5">
@@ -352,7 +351,7 @@ export default function ContactPage() {
 
                 {/* Footer */}
                 <div className="flex flex-col-reverse sm:flex-row-reverse sm:items-center justify-between gap-6 pt-4">
-                  
+
                   <Button
                     type="submit"
                     disabled={isLoading}
@@ -381,16 +380,16 @@ export default function ContactPage() {
 
 function Loader2({ className }: { className?: string }) {
   return (
-    <svg 
-      className={className} 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="24" 
-      height="24" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
+    <svg
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
       strokeLinejoin="round"
     >
       <path d="M21 12a9 9 0 1 1-6.219-8.56" />
