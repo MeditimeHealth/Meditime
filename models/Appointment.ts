@@ -9,6 +9,7 @@ export interface IAppointment extends Document {
   age?: number;
   patientType: 'old' | 'new' | 'report';
   hospitalName: string;
+  hospitalSlug?: string;
   appointmentDate: Date;
   appointmentTime?: string;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
@@ -59,6 +60,10 @@ const AppointmentSchema: Schema = new Schema(
     hospitalName: {
       type: String,
       required: [true, 'Hospital name is required'],
+      trim: true,
+    },
+    hospitalSlug: {
+      type: String,
       trim: true,
     },
     appointmentDate: {

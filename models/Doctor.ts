@@ -21,20 +21,7 @@ export interface IDoctor extends Document {
   slug: string;
   slugBn?: string;
 
-  // ── Location ────────────────────────────────────────────────────
-  division?: string;
-  divisionBn?: string;
-
-  district?: string;
-  districtBn?: string;
-
-  thana?: string;
-  thanaBn?: string;
-
-  // ── Hospital / Department ───────────────────────────────────────
-  hospital?: string;
-  hospitalBn?: string;
-
+  // ── Department ─────────────────────────────────────────────────
   department?: string;
   departmentBn?: string;
 
@@ -58,11 +45,16 @@ export interface IDoctor extends Document {
   bioBn?: string;
 
   // ── Availability ────────────────────────────────────────────────
+  /**
+   * Each slot represents a schedule at a specific hospital.
+   * hospital: slug of the hospital (required).
+   */
   availability: Array<{
     days: string[];
     daysBn?: string[];
     time?: string;
     timeBn?: string;
+    hospital: string; // hospital slug (required)
   }>;
 
 
@@ -103,20 +95,7 @@ const DoctorSchema: Schema = new Schema(
       trim: true,
     },
 
-    // ── Location ──────────────────────────────────────────────────
-    division: { type: String, trim: true },
-    divisionBn: { type: String, trim: true },
-
-    district: { type: String, trim: true },
-    districtBn: { type: String, trim: true },
-
-    thana: { type: String, trim: true },
-    thanaBn: { type: String, trim: true },
-
-    // ── Hospital / Department ─────────────────────────────────────
-    hospital: { type: String, trim: true },
-    hospitalBn: { type: String, trim: true },
-
+    // ── Department ───────────────────────────────────────────────
     department: { type: String, trim: true },
     departmentBn: { type: String, trim: true },
 
@@ -147,37 +126,25 @@ const DoctorSchema: Schema = new Schema(
       required: true,
       validate: {
         validator: function (v: any) {
-          // Handle both old format (single object) and new format (array)
-          if (Array.isArray(v)) {
-            if (v.length === 0) return false;
-            return v.every((slot: any) => {
-              return (
-                slot &&
-                typeof slot === 'object' &&
-                slot.days &&
-                Array.isArray(slot.days) &&
-                slot.days.length > 0 &&
-                (!slot.daysBn || Array.isArray(slot.daysBn)) &&
-                (!slot.time || typeof slot.time === 'string') &&
-                (!slot.timeBn || typeof slot.timeBn === 'string')
-              );
-            });
-          } else if (v && typeof v === 'object' && !Array.isArray(v)) {
-            // Old format – single object (backward compatibility)
+          if (!Array.isArray(v) || v.length === 0) return false;
+          return v.every((slot: any) => {
             return (
-              v.days &&
-              Array.isArray(v.days) &&
-              v.days.length > 0 &&
-              v.startTime &&
-              typeof v.startTime === 'string' &&
-              v.endTime &&
-              typeof v.endTime === 'string'
+              slot &&
+              typeof slot === 'object' &&
+              slot.days &&
+              Array.isArray(slot.days) &&
+              slot.days.length > 0 &&
+              slot.hospital &&
+              typeof slot.hospital === 'string' &&
+              slot.hospital.trim().length > 0 &&
+              (!slot.daysBn || Array.isArray(slot.daysBn)) &&
+              (!slot.time || typeof slot.time === 'string') &&
+              (!slot.timeBn || typeof slot.timeBn === 'string')
             );
-          }
-          return false;
+          });
         },
         message:
-          'At least one availability slot must be provided with days, startTime, and endTime',
+          'At least one availability slot must be provided with days and a hospital slug',
       },
     },
 
@@ -209,6 +176,9 @@ const DoctorSchema: Schema = new Schema(
     strict: false, // Allow fields not in schema
   }
 );
+
+// Index for efficient hospital-based doctor queries
+DoctorSchema.index({ 'availability.hospital': 1 });
 
 // Pre-save hook to ensure availability is always an array
 DoctorSchema.pre('save', function (next) {

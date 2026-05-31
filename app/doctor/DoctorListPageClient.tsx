@@ -76,26 +76,19 @@ interface Doctor {
   designationBn?: string;
   phoneNumber: string;
   email?: string;
-  hospital?: string;
-  hospitalBn?: string;
-  division?: string;
-  district?: string;
-  thana?: string;
   department?: string;
 
   reportShowFee?: number;
   newPatientFee?: number;
   diseases?: string[];
   slotDuration?: number;
-  availability:
-    | Array<{
-        days: string[];
-        time: string;
-      }>
-    | {
-        days: string[];
-        time: string;
-      };
+  availability: Array<{
+    days: string[];
+    daysBn?: string[];
+    time?: string;
+    timeBn?: string;
+    hospital: string;
+  }>;
 
   bio?: string;
   bioBn?: string;
@@ -133,6 +126,7 @@ interface Hospital {
   name: string;
   nameBn?: string;
   thana?: Thana;
+  slug?: string;
 }
 
 function DoctorListPageContent() {
@@ -291,7 +285,7 @@ function DoctorListPageContent() {
       params.append("limit", "12");
       if (debouncedSearchQuery) params.append("search", debouncedSearchQuery);
       if (selectedSpecialty) params.append("specialty", selectedSpecialty);
-      if (selectedHospital) params.append("hospital", selectedHospital);
+      if (selectedHospital) params.append("hospitalSlug", selectedHospital);
       if (selectedDepartment) params.append("department", selectedDepartment);
       if (selectedDivision) params.append("division", selectedDivision);
       if (selectedDistrict) params.append("district", selectedDistrict);
@@ -517,13 +511,13 @@ function DoctorListPageContent() {
     return unique.sort();
   }, [doctors]);
 
-  const hospitalNames = useMemo(() => {
-    const fromDoctors = Array.from(
-      new Set(doctors.map((d) => d.hospital).filter(Boolean)),
-    );
-    const fromHospitals = hospitals.map((h) => h.name);
-    return Array.from(new Set([...fromDoctors, ...fromHospitals])).sort();
-  }, [doctors, hospitals]);
+  const hospitalsFilterList = useMemo(() => {
+    return hospitals.map((h) => ({
+      slug: h.slug || h.name,
+      name: h.name,
+      nameBn: h.nameBn || h.name,
+    })).sort((a, b) => a.name.localeCompare(b.name));
+  }, [hospitals]);
 
   const qualifications = useMemo(() => {
     const unique = Array.from(
@@ -655,7 +649,7 @@ function DoctorListPageContent() {
     if (doctor.specialty.toLowerCase().includes(query)) {
       matched.push("Specialty");
     }
-    if (doctor.hospital?.toLowerCase().includes(query)) {
+    if (doctor.availability && Array.isArray(doctor.availability) && doctor.availability.some(slot => slot.hospital?.toLowerCase().includes(query))) {
       matched.push("Hospital");
     }
     if (doctor.qualification.toLowerCase().includes(query)) {
@@ -731,8 +725,8 @@ function DoctorListPageContent() {
           "url": `https://meditime.com.bd/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`,
           "address": {
             "@type": "PostalAddress",
-            "addressLocality": doctor.thana || "Savar",
-            "addressRegion": doctor.district || "Dhaka"
+            "addressLocality": "Savar",
+            "addressRegion": "Dhaka"
           }
         }
       }))
@@ -1180,9 +1174,9 @@ function DoctorListPageContent() {
                   className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
                 >
                   <option value="">{t.allHospitals}</option>
-                  {hospitalNames.map((hosp) => (
-                    <option key={hosp} value={hosp}>
-                      {hosp}
+                  {hospitalsFilterList.map((hosp) => (
+                    <option key={hosp.slug} value={hosp.slug}>
+                      {language === 'bn' ? hosp.nameBn : hosp.name}
                     </option>
                   ))}
                 </select>
@@ -1312,9 +1306,9 @@ function DoctorListPageContent() {
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base bg-white shadow-sm hover:shadow-md transition-all"
                     >
                       <option value="">{t.allHospitals}</option>
-                      {hospitalNames.map((hosp) => (
-                        <option key={hosp} value={hosp}>
-                          {hosp}
+                      {hospitalsFilterList.map((hosp) => (
+                        <option key={hosp.slug} value={hosp.slug}>
+                          {language === 'bn' ? hosp.nameBn : hosp.name}
                         </option>
                       ))}
                     </select>

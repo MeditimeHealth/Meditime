@@ -272,7 +272,7 @@ function AppointmentDetailsContent() {
                   <div className="flex items-start gap-2">
                     <MapPin className="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" />
                     <p className="font-bold text-slate-800 text-sm leading-snug">
-                      {getLocalizedValue(doc.hospital, doc.hospitalBn, language) || appointment.hospitalName}
+                      {appointment.hospitalName}
                     </p>
                   </div>
                 </div>

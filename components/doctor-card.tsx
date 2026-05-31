@@ -17,27 +17,19 @@ export interface Doctor {
   slug?: string;
   slugBn?: string;
   email?: string;
-  hospital?: string;
-  division?: string;
-  district?: string;
-  thana?: string;
   department?: string;
 
   reportShowFee?: number;
   newPatientFee?: number;
   diseases?: string[];
   slotDuration?: number;
-  availability:
-  | Array<{
+  availability: Array<{
     days: string[];
-    time: string;
+    daysBn?: string[];
+    time?: string;
     timeBn?: string;
-  }>
-  | {
-    days: string[];
-    time: string;
-    timeBn?: string;
-  };
+    hospital: string;
+  }>;
   bio?: string;
   image?: string;
   rating?: number;
@@ -46,7 +38,6 @@ export interface Doctor {
   specialtyBn?: string;
   qualificationBn?: string;
   designationBn?: string;
-  hospitalBn?: string;
 }
 
 interface DoctorCardProps {
@@ -94,9 +85,13 @@ const areDaysConsecutive = (sortedDays: string[]): boolean => {
 };
 
 const formatAvailability = (
-  availability:
-    | Array<{ days: string[]; time: string; timeBn?: string }>
-    | { days: string[]; time: string; timeBn?: string },
+  availability: Array<{
+    days: string[];
+    daysBn?: string[];
+    time?: string;
+    timeBn?: string;
+    hospital: string;
+  }>,
   language: string = "en"
 ): string => {
   const slots = Array.isArray(availability) ? availability : [availability];
@@ -152,7 +147,6 @@ export default function DoctorCard({
   const displaySpecialty = getLocalizedValue(doctor.specialty, doctor.specialtyBn, language);
   const displayQualification = getLocalizedValue(doctor.qualification, doctor.qualificationBn, language);
   const displayDesignation = getLocalizedValue(doctor.designation, doctor.designationBn, language);
-  const displayHospital = getLocalizedValue(doctor.hospital, doctor.hospitalBn, language);
   const availabilityText = formatAvailability(doctor.availability, language);
 
 
@@ -200,14 +194,6 @@ export default function DoctorCard({
 
         {/* Time / Availability */}
         <div className="flex flex-col gap-2">
-            <div className="bg-gray-50/80 rounded-xl p-3 border border-gray-100/50 group-hover:bg-primary/5 transition-colors">
-          <div className="flex items-start gap-2 text-xs text-gray-700">
-            <Building2 className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
-            <span className="font-semibold leading-relaxed">
-              {language === 'bn' ? (doctor.hospitalBn || '') : (doctor.hospital || '')}
-            </span>
-          </div>
-        </div>
         {/* Time / Availability */}
         <div className="bg-gray-50/80 rounded-xl p-3 border border-gray-100/50 group-hover:bg-primary/5 transition-colors">
           <div className="flex items-start gap-2 text-xs text-gray-700">

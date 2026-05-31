@@ -236,16 +236,10 @@ export default function DoctorsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDoctors.map((doctor) => {
-            const matchedHospital = hospitals.find(h => h.name === doctor.hospital);
-            const enrichedDoctor = {
-              ...doctor,
-              hospitalBn: matchedHospital?.nameBn || doctor.hospitalBn || ""
-            };
-            
             return (
               <DoctorCard 
                 key={doctor._id} 
-                doctor={enrichedDoctor} 
+                doctor={doctor} 
                 disableLink={true}
                 language={currentLanguage}
                 actions={

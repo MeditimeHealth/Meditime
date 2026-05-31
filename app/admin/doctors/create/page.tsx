@@ -15,13 +15,12 @@ import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 import { convertToBengaliNumber, convertToEnglishNumber } from "@/lib/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 
 const doctorSchema = z.object({
   name: z.string().optional(),
   nameBn: z.string().optional(),
-  hospital: z.string().optional(),
-  hospitalBn: z.string().optional(),
   department: z.string().optional(),
   departmentBn: z.string().optional(),
   specialty: z.string().optional(),
@@ -30,12 +29,6 @@ const doctorSchema = z.object({
   qualificationBn: z.string().optional(),
   designation: z.string().optional(),
   designationBn: z.string().optional(),
-  division: z.string().optional(),
-  divisionBn: z.string().optional(),
-  district: z.string().optional(),
-  districtBn: z.string().optional(),
-  thana: z.string().optional(),
-  thanaBn: z.string().optional(),
   newPatientFee: z.number().min(0).optional(),
   newPatientFeeBn: z.string().optional(),
   reportShowFee: z.number().min(0).optional(),
@@ -49,6 +42,7 @@ const doctorSchema = z.object({
     daysBn: z.array(z.string()).optional(),
     time: z.string().optional(),
     timeBn: z.string().optional(),
+    hospital: z.string().min(1, "Hospital is required"),
   })).optional(),
   image: z.string().optional(),
 }).refine((data) => data.name || data.nameBn, {
@@ -103,8 +97,6 @@ export default function CreateDoctorPage() {
     defaultValues: {
       name: "",
       nameBn: "",
-      hospital: "",
-      hospitalBn: "",
       department: "",
       departmentBn: "",
       specialty: "",
@@ -113,17 +105,11 @@ export default function CreateDoctorPage() {
       qualificationBn: "",
       designation: "",
       designationBn: "",
-      division: "",
-      divisionBn: "",
-      district: "",
-      districtBn: "",
-      thana: "",
-      thanaBn: "",
       bio: "",
       bioBn: "",
       phone: "",
       image: "",
-      availability: [{ days: [], time: "", timeBn: "" }],
+      availability: [{ days: [], time: "", timeBn: "", hospital: "" }],
       newPatientFee: 0,
       newPatientFeeBn: "",
       reportShowFee: 0,
@@ -207,120 +193,50 @@ export default function CreateDoctorPage() {
     }
   }, [selectedDepartment, diseases, departments]);
 
-  const selectedDivision = watch("division");
-  const selectedDistrict = watch("district");
-  const selectedHospital = watch("hospital");
+  const [duplicateMatches, setDuplicateMatches] = useState<any[]>([]);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+
+  const watchName = watch("name");
+  const watchNameBn = watch("nameBn");
+  const watchDesignation = watch("designation");
+  const watchSpecialty = watch("specialty");
+  const watchQualification = watch("qualification");
 
   useEffect(() => {
-    if (selectedDivision) {
-      const division = divisions.find(d => d.name === selectedDivision);
-      if (division) {
-        setFilteredDistricts(districts.filter(d => d.division?._id === division._id || d.division === division._id));
-      } else {
-        setFilteredDistricts([]);
-      }
-    } else {
-      setFilteredDistricts(districts);
-    }
-  }, [selectedDivision, divisions, districts]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
-      const district = districts.find(d => d.name === selectedDistrict);
-      if (district) {
-        setFilteredThanas(thanas.filter(t => t.district?._id === district._id || t.district === district._id));
-      } else {
-        setFilteredThanas([]);
-      }
-    } else {
-      setFilteredThanas(thanas);
-    }
-  }, [selectedDistrict, districts, thanas]);
-
-  // Handle hospital selection auto-populating location
-  useEffect(() => {
-    const autoPopulateLocation = async () => {
-      if (!selectedHospital) return;
-      
-      const hospitalObj = hospitals.find(h => h.name === selectedHospital);
-      if (!hospitalObj || !hospitalObj.thana) return;
-      
-      try {
-        const thanaId = hospitalObj.thana?._id || hospitalObj.thana;
-        
-        // First try to find in already-loaded data
-        let thana = thanas.find(t => t._id === thanaId);
-        if (!thana) {
-          // Fetch thana data if not in loaded data
-          const thanaRes = await fetch(`/api/locations/thanas/${thanaId}`);
-          if (!thanaRes.ok) throw new Error(`Failed to fetch thana: ${thanaRes.status}`);
-          const thanaData = await thanaRes.json();
-          thana = thanaData.thana || thanaData;
-        }
-        
-        if (!thana) return;
-        
-        const thanaName = thana.name || "";
-        const thanaBnName = thana.nameBn || thana.bangla || thanaName;
-        
-        setValue("thana", thanaName);
-        setValue("thanaBn", thanaBnName);
-        
-        // Get district
-        const districtId = thana.district?._id || thana.district;
-        if (districtId) {
-          let district = districts.find(d => d._id === districtId);
-          if (!district) {
-            // Fetch district data if not in loaded data
-            const districtRes = await fetch(`/api/locations/districts/${districtId}`);
-            if (!districtRes.ok) throw new Error(`Failed to fetch district: ${districtRes.status}`);
-            const districtData = await districtRes.json();
-            district = districtData.district || districtData;
-          }
-          
-          if (district) {
-            const districtName = district.name || "";
-            const districtBnName = district.nameBn || district.bangla || districtName;
-            
-            setValue("district", districtName);
-            setValue("districtBn", districtBnName);
-            
-            // Get division
-            const divisionId = district.division?._id || district.division;
-            if (divisionId) {
-              let division = divisions.find(d => d._id === divisionId);
-              if (!division) {
-                // Fetch division data if not in loaded data
-                const divisionRes = await fetch(`/api/locations/divisions/${divisionId}`);
-                if (!divisionRes.ok) throw new Error(`Failed to fetch division: ${divisionRes.status}`);
-                const divisionData = await divisionRes.json();
-                division = divisionData.division || divisionData;
-              }
-              
-              if (division) {
-                const divisionName = division.name || "";
-                const divisionBnName = division.nameBn || division.bangla || divisionName;
-                
-                setValue("division", divisionName);
-                setValue("divisionBn", divisionBnName);
-              }
+    const checkDuplicates = async () => {
+      const n = watchName || watchNameBn;
+      if (n && watchDesignation && watchSpecialty && watchQualification) {
+        try {
+          const res = await fetch("/api/doctors/check-duplicate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: n,
+              designation: watchDesignation,
+              specialty: watchSpecialty,
+              qualification: watchQualification
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.matches && data.matches.length > 0) {
+              setDuplicateMatches(data.matches);
+              setShowDuplicateModal(true);
             }
           }
+        } catch (error) {
+          console.error("Duplicate check error", error);
         }
-      } catch (error) {
-        console.error("Error auto-populating location:", error);
       }
     };
     
-    autoPopulateLocation();
-  }, [selectedHospital, hospitals, thanas, districts, divisions, setValue]);
+    const timeoutId = setTimeout(checkDuplicates, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [watchName, watchNameBn, watchDesignation, watchSpecialty, watchQualification]);
 
   const onSubmit = async (data: DoctorFormValues) => {
     setLoading(true);
     try {
-      const selectedHospital = hospitals.find(h => h.name === data.hospital);
-      const hospitalBn = selectedHospital?.nameBn || "";
-
       const availabilityWithDaysBn = data.availability?.map(slot => {
         const daysBn = slot.days.map(day => {
           const index = daysOfWeek.indexOf(day);
@@ -342,7 +258,6 @@ export default function CreateDoctorPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
-          hospitalBn,
           availability: availabilityWithDaysBn,
           diseases: diseasesBn,
           diseasesEn: diseasesEn,
@@ -550,123 +465,6 @@ export default function CreateDoctorPage() {
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="hospital">
-                {t("hospitalName", formLanguage)} <span className="text-red-500">*</span>
-              </Label>
-              <select
-                id="hospital"
-                {...register("hospital")}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                onChange={(e) => {
-                  setValue("hospital", e.target.value);
-                  const h = hospitals.find(hosp => hosp.name === e.target.value);
-                  if (h) {
-                    setValue("hospitalBn", h.nameBn || "");
-                  } else {
-                    setValue("hospitalBn", "");
-                  }
-                }}
-              >
-                <option value="">{t("selectHospital", formLanguage)}</option>
-                {hospitals.map((h) => (
-                  <option key={h._id} value={h.name}>
-                    {formLanguage === 'bn' && h.nameBn ? h.nameBn : h.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <Label htmlFor="division">
-                {formLanguage === 'bn' ? 'বিভাগ' : 'Division'}
-              </Label>
-              <select
-                id="division"
-                {...register("division")}
-                onChange={(e) => {
-                  setValue("division", e.target.value);
-                  const div = divisions.find(d => d.name === e.target.value);
-                  if (div) {
-                    setValue("divisionBn", div.nameBn || "");
-                  } else {
-                    setValue("divisionBn", "");
-                  }
-                  // Reset child fields
-                  setValue("district", "");
-                  setValue("districtBn", "");
-                  setValue("thana", "");
-                  setValue("thanaBn", "");
-                }}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-              >
-                <option value="">{formLanguage === 'bn' ? 'বিভাগ নির্বাচন করুন' : 'Select Division'}</option>
-                {divisions.map((d) => (
-                  <option key={d._id} value={d.name}>
-                    {formLanguage === 'bn' && d.nameBn ? d.nameBn : d.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <Label htmlFor="district">
-                {formLanguage === 'bn' ? 'জেলা' : 'District'}
-              </Label>
-              <select
-                id="district"
-                {...register("district")}
-                onChange={(e) => {
-                  setValue("district", e.target.value);
-                  const dist = districts.find(d => d.name === e.target.value);
-                  if (dist) {
-                    setValue("districtBn", dist.nameBn || "");
-                  } else {
-                    setValue("districtBn", "");
-                  }
-                  // Reset child field
-                  setValue("thana", "");
-                  setValue("thanaBn", "");
-                }}
-                disabled={!selectedDivision}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-              >
-                <option value="">{formLanguage === 'bn' ? 'জেলা নির্বাচন করুন' : 'Select District'}</option>
-                {filteredDistricts.map((d) => (
-                  <option key={d._id} value={d.name}>
-                    {formLanguage === 'bn' && d.nameBn ? d.nameBn : d.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <Label htmlFor="thana">
-                {formLanguage === 'bn' ? 'উপজেলা/থানা' : 'Thana/Upazila'}
-              </Label>
-              <select
-                id="thana"
-                {...register("thana")}
-                onChange={(e) => {
-                  setValue("thana", e.target.value);
-                  const thanaObj = thanas.find(t => t.name === e.target.value);
-                  if (thanaObj) {
-                    setValue("thanaBn", thanaObj.nameBn || "");
-                  } else {
-                    setValue("thanaBn", "");
-                  }
-                }}
-                disabled={!selectedDistrict}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-              >
-                <option value="">{formLanguage === 'bn' ? 'থানা নির্বাচন করুন' : 'Select Thana'}</option>
-                {filteredThanas.map((t) => (
-                  <option key={t._id} value={t.name}>
-                    {formLanguage === 'bn' && t.nameBn ? t.nameBn : t.name}
-                  </option>
-                ))}
-              </select>
-            </div>
 
             <div>
               <Label htmlFor="department">
@@ -909,7 +707,7 @@ export default function CreateDoctorPage() {
               </Label>
               <Button
                 type="button"
-                onClick={() => append({ days: [], time: "", timeBn: "" })}
+                onClick={() => append({ days: [], time: "", timeBn: "", hospital: "" })}
                 variant="outline"
                 size="sm"
                 className="flex items-center gap-2"
@@ -939,6 +737,27 @@ export default function CreateDoctorPage() {
                 </div>
 
                 <div className="space-y-4">
+                  <div>
+                    <Label className="mb-2 block">
+                      {t("hospitalName", formLanguage)} <span className="text-red-500">*</span>
+                    </Label>
+                    <select
+                      {...register(`availability.${slotIndex}.hospital`)}
+                      className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                    >
+                      <option value="">{t("selectHospital", formLanguage)}</option>
+                      {hospitals.map((h) => (
+                        <option key={h._id} value={h.slug || h.name}>
+                          {formLanguage === 'bn' && h.nameBn ? h.nameBn : h.name}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.availability?.[slotIndex]?.hospital && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {errors.availability[slotIndex]?.hospital?.message}
+                      </p>
+                    )}
+                  </div>
                   <div>
                     <Label className="mb-2 block">
                       {t("selectDays", formLanguage)} <span className="text-red-500">*</span>
@@ -1053,6 +872,39 @@ export default function CreateDoctorPage() {
           </div>
         </form>
       </Card>
+
+      <Dialog open={showDuplicateModal} onOpenChange={setShowDuplicateModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Similar Doctor Found</DialogTitle>
+            <DialogDescription>
+              We found doctors with very similar details. Are you sure you want to create a new one?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 my-4 max-h-[60vh] overflow-y-auto">
+            {duplicateMatches.map((match) => (
+              <div key={match._id} className="p-3 border rounded-lg">
+                <p className="font-semibold">{match.name}</p>
+                <p className="text-sm text-gray-600">{match.specialty} | {match.designation}</p>
+                <div className="mt-2 text-xs text-gray-500">Similarity: {match.similarity}%</div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-2"
+                  onClick={() => router.push(`/admin/doctors/edit/${match._id}`)}
+                >
+                  Edit This Doctor
+                </Button>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDuplicateModal(false)}>
+              Create Anyway
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

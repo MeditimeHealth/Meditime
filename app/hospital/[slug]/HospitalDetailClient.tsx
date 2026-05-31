@@ -88,7 +88,7 @@ export default function HospitalDetailPage() {
         setHospital(foundHospital);
 
         // 2. Fetch doctors for this specific hospital (SERVER SIDE FILTERING)
-        const doctorsResponse = await fetch(`/api/doctors?hospital=${encodeURIComponent(foundHospital.name)}&limit=100`);
+        const doctorsResponse = await fetch(`/api/doctors?hospitalSlug=${encodeURIComponent(hospitalSlug)}&limit=100`);
         const doctorsData = await doctorsResponse.json();
         if (doctorsResponse.ok) {
           setDoctors(doctorsData.doctors || []);

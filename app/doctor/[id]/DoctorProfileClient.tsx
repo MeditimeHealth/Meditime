@@ -61,7 +61,7 @@ export default function DoctorProfilePage() {
   const doctorId = params?.id as string;
   const [doctor, setDoctor] = useState<IDoctor | null>(null);
   const [relatedDoctors, setRelatedDoctors] = useState<IDoctor[]>([]);
-  const [hospitals, setHospitals] = useState<{ name: string, nameBn?: string }[]>([]);
+  const [hospitals, setHospitals] = useState<{ name: string, nameBn?: string, slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [departmentDiseases, setDepartmentDiseases] = useState<Array<{ name: string, bangla: string }>>([]);
@@ -171,10 +171,12 @@ export default function DoctorProfilePage() {
   const calculateRelevanceScore = (currentDoc: IDoctor, otherDoc: IDoctor): number => {
     let score = 0;
     if (otherDoc.department === currentDoc.department) score += 10;
-    if (otherDoc.hospital === currentDoc.hospital) score += 5;
-    // Assuming same division/district implies "same area" if hospital is different
-    if (otherDoc.district === currentDoc.district) score += 2;
-    if (otherDoc.division === currentDoc.division) score += 1;
+    
+    const currentHospitals = new Set(currentDoc.availability?.map(slot => slot.hospital).filter(Boolean) || []);
+    const otherHospitals = otherDoc.availability?.map(slot => slot.hospital).filter(Boolean) || [];
+    const sharesHospital = otherHospitals.some(h => currentHospitals.has(h));
+    if (sharesHospital) score += 5;
+    
     return score;
   };
 
@@ -264,17 +266,22 @@ export default function DoctorProfilePage() {
 
   const enrichedDoctor = {
     ...doctor,
-    hospitalBn: hospitals.find(h => h.name === doctor.hospital)?.nameBn || doctor.hospitalBn || ""
+    // hospitalBn: hospitals.find(h => h.name === doctor.hospital)?.nameBn || doctor.hospitalBn || ""
   };
+  
+  // Group availability by hospital
+  const groupedAvailability = availabilityArray.reduce((acc, slot) => {
+    const h = slot.hospital || "unknown";
+    if (!acc[h]) acc[h] = [];
+    acc[h].push(slot);
+    return acc;
+  }, {} as Record<string, typeof availabilityArray>);
 
   const fees = [doctor.newPatientFee, doctor.reportShowFee].filter(f => f !== undefined && f !== null && f > 0) as number[];
   const minFee = fees.length > 0 ? Math.min(...fees) : doctor.newPatientFee;
 
 
-  const enrichedRelatedDoctors = relatedDoctors.map(rd => ({
-    ...rd,
-    hospitalBn: hospitals.find(h => h.name === rd.hospital)?.nameBn || rd.hospitalBn || ""
-  }));
+  const enrichedRelatedDoctors = relatedDoctors;
 
 
 
@@ -321,8 +328,8 @@ export default function DoctorProfilePage() {
         "priceRange": minFee ? `৳${minFee}` : undefined,
         "address": {
           "@type": "PostalAddress",
-          "addressLocality": doctor.thana || "",
-          "addressRegion": doctor.district || "",
+          "addressLocality": "Savar",
+          "addressRegion": "Dhaka",
           "addressCountry": "BD"
         },
         "aggregateRating": doctor.rating ? {
@@ -332,10 +339,14 @@ export default function DoctorProfilePage() {
           "bestRating": "5",
           "worstRating": "1"
         } : undefined,
-        "worksFor": {
-          "@type": "MedicalOrganization",
-          "name": doctor.hospital
-        },
+        "worksFor": availabilityArray.map(slot => {
+          const hospSlug = slot.hospital;
+          const hospName = hospitals.find(h => h.slug === hospSlug || h.name === hospSlug)?.name || hospSlug || "Medical Organization";
+          return {
+            "@type": "MedicalOrganization",
+            "name": hospName
+          };
+        }),
         "openingHoursSpecification": availabilityArray.flatMap(slot =>
           (slot.days || []).map(day => {
             const timeParts = (slot.time || "09:00 - 17:00").split(' - ');
@@ -381,7 +392,7 @@ export default function DoctorProfilePage() {
             "name": `How to get appointment with ${doctor.name}?`,
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": `You can book an appointment with ${doctor.name} online via Meditime or visit ${doctor.hospital}.`
+              "text": `You can book an appointment with ${doctor.name} online via Meditime.`
             }
           },
           {
@@ -389,7 +400,13 @@ export default function DoctorProfilePage() {
             "name": `Where does ${doctor.name} practice?`,
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": `${doctor.name} practices at ${doctor.hospital}${doctor.thana ? `, ${doctor.thana}` : ''}${doctor.district ? `, ${doctor.district}` : ''}.`
+              "text": `${doctor.name} practices at ${availabilityArray
+                .map(slot => {
+                  const hospSlug = slot.hospital;
+                  return hospitals.find(h => h.slug === hospSlug || h.name === hospSlug)?.name || hospSlug;
+                })
+                .filter(Boolean)
+                .join(", ")}.`
             }
           }
         ]
@@ -500,11 +517,21 @@ export default function DoctorProfilePage() {
                       </p>
                     )}
 
-                    <div className="flex items-center gap-2 pt-1">
-                      <Building2 className="h-5 w-5 text-primary shrink-0" />
-                      <p className=" md:text-lg font-bold text-gray-800">
-                        {getLocalizedValue(enrichedDoctor.hospital, enrichedDoctor.hospitalBn, language)}
-                      </p>
+                    <div className="flex items-start gap-2 pt-1 flex-wrap">
+                      <Building2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                      <div className="flex flex-col">
+                        {Object.keys(groupedAvailability).map((hSlug, i) => {
+                          const hObj = hospitals.find(h => h.name === hSlug || (h as any).slug === hSlug);
+                          const hName = hObj?.name || hSlug;
+                          const hNameBn = hObj?.nameBn || hName;
+                          if (hSlug === 'unknown') return null;
+                          return (
+                            <p key={i} className="md:text-lg font-bold text-gray-800">
+                              {language === 'bn' ? hNameBn : hName}
+                            </p>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -593,14 +620,13 @@ export default function DoctorProfilePage() {
                 অ্যাপয়েন্টমেন্ট বুক করুন
               </h2> */}
               <div className="space-y-5">
-                <Link href={`/doctor/${doctorId}/book`}>
+                <a href="#schedule">
                   <Button
                     className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-6 shadow-lg hover:shadow-xl transition-all"
-
                   >
                     {language === 'bn' ? 'বুক অ্যাপয়েন্টমেন্ট' : 'Book Appointment'}
                   </Button>
-                </Link>
+                </a>
               </div>
             </div>
 
@@ -639,70 +665,65 @@ export default function DoctorProfilePage() {
             </Card>
 
             {/* Hospital Schedule */}
-            <Card className="p-6 bg-gradient-to-br from-white to-indigo-50 border-2 border-primary/20 shadow-xl">
-              <h2
-                className="text-xl md:text-2xl font-bold  mb-5"
-
-              >
+            <Card id="schedule" className="p-6 bg-gradient-to-br from-white to-indigo-50 border-2 border-primary/20 shadow-xl">
+              <h2 className="text-xl md:text-2xl font-bold mb-5">
                 {language === 'bn' ? 'চেম্বার সময়সূচি' : 'Chamber Schedule'}
               </h2>
               <div className="space-y-5">
-                <div className="bg-white p-5 rounded-xl border-2 border-primary/10 shadow-md">
-                  {doctor.hospital && (
-                    <div className="mb-4">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-5 w-5 text-primary shrink-0" />
-                        <p
-                          className=" md:text-lg font-bold text-gray-800"
+                {Object.entries(groupedAvailability).map(([hospitalSlug, slots], groupIndex) => {
+                  const hObj = hospitals.find(h => h.name === hospitalSlug || (h as any).slug === hospitalSlug);
+                  const hospitalName = hObj?.name || hospitalSlug;
+                  const hospitalBnName = hObj?.nameBn || hospitalName;
 
-                        >
-                          {getLocalizedValue(enrichedDoctor.hospital, enrichedDoctor.hospitalBn, language)}
-                        </p>
-                      </div>
-                      {doctor.district && (
-                        <p className="text-sm text-gray-500 mt-1 ml-7" >
-                          {language === 'bn' 
-                            ? `${doctor.thanaBn ? doctor.thanaBn + ', ' : ''}${doctor.districtBn || ''}` 
-                            : `${doctor.thana ? doctor.thana + ', ' : ''}${doctor.district}`}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                  <div className="space-y-2">
-                    {availabilityArray.map((slot, index) => {
-                      const sortedDays = (slot.days || []).sort((a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b));
-                      const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
-                      const isOnCall = time === "On Call" || time === "অন কল";
-
-                      let dayRange = "";
-                      if (!isOnCall && sortedDays.length > 0) {
-                        if (language === 'bn') {
-                          dayRange = sortedDays.length === 1
-                            ? getBengaliDay(sortedDays[0])
-                            : `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])}`;
-                        } else {
-                          dayRange = sortedDays.length === 1
-                            ? sortedDays[0]
-                            : `${sortedDays[0]} to ${sortedDays[sortedDays.length - 1]}`;
-                        }
-                      }
-
-                      return (
-                        <div
-                          key={index}
-                          className="flex items-start gap-2 p-3 bg-gray-50 rounded-2xl"
-                        >
-                          <Clock className="h-4 w-4 text-primary shrink-0 mt-1" />
-                          <span
-                            className="text-sm md: font-semibold "
-                          >
-                            {dayRange} {time}
-                          </span>
+                  return (
+                    <div key={groupIndex} className="bg-white p-5 rounded-xl border-2 border-primary/10 shadow-md">
+                      {hospitalSlug !== 'unknown' && (
+                        <div className="mb-4 flex items-start justify-between gap-4">
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-5 w-5 text-primary shrink-0" />
+                            <p className="md:text-lg font-bold text-gray-800">
+                              {language === 'bn' ? hospitalBnName : hospitalName}
+                            </p>
+                          </div>
+                          <Link href={`/doctor/${doctorId}/book?hospital=${encodeURIComponent(hospitalSlug)}`}>
+                            <Button size="sm" className="bg-primary text-white hover:bg-primary/90 whitespace-nowrap">
+                              {language === 'bn' ? 'বুক করুন' : 'Book'}
+                            </Button>
+                          </Link>
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                      )}
+                      <div className="space-y-2">
+                        {slots.map((slot, index) => {
+                          const sortedDays = (slot.days || []).sort((a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b));
+                          const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
+                          const isOnCall = time === "On Call" || time === "অন কল";
+
+                          let dayRange = "";
+                          if (!isOnCall && sortedDays.length > 0) {
+                            if (language === 'bn') {
+                              dayRange = sortedDays.length === 1
+                                ? getBengaliDay(sortedDays[0])
+                                : `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])}`;
+                            } else {
+                              dayRange = sortedDays.length === 1
+                                ? sortedDays[0]
+                                : `${sortedDays[0]} to ${sortedDays[sortedDays.length - 1]}`;
+                            }
+                          }
+
+                          return (
+                            <div key={index} className="flex items-start gap-2 p-3 bg-gray-50 rounded-2xl">
+                              <Clock className="h-4 w-4 text-primary shrink-0 mt-1" />
+                              <span className="text-sm md: font-semibold ">
+                                {dayRange} {time}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </Card>
 
@@ -780,80 +801,88 @@ export default function DoctorProfilePage() {
                       {language === 'bn' ? 'রিপোর্ট দেখানো' : 'Report Show'}
                     </p>
                     <p className="text-lg font-bold ">
-                      {language === 'bn' ? (doctor.reportShowFeeBn !== undefined && doctor.reportShowFeeBn !== null ? doctor.reportShowFeeBn : '0') : (doctor.reportShowFee !== undefined && doctor.reportShowFee !== null ? doctor.reportShowFee : '0')} ৳                    </p>
+                      {language === 'bn' ? (doctor.reportShowFeeBn !== undefined && doctor.reportShowFeeBn !== null ? doctor.reportShowFeeBn : '0') : (doctor.reportShowFee !== undefined && doctor.reportShowFee !== null ? doctor.reportShowFee : '0')} ৳
+                    </p>
                   </div>
                 </div>
               </div>
             </Card>
 
             {/* Hospital Schedule - Mobile */}
-            <Card className="p-6 bg-gradient-to-br from-white to-indigo-50 border-2 border-primary/20 shadow-xl">
-              <h2
-                className="text-xl md:text-2xl font-bold  mb-5"
-
-              >
+            <Card id="schedule-mobile" className="p-6 bg-gradient-to-br from-white to-indigo-50 border-2 border-primary/20 shadow-xl">
+              <h2 className="text-xl md:text-2xl font-bold mb-5">
                 {language === 'bn' ? 'চেম্বার সময়সূচি' : 'Chamber Schedule'}
               </h2>
               <div className="space-y-5">
-                <div className="bg-white p-5 rounded-xl border-2 border-primary/10 shadow-md">
-                  {doctor.hospital && (
-                    <div className="mb-4">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-5 w-5 text-primary shrink-0" />
-                        <p
-                          className=" md:text-lg font-bold text-gray-800"
+                {Object.entries(groupedAvailability).map(([hospitalSlug, slots], groupIndex) => {
+                  const hObj = hospitals.find(h => h.name === hospitalSlug || (h as any).slug === hospitalSlug);
+                  const hospitalName = hObj?.name || hospitalSlug;
+                  const hospitalBnName = hObj?.nameBn || hospitalName;
 
-                        >
-                          {getLocalizedValue(enrichedDoctor.hospital, enrichedDoctor.hospitalBn, language)}
-                        </p>
+                  return (
+                    <div key={groupIndex} className="bg-white p-5 rounded-xl border-2 border-primary/10 shadow-md">
+                      {hospitalSlug !== 'unknown' && (
+                        <div className="mb-4">
+                          <div className="flex items-center gap-2 mb-3">
+                            <MapPin className="h-5 w-5 text-primary shrink-0" />
+                            <p className="md:text-lg font-bold text-gray-800">
+                              {language === 'bn' ? hospitalBnName : hospitalName}
+                            </p>
+                          </div>
+                          <Link href={`/doctor/${doctorId}/book?hospital=${encodeURIComponent(hospitalSlug)}`}>
+                            <Button size="sm" className="w-full bg-primary text-white hover:bg-primary/90">
+                              {language === 'bn' ? 'বুক করুন' : 'Book'}
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
+                      <div className="space-y-2">
+                        {slots.map((slot, index) => {
+                          const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
+                          const sortedDays = (slot.days || []).sort((a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b));
+                          const isOnCall = time === "On Call" || time === "অন কল";
+
+                          let dayRange = "";
+                          if (!isOnCall && sortedDays.length > 0) {
+                            if (language === 'bn') {
+                              dayRange = sortedDays.length === 1
+                                ? getBengaliDay(sortedDays[0])
+                                : `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])}`;
+                            } else {
+                              dayRange = sortedDays.length === 1
+                                ? sortedDays[0]
+                                : `${sortedDays[0]} to ${sortedDays[sortedDays.length - 1]}`;
+                            }
+                          }
+                          return (
+                            <div key={index} className="flex items-center gap-2 p-3 bg-gray-50 rounded-full flex-nowrap">
+                              <Clock className="h-4 w-4 text-primary shrink-0" />
+                              <span className="text-sm md: font-semibold whitespace-nowrap">
+                                {dayRange} {time}
+                              </span>
+                            </div>
+                          );
+                        })}
                       </div>
-
-                       <p className="text-sm text-gray-500 mt-1 ml-7" >
-                          {language === 'bn' 
-                            ? `${doctor.thanaBn ? doctor.thanaBn + ', ' : ''}${doctor.districtBn || ''}` 
-                            : `${doctor.thana ? doctor.thana + ', ' : ''}${doctor.district}`}
-                        </p>
                     </div>
-                  )}
-                  <div className="space-y-2">
-                    {Array.from(new Set(availabilityArray.map(slot =>
-                      (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "")
-                    ).filter(Boolean))).map((time, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 p-3 bg-gray-50 rounded-full flex-nowrap"
-                      >
-                        <Clock className="h-4 w-4 text-primary shrink-0" />
-                        <span
-                          className="text-sm md: font-semibold  whitespace-nowrap"
-
-                        >
-                          {time}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </Card>
 
             {/* Book Appointment - Mobile */}
             <Card className="p-6 bg-gradient-to-br from-white to-emerald-50 border-2 border-primary/20 shadow-xl">
-              <h2
-                className="text-xl md:text-2xl font-bold  mb-5"
-
-              >
+              <h2 className="text-xl md:text-2xl font-bold mb-5">
                 {language === 'bn' ? 'অ্যাপয়েন্টমেন্ট বুক করুন' : 'Book Appointment'}
               </h2>
               <div className="space-y-5">
-                <Link href={`/doctor/${doctorId}/book`}>
+                <a href="#schedule-mobile">
                   <Button
-                    className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all"
-
+                    className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-6 shadow-lg hover:shadow-xl transition-all"
                   >
                     {language === 'bn' ? 'বুক অ্যাপয়েন্টমেন্ট' : 'Book Appointment'}
                   </Button>
-                </Link>
+                </a>
               </div>
             </Card>
 

@@ -31,11 +31,12 @@ interface Appointment {
     qualification?: string;
     qualificationBn?: string;
     department?: string;
-    hospital?: string;
     availability?: Array<{
       days: string[];
-      time: string;
+      daysBn?: string[];
+      time?: string;
       timeBn?: string;
+      hospital: string;
     }>;
   };
   serialNumber?: string;

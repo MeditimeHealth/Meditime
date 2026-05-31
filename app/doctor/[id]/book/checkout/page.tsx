@@ -181,6 +181,7 @@ function CheckoutContent() {
           age: booking.age,
           patientType: booking.patientType,
           hospitalName: booking.hospitalName,
+          hospitalSlug: booking.hospitalSlug,
           appointmentDate: booking.appointmentDate,
           userId: booking.userId,
           affiliateCode: booking.affiliateCode,
@@ -311,14 +312,6 @@ function CheckoutContent() {
                           ? doctor.designationBn
                           : doctor.designation}
                       </p>
-                    )}
-                    {doctor.hospital && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <MapPin className="h-3 w-3 text-red-400" />
-                        <p className="text-xs text-slate-500" style={fontStyle}>
-                          {doctor.hospital}
-                        </p>
-                      </div>
                     )}
                   </div>
                 </div>

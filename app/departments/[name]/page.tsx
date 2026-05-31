@@ -48,7 +48,7 @@ export default function DepartmentDoctorsPage() {
       (doctor) =>
         doctor.name.toLowerCase().includes(query) ||
         doctor.specialty?.toLowerCase().includes(query) ||
-        doctor.hospital?.toLowerCase().includes(query) ||
+        doctor.availability?.some(slot => slot.hospital?.toLowerCase().includes(query)) ||
         doctor.qualification.toLowerCase().includes(query)
     );
   }, [doctors, searchQuery]);

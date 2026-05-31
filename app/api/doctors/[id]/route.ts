@@ -70,10 +70,6 @@ export async function PUT(
 
       email,
       phoneNumber,
-      hospital,
-      division,
-      district,
-      thana,
       department,
 
       reportShowFee,
@@ -85,10 +81,6 @@ export async function PUT(
       image,
 
       // Bangla fields
-      hospitalBn,
-      divisionBn,
-      districtBn,
-      thanaBn,
       departmentBn,
       reportShowFeeBn,
       newPatientFeeBn,
@@ -117,6 +109,12 @@ export async function PUT(
       if (!slot.days || !Array.isArray(slot.days) || slot.days.length === 0) {
         return NextResponse.json(
           { error: "Each availability slot must have at least one day selected" },
+          { status: 400 }
+        );
+      }
+      if (!slot.hospital) {
+        return NextResponse.json(
+          { error: "Each availability slot must have a hospital" },
           { status: 400 }
         );
       }
@@ -166,11 +164,6 @@ export async function PUT(
     if (designation) doctorData.designation = designation;
     if (email) doctorData.email = email;
     if (phoneNumber) doctorData.phoneNumber = phoneNumber;
-    if (hospital) doctorData.hospital = hospital;
-    if (hospitalBn) doctorData.hospitalBn = hospitalBn;
-    if (division) doctorData.division = division;
-    if (district) doctorData.district = district;
-    if (thana) doctorData.thana = thana;
     if (department) doctorData.department = department;
     
     // Handle fees - allow 0
@@ -188,9 +181,6 @@ export async function PUT(
     if (body.qualificationBn) doctorData.qualificationBn = body.qualificationBn;
     if (body.designationBn) doctorData.designationBn = body.designationBn;
     if (body.bioBn) doctorData.bioBn = body.bioBn;
-    if (divisionBn) doctorData.divisionBn = divisionBn;
-    if (districtBn) doctorData.districtBn = districtBn;
-    if (thanaBn) doctorData.thanaBn = thanaBn;
     if (departmentBn) doctorData.departmentBn = departmentBn;
     if (reportShowFeeBn) doctorData.reportShowFeeBn = reportShowFeeBn;
     if (newPatientFeeBn) doctorData.newPatientFeeBn = newPatientFeeBn;

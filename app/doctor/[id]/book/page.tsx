@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useContext } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,6 +67,23 @@ export default function BookAppointmentPage() {
   const [patientType, setPatientType] = useState<"new" | "report">("new");
   const [affiliateCode, setAffiliateCode] = useState("");
 
+  const searchParams = useSearchParams();
+  const selectedHospitalSlug = searchParams?.get("hospital");
+
+  const [hospitals, setHospitals] = useState<any[]>([]);
+
+  const fetchHospitals = useCallback(async () => {
+    try {
+      const response = await fetch("/api/locations/hospitals");
+      const data = await response.json();
+      if (response.ok && data.hospitals) {
+        setHospitals(data.hospitals);
+      }
+    } catch (error) {
+      console.error("Error fetching hospitals:", error);
+    }
+  }, []);
+
   const fetchDoctor = useCallback(async () => {
     try {
       const response = await fetch(`/api/doctors/${doctorId}`);
@@ -100,22 +117,26 @@ export default function BookAppointmentPage() {
     }
   }, [doctorId]);
 
-  // Get available days from doctor's availability (all slots combined)
   const getAvailableDays = useCallback((): string[] => {
     if (!doctor) return [];
     const availabilityArray = Array.isArray(doctor.availability)
       ? doctor.availability
       : [doctor.availability];
 
-    // Combine all days from all availability slots
+    // Combine all days from all availability slots for the selected hospital
     const allDays = new Set<string>();
-    availabilityArray.forEach((slot) => {
+    availabilityArray.forEach((slot: any) => {
+      const slotHospital = typeof slot.hospital === 'object' ? slot.hospital?.slug || slot.hospital?.name : slot.hospital;
+      if (selectedHospitalSlug && slotHospital !== selectedHospitalSlug) {
+        return;
+      }
+      
       if (slot?.days) {
         slot.days.forEach((day: string) => allDays.add(day));
       }
     });
     return Array.from(allDays);
-  }, [doctor]);
+  }, [doctor, selectedHospitalSlug]);
 
   // Helper function to get date string in YYYY-MM-DD format
   const getDateString = (date: Date): string => {
@@ -171,8 +192,9 @@ export default function BookAppointmentPage() {
     if (doctorId) {
       fetchDoctor();
       fetchAppointments();
+      fetchHospitals();
     }
-  }, [doctorId, fetchDoctor, fetchAppointments]);
+  }, [doctorId, fetchDoctor, fetchAppointments, fetchHospitals]);
 
   // Auto-populate user data from localStorage
   useEffect(() => {
@@ -282,8 +304,8 @@ export default function BookAppointmentPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!doctor?.hospital || !selectedDate) {
-      alert("Please select a date");
+    if (!selectedHospitalSlug || !selectedDate) {
+      alert("Please select a date and ensure hospital is selected.");
       return;
     }
 
@@ -291,31 +313,36 @@ export default function BookAppointmentPage() {
     try {
       const userData = typeof window !== "undefined" ? localStorage.getItem("user") : null;
       const user = userData ? JSON.parse(userData) : null;
+      
+      const selectedHospitalObj = hospitals.find(h => h.slug === selectedHospitalSlug || h.name === selectedHospitalSlug);
+      const hospitalName = selectedHospitalObj?.name || selectedHospitalSlug;
+      const hospitalBn = selectedHospitalObj?.nameBn || hospitalName;
 
       // Save booking data to localStorage and go to checkout page
       const checkoutData = {
         doctorId: doctor?._id || doctorId,
         doctorSlug: doctorId,
         doctor: {
-          _id: doctor._id,
-          name: doctor.name,
-          nameBn: doctor.nameBn,
-          specialty: doctor.specialty,
-          specialtyBn: doctor.specialtyBn,
-          qualification: doctor.qualification,
-          qualificationBn: doctor.qualificationBn,
-          designation: doctor.designation,
-          designationBn: doctor.designationBn,
-          hospital: doctor.hospital,
-          image: doctor.image,
-          availability: doctor.availability,
+          _id: doctor?._id,
+          name: doctor?.name,
+          nameBn: doctor?.nameBn,
+          specialty: doctor?.specialty,
+          specialtyBn: doctor?.specialtyBn,
+          qualification: doctor?.qualification,
+          qualificationBn: doctor?.qualificationBn,
+          designation: doctor?.designation,
+          designationBn: doctor?.designationBn,
+          image: doctor?.image,
+          availability: doctor?.availability,
         },
         patientName,
         mobileNumber,
         gender: gender || undefined,
         age: age ? parseInt(age) : undefined,
         patientType,
-        hospitalName: doctor.hospital,
+        hospitalName,
+        hospitalBn,
+        hospitalSlug: selectedHospitalSlug,
         appointmentDate: selectedDate.toISOString(),
         userId: user?._id || user?.id || undefined,
         affiliateCode: affiliateCode || undefined,
@@ -393,13 +420,20 @@ export default function BookAppointmentPage() {
                 {t('hospital')}
               </h2>
               <div className="relative">
-                {doctor.hospital || doctor.hospitalBn ? (
-                  <div className="p-4 bg-primary text-white rounded-xl border-2 border-primary shadow-lg">
-                    <p className="text-lg font-semibold flex items-center gap-2" >
-                      <Building2 className="h-5 w-5" />
-                      {language === 'bn' ? (doctor.hospitalBn || doctor.hospital) : doctor.hospital}
-                    </p>
-                  </div>
+                {selectedHospitalSlug ? (
+                  (() => {
+                    const hObj = hospitals.find(h => h.slug === selectedHospitalSlug || h.name === selectedHospitalSlug);
+                    const hName = hObj?.name || selectedHospitalSlug;
+                    const hNameBn = hObj?.nameBn || hName;
+                    return (
+                      <div className="p-4 bg-primary text-white rounded-xl border-2 border-primary shadow-lg">
+                        <p className="text-lg font-semibold flex items-center gap-2" >
+                          <Building2 className="h-5 w-5" />
+                          {language === 'bn' ? hNameBn : hName}
+                        </p>
+                      </div>
+                    );
+                  })()
                 ) : (
                   <p className="text-gray-500 p-4 bg-gray-50 rounded-xl" >
                     {t('noHospitalAssigned')}
@@ -409,7 +443,7 @@ export default function BookAppointmentPage() {
             </Card>
 
             {/* Calendar */}
-            {doctor.hospital && (
+            {selectedHospitalSlug && (
               <Card className="p-6 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
                 <h2
                   className="text-2xl font-bold text-gray-900 mb-5"
@@ -676,11 +710,11 @@ export default function BookAppointmentPage() {
                 </div>
 
                 {/* Validation Warning */}
-                {(!doctor.hospital || !selectedDate) && (
+                {(!selectedHospitalSlug || !selectedDate) && (
                   <div className="p-3 bg-yellow-50 border border-yellow-300 rounded-lg">
                     <p className="text-sm text-yellow-700" >
-                      {!doctor.hospital && "⚠️ " + t('noHospitalAssigned')}
-                      {!doctor.hospital && !selectedDate && " " + (language === 'en' ? "and" : "এবং") + " "}
+                      {!selectedHospitalSlug && "⚠️ " + t('noHospitalAssigned')}
+                      {!selectedHospitalSlug && !selectedDate && " " + (language === 'en' ? "and" : "এবং") + " "}
                       {!selectedDate && "⚠️ " + t('selectDateRequired')}
                     </p>
                   </div>
@@ -688,7 +722,7 @@ export default function BookAppointmentPage() {
 
                 <Button
                   type="submit"
-                  disabled={!doctor.hospital || !selectedDate || !patientName || !mobileNumber || submitting}
+                  disabled={!selectedHospitalSlug || !selectedDate || !patientName || !mobileNumber || submitting}
                   className="w-full bg-gradient-to-r from-primary to-orange-600 hover:from-orange-600 hover:to-primary text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting ? (

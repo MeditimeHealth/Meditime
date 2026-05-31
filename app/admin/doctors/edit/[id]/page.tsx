@@ -15,21 +15,13 @@ import Image from "next/image";
 import { Plus, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 const doctorSchema = z.object({
   name: z.string().optional(),
   specialty: z.string().optional(),
   qualification: z.string().optional(),
   designation: z.string().optional(),
-
-  hospital: z.string().optional(),
-  hospitalBn: z.string().optional(),
-  division: z.string().optional(),
-  divisionBn: z.string().optional(),
-  district: z.string().optional(),
-  districtBn: z.string().optional(),
-  thana: z.string().optional(),
-  thanaBn: z.string().optional(),
 
   department: z.string().optional(),
   departmentBn: z.string().optional(),
@@ -57,6 +49,7 @@ const doctorSchema = z.object({
     daysBn: z.array(z.string()).optional(),
     time: z.string().optional(),
     timeBn: z.string().optional(),
+    hospital: z.string().min(1, "Hospital is required"),
   })).min(1, "Add at least one availability slot"),
 }).refine((data) => data.name || data.nameBn, {
   message: "Name (English or Bangla) is required",
@@ -93,6 +86,7 @@ interface AvailabilitySlot {
   daysBn?: string[];
   time: string;
   timeBn?: string;
+  hospital: string;
 }
 
 export default function EditDoctorPage() {
@@ -138,7 +132,7 @@ export default function EditDoctorPage() {
   const [filteredThanas, setFilteredThanas] = useState<any[]>([]);
 
   const [availabilitySlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>([
-    { days: [], time: "" },
+    { days: [], time: "", hospital: "" },
   ]);
 
   const {
@@ -159,14 +153,6 @@ export default function EditDoctorPage() {
       qualificationBn: "",
       designation: "",
       designationBn: "",
-      hospital: "",
-      hospitalBn: "",
-      division: "",
-      divisionBn: "",
-      district: "",
-      districtBn: "",
-      thana: "",
-      thanaBn: "",
       department: "",
       departmentBn: "",
       reportShowFee: 0,
@@ -178,7 +164,7 @@ export default function EditDoctorPage() {
       bio: "",
       bioBn: "",
       image: "",
-      availabilitySlots: [{ days: [], time: "", timeBn: "" }],
+      availabilitySlots: [{ days: [], time: "", timeBn: "", hospital: "" }],
     },
   });
   const fetchHospitals = async (searchValue: string = "", pageToLoad = 1) => {
@@ -281,108 +267,47 @@ export default function EditDoctorPage() {
 
 
   // Handle click outside to close dropdown
+  const [duplicateMatches, setDuplicateMatches] = useState<any[]>([]);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+
+  const watchName = watch("name");
+  const watchNameBn = watch("nameBn");
+  const watchDesignation = watch("designation");
+  const watchSpecialty = watch("specialty");
+  const watchQualification = watch("qualification");
+
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        hospitalDropdownRef.current &&
-        !hospitalDropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowHospitalDropdown(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  // Removed buggy hospitalSearchTerm update on language toggle
-
-  // Handle hospital selection - auto-populate location
-  const handleHospitalSelect = async (hospitalName: string) => {
-    setSelectedHospitalName(hospitalName);
-    setValue("hospital", hospitalName);
-    setShowHospitalDropdown(false);
-
-    const selectedHospital = availableHospitals.find(h => h.name === hospitalName) || hospitals.find(h => h.name === hospitalName);
-    const hospitalBn = selectedHospital?.nameBn || "";
-    setValue("hospitalBn", hospitalBn);
-    setHospitalSearchTerm(language === 'bn' && hospitalBn ? hospitalBn : hospitalName);
-
-    if (!hospitalName || !selectedHospital || !selectedHospital.thana) return;
-
-    try {
-      const thanaId = selectedHospital.thana?._id || selectedHospital.thana;
-      
-      // First try to find in already-loaded data
-      let thana = thanas.find(t => t._id === thanaId);
-      if (!thana) {
-        // Fetch thana data if not in loaded data
-        const thanaRes = await fetch(`/api/locations/thanas/${thanaId}`);
-        if (!thanaRes.ok) throw new Error(`Failed to fetch thana: ${thanaRes.status}`);
-        const thanaData = await thanaRes.json();
-        thana = thanaData.thana || thanaData;
-      }
-      
-      if (!thana) return;
-      
-      const thanaName = thana.name || "";
-      const thanaBnName = thana.nameBn || thana.bangla || thanaName;
-      
-      setValue("thana", thanaName);
-      setValue("thanaBn", thanaBnName);
-      
-      // Get district
-      const districtId = thana.district?._id || thana.district;
-      if (districtId) {
-        let district = districts.find(d => d._id === districtId);
-        if (!district) {
-          // Fetch district data if not in loaded data
-          const districtRes = await fetch(`/api/locations/districts/${districtId}`);
-          if (!districtRes.ok) throw new Error(`Failed to fetch district: ${districtRes.status}`);
-          const districtData = await districtRes.json();
-          district = districtData.district || districtData;
-        }
-        
-        if (district) {
-          const districtName = district.name || "";
-          const districtBnName = district.nameBn || district.bangla || districtName;
-          
-          setValue("district", districtName);
-          setValue("districtBn", districtBnName);
-          
-          // Get division
-          const divisionId = district.division?._id || district.division;
-          if (divisionId) {
-            let division = divisions.find(d => d._id === divisionId);
-            if (!division) {
-              // Fetch division data if not in loaded data
-              const divisionRes = await fetch(`/api/locations/divisions/${divisionId}`);
-              if (!divisionRes.ok) throw new Error(`Failed to fetch division: ${divisionRes.status}`);
-              const divisionData = await divisionRes.json();
-              division = divisionData.division || divisionData;
-            }
-            
-            if (division) {
-              const divisionName = division.name || "";
-              const divisionBnName = division.nameBn || division.bangla || divisionName;
-              
-              setValue("division", divisionName);
-              setValue("divisionBn", divisionBnName);
+    const checkDuplicates = async () => {
+      const n = watchName || watchNameBn;
+      if (n && watchDesignation && watchSpecialty && watchQualification && doctorId) {
+        try {
+          const res = await fetch("/api/doctors/check-duplicate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: n,
+              designation: watchDesignation,
+              specialty: watchSpecialty,
+              qualification: watchQualification,
+              excludeId: doctorId
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.matches && data.matches.length > 0) {
+              setDuplicateMatches(data.matches);
+              setShowDuplicateModal(true);
             }
           }
+        } catch (error) {
+          console.error("Duplicate check error", error);
         }
       }
-    } catch (error) {
-      console.error("Error auto-populating location:", error);
-    }
-  };
-
-  const loadMoreHospitals = () => {
-    if (isHospitalLoading || !hasMoreHospitals) return;
-    fetchHospitals(hospitalSearchTerm, hospitalPage + 1);
-  };
+    };
+    
+    const timeoutId = setTimeout(checkDuplicates, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [watchName, watchNameBn, watchDesignation, watchSpecialty, watchQualification, doctorId]);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -437,34 +362,7 @@ export default function EditDoctorPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doctorId]);
 
-  const selectedDivision = watch("division");
-  const selectedDistrict = watch("district");
 
-  useEffect(() => {
-    if (selectedDivision) {
-      const division = divisions.find(d => d.name === selectedDivision);
-      if (division) {
-        setFilteredDistricts(districts.filter(d => d.division?._id === division._id || d.division === division._id));
-      } else {
-        setFilteredDistricts([]);
-      }
-    } else {
-      setFilteredDistricts(districts);
-    }
-  }, [selectedDivision, divisions, districts]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
-      const district = districts.find(d => d.name === selectedDistrict);
-      if (district) {
-        setFilteredThanas(thanas.filter(t => t.district?._id === district._id || t.district === district._id));
-      } else {
-        setFilteredThanas([]);
-      }
-    } else {
-      setFilteredThanas(thanas);
-    }
-  }, [selectedDistrict, districts, thanas]);
 
   const fetchDoctor = async (loadedDiseases?: any[]) => {
     try {
@@ -483,6 +381,7 @@ export default function EditDoctorPage() {
             daysBn: Array.isArray(slot.daysBn) ? slot.daysBn : [],
             time: slot.time || (slot.startTime && slot.endTime ? `${slot.startTime} - ${slot.endTime}` : "") || "",
             timeBn: slot.timeBn || "",
+            hospital: typeof slot.hospital === 'object' ? (slot.hospital.slug || slot.hospital.name || "") : (slot.hospital || ""),
           }));
         } else if (doctor.availability) {
           availabilityArray = [{
@@ -490,11 +389,12 @@ export default function EditDoctorPage() {
             daysBn: Array.isArray(doctor.availability.daysBn) ? doctor.availability.daysBn : [],
             time: doctor.availability.time || (doctor.availability.startTime && doctor.availability.endTime ? `${doctor.availability.startTime} - ${doctor.availability.endTime}` : "") || "",
             timeBn: doctor.availability.timeBn || "",
+            hospital: typeof doctor.availability.hospital === 'object' ? (doctor.availability.hospital.slug || doctor.availability.hospital.name || "") : (doctor.availability.hospital || ""),
           }];
         }
 
         if (availabilityArray.length === 0) {
-          availabilityArray = [{ days: [], time: "", timeBn: "" }];
+          availabilityArray = [{ days: [], time: "", timeBn: "", hospital: "" }];
         }
 
         setAvailabilitySlots(availabilityArray);
@@ -519,15 +419,6 @@ export default function EditDoctorPage() {
           designation: doctor.designation || "",
           designationBn: doctor.designationBn || "",
 
-          hospital: doctor.hospital || "",
-          hospitalBn: doctor.hospitalBn || "",
-          division: doctor.division || "",
-          divisionBn: doctor.divisionBn || "",
-          district: doctor.district || "",
-          districtBn: doctor.districtBn || "",
-          thana: doctor.thana || "",
-          thanaBn: doctor.thanaBn || "",
-
           department: doctor.department || "",
           departmentBn: doctor.departmentBn || "",
           reportShowFee: doctor.reportShowFee || 0,
@@ -550,11 +441,7 @@ export default function EditDoctorPage() {
           setImagePreview(doctor.image);
         }
 
-        if (doctor.hospital) {
-          setSelectedHospitalName(doctor.hospital);
-          const initialSearchTerm = language === 'bn' && doctor.hospitalBn ? doctor.hospitalBn : doctor.hospital;
-          setHospitalSearchTerm(initialSearchTerm);
-        }
+
       } else {
         alert(data.error || "Failed to fetch doctor data");
         router.push("/admin/doctors");
@@ -572,7 +459,7 @@ export default function EditDoctorPage() {
 
   // Add new availability slot
   const addAvailabilitySlot = () => {
-    const newSlot = { days: [], time: "", timeBn: "" };
+    const newSlot = { days: [], time: "", timeBn: "", hospital: "" };
     setAvailabilitySlots([...availabilitySlots, newSlot]);
     setValue("availabilitySlots", [...availabilitySlots, newSlot]);
   };
@@ -599,10 +486,16 @@ export default function EditDoctorPage() {
     setValue("availabilitySlots", updated);
   };
 
-  // Update time for a specific slot
   const updateSlotTime = (slotIndex: number, value: string) => {
     const updated = [...availabilitySlots];
     updated[slotIndex].time = value;
+    setAvailabilitySlots(updated);
+    setValue("availabilitySlots", updated);
+  };
+
+  const updateSlotHospital = (slotIndex: number, value: string) => {
+    const updated = [...availabilitySlots];
+    updated[slotIndex].hospital = value;
     setAvailabilitySlots(updated);
     setValue("availabilitySlots", updated);
   };
@@ -683,9 +576,6 @@ export default function EditDoctorPage() {
 
       const { availabilitySlots, ...doctorData } = data;
 
-      const selectedHospital = hospitals.find(h => h.name === data.hospital);
-      const hospitalBn = selectedHospital?.nameBn || data.hospitalBn || "";
-
       const availabilityWithDaysBn = availabilitySlots?.map(slot => {
         const daysBn = slot.days.map(day => {
           const index = daysOfWeek.indexOf(day);
@@ -707,7 +597,6 @@ export default function EditDoctorPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...doctorData,
-          hospitalBn,
           image: imageUrl || undefined,
           availability: availabilityWithDaysBn,
 
@@ -716,9 +605,6 @@ export default function EditDoctorPage() {
           qualificationBn: data.qualificationBn,
           designationBn: data.designationBn,
           bioBn: data.bioBn,
-          divisionBn: data.divisionBn,
-          districtBn: data.districtBn,
-          thanaBn: data.thanaBn,
           departmentBn: data.departmentBn,
           reportShowFeeBn: data.reportShowFeeBn,
           newPatientFeeBn: data.newPatientFeeBn,
@@ -922,164 +808,7 @@ export default function EditDoctorPage() {
 
 
 
-            {/* Location Selection Section */}
-            <div className="md:col-span-2">
-              <Label className="mb-2 block font-semibold text-gray-900">
-                {language === 'bn' ? 'অবস্থান এবং হাসপাতাল' : 'Location & Hospital'}
-              </Label>
-            </div>
 
-            <div className="relative" ref={hospitalDropdownRef}>
-              <Label htmlFor="hospital">{t("hospitalName", language)}</Label>
-              <Input
-                id="hospital"
-                type="text"
-                placeholder={t("selectHospital", language)}
-                value={hospitalSearchTerm}
-                onChange={(e) => {
-                  setHospitalSearchTerm(e.target.value);
-                  setShowHospitalDropdown(true);
-                  if (!e.target.value) {
-                    setSelectedHospitalName("");
-                    setValue("hospital", "");
-                  }
-                }}
-                onFocus={() => setShowHospitalDropdown(true)}
-                className="mt-1"
-                autoComplete="off"
-              />
-              {showHospitalDropdown && (
-                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                  {isHospitalLoading && availableHospitals.length === 0 ? (
-                    <div className="p-3 text-sm text-gray-500 text-center">
-                      Loading hospitals...
-                    </div>
-                  ) : availableHospitals.length === 0 ? (
-                    <div className="p-3 text-sm text-gray-500 text-center">
-                      No hospitals found
-                    </div>
-                  ) : (
-                    <>
-                      {availableHospitals.map((hosp) => (
-                        <div
-                          key={hosp._id}
-                          onClick={() => handleHospitalSelect(hosp.name)}
-                          className={`px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm ${selectedHospitalName === hosp.name ? "bg-primary/10" : ""
-                            }`}
-                        >
-                          {language === 'bn' && hosp.nameBn ? hosp.nameBn : hosp.name}
-                        </div>
-                      ))}
-                      {hasMoreHospitals && (
-                        <div className="border-t border-gray-200 p-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="w-full"
-                            onClick={loadMoreHospitals}
-                            disabled={isHospitalLoading}
-                          >
-                            {isHospitalLoading ? "Loading..." : "Load more hospitals"}
-                          </Button>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="division">
-                {language === 'bn' ? 'বিভাগ' : 'Division'}
-              </Label>
-              <select
-                id="division"
-                {...register("division")}
-                onChange={(e) => {
-                  setValue("division", e.target.value);
-                  const div = divisions.find(d => d.name === e.target.value);
-                  if (div) {
-                    setValue("divisionBn", div.nameBn || "");
-                  } else {
-                    setValue("divisionBn", "");
-                  }
-                  // Reset child fields
-                  setValue("district", "");
-                  setValue("districtBn", "");
-                  setValue("thana", "");
-                  setValue("thanaBn", "");
-                }}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-              >
-                <option value="">{language === 'bn' ? 'বিভাগ নির্বাচন করুন' : 'Select Division'}</option>
-                {divisions.map((d) => (
-                  <option key={d._id} value={d.name}>
-                    {language === 'bn' && d.nameBn ? d.nameBn : d.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <Label htmlFor="district">
-                {language === 'bn' ? 'জেলা' : 'District'}
-              </Label>
-              <select
-                id="district"
-                {...register("district")}
-                onChange={(e) => {
-                  setValue("district", e.target.value);
-                  const dist = districts.find(d => d.name === e.target.value);
-                  if (dist) {
-                    setValue("districtBn", dist.nameBn || "");
-                  } else {
-                    setValue("districtBn", "");
-                  }
-                  // Reset child field
-                  setValue("thana", "");
-                  setValue("thanaBn", "");
-                }}
-                disabled={!selectedDivision}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-              >
-                <option value="">{language === 'bn' ? 'জেলা নির্বাচন করুন' : 'Select District'}</option>
-                {filteredDistricts.map((d) => (
-                  <option key={d._id} value={d.name}>
-                    {language === 'bn' && d.nameBn ? d.nameBn : d.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <Label htmlFor="thana">
-                {language === 'bn' ? 'উপজেলা/থানা' : 'Thana/Upazila'}
-              </Label>
-              <select
-                id="thana"
-                {...register("thana")}
-                onChange={(e) => {
-                  setValue("thana", e.target.value);
-                  const thanaObj = thanas.find(t => t.name === e.target.value);
-                  if (thanaObj) {
-                    setValue("thanaBn", thanaObj.nameBn || "");
-                  } else {
-                    setValue("thanaBn", "");
-                  }
-                }}
-                disabled={!selectedDistrict}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-              >
-                <option value="">{language === 'bn' ? 'থানা নির্বাচন করুন' : 'Select Thana'}</option>
-                {filteredThanas.map((t) => (
-                  <option key={t._id} value={t.name}>
-                    {language === 'bn' && t.nameBn ? t.nameBn : t.name}
-                  </option>
-                ))}
-              </select>
-            </div>
 
             <div>
               <Label htmlFor="department">
@@ -1365,6 +1094,28 @@ export default function EditDoctorPage() {
                 <div className="space-y-4">
                   <div>
                     <Label className="mb-2 block">
+                      {t("hospitalName", language)} <span className="text-red-500">*</span>
+                    </Label>
+                    <select
+                      value={slot.hospital || ""}
+                      onChange={(e) => updateSlotHospital(slotIndex, e.target.value)}
+                      className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                    >
+                      <option value="">{t("selectHospital", language)}</option>
+                      {hospitals.map((h) => (
+                        <option key={h._id} value={h.slug || h.name}>
+                          {language === 'bn' && h.nameBn ? h.nameBn : h.name}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.availabilitySlots?.[slotIndex]?.hospital && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {errors.availabilitySlots[slotIndex]?.hospital?.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="mb-2 block">
                       {t("selectDays", language)} <span className="text-red-500">*</span>
                     </Label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -1476,6 +1227,39 @@ export default function EditDoctorPage() {
           </div>
         </form>
       </Card>
+
+      <Dialog open={showDuplicateModal} onOpenChange={setShowDuplicateModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Similar Doctor Found</DialogTitle>
+            <DialogDescription>
+              We found doctors with very similar details. Are you sure you want to update?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 my-4 max-h-[60vh] overflow-y-auto">
+            {duplicateMatches.map((match) => (
+              <div key={match._id} className="p-3 border rounded-lg">
+                <p className="font-semibold">{match.name}</p>
+                <p className="text-sm text-gray-600">{match.specialty} | {match.designation}</p>
+                <div className="mt-2 text-xs text-gray-500">Similarity: {match.similarity}%</div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-2"
+                  onClick={() => router.push(`/admin/doctors/edit/${match._id}`)}
+                >
+                  Edit This Doctor Instead
+                </Button>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDuplicateModal(false)}>
+              Update Anyway
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
