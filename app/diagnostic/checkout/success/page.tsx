@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Navbar from "@/components/navbar";
+import Navbar_for_details from "@/components/nav_for_details";
 import { ArrowLeft, Loader2, CheckCircle2, Download } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "@/lib/toast";
@@ -153,7 +153,7 @@ export default function DiagnosticSuccessPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <Navbar />
+      <Navbar_for_details />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         

@@ -41,7 +41,7 @@ export const generateDiagnosticBookingPDF = async (booking: DiagnosticBookingRec
         });
       };
 
-      const logoImg = await loadImage('/logo.png').catch(() => null);
+      const logoImg = await loadImage('/SVG/asset-3.png').catch(() => null);
       if (logoImg) {
         const logoWidth = 35; 
         const logoHeight = (logoImg.height * logoWidth) / logoImg.width;

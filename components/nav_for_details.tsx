@@ -148,14 +148,10 @@ export default function Nav_for_details() {
               className="transition-all duration-300"
             >
               <Link href="/" onClick={() => setMobileMenuOpen(false)}>
-                <Image
-                  src="/logo.png"
+                <img
+                  src="/SVG/asset-3.svg"
                   alt="Logo"
-                  width={120}
-                  height={120}
                   className="h-8 sm:h-8 md:h-8 w-auto cursor-pointer"
-                  style={{ width: "auto", height: "auto" }}
-                  priority
                 />
               </Link>
             </motion.div>
@@ -221,11 +217,7 @@ export default function Nav_for_details() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleLanguage}
-                className={`flex items-center justify-center w-[75px] px-5 py-2.5 gap-[4px] rounded-[8px] text-xs font-medium shrink-0 transition-all ${
-                  scrolled
-                    ? "bg-white text-primary hover:bg-primary/20"
-                    : "bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
-                }`}
+                className={`flex items-center justify-center w-[75px] px-5 py-2.5 gap-[4px] rounded-[8px] text-xs font-medium shrink-0 transition-all bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm`}
                 title={language === 'en' ? 'Switch to Bangla' : 'Switch to English'}
               >
                 {language === 'en' ? 'বাংলা' : 'English'}
@@ -235,7 +227,7 @@ export default function Nav_for_details() {
                 <>
                   <Link
                     href="/user/dashboard"
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all hover:scale-105 active:scale-95"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-[var--background-dark] transition-all hover:scale-105 active:scale-95"
                   >
                     <Activity className="h-4 w-4" />
                     {language === 'bn' ? 'ড্যাশবোর্ড' : 'Dashboard'}

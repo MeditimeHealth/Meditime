@@ -177,9 +177,11 @@ function AppointmentDetailsContent() {
         >
           {/* Slip Header - Gradient from success page */}
           <div className="bg-gradient-to-r from-[#00B7B5] to-teal-600 px-6 py-6 text-center">
-            <h3 className="font-bold text-2xl text-white tracking-tight">
-              MediTime
-            </h3>
+            <div className="flex justify-center mb-4">
+              <div className="bg-white p-2 rounded-xl">
+                <img src="/SVG/asset-3.svg" alt="MediTime Logo" className="h-8 w-auto" />
+              </div>
+            </div>
             <p className="text-white/80 text-sm font-bold uppercase tracking-wider mt-1">
               Appointment Slip
             </p>
@@ -424,6 +426,11 @@ function AppointmentDetailsContent() {
             margin-left: 0 !important;
             padding: 0 !important;
             width: 100% !important;
+          }
+
+          main > div {
+            padding: 0 !important;
+            margin: 0 !important;
           }
 
           .min-h-screen, .max-w-2xl {

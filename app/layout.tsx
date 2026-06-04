@@ -19,6 +19,9 @@ import { FaWhatsapp } from "react-icons/fa";
 export const metadata: Metadata = {
   title: "Book Doctors, Tests & Hospital Appointments Online | Medi Time",
   description: "Book appointments with top doctors, diagnostic tests, and hospitals near you. Fast, easy, and trusted healthcare booking platform in Bangladesh.",
+  icons: {
+    icon: "/SVG/asset-8.svg",
+  },
 };
 
 export default function RootLayout({

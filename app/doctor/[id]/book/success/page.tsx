@@ -228,15 +228,11 @@ function BookingSuccessContent() {
           >
             {/* Slip Header */}
             <div className="bg-[var(--color-primary)] px-6 py-6 text-center">
-             <div className="p-2 bg-white w-fit h-fit rounded-full mx-auto justify-center items-center flex h-16 w-16">
-                <Image
-                src="/logo.png"
-                alt="Meditime Logo"
-                width={100}
-                height={100}
-                className="mx-auto"
-              />
-             </div>
+            <div className="flex justify-center mb-4">
+              <div className="bg-white p-2 rounded-xl">
+                <img src="/SVG/asset-3.svg" alt="MediTime Logo" className="h-8 w-auto" />
+              </div>
+            </div>
             
               <p className="text-white/80 text-sm font-bold uppercase tracking-wider mt-1">
                 Appointment Slip
@@ -512,7 +508,7 @@ function BookingSuccessContent() {
           #appointment-slip-wrapper {
             display: block !important;
             margin: 0 !important;
-            padding: 5mm !important;
+            padding: 0 !important;
             width: 100% !important;
           }
 
