@@ -183,6 +183,7 @@ function CheckoutContent() {
           hospitalName: booking.hospitalName,
           hospitalSlug: booking.hospitalSlug,
           appointmentDate: booking.appointmentDate,
+          appointmentTime: booking.appointmentTime,
           userId: booking.userId,
           affiliateCode: booking.affiliateCode,
         }),
@@ -366,6 +367,7 @@ function CheckoutContent() {
                     </p>
                     <p className="font-semibold text-slate-800 text-sm mt-0.5" style={fontStyle}>
                       {formatDate(booking.appointmentDate, language)}
+                      {booking.appointmentTime && ` • ${booking.appointmentTime}`}
                     </p>
                   </div>
                 </div>
@@ -525,7 +527,7 @@ function CheckoutContent() {
             disabled={!agreed || submitting}
             className={`sm:flex-[2] font-bold py-3 text-base shadow-lg transition-all duration-300 ${
               agreed && !submitting
-                ? "bg-gradient-to-r from-primary to-orange-500 hover:from-orange-500 hover:to-primary text-white hover:shadow-xl"
+                ? "btn-primary btn-slide"
                 : "bg-slate-200 text-slate-400 cursor-not-allowed"
             }`}
             style={fontStyle}

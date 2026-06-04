@@ -184,7 +184,7 @@ export default function Navbar() {
                           language === 'bn' 
                             ? "text-[13px] xl:text-[15px] font-bold" 
                             : "text-[11px] xl:text-[13px] font-semibold"
-                        } uppercase whitespace-nowrap text-center ${
+                        }  whitespace-nowrap text-center ${
                           isActive
                             ? scrolled ? "text-primary" : "text-primary"
                             : scrolled ? "text-white   group-hover:text-primary" : "text-white group-hover:text-yellow-300"

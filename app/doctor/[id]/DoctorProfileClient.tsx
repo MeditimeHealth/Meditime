@@ -55,6 +55,16 @@ const getBengaliDay = (day: string): string => {
   return index >= 0 ? banglaDays[index] : day;
 };
 
+const areDaysConsecutive = (sortedDays: string[]): boolean => {
+  if (sortedDays.length <= 1) return true;
+  for (let i = 1; i < sortedDays.length; i++) {
+    const prevIndex = daysOfWeek.indexOf(sortedDays[i - 1]);
+    const currIndex = daysOfWeek.indexOf(sortedDays[i]);
+    if (currIndex - prevIndex !== 1) return false;
+  }
+  return true;
+};
+
 export default function DoctorProfilePage() {
   const params = useParams();
   const router = useRouter();
@@ -66,6 +76,7 @@ export default function DoctorProfilePage() {
 
   const [departmentDiseases, setDepartmentDiseases] = useState<Array<{ name: string, bangla: string }>>([]);
   const [departmentInfo, setDepartmentInfo] = useState<{ name: string, nameBn?: string } | null>(null);
+  const [selectedSlotIndex, setSelectedSlotIndex] = useState<number>(0);
   const { language } = useLanguage();
 
   useEffect(() => {
@@ -171,12 +182,12 @@ export default function DoctorProfilePage() {
   const calculateRelevanceScore = (currentDoc: IDoctor, otherDoc: IDoctor): number => {
     let score = 0;
     if (otherDoc.department === currentDoc.department) score += 10;
-    
+
     const currentHospitals = new Set(currentDoc.availability?.map(slot => slot.hospital).filter(Boolean) || []);
     const otherHospitals = otherDoc.availability?.map(slot => slot.hospital).filter(Boolean) || [];
     const sharesHospital = otherHospitals.some(h => currentHospitals.has(h));
     if (sharesHospital) score += 5;
-    
+
     return score;
   };
 
@@ -268,14 +279,40 @@ export default function DoctorProfilePage() {
     ...doctor,
     // hospitalBn: hospitals.find(h => h.name === doctor.hospital)?.nameBn || doctor.hospitalBn || ""
   };
-  
-  // Group availability by hospital
-  const groupedAvailability = availabilityArray.reduce((acc, slot) => {
-    const h = slot.hospital || "unknown";
-    if (!acc[h]) acc[h] = [];
-    acc[h].push(slot);
-    return acc;
-  }, {} as Record<string, typeof availabilityArray>);
+
+  const formatSlot = (slot: any): string => {
+    const sortedDays = (slot.days || []).sort((a: string, b: string) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b));
+    if (!sortedDays.length) return "";
+
+    const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
+    const isOnCall = time === "On Call" || time === "অন কল";
+
+    if (isOnCall) return time;
+
+    const consecutive = areDaysConsecutive(sortedDays);
+
+    if (language === 'bn') {
+      const getBnDay = (d: string) => {
+        if ((slot as any).daysBn && Array.isArray((slot as any).daysBn) && (slot as any).daysBn.length === slot.days.length) {
+          const idx = slot.days.indexOf(d);
+          if (idx !== -1 && (slot as any).daysBn[idx]) return (slot as any).daysBn[idx];
+        }
+        return getBengaliDay(d);
+      };
+
+      if (sortedDays.length === 1) return `${getBnDay(sortedDays[0])} ${time}`;
+      if (consecutive) {
+        return `${getBnDay(sortedDays[0])} থেকে ${getBnDay(sortedDays[sortedDays.length - 1])} ${time}`;
+      }
+      return `${sortedDays.map((d: string) => getBnDay(d)).join(", ")} ${time}`;
+    } else {
+      if (sortedDays.length === 1) return `${sortedDays[0]} ${time}`;
+      if (consecutive) {
+        return `${sortedDays[0]} to ${sortedDays[sortedDays.length - 1]} ${time}`;
+      }
+      return `${sortedDays.join(", ")} ${time}`;
+    }
+  };
 
   const fees = [doctor.newPatientFee, doctor.reportShowFee].filter(f => f !== undefined && f !== null && f > 0) as number[];
   const minFee = fees.length > 0 ? Math.min(...fees) : doctor.newPatientFee;
@@ -518,17 +555,19 @@ export default function DoctorProfilePage() {
                     )}
 
                     <div className="flex items-start gap-2 pt-1 flex-wrap">
-                      <Building2 className="h-5 w-5 text-primary shrink-0 mt-1" />
                       <div className="flex flex-col">
-                        {Object.keys(groupedAvailability).map((hSlug, i) => {
+                        {Array.from(new Set(availabilityArray.map((s: any) => s.hospital).filter(Boolean))).map((hSlug: any, i) => {
                           const hObj = hospitals.find(h => h.name === hSlug || (h as any).slug === hSlug);
                           const hName = hObj?.name || hSlug;
                           const hNameBn = hObj?.nameBn || hName;
-                          if (hSlug === 'unknown') return null;
                           return (
-                            <p key={i} className="md:text-lg font-bold text-gray-800">
-                              {language === 'bn' ? hNameBn : hName}
-                            </p>
+                            <div key={i} className="flex gap-2 ">
+                              <Building2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+
+                              <p className="md:text-lg font-bold text-gray-800">
+                                {language === 'bn' ? hNameBn : hName}
+                              </p>
+                            </div>
                           );
                         })}
                       </div>
@@ -611,22 +650,75 @@ export default function DoctorProfilePage() {
 
           {/* Right Column - Desktop */}
           <div className="hidden lg:block space-y-6">
+
+            <Card id="schedule" className="p-6 bg-gradient-to-br from-white to-indigo-50/50 border-2 border-primary/20 shadow-xl ">
+              <h2 className="text-xl md:text-2xl font-bold mb-5 text-gray-900 flex items-center gap-2">
+                <Building2 className="h-6 w-6 text-primary" />
+                {language === 'bn' ? 'চেম্বার নির্বাচন করুন' : 'Select Chamber'}
+              </h2>
+              <div className="space-y-4">
+                {availabilityArray.map((slot: any, index: number) => {
+                  const hospitalSlug = slot.hospital || "unknown";
+                  const hObj = hospitals.find(h => h.name === hospitalSlug || (h as any).slug === hospitalSlug);
+                  const hospitalName = hObj?.name || hospitalSlug;
+                  const hospitalBnName = hObj?.nameBn || hospitalName;
+                  const isSelected = selectedSlotIndex === index;
+                  const formattedText = formatSlot(slot);
+
+                  return (
+                    <div
+                      key={index}
+                      onClick={() => setSelectedSlotIndex(index)}
+                      className={`p-5 border-2 transition-all duration-300 cursor-pointer select-none relative flex flex-col gap-3 group ${
+                        isSelected
+                          ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/5 scale-[1.01]"
+                          : "border-gray-100 bg-white hover:border-primary/30 hover:bg-gray-50/50 shadow-sm"
+                      }`}
+                    >
+                      {hospitalSlug !== 'unknown' && (
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-2.5">
+                            <MapPin className={`h-5 w-5 shrink-0 transition-colors ${isSelected ? 'text-primary' : 'text-gray-400 group-hover:text-primary/70'}`} />
+                            <p className={`md:text-lg font-extrabold transition-colors ${isSelected ? 'text-primary' : 'text-gray-800'}`}>
+                              {language === 'bn' ? hospitalBnName : hospitalName}
+                            </p>
+                          </div>
+                          {/* Custom Radio Button */}
+                          <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                            isSelected ? 'border-primary bg-primary/10 scale-110' : 'border-gray-300 bg-white'
+                          }`}>
+                            {isSelected && (
+                              <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      <div className="space-y-2 pl-7">
+                        <div className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-colors ${
+                          isSelected ? 'bg-primary/5' : 'bg-gray-50'
+                        }`}>
+                          <Clock className={`h-4 w-4 shrink-0 mt-0.5 ${isSelected ? 'text-primary' : 'text-gray-400'}`} />
+                          <span className={`text-sm font-bold ${isSelected ? 'text-primary-dark' : 'text-gray-600'}`}>
+                            {formattedText}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+
             {/* Book Appointment */}
-            <div >
-              {/* <h2
-                className="text-xl md:text-2xl font-bold  mb-5"
-                
-              >
-                অ্যাপয়েন্টমেন্ট বুক করুন
-              </h2> */}
+            <div>
               <div className="space-y-5">
-                <a href="#schedule">
+                <Link href={`/doctor/${doctorId}/book?slotIndex=${selectedSlotIndex}`}>
                   <Button
-                    className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-6 shadow-lg hover:shadow-xl transition-all"
+                    className="w-full btn-primary btn-slide h-12"
                   >
                     {language === 'bn' ? 'বুক অ্যাপয়েন্টমেন্ট' : 'Book Appointment'}
                   </Button>
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -665,67 +757,7 @@ export default function DoctorProfilePage() {
             </Card>
 
             {/* Hospital Schedule */}
-            <Card id="schedule" className="p-6 bg-gradient-to-br from-white to-indigo-50 border-2 border-primary/20 shadow-xl">
-              <h2 className="text-xl md:text-2xl font-bold mb-5">
-                {language === 'bn' ? 'চেম্বার সময়সূচি' : 'Chamber Schedule'}
-              </h2>
-              <div className="space-y-5">
-                {Object.entries(groupedAvailability).map(([hospitalSlug, slots], groupIndex) => {
-                  const hObj = hospitals.find(h => h.name === hospitalSlug || (h as any).slug === hospitalSlug);
-                  const hospitalName = hObj?.name || hospitalSlug;
-                  const hospitalBnName = hObj?.nameBn || hospitalName;
 
-                  return (
-                    <div key={groupIndex} className="bg-white p-5 rounded-xl border-2 border-primary/10 shadow-md">
-                      {hospitalSlug !== 'unknown' && (
-                        <div className="mb-4 flex items-start justify-between gap-4">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="h-5 w-5 text-primary shrink-0" />
-                            <p className="md:text-lg font-bold text-gray-800">
-                              {language === 'bn' ? hospitalBnName : hospitalName}
-                            </p>
-                          </div>
-                          <Link href={`/doctor/${doctorId}/book?hospital=${encodeURIComponent(hospitalSlug)}`}>
-                            <Button size="sm" className="bg-primary text-white hover:bg-primary/90 whitespace-nowrap">
-                              {language === 'bn' ? 'বুক করুন' : 'Book'}
-                            </Button>
-                          </Link>
-                        </div>
-                      )}
-                      <div className="space-y-2">
-                        {slots.map((slot, index) => {
-                          const sortedDays = (slot.days || []).sort((a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b));
-                          const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
-                          const isOnCall = time === "On Call" || time === "অন কল";
-
-                          let dayRange = "";
-                          if (!isOnCall && sortedDays.length > 0) {
-                            if (language === 'bn') {
-                              dayRange = sortedDays.length === 1
-                                ? getBengaliDay(sortedDays[0])
-                                : `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])}`;
-                            } else {
-                              dayRange = sortedDays.length === 1
-                                ? sortedDays[0]
-                                : `${sortedDays[0]} to ${sortedDays[sortedDays.length - 1]}`;
-                            }
-                          }
-
-                          return (
-                            <div key={index} className="flex items-start gap-2 p-3 bg-gray-50 rounded-2xl">
-                              <Clock className="h-4 w-4 text-primary shrink-0 mt-1" />
-                              <span className="text-sm md: font-semibold ">
-                                {dayRange} {time}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </Card>
 
             {/* Doctor Rating */}
             {/* {doctor.rating && doctor.rating > 0 && (
@@ -777,7 +809,7 @@ export default function DoctorProfilePage() {
             {/* Fees Section - Mobile */}
             <Card className="overflow-hidden border-2 border-primary/20 shadow-xl">
               <div className="bg-primary p-4 flex items-center justify-center gap-3">
-          
+
                 <h2 className="text-xl md:text-2xl font-bold text-white">
                   {language === 'bn' ? 'ডাক্তারের পরামর্শ ফি' : 'Consultation Fee'}
                 </h2>
@@ -809,60 +841,57 @@ export default function DoctorProfilePage() {
             </Card>
 
             {/* Hospital Schedule - Mobile */}
-            <Card id="schedule-mobile" className="p-6 bg-gradient-to-br from-white to-indigo-50 border-2 border-primary/20 shadow-xl">
-              <h2 className="text-xl md:text-2xl font-bold mb-5">
-                {language === 'bn' ? 'চেম্বার সময়সূচি' : 'Chamber Schedule'}
+            <Card id="schedule-mobile" className="p-6 bg-gradient-to-br from-white to-indigo-50/50 border-2 border-primary/20 shadow-xl ">
+              <h2 className="text-xl md:text-2xl font-bold mb-5 text-gray-900 flex items-center gap-2">
+                <Building2 className="h-6 w-6 text-primary" />
+                {language === 'bn' ? 'চেম্বার নির্বাচন করুন' : 'Select Chamber'}
               </h2>
-              <div className="space-y-5">
-                {Object.entries(groupedAvailability).map(([hospitalSlug, slots], groupIndex) => {
+              <div className="space-y-4">
+                {availabilityArray.map((slot: any, index: number) => {
+                  const hospitalSlug = slot.hospital || "unknown";
                   const hObj = hospitals.find(h => h.name === hospitalSlug || (h as any).slug === hospitalSlug);
                   const hospitalName = hObj?.name || hospitalSlug;
                   const hospitalBnName = hObj?.nameBn || hospitalName;
+                  const isSelected = selectedSlotIndex === index;
+                  const formattedText = formatSlot(slot);
 
                   return (
-                    <div key={groupIndex} className="bg-white p-5 rounded-xl border-2 border-primary/10 shadow-md">
+                    <div
+                      key={index}
+                      onClick={() => setSelectedSlotIndex(index)}
+                      className={`p-5 rounded-2xl border-2 transition-all duration-300 cursor-pointer select-none relative flex flex-col gap-3 group ${
+                        isSelected
+                          ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/5 scale-[1.01]"
+                          : "border-gray-100 bg-white hover:border-primary/30 hover:bg-gray-50/50 shadow-sm"
+                      }`}
+                    >
                       {hospitalSlug !== 'unknown' && (
-                        <div className="mb-4">
-                          <div className="flex items-center gap-2 mb-3">
-                            <MapPin className="h-5 w-5 text-primary shrink-0" />
-                            <p className="md:text-lg font-bold text-gray-800">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-2.5">
+                            <MapPin className={`h-5 w-5 shrink-0 transition-colors ${isSelected ? 'text-primary' : 'text-gray-400 group-hover:text-primary/70'}`} />
+                            <p className={`md:text-lg font-extrabold transition-colors ${isSelected ? 'text-primary' : 'text-gray-800'}`}>
                               {language === 'bn' ? hospitalBnName : hospitalName}
                             </p>
                           </div>
-                          <Link href={`/doctor/${doctorId}/book?hospital=${encodeURIComponent(hospitalSlug)}`}>
-                            <Button size="sm" className="w-full bg-primary text-white hover:bg-primary/90">
-                              {language === 'bn' ? 'বুক করুন' : 'Book'}
-                            </Button>
-                          </Link>
+                          {/* Custom Radio Button */}
+                          <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                            isSelected ? 'border-primary bg-primary/10 scale-110' : 'border-gray-300 bg-white'
+                          }`}>
+                            {isSelected && (
+                              <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                            )}
+                          </div>
                         </div>
                       )}
-                      <div className="space-y-2">
-                        {slots.map((slot, index) => {
-                          const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
-                          const sortedDays = (slot.days || []).sort((a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b));
-                          const isOnCall = time === "On Call" || time === "অন কল";
-
-                          let dayRange = "";
-                          if (!isOnCall && sortedDays.length > 0) {
-                            if (language === 'bn') {
-                              dayRange = sortedDays.length === 1
-                                ? getBengaliDay(sortedDays[0])
-                                : `${getBengaliDay(sortedDays[0])} থেকে ${getBengaliDay(sortedDays[sortedDays.length - 1])}`;
-                            } else {
-                              dayRange = sortedDays.length === 1
-                                ? sortedDays[0]
-                                : `${sortedDays[0]} to ${sortedDays[sortedDays.length - 1]}`;
-                            }
-                          }
-                          return (
-                            <div key={index} className="flex items-center gap-2 p-3 bg-gray-50 rounded-full flex-nowrap">
-                              <Clock className="h-4 w-4 text-primary shrink-0" />
-                              <span className="text-sm md: font-semibold whitespace-nowrap">
-                                {dayRange} {time}
-                              </span>
-                            </div>
-                          );
-                        })}
+                      <div className="space-y-2 pl-7">
+                        <div className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-colors ${
+                          isSelected ? 'bg-primary/5' : 'bg-gray-50'
+                        }`}>
+                          <Clock className={`h-4 w-4 shrink-0 mt-0.5 ${isSelected ? 'text-primary' : 'text-gray-400'}`} />
+                          <span className={`text-sm font-bold ${isSelected ? 'text-primary-dark' : 'text-gray-600'}`}>
+                            {formattedText}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );
@@ -872,17 +901,17 @@ export default function DoctorProfilePage() {
 
             {/* Book Appointment - Mobile */}
             <Card className="p-6 bg-gradient-to-br from-white to-emerald-50 border-2 border-primary/20 shadow-xl">
-              <h2 className="text-xl md:text-2xl font-bold mb-5">
+              <h2 className="text-xl md:text-2xl font-bold mb-5 text-gray-900">
                 {language === 'bn' ? 'অ্যাপয়েন্টমেন্ট বুক করুন' : 'Book Appointment'}
               </h2>
               <div className="space-y-5">
-                <a href="#schedule-mobile">
+                <Link href={`/doctor/${doctorId}/book?slotIndex=${selectedSlotIndex}`}>
                   <Button
-                    className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold py-6 shadow-lg hover:shadow-xl transition-all"
+                    className="w-full btn-primary btn-slide py-6"
                   >
                     {language === 'bn' ? 'বুক অ্যাপয়েন্টমেন্ট' : 'Book Appointment'}
                   </Button>
-                </a>
+                </Link>
               </div>
             </Card>
 

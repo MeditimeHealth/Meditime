@@ -201,20 +201,27 @@ export default function CreateDoctorPage() {
   const watchDesignation = watch("designation");
   const watchSpecialty = watch("specialty");
   const watchQualification = watch("qualification");
+  const watchDesignationBn = watch("designationBn");
+  const watchSpecialtyBn = watch("specialtyBn");
+  const watchQualificationBn = watch("qualificationBn");
 
   useEffect(() => {
     const checkDuplicates = async () => {
       const n = watchName || watchNameBn;
-      if (n && watchDesignation && watchSpecialty && watchQualification) {
+      const des = watchDesignation || watchDesignationBn;
+      const spec = watchSpecialty || watchSpecialtyBn;
+      const qual = watchQualification || watchQualificationBn;
+
+      if (n && des && spec && qual) {
         try {
           const res = await fetch("/api/doctors/check-duplicate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               name: n,
-              designation: watchDesignation,
-              specialty: watchSpecialty,
-              qualification: watchQualification
+              designation: des,
+              specialty: spec,
+              qualification: qual
             })
           });
           if (res.ok) {
@@ -232,7 +239,12 @@ export default function CreateDoctorPage() {
     
     const timeoutId = setTimeout(checkDuplicates, 1000);
     return () => clearTimeout(timeoutId);
-  }, [watchName, watchNameBn, watchDesignation, watchSpecialty, watchQualification]);
+  }, [
+    watchName, watchNameBn, 
+    watchDesignation, watchDesignationBn, 
+    watchSpecialty, watchSpecialtyBn, 
+    watchQualification, watchQualificationBn
+  ]);
 
   const onSubmit = async (data: DoctorFormValues) => {
     setLoading(true);

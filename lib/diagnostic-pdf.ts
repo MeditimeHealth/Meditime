@@ -25,7 +25,7 @@ export const generateDiagnosticBookingPDF = async (booking: DiagnosticBookingRec
     });
 
     // ─────── HEADER BAR ───────
-    doc.setFillColor(0, 75, 80); // dark teal
+    doc.setFillColor("#00B1C2"); // primary
     doc.rect(0, 0, W, 37, 'F');
     
     // Add Logo (Top Center)
@@ -82,13 +82,13 @@ export const generateDiagnosticBookingPDF = async (booking: DiagnosticBookingRec
 
     // ─────── DIVIDER LINE ───────
     let y = 41;
-    doc.setDrawColor(0, 75, 80);
+    doc.setDrawColor("#00B1C2");
     doc.setLineWidth(0.5);
     doc.line(M, y, W - M, y);
     
     // ─────── PATIENT & APPOINTMENT INFO ───────
     y += 8;
-    doc.setTextColor(0, 75, 80);
+    doc.setTextColor("#00B1C2");
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text('PATIENT & APPOINTMENT INFORMATION', M, y);
@@ -132,7 +132,7 @@ export const generateDiagnosticBookingPDF = async (booking: DiagnosticBookingRec
     doc.line(M, y, W - M, y);
     
     y += 8;
-    doc.setTextColor(0, 75, 80);
+    doc.setTextColor("#00B1C2");
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text('BOOKED TESTS', M, y);
@@ -201,7 +201,7 @@ export const generateDiagnosticBookingPDF = async (booking: DiagnosticBookingRec
     y += 7;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 75, 80);
+    doc.setTextColor("#00B1C2");
     doc.text('Total Due:', totalsX, y, { align: 'right' });
     doc.setTextColor(30, 30, 30);
     doc.text(`${totalPrice} BDT`, W - M - 3, y, { align: 'right' });

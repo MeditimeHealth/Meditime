@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   try {
     const requestFormData = await request.formData();
     const file = requestFormData.get("image") as File;
-    const apiKey = process.env.IMGBB_API_KEY;
+    const apiKey = process.env.IMGBB_API_KEY || process.env.NEXT_PUBLIC_IMGBB_API_KEY;
 
     if (!apiKey) {
       return NextResponse.json(

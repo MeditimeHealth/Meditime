@@ -275,20 +275,27 @@ export default function EditDoctorPage() {
   const watchDesignation = watch("designation");
   const watchSpecialty = watch("specialty");
   const watchQualification = watch("qualification");
+  const watchDesignationBn = watch("designationBn");
+  const watchSpecialtyBn = watch("specialtyBn");
+  const watchQualificationBn = watch("qualificationBn");
 
   useEffect(() => {
     const checkDuplicates = async () => {
       const n = watchName || watchNameBn;
-      if (n && watchDesignation && watchSpecialty && watchQualification && doctorId) {
+      const des = watchDesignation || watchDesignationBn;
+      const spec = watchSpecialty || watchSpecialtyBn;
+      const qual = watchQualification || watchQualificationBn;
+
+      if (n && des && spec && qual && doctorId) {
         try {
           const res = await fetch("/api/doctors/check-duplicate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               name: n,
-              designation: watchDesignation,
-              specialty: watchSpecialty,
-              qualification: watchQualification,
+              designation: des,
+              specialty: spec,
+              qualification: qual,
               excludeId: doctorId
             })
           });
@@ -307,7 +314,13 @@ export default function EditDoctorPage() {
     
     const timeoutId = setTimeout(checkDuplicates, 1000);
     return () => clearTimeout(timeoutId);
-  }, [watchName, watchNameBn, watchDesignation, watchSpecialty, watchQualification, doctorId]);
+  }, [
+    watchName, watchNameBn, 
+    watchDesignation, watchDesignationBn, 
+    watchSpecialty, watchSpecialtyBn, 
+    watchQualification, watchQualificationBn, 
+    doctorId
+  ]);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -443,12 +456,12 @@ export default function EditDoctorPage() {
 
 
       } else {
-        alert(data.error || "Failed to fetch doctor data");
+        showToast.error(data.error || "Failed to fetch doctor data");
         router.push("/admin/doctors");
       }
     } catch (error) {
       console.error("Error fetching doctor:", error);
-      alert("Failed to fetch doctor data");
+      showToast.error("Failed to fetch doctor data");
       router.push("/admin/doctors");
     } finally {
       setIsFetching(false);
@@ -514,13 +527,13 @@ export default function EditDoctorPage() {
     if (file) {
       // Validate file type
       if (!file.type.startsWith("image/")) {
-        alert("Please select an image file");
+        showToast.error("Please select an image file");
         return;
       }
 
       // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
-        alert("Image size must be less than 10MB");
+        showToast.error("Image size must be less than 10MB");
         return;
       }
 
@@ -565,7 +578,7 @@ export default function EditDoctorPage() {
           imageUrl = await uploadImage(selectedImage);
           setValue("image", imageUrl);
         } catch (error: any) {
-          alert(error.message || "Failed to upload image. Please try again.");
+          showToast.error(error.message || "Failed to upload image. Please try again.");
           setIsLoading(false);
           setIsUploading(false);
           return;
@@ -616,13 +629,13 @@ export default function EditDoctorPage() {
       const result = await response.json();
 
       if (response.ok) {
+        showToast.success("Doctor profile updated successfully!");
         router.push("/admin/doctors");
-        alert("Doctor profile updated successfully!");
       } else {
-        alert(result.error || "Failed to update doctor profile");
+        showToast.error(result.error || "Failed to update doctor profile");
       }
     } catch {
-      alert("An error occurred. Please try again.");
+      showToast.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }

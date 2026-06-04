@@ -68,7 +68,12 @@ export default function BookAppointmentPage() {
   const [affiliateCode, setAffiliateCode] = useState("");
 
   const searchParams = useSearchParams();
-  const selectedHospitalSlug = searchParams?.get("hospital");
+  const slotIndexParam = searchParams?.get("slotIndex");
+  const slotIndex = slotIndexParam ? parseInt(slotIndexParam, 10) : 0;
+
+  const availabilityArray = doctor ? (Array.isArray(doctor.availability) ? doctor.availability : [doctor.availability]) : [];
+  const selectedSlot = availabilityArray[slotIndex] || availabilityArray[0];
+  const selectedHospitalSlug = selectedSlot?.hospital;
 
   const [hospitals, setHospitals] = useState<any[]>([]);
 
@@ -123,20 +128,15 @@ export default function BookAppointmentPage() {
       ? doctor.availability
       : [doctor.availability];
 
-    // Combine all days from all availability slots for the selected hospital
+    const slot = availabilityArray[slotIndex] || availabilityArray[0];
+    if (!slot) return [];
+
     const allDays = new Set<string>();
-    availabilityArray.forEach((slot: any) => {
-      const slotHospital = typeof slot.hospital === 'object' ? slot.hospital?.slug || slot.hospital?.name : slot.hospital;
-      if (selectedHospitalSlug && slotHospital !== selectedHospitalSlug) {
-        return;
-      }
-      
-      if (slot?.days) {
-        slot.days.forEach((day: string) => allDays.add(day));
-      }
-    });
+    if (slot.days) {
+      slot.days.forEach((day: string) => allDays.add(day));
+    }
     return Array.from(allDays);
-  }, [doctor, selectedHospitalSlug]);
+  }, [doctor, slotIndex]);
 
   // Helper function to get date string in YYYY-MM-DD format
   const getDateString = (date: Date): string => {
@@ -344,6 +344,7 @@ export default function BookAppointmentPage() {
         hospitalBn,
         hospitalSlug: selectedHospitalSlug,
         appointmentDate: selectedDate.toISOString(),
+        appointmentTime: selectedSlot?.time || undefined,
         userId: user?._id || user?.id || undefined,
         affiliateCode: affiliateCode || undefined,
       };
@@ -503,7 +504,7 @@ export default function BookAppointmentPage() {
                   </div>
 
                   {/* Calendar Grid */}
-                  <div className="grid grid-cols-7 gap-6">
+                  <div className="grid grid-cols-7 gap-3 lg:gap-6">
                     {calendarDays.map((date, index) => {
                       if (!date) {
                         return <div key={index} className="aspect-square" />;
@@ -526,7 +527,7 @@ export default function BookAppointmentPage() {
                           }}
                           disabled={!isAvailable}
                           className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center md:text-2xl text-sm ${isSelected
-                              ? "text-white shadow-lg scale-110 ring-4 ring-orange-300"
+                              ? "text-white shadow-lg scale-110 ring-4 ring-orange-300 "
                               : isAvailable
                                 ? "bg-primary text-white border-2 border-primary hover:bg-primary/90 hover:shadow-md hover:scale-105"
                                 : isInScheduleButNotAvailable
@@ -723,7 +724,7 @@ export default function BookAppointmentPage() {
                 <Button
                   type="submit"
                   disabled={!selectedHospitalSlug || !selectedDate || !patientName || !mobileNumber || submitting}
-                  className="w-full bg-gradient-to-r from-primary to-orange-600 hover:from-orange-600 hover:to-primary text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full btn-primary btn-slide disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting ? (
                     <>

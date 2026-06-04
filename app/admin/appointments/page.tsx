@@ -131,7 +131,7 @@ const getStatusBadge = (status: string) => {
   return (
     <span
       className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold border-2 ${styles[status as keyof typeof styles] || styles.pending}`}
-      
+
     >
       <Icon className="h-4 w-4" />
       {labels[status as keyof typeof labels] || status}
@@ -158,6 +158,8 @@ export default function AppointmentsPage() {
   const [serialNumber, setSerialNumber] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   useEffect(() => {
     fetchAppointments();
@@ -215,6 +217,32 @@ export default function AppointmentsPage() {
     } catch (error) {
       console.error("Error updating status:", error);
       return { success: false, error: "Failed to update status" };
+    }
+  };
+
+  // Clear completed appointments (history)
+  const handleClearHistory = async () => {
+    setClearing(true);
+    try {
+      // Get all completed appointments and delete them one by one
+      // Use the existing bulk delete endpoint with clearAll=false, but for 'completed' only
+      // We'll delete all completed appointments
+      const completedIds = appointments
+        .filter(a => a.status === 'completed')
+        .map(a => a._id);
+      
+      await Promise.all(
+        completedIds.map(id =>
+          fetch(`/api/appointments/${id}`, { method: 'DELETE' })
+        )
+      );
+
+      setAppointments(prev => prev.filter(a => a.status !== 'completed'));
+      setShowClearConfirm(false);
+    } catch {
+      alert('সম্পন্ন অ্যাপয়েন্টমেন্ট মুছতে সমস্যা হয়েছে।');
+    } finally {
+      setClearing(false);
     }
   };
 
@@ -287,19 +315,29 @@ export default function AppointmentsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1
-          className="text-3xl font-bold text-gray-900"
-          
+      <div className="flex items-start justify-between flex-wrap gap-4">
+        <div>
+          <h1
+            className="text-3xl font-bold text-gray-900"
+
+          >
+            অ্যাপয়েন্টমেন্ট
+          </h1>
+          <p
+            className="text-gray-600 mt-2"
+
+          >
+            রোগীর অ্যাপয়েন্টমেন্ট পরিচালনা করুন
+          </p>
+        </div>
+        <Button
+          onClick={() => setShowClearConfirm(true)}
+          variant="outline"
+          className="border-red-300 text-red-600 hover:bg-red-50 flex items-center gap-2 self-start mt-1"
         >
-          অ্যাপয়েন্টমেন্ট
-        </h1>
-        <p
-          className="text-gray-600 mt-2"
-          
-        >
-          রোগীর অ্যাপয়েন্টমেন্ট পরিচালনা করুন
-        </p>
+          <XCircle className="h-4 w-4" />
+          সম্পন্ন হিস্ট্রি মুছুন
+        </Button>
       </div>
 
       {/* Filter Buttons */}
@@ -317,7 +355,7 @@ export default function AppointmentsPage() {
             className={
               filter === filterOption.value ? "bg-primary text-white" : ""
             }
-            
+
           >
             {filterOption.label}
           </Button>
@@ -328,7 +366,7 @@ export default function AppointmentsPage() {
         <Card className="p-12 text-center">
           <p
             className="text-gray-500 text-lg"
-            
+
           >
             কোন অ্যাপয়েন্টমেন্ট পাওয়া যায়নি
           </p>
@@ -347,7 +385,7 @@ export default function AppointmentsPage() {
                     <User className="h-5 w-5 text-primary" />
                     <h4
                       className="font-bold text-lg text-gray-800"
-                      
+
                     >
                       রোগীর তথ্য
                     </h4>
@@ -396,7 +434,7 @@ export default function AppointmentsPage() {
 
                       <h3
                         className="text-xl font-bold text-gray-900"
-                        
+
                       >
                         {appointment.patientName}
                       </h3>
@@ -422,7 +460,7 @@ export default function AppointmentsPage() {
                           <p className="text-xs text-gray-500">রোগীর ধরন</p>
                           <p
                             className="font-medium text-gray-900"
-                           
+
                           >
                             {getPatientTypeLabel(appointment.patientType)}
                           </p>
@@ -438,7 +476,7 @@ export default function AppointmentsPage() {
                             </p>
                             <p
                               className="font-medium text-gray-900"
-                              
+
                             >
                               {appointment.age
                                 ? `${toBengaliNumber(appointment.age)} বছর`
@@ -468,7 +506,7 @@ export default function AppointmentsPage() {
                       <Stethoscope className="h-5 w-5 text-primary" />
                       <h4
                         className="font-bold text-lg text-gray-800"
-                        
+
                       >
                         ডাক্তার ও অ্যাপয়েন্টমেন্ট
                       </h4>
@@ -496,13 +534,13 @@ export default function AppointmentsPage() {
                         <div>
                           <p
                             className="font-bold text-gray-900"
-                            
+
                           >
                             {appointment.doctorId?.name || appointment.doctorId?.nameBn || "Unknown Doctor"}
                           </p>
                           <p
                             className="text-xs text-gray-600 mt-1"
-                            
+
                           >
                             {(appointment.doctorId?.qualification || appointment.doctorId?.qualificationBn) &&
                               `${appointment.doctorId.qualification || appointment.doctorId.qualificationBn}`}
@@ -528,7 +566,7 @@ export default function AppointmentsPage() {
                         <p className="text-xs text-gray-500">হাসপাতাল</p>
                         <p
                           className="font-medium text-gray-900"
-                          
+
                         >
                           {appointment.hospitalName}
                         </p>
@@ -543,28 +581,20 @@ export default function AppointmentsPage() {
                           <p className="text-xs text-gray-500">তারিখ</p>
                           <p
                             className="font-medium text-gray-900"
-                            
+
                           >
                             {formatDate(appointment.appointmentDate)}
                           </p>
                         </div>
                       </div>
-                      {/* Doctor Chamber Time from Availability */}
-                      {appointment.doctorId?.availability && appointment.doctorId.availability.length > 0 && (
+                      {/* Appointment Time */}
+                      {appointment.appointmentTime && (
                         <div className="flex items-start gap-2">
                           <Clock className="h-4 w-4 text-gray-400 mt-1" />
                           <div>
                             <p className="text-xs text-gray-500">চেম্বার সময়</p>
-                            <p
-                              className="font-medium text-gray-900"
-                              
-                            >
-                              {appointment.doctorId.availability.map((slot, idx) => (
-                                <span key={idx}>
-                                  {slot.time || slot.timeBn || ""}
-                                  {idx < (appointment.doctorId?.availability?.length || 0) - 1 ? ", " : ""}
-                                </span>
-                              ))}
+                            <p className="font-medium text-gray-900">
+                              {appointment.appointmentTime}
                             </p>
                           </div>
                         </div>
@@ -588,7 +618,7 @@ export default function AppointmentsPage() {
                           <Button
                             onClick={() => handleConfirmClick(appointment)}
                             className="flex-1 bg-green-600 hover:bg-green-700 text-white h-9 text-sm"
-                            
+
                           >
                             নিশ্চিত করুন
                           </Button>
@@ -598,7 +628,7 @@ export default function AppointmentsPage() {
                             }
                             variant="outline"
                             className="flex-1 border-red-300 text-red-600 hover:bg-red-50 h-9 text-sm"
-                            
+
                           >
                             বাতিল করুন
                           </Button>
@@ -611,7 +641,7 @@ export default function AppointmentsPage() {
                               handleCompleteAppointment(appointment._id)
                             }
                             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-9 text-sm"
-                            
+
                           >
                             সম্পন্ন করুন
                           </Button>
@@ -621,7 +651,7 @@ export default function AppointmentsPage() {
                             }
                             variant="outline"
                             className="flex-1 border-red-300 text-red-600 hover:bg-red-50 h-9 text-sm"
-                            
+
                           >
                             বাতিল করুন
                           </Button>
@@ -643,7 +673,7 @@ export default function AppointmentsPage() {
             <div className="flex items-center justify-between mb-6">
               <h3
                 className="text-xl font-bold text-gray-900"
-                
+
               >
                 সিরিয়াল নম্বর দিন
               </h3>
@@ -665,7 +695,7 @@ export default function AppointmentsPage() {
               <p className="text-sm text-gray-500 mb-1">রোগী</p>
               <p
                 className="font-bold text-gray-900"
-               
+
               >
                 {selectedAppointment.patientName}
               </p>
@@ -682,7 +712,7 @@ export default function AppointmentsPage() {
               <Label
                 htmlFor="serialNumber"
                 className="text-gray-700 mb-2 block"
-                
+
               >
                 সিরিয়াল নম্বর <span className="text-red-500">*</span>
               </Label>
@@ -717,7 +747,7 @@ export default function AppointmentsPage() {
                 variant="outline"
                 className="flex-1"
                 disabled={submitting}
-                
+
               >
                 বাতিল
               </Button>
@@ -725,7 +755,7 @@ export default function AppointmentsPage() {
                 onClick={handleConfirmWithSerial}
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                 disabled={submitting}
-                
+
               >
                 {submitting ? (
                   <>
@@ -736,6 +766,55 @@ export default function AppointmentsPage() {
                   <>
                     <CheckCircle className="h-4 w-4 mr-2" />
                     নিশ্চিত করুন
+                  </>
+                )}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Clear Completed Appointments Confirmation Modal */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md p-6 bg-white">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-red-100 rounded-full">
+                <XCircle className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">
+                সম্পন্ন হিস্ট্রি মুছুন
+              </h3>
+            </div>
+            <p className="text-gray-600 mb-2">
+              সকল <span className="font-bold text-blue-600">সম্পন্ন</span> অ্যাপয়েন্টমেন্ট স্থায়ীভাবে মুছে যাবে।
+            </p>
+            <p className="text-sm text-gray-400 mb-6">
+              All <strong>completed</strong> appointments will be permanently deleted. Pending and confirmed appointments will remain.
+            </p>
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setShowClearConfirm(false)}
+                variant="outline"
+                className="flex-1"
+                disabled={clearing}
+              >
+                বাতিল
+              </Button>
+              <Button
+                onClick={handleClearHistory}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                disabled={clearing}
+              >
+                {clearing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    মুছছে...
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="h-4 w-4 mr-2" />
+                    হ্যাঁ, মুছুন
                   </>
                 )}
               </Button>

@@ -93,7 +93,7 @@ const formatAvailability = (
     hospital: string;
   }>,
   language: string = "en"
-): string => {
+): string[] => {
   const slots = Array.isArray(availability) ? availability : [availability];
 
   return slots.map((slot) => {
@@ -113,7 +113,7 @@ const formatAvailability = (
         // We know slot.daysBn is a string array.
         if ((slot as any).daysBn && Array.isArray((slot as any).daysBn) && (slot as any).daysBn.length === slot.days.length) {
           const idx = slot.days.indexOf(d);
-          if (idx !== -1 && (slot as any).daysBn[idx]) return (slot as any).daysBn[idx] + 'বার';
+          if (idx !== -1 && (slot as any).daysBn[idx]) return (slot as any).daysBn[idx]
         }
         return getBengaliDay(d);
       };
@@ -130,7 +130,7 @@ const formatAvailability = (
       }
       return `${sortedDays.join(", ")} ${time}`;
     }
-  }).join(language === 'bn' ? "। " : ", ");
+  }).filter(t => t !== "");
 };
 
 export default function DoctorCard({
@@ -147,7 +147,7 @@ export default function DoctorCard({
   const displaySpecialty = getLocalizedValue(doctor.specialty, doctor.specialtyBn, language);
   const displayQualification = getLocalizedValue(doctor.qualification, doctor.qualificationBn, language);
   const displayDesignation = getLocalizedValue(doctor.designation, doctor.designationBn, language);
-  const availabilityText = formatAvailability(doctor.availability, language);
+  const availabilityTexts = formatAvailability(doctor.availability, language);
 
 
   const CardContent = (
@@ -193,32 +193,33 @@ export default function DoctorCard({
       <div className="space-y-6">
 
         {/* Time / Availability */}
-        <div className="flex flex-col gap-2">
-        {/* Time / Availability */}
-        <div className="bg-gray-50/80 rounded-xl p-3 border border-gray-100/50 group-hover:bg-primary/5 transition-colors">
-          <div className="flex items-start gap-2 text-xs text-gray-700">
-            <Clock className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
-            <span className="font-semibold leading-relaxed">
-              {availabilityText || (language === 'bn' ? 'সময়সূচী দেখুন' : 'View Schedule')}
-            </span>
-          </div>
+        <div className="flex flex-col gap-2 bg-gray-50/80 rounded-xl p-3 border border-gray-100/50 group-hover:bg-primary/5 transition-colors">
+          {availabilityTexts.length > 0 ? (
+            availabilityTexts.map((text, idx) => (
+              <div key={idx} className="">
+                <div className="flex items-start gap-2 text-xs text-gray-700">
+                  <Clock className="w-4 h-4 mt-0.5 text-primary shrink-0" />
+                  <span className="font-semibold leading-relaxed">
+                    {text}
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="bg-gray-50/80 rounded-xl p-3 border border-gray-100/50 group-hover:bg-primary/5 transition-colors">
+              <div className="flex items-start gap-2 text-xs text-gray-700">
+                <Clock className="w-4 h-4 mt-0.5 text-primary shrink-0" />
+                <span className="font-semibold leading-relaxed">
+                  {language === 'bn' ? 'সময়সূচী দেখুন' : 'View Schedule'}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
-        </div>
-      
-
-        {/* Consultation Fee */}
-        {/* <div className="flex items-center justify-between py-2 border-t border-dashed border-gray-200">
-          <span className="text-sm text-gray-500 font-medium">
-            {language === 'bn' ? 'ভিজিট ফি' : 'Consultation Fee'}
-          </span>
-          <span className="text-lg font-bold text-primary">
-            {doctor.newPatientFee || 0}৳
-          </span>
-        </div> */}
 
         {/* Action Button */}
         {!disableLink && (
-          <div className="w-full py-2.5 bg-primary text-white text-sm font-bold text-center rounded-xl transition-all shadow-md group-hover:shadow-primary/30 flex items-center justify-center gap-2">
+          <div className="w-full py-6 btn-primary btn-slide flex items-center justify-center gap-2">
             {language === 'bn' ? 'অ্যাপয়েন্টমেন্ট নিন' : 'Book Appointment'}
             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </div>

@@ -209,8 +209,8 @@ function BookingSuccessContent() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-24 pb-16">
         {/* Success Header */}
         <div className="text-center mb-8" id="success-header">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-50 mb-4 border-2 border-green-200 shadow-sm">
-            <CheckCircle className="h-12 w-12 text-green-500" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 border-2 border-(--color-primary) shadow-sm">
+            <CheckCircle className="h-12 w-12 text-(--color-primary)" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-1" >
             {t.success[language]}
@@ -227,7 +227,7 @@ function BookingSuccessContent() {
             id="appointment-slip"
           >
             {/* Slip Header */}
-            <div className="bg-gradient-to-r from-[#00B7B5] to-teal-600 px-6 py-6 text-center">
+            <div className="bg-[var(--color-primary)] px-6 py-6 text-center">
              <div className="p-2 bg-white w-fit h-fit rounded-full mx-auto justify-center items-center flex h-16 w-16">
                 <Image
                 src="/logo.png"
@@ -323,6 +323,7 @@ function BookingSuccessContent() {
                       <Calendar className="h-4 w-4 text-[#00B7B5] flex-shrink-0" />
                       <p className="font-bold text-slate-800 text-sm" >
                         {formatDate(appointment.appointmentDate, language)}
+                        {appointment.appointmentTime && ` • ${appointment.appointmentTime}`}
                       </p>
                     </div>
                   </div>
@@ -459,7 +460,7 @@ function BookingSuccessContent() {
           </Link>
           <Link href="/">
             <Button
-              className="w-full sm:w-auto bg-gradient-to-r from-primary to-orange-600 hover:from-orange-600 hover:to-primary"
+              className="w-full sm:w-auto btn-primary btn-slide"
               
             >
               <Home className="h-4 w-4 mr-2" />

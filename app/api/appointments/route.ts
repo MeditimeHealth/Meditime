@@ -81,12 +81,12 @@ export async function generateSerialNumber(): Promise<string> {
   const month = String(today.getMonth() + 1).padStart(2, '0');
   const day = String(today.getDate()).padStart(2, '0');
   const prefix = `MT${year}${month}${day}`;
-  
+
   // Find the last appointment for today to get the next sequence number
   const lastAppointment = await Appointment.findOne({
     serialNumber: { $regex: `^${prefix}` }
   }).sort({ serialNumber: -1 });
-  
+
   let sequence = 1;
   if (lastAppointment && lastAppointment.serialNumber) {
     const lastSequence = parseInt(lastAppointment.serialNumber.slice(-4));
@@ -94,7 +94,7 @@ export async function generateSerialNumber(): Promise<string> {
       sequence = lastSequence + 1;
     }
   }
-  
+
   return `${prefix}${String(sequence).padStart(4, '0')}`;
 }
 
@@ -130,12 +130,12 @@ export async function POST(request: NextRequest) {
     // Verify doctor exists
     let doctor;
     const trimmedDoctorId = doctorId.trim();
-    
+
     // 1. Try finding by ID if it's a valid ObjectId
     if (trimmedDoctorId.match(/^[0-9a-fA-F]{24}$/)) {
       doctor = await Doctor.findById(trimmedDoctorId);
     }
-    
+
     // 2. Fallback to finding by slug if not found by ID or not a valid ObjectId
     if (!doctor) {
       doctor = await Doctor.findOne({ $or: [{ slug: trimmedDoctorId }, { slugBn: trimmedDoctorId }] });
@@ -155,20 +155,20 @@ export async function POST(request: NextRequest) {
     let affiliateId = undefined;
     if (affiliateCode) {
       // Check in User model first (new system)
-      let affiliate: any = await User.findOne({ 
+      let affiliate: any = await User.findOne({
         affiliateCode: affiliateCode.toUpperCase(),
         userType: 'affiliate',
-        isActive: true 
+        isActive: true
       });
 
       // Fallback to Affiliate model (old system) if not found in User
       if (!affiliate) {
-         affiliate = await Affiliate.findOne({ 
+        affiliate = await Affiliate.findOne({
           affiliateCode: affiliateCode.toUpperCase(),
-          isActive: true 
+          isActive: true
         });
       }
-      
+
       if (affiliate) {
         affiliateId = affiliate._id;
         // Increment referrals count
