@@ -14,6 +14,7 @@ import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { homepageTranslations } from "@/lib/homepage-translations";
 import { useRouter } from "next/navigation";
+import PageLoader from "@/components/page-loader";
 
 interface Hospital {
   _id: string;
@@ -434,24 +435,7 @@ export default function HospitalListPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <Navbar />
-        <div className="flex items-center justify-center min-h-[80vh]">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center"
-
-          >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"
-            />
-            <p className="text-xl font-semibold text-gray-700">{t.loading}</p>
-          </motion.div>
-        </div>
-      </div>
+      <PageLoader/>
     );
   }
 

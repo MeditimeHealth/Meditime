@@ -24,7 +24,7 @@ interface User {
   role?: string;
 }
 
-export default function Nav_for_details() {
+export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [affiliate, setAffiliate] = useState<any>(null);
@@ -138,6 +138,7 @@ export default function Nav_for_details() {
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b border-primary py-4 sm:py-5 bg-[#017991]`}
+
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
@@ -147,7 +148,10 @@ export default function Nav_for_details() {
               whileTap={{ scale: 0.95 }}
               className="transition-all duration-300"
             >
-              <Link href="/" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/" onClick={() => {
+                setMobileMenuOpen(false)
+                window.scrollTo({ top: 0, behavior: "smooth" })
+              }}>
                 <img
                   src="/SVG/asset-3.svg"
                   alt="Logo"
@@ -172,15 +176,13 @@ export default function Nav_for_details() {
                       className="relative group min-w-[85px] flex items-center justify-center"
                     >
                       <span
-                        className={`${
-                          language === 'bn' 
-                            ? "text-[13px] xl:text-[15px] font-bold" 
-                            : "text-[11px] xl:text-[13px] font-semibold"
-                        } uppercase  transition-all duration-300 whitespace-nowrap text-center ${
-                          isActive
+                        className={`${language === 'bn'
+                          ? "text-[13px] xl:text-[15px] font-bold"
+                          : "text-[11px] xl:text-[13px] font-semibold"
+                          }  whitespace-nowrap text-center ${isActive
                             ? scrolled ? "text-primary" : "text-primary"
-                            : scrolled ? "text-white   group-hover:text-primary" : "text-white group-hover:text-yellow-300"
-                        }`}
+                            : scrolled ? "text-white   group-hover:text-primary" : "text-white group-hover:text-primary"
+                          }`}
                       >
                         {link.label}
                       </span>
@@ -194,11 +196,10 @@ export default function Nav_for_details() {
                       )}
                       {!isActive && (
                         <motion.div
-                          className={`absolute -bottom-1 left-0 right-0 h-0.5 rounded-full ${
-                            scrolled 
-                              ? "bg-primary/0 group-hover:bg-primary/50" 
-                              : "bg-white/0 group-hover:bg-white/50"
-                          }`}
+                          className={`absolute -bottom-1 left-0 right-0 h-0.5 rounded-full ${scrolled
+                            ? "bg-primary/0 group-hover:bg-primary/50"
+                            : "bg-white/0 group-hover:bg-white/50"
+                            }`}
                           initial={{ scaleX: 0 }}
                           whileHover={{ scaleX: 1 }}
                           transition={{ duration: 0.3 }}
@@ -217,17 +218,25 @@ export default function Nav_for_details() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleLanguage}
-                className={`flex items-center justify-center w-[75px] px-5 py-2.5 gap-[4px] rounded-[8px] text-xs font-medium shrink-0 transition-all bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm`}
+                className={`text-xs font-semibold px-3 py-2 rounded-lg h-[50px] border border-primary h-full transition-colors duration-300 ${scrolled
+                  ? "text-white hover:text-primary hover:bg-primary/5"
+                  : "text-white hover:text-primary hover:bg-white/10"
+                  }`}
                 title={language === 'en' ? 'Switch to Bangla' : 'Switch to English'}
               >
-                {language === 'en' ? 'বাংলা' : 'English'}
+                <div className="flex gap-3 items-center">
+                  <Globe className="h-4 w-4" />
+
+                  {language === 'en' ? 'বাংলা' : 'English'}
+                </div>
+
               </motion.button>
 
               {user ? (
                 <>
                   <Link
                     href="/user/dashboard"
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-[var--background-dark] transition-all hover:scale-105 active:scale-95"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20  transition-all hover:scale-105 active:scale-95"
                   >
                     <Activity className="h-4 w-4" />
                     {language === 'bn' ? 'ড্যাশবোর্ড' : 'Dashboard'}
@@ -246,11 +255,10 @@ export default function Nav_for_details() {
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link
                       href="/login"
-                      className={`text-sm font-semibold px-3 py-2 rounded-lg h-[54px] border border-primary h-full transition-colors duration-300 ${
-                        scrolled
-                          ? "text-white hover:text-primary hover:bg-primary/5"
-                          : "text-white hover:text-primary hover:bg-white/10"
-                      }`}
+                      className={`text-sm font-semibold px-3 py-2 rounded-lg h-[54px] border border-primary h-full transition-colors duration-300 ${scrolled
+                        ? "text-white hover:text-primary hover:bg-primary/5"
+                        : "text-white hover:text-primary hover:bg-white/10"
+                        }`}
                     >
                       {t.login}
                     </Link>
@@ -258,11 +266,10 @@ export default function Nav_for_details() {
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link
                       href="/signup"
-                      className={`px-6 py-2.5 rounded-lg text-white text-sm font-semibold transition-all duration-300 ${
-                        scrolled
-                          ? "bg-primary hover:bg-primary/90"
-                          : "bg-white/25 hover:bg-white/35 backdrop-blur-sm"
-                      }`}
+                      className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${scrolled
+                        ? "bg-white hover:bg-primary/90 text-primary"
+                        : "bg-primary hover:bg-white/35 backdrop-blur-sm text-white"
+                        }`}
                     >
                       {t.signup}
                     </Link>
@@ -274,7 +281,10 @@ export default function Nav_for_details() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`xl:hidden p-2.5 rounded-lg text-white shadow-sm transition-all active:scale-95 bg-white/25 backdrop-blur-sm hover:bg-white/35`}
+              className={`xl:hidden p-2.5 rounded-lg text-white shadow-sm transition-all active:scale-95 ${scrolled
+                ? "bg-primary"
+                : "bg-white/25 backdrop-blur-sm hover:bg-white/35"
+                }`}
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
@@ -347,8 +357,8 @@ export default function Nav_for_details() {
                           href={link.href}
                           onClick={() => setMobileMenuOpen(false)}
                           className={`block px-4 py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-200 ${isActive
-                              ? "bg-primary/10 text-primary border-2 border-primary/20"
-                              : "text-gray-700 hover:bg-gray-100 hover:text-primary"
+                            ? "bg-primary/10 text-primary border-2 border-primary/20"
+                            : "text-gray-700 hover:bg-gray-100 hover:text-primary"
                             }`}
                         >
                           {link.label}

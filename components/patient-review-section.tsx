@@ -132,19 +132,19 @@ export default function PatientReviewSection() {
   };
 
   return (
-    <div className="relative w-full mx-auto min-h-[300px] py-16 overflow-hidden flex items-center">
+    <div className="relative w-full mx-auto min-h-[300px] pt-16 overflow-hidden flex items-center">
 
       <div className="absolute inset-0 bg-[var(--background-dark)]" />
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 ">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-20 mb-12">
-          <div>
+      <div className="relative z-10 w-full container mx-auto px-4 sm:px-6 lg:px-8 ">
+        <div className="grid grid-cols-1 lg:grid-cols-13 gap-13 sm:gap-20 mb-12">
+          <div className="lg:col-span-7">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-bold mb-2">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-2 text-white">
                 {language === 'bn' ? 'আমাদের সেবা নিয়ে রোগীদের মতামত' : 'What Our Patients Say About Us'}
               </h2>
-              <p className="text-lg max-w-lg leading-relaxed mb-8">
+              <p className="text-lg max-w-lg leading-relaxed mb-8 text-white/90 ">
                 {language === 'bn' ? 'মেডিটাইম কীভাবে রোগীদের সঠিক বিশেষজ্ঞ ডাক্তারের সাথে যুক্ত হতে সাহায্য করে, তা নিজেই দেখে নিন।' : 'See how Meditime helps patients connect with the right specialists.'}
               </p>
             </div>
@@ -176,10 +176,10 @@ export default function PatientReviewSection() {
                     `}>
                         <div className="flex flex-col h-full">
                           {/* Quote mark */}
-                          <div className={`text-6xl font-serif leading-none mb-4`}>"</div>
+                          <div className={`text-6xl font-serif text-white leading-none mb-4`}>"</div>
 
                           {/* Review text */}
-                          <h1 className={`text-lg sm:text-xl font-bold leading-relaxed mb-10 `}>
+                          <h1 className={`text-lg sm:text-xl text-white font-bold leading-relaxed mb-10 `}>
                             {review.text}
                           </h1>
 
@@ -209,12 +209,12 @@ export default function PatientReviewSection() {
               </Swiper>
             </div>
           </div>
-          <div className="mb-4">
+          <div className="lg:col-span-6">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-bold mb-2">
+              <h2 className="text-3xl sm:text-4xl text-white font-bold mb-2">
                 {formTranslations.title}
               </h2>
-              <p className="text-lg max-w-lg leading-relaxed mb-8">
+              <p className="text-lg max-w-lg leading-relaxed mb-8 text-white/90 ">
                 {formTranslations.subtitle}
               </p>
             </div>
@@ -294,7 +294,7 @@ export default function PatientReviewSection() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-fit h-10 btn-slide btn-primary"
+                    className="w-fit flex items-center gap-2 btn-slide btn-primary"
                   >
                     {loading ? formTranslations.sending : formTranslations.submit}
                     <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-2" />

@@ -23,6 +23,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import Nav_for_details from "@/components/nav_for_details";
+import PageLoader from "@/components/page-loader";
 
 const banglaMonths = [
   "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
@@ -127,15 +128,7 @@ function BookingSuccessContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <Nav_for_details />
-        <div className="flex items-center justify-center min-h-[80vh]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-14 w-14 border-b-2 border-primary mx-auto mb-3" />
-            <p className="text-slate-500 text-sm" >{language === "bn" ? "লোড হচ্ছে..." : "Loading..."}</p>
-          </div>
-        </div>
-      </div>
+  <PageLoader/>
     );
   }
 

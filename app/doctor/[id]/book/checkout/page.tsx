@@ -23,6 +23,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Nav_for_details from "@/components/nav_for_details";
+import PageLoader from "@/components/page-loader";
 
 const banglaMonths = [
   "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
@@ -209,12 +210,7 @@ function CheckoutContent() {
 
   if (!booking) {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <Nav_for_details />
-        <div className="flex items-center justify-center min-h-[80vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      </div>
+    <PageLoader/>
     );
   }
 

@@ -76,7 +76,35 @@ export default function DoctorProfilePage() {
 
   const [departmentDiseases, setDepartmentDiseases] = useState<Array<{ name: string, bangla: string }>>([]);
   const [departmentInfo, setDepartmentInfo] = useState<{ name: string, nameBn?: string } | null>(null);
-  const [selectedSlotIndex, setSelectedSlotIndex] = useState<number>(0);
+  const [selectedHospitalSlug, setSelectedHospitalSlug] = useState<string>("");
+
+
+    const availabilityArray = Array.isArray(doctor?.availability)
+    ? doctor?.availability
+    : [doctor?.availability];
+
+  const groupedAvailability = availabilityArray.reduce((acc: any[], slot) => {
+    const hospitalSlug = slot?.hospital || "unknown";
+    let group = acc.find(g => g.hospital === hospitalSlug);
+    if (!group) {
+      group = {
+        hospital: hospitalSlug,
+        slots: []
+      };
+      acc.push(group);
+    }
+    group.slots.push(slot);
+    return acc;
+  }, []);
+
+  useEffect(() => {
+    if (doctor && availabilityArray.length > 0) {
+      const firstHospital = availabilityArray[0]?.hospital || "";
+      if (firstHospital && !selectedHospitalSlug) {
+        setSelectedHospitalSlug(firstHospital);
+      }
+    }
+  }, [doctor, availabilityArray, selectedHospitalSlug]);
   const { language } = useLanguage();
 
   useEffect(() => {
@@ -269,9 +297,7 @@ export default function DoctorProfilePage() {
     );
   }
 
-  const availabilityArray = Array.isArray(doctor.availability)
-    ? doctor.availability
-    : [doctor.availability];
+
 
 
 
@@ -377,7 +403,7 @@ export default function DoctorProfilePage() {
           "worstRating": "1"
         } : undefined,
         "worksFor": availabilityArray.map(slot => {
-          const hospSlug = slot.hospital;
+          const hospSlug = slot?.hospital;
           const hospName = hospitals.find(h => h.slug === hospSlug || h.name === hospSlug)?.name || hospSlug || "Medical Organization";
           return {
             "@type": "MedicalOrganization",
@@ -385,8 +411,8 @@ export default function DoctorProfilePage() {
           };
         }),
         "openingHoursSpecification": availabilityArray.flatMap(slot =>
-          (slot.days || []).map(day => {
-            const timeParts = (slot.time || "09:00 - 17:00").split(' - ');
+          (slot?.days || []).map(day => {
+            const timeParts = (slot?.time || "09:00 - 17:00").split(' - ');
             return {
               "@type": "OpeningHoursSpecification",
               "dayOfWeek": day,
@@ -439,7 +465,7 @@ export default function DoctorProfilePage() {
               "@type": "Answer",
               "text": `${doctor.name} practices at ${availabilityArray
                 .map(slot => {
-                  const hospSlug = slot.hospital;
+                  const hospSlug = slot?.hospital;
                   return hospitals.find(h => h.slug === hospSlug || h.name === hospSlug)?.name || hospSlug;
                 })
                 .filter(Boolean)
@@ -657,18 +683,17 @@ export default function DoctorProfilePage() {
                 {language === 'bn' ? 'চেম্বার নির্বাচন করুন' : 'Select Chamber'}
               </h2>
               <div className="space-y-4">
-                {availabilityArray.map((slot: any, index: number) => {
-                  const hospitalSlug = slot.hospital || "unknown";
+                {groupedAvailability.map((group: any, index: number) => {
+                  const hospitalSlug = group.hospital;
                   const hObj = hospitals.find(h => h.name === hospitalSlug || (h as any).slug === hospitalSlug);
                   const hospitalName = hObj?.name || hospitalSlug;
                   const hospitalBnName = hObj?.nameBn || hospitalName;
-                  const isSelected = selectedSlotIndex === index;
-                  const formattedText = formatSlot(slot);
+                  const isSelected = selectedHospitalSlug === hospitalSlug;
 
                   return (
                     <div
                       key={index}
-                      onClick={() => setSelectedSlotIndex(index)}
+                      onClick={() => setSelectedHospitalSlug(hospitalSlug)}
                       className={`p-5 border-2 transition-all duration-300 cursor-pointer select-none relative flex flex-col gap-3 group ${
                         isSelected
                           ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/5 scale-[1.01]"
@@ -694,14 +719,16 @@ export default function DoctorProfilePage() {
                         </div>
                       )}
                       <div className="space-y-2 pl-7">
-                        <div className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-colors ${
-                          isSelected ? 'bg-primary/5' : 'bg-gray-50'
-                        }`}>
-                          <Clock className={`h-4 w-4 shrink-0 mt-0.5 ${isSelected ? 'text-primary' : 'text-gray-400'}`} />
-                          <span className={`text-sm font-bold ${isSelected ? 'text-primary-dark' : 'text-gray-600'}`}>
-                            {formattedText}
-                          </span>
-                        </div>
+                        {group.slots.map((slot: any, sIdx: number) => (
+                          <div key={sIdx} className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-colors ${
+                            isSelected ? 'bg-primary/5' : 'bg-gray-50'
+                          }`}>
+                            <Clock className={`h-4 w-4 shrink-0 mt-0.5 ${isSelected ? 'text-primary' : 'text-gray-400'}`} />
+                            <span className={`text-sm font-bold ${isSelected ? 'text-primary-dark' : 'text-gray-600'}`}>
+                              {formatSlot(slot)}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   );
@@ -712,7 +739,7 @@ export default function DoctorProfilePage() {
             {/* Book Appointment */}
             <div>
               <div className="space-y-5">
-                <Link href={`/doctor/${doctorId}/book?slotIndex=${selectedSlotIndex}`}>
+                <Link href={`/doctor/${doctorId}/book?hospital=${selectedHospitalSlug}`}>
                   <Button
                     className="w-full btn-primary btn-slide h-12"
                   >
@@ -847,30 +874,25 @@ export default function DoctorProfilePage() {
                 {language === 'bn' ? 'চেম্বার নির্বাচন করুন' : 'Select Chamber'}
               </h2>
               <div className="space-y-4">
-                {availabilityArray.map((slot: any, index: number) => {
-                  const hospitalSlug = slot.hospital || "unknown";
-                  const hObj = hospitals.find(h => h.name === hospitalSlug || (h as any).slug === hospitalSlug);
-                  const hospitalName = hObj?.name || hospitalSlug;
-                  const hospitalBnName = hObj?.nameBn || hospitalName;
-                  const isSelected = selectedSlotIndex === index;
-                  const formattedText = formatSlot(slot);
-
+                {groupedAvailability.map((group: any, index: number) => {
+                  const isSelected = selectedHospitalSlug === group.hospitalSlug;
+                  
                   return (
                     <div
                       key={index}
-                      onClick={() => setSelectedSlotIndex(index)}
+                      onClick={() => setSelectedHospitalSlug(group.hospitalSlug)}
                       className={`p-5 rounded-2xl border-2 transition-all duration-300 cursor-pointer select-none relative flex flex-col gap-3 group ${
                         isSelected
                           ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/5 scale-[1.01]"
                           : "border-gray-100 bg-white hover:border-primary/30 hover:bg-gray-50/50 shadow-sm"
                       }`}
                     >
-                      {hospitalSlug !== 'unknown' && (
+                      {group.hospitalSlug !== 'unknown' && (
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex items-center gap-2.5">
                             <MapPin className={`h-5 w-5 shrink-0 transition-colors ${isSelected ? 'text-primary' : 'text-gray-400 group-hover:text-primary/70'}`} />
                             <p className={`md:text-lg font-extrabold transition-colors ${isSelected ? 'text-primary' : 'text-gray-800'}`}>
-                              {language === 'bn' ? hospitalBnName : hospitalName}
+                              {language === 'bn' ? group.hospitalBnName : group.hospitalName}
                             </p>
                           </div>
                           {/* Custom Radio Button */}
@@ -884,14 +906,16 @@ export default function DoctorProfilePage() {
                         </div>
                       )}
                       <div className="space-y-2 pl-7">
-                        <div className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-colors ${
-                          isSelected ? 'bg-primary/5' : 'bg-gray-50'
-                        }`}>
-                          <Clock className={`h-4 w-4 shrink-0 mt-0.5 ${isSelected ? 'text-primary' : 'text-gray-400'}`} />
-                          <span className={`text-sm font-bold ${isSelected ? 'text-primary-dark' : 'text-gray-600'}`}>
-                            {formattedText}
-                          </span>
-                        </div>
+                        {group.slots.map((slotInfo: any, sIdx: number) => (
+                          <div key={sIdx} className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-colors ${
+                            isSelected ? 'bg-primary/5' : 'bg-gray-50'
+                          }`}>
+                            <Clock className={`h-4 w-4 shrink-0 mt-0.5 ${isSelected ? 'text-primary' : 'text-gray-400'}`} />
+                            <span className={`text-sm font-bold ${isSelected ? 'text-primary-dark' : 'text-gray-600'}`}>
+                              {slotInfo.formattedText}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   );
@@ -905,7 +929,7 @@ export default function DoctorProfilePage() {
                 {language === 'bn' ? 'অ্যাপয়েন্টমেন্ট বুক করুন' : 'Book Appointment'}
               </h2>
               <div className="space-y-5">
-                <Link href={`/doctor/${doctorId}/book?slotIndex=${selectedSlotIndex}`}>
+                <Link href={`/doctor/${doctorId}/book?hospitalSlug=${encodeURIComponent(selectedHospitalSlug)}`}>
                   <Button
                     className="w-full btn-primary btn-slide py-6"
                   >

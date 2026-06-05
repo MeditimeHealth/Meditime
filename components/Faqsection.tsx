@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Phone, Plus, X } from "lucide-react";
+import { ArrowRight, ChevronRight, Phone, Plus, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
 
@@ -19,7 +19,7 @@ export default function FaqSection() {
 
   return (
     <section className="w-full py-20 sm:py-32 bg-slate-50 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
           
           {/* LEFT: HEADER & CTA */}
@@ -31,7 +31,7 @@ export default function FaqSection() {
           >
           
             
-            <h2 className="text-4xl sm:text-5xl lg:text-[64px] font-bold text-slate-900 leading-[1.1] mb-8 tracking-tight">
+            <h2 className="text-4xl sm:text-5xl lg:text-[64px] font-bold text-[#017991] leading-[1.1] mb-8 tracking-tight">
               {t.title}
             </h2>
             
@@ -57,7 +57,7 @@ export default function FaqSection() {
                 >
                   <span className="relative z-10 flex items-center gap-3">
                     {t.contactSupport}
-                    <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </span>
                 </a>
               </div>

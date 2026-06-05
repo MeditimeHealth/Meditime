@@ -42,7 +42,7 @@ export default function Footer() {
 
   return (
     <footer className="w-full" style={{ backgroundColor: "#193252", color: "#9CA3AF" }}>
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-14">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── TOP ROW ─────────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center py-8 sm:py-12 border-b border-white/5">

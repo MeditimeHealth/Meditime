@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Card } from "@/components/ui/card";
@@ -16,6 +16,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 import { convertToBengaliNumber, convertToEnglishNumber } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 
 
 const doctorSchema = z.object({
@@ -753,17 +754,23 @@ export default function CreateDoctorPage() {
                     <Label className="mb-2 block">
                       {t("hospitalName", formLanguage)} <span className="text-red-500">*</span>
                     </Label>
-                    <select
-                      {...register(`availability.${slotIndex}.hospital`)}
-                      className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                    >
-                      <option value="">{t("selectHospital", formLanguage)}</option>
-                      {hospitals.map((h) => (
-                        <option key={h._id} value={h.slug || h.name}>
-                          {formLanguage === 'bn' && h.nameBn ? h.nameBn : h.name}
-                        </option>
-                      ))}
-                    </select>
+                    <Controller
+                      name={`availability.${slotIndex}.hospital`}
+                      control={control}
+                      render={({ field }) => (
+                        <SearchableSelect
+                          options={hospitals.map(h => ({
+                            value: h.slug || h.name,
+                            label: formLanguage === 'bn' && h.nameBn ? h.nameBn : h.name
+                          }))}
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          placeholder={t("selectHospital", formLanguage)}
+                          className="mt-1"
+                          error={!!errors.availability?.[slotIndex]?.hospital}
+                        />
+                      )}
+                    />
                     {errors.availability?.[slotIndex]?.hospital && (
                       <p className="text-sm text-red-500 mt-1">
                         {errors.availability[slotIndex]?.hospital?.message}
@@ -825,7 +832,7 @@ export default function CreateDoctorPage() {
                                 : "bg-amber-100 text-amber-700 hover:bg-amber-200 border-amber-300"
                             }`}
                           >
-                            {formLanguage === 'bn' ? 'অন কল (On Call)' : 'On Call'}
+                            {formLanguage === 'bn' ? 'অন কল' : 'On Call'}
                           </button>
                         );
                       })()}

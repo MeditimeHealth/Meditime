@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
 
@@ -68,7 +68,7 @@ export default function ServicesSection() {
 
   return (
     <div className="bg-[#F5F6F8] py-16 sm:py-24">
-      <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Header ── */}
         <motion.div
@@ -78,10 +78,12 @@ export default function ServicesSection() {
           transition={{ duration: 0.5 }}
           className="mb-16 text-center"
         >
-          <h2 className="text-[28px] sm:text-[48px] font-bold mb-4 text-slate-900 tracking-tight max-w-[804px] mx-auto leading-[1.1]">
+          <h2 className="text-[28px] sm:text-[48px]  font-bold mb-4 text-[#017991] tracking-tight max-w-[804px] mx-auto leading-[1.1]">
             {t.title}
           </h2>
-          <p className="text-[14px] sm:text-[16px]  max-w-[650px] mx-auto leading-relaxed">
+                    <div className="w-20 h-1.5 bg-primary mx-auto mb-6 shadow-[0_0_15px_rgba(13,148,136,0.5)]" />
+
+          <p className="text-[#193252]  text-sm sm:text-lg max-w-[650px] mx-auto leading-relaxed">
             {t.subtitle}
           </p>
         </motion.div>
@@ -113,7 +115,7 @@ export default function ServicesSection() {
 
                   {/* CONTENT SIDE */}
                   <div className={`p-8 sm:p-12 lg:p-20 flex flex-col justify-center ${isEven ? 'lg:order-2' : 'lg:order-1'}`}>
-                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight mb-6">
+                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#017991] leading-tight mb-6">
                       {service.title}
                     </h3>
 
@@ -126,7 +128,7 @@ export default function ServicesSection() {
                         <button className="btn-slide btn-primary group/btn rounded-none border border-primary text-primary font-bold text-sm sm:text-base py-4 px-8 sm:px-10 shadow-lg transition-all inline-flex items-center gap-3 active:scale-95 overflow-hidden">
                           <span className="relative z-10 flex items-center gap-3">
                             {service.cta}
-                            <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                           </span>
                         </button>
                       </Link>

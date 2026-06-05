@@ -15,6 +15,7 @@ import { translations } from "@/lib/translations";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { IDoctor } from "@/models/Doctor";
 import Nav_for_details from "@/components/nav_for_details";
+import PageLoader from "@/components/page-loader";
 
 
 
@@ -68,12 +69,10 @@ export default function BookAppointmentPage() {
   const [affiliateCode, setAffiliateCode] = useState("");
 
   const searchParams = useSearchParams();
-  const slotIndexParam = searchParams?.get("slotIndex");
-  const slotIndex = slotIndexParam ? parseInt(slotIndexParam, 10) : 0;
+  const hospitalSlugParam = searchParams?.get("hospitalSlug");
 
   const availabilityArray = doctor ? (Array.isArray(doctor.availability) ? doctor.availability : [doctor.availability]) : [];
-  const selectedSlot = availabilityArray[slotIndex] || availabilityArray[0];
-  const selectedHospitalSlug = selectedSlot?.hospital;
+  const selectedHospitalSlug = hospitalSlugParam || (availabilityArray.length > 0 ? availabilityArray[0].hospital : null);
 
   const [hospitals, setHospitals] = useState<any[]>([]);
 
@@ -123,20 +122,21 @@ export default function BookAppointmentPage() {
   }, [doctorId]);
 
   const getAvailableDays = useCallback((): string[] => {
-    if (!doctor) return [];
+    if (!doctor || !selectedHospitalSlug) return [];
     const availabilityArray = Array.isArray(doctor.availability)
       ? doctor.availability
       : [doctor.availability];
 
-    const slot = availabilityArray[slotIndex] || availabilityArray[0];
-    if (!slot) return [];
+    const hospitalSlots = availabilityArray.filter((s: any) => s.hospital === selectedHospitalSlug);
 
     const allDays = new Set<string>();
-    if (slot.days) {
-      slot.days.forEach((day: string) => allDays.add(day));
-    }
+    hospitalSlots.forEach((slot: any) => {
+      if (slot.days) {
+        slot.days.forEach((day: string) => allDays.add(day));
+      }
+    });
     return Array.from(allDays);
-  }, [doctor, slotIndex]);
+  }, [doctor, selectedHospitalSlug]);
 
   // Helper function to get date string in YYYY-MM-DD format
   const getDateString = (date: Date): string => {
@@ -302,6 +302,14 @@ export default function BookAppointmentPage() {
     }
   };
 
+  const getSlotForDate = (date: Date) => {
+    if (!doctor || !selectedHospitalSlug) return null;
+    const availabilityArray = Array.isArray(doctor.availability) ? doctor.availability : [doctor.availability];
+    const hospitalSlots = availabilityArray.filter((s: any) => s.hospital === selectedHospitalSlug);
+    const dayName = getDayName(date);
+    return hospitalSlots.find((s: any) => s.days && s.days.includes(dayName));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedHospitalSlug || !selectedDate) {
@@ -317,6 +325,8 @@ export default function BookAppointmentPage() {
       const selectedHospitalObj = hospitals.find(h => h.slug === selectedHospitalSlug || h.name === selectedHospitalSlug);
       const hospitalName = selectedHospitalObj?.name || selectedHospitalSlug;
       const hospitalBn = selectedHospitalObj?.nameBn || hospitalName;
+
+      const slotForDate = getSlotForDate(selectedDate);
 
       // Save booking data to localStorage and go to checkout page
       const checkoutData = {
@@ -344,7 +354,7 @@ export default function BookAppointmentPage() {
         hospitalBn,
         hospitalSlug: selectedHospitalSlug,
         appointmentDate: selectedDate.toISOString(),
-        appointmentTime: selectedSlot?.time || undefined,
+        appointmentTime: slotForDate?.time || undefined,
         userId: user?._id || user?.id || undefined,
         affiliateCode: affiliateCode || undefined,
       };
@@ -375,12 +385,7 @@ export default function BookAppointmentPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="flex items-center justify-center min-h-[80vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      </div>
+      <PageLoader/>
     );
   }
 

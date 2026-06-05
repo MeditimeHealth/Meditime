@@ -10,6 +10,7 @@ import "swiper/css/effect-fade";
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
+import { ChevronRight } from "lucide-react";
 
 export default function HeroSection() {
   const { language } = useLanguage();
@@ -32,7 +33,7 @@ export default function HeroSection() {
       ctaText: t.slide3.cta,
       ctaLink: "https://play.google.com/store",
     },
-     {
+    {
       title: t.slide2.title,
       description: t.slide2.description,
       image: "/slide2.jpg",
@@ -109,7 +110,7 @@ export default function HeroSection() {
                   <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight text-white mb-6 max-w-[320px] tracking-tight">
                     {slide.title}
                   </h1>
-                  <p className="text-[15px] sm:text-base text-white/90 leading-relaxed mb-10 max-w-[300px]">
+                  <p className=" text-sm sm:text-lg text-white/90 leading-relaxed mb-10 max-w-[300px]">
                     {slide.description}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4">
@@ -117,8 +118,9 @@ export default function HeroSection() {
                       href={slide.ctaLink}
                       target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
                     >
-                      <button className="btn-slide btn-primary w-full md:w-fit">
+                      <button className="btn-slide btn-primary w-full md:w-fit flex items-center gap-2 group">
                         <span className="relative z-10">{slide.ctaText}</span>
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </button>
                     </Link>
 
@@ -128,8 +130,9 @@ export default function HeroSection() {
                           href={slide.ctaLink2}
                           target={slide.ctaLink2.startsWith("http") ? "_blank" : "_self"}
                         >
-                          <button className="btn-slide btn-primary w-full md:w-fit">
+                          <button className="btn-slide btn-primary w-full md:w-fit flex items-center gap-2">
                             <span className="relative z-10">{slide.ctaText2}</span>
+                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                           </button>
                         </Link>
                       )
@@ -173,7 +176,7 @@ export default function HeroSection() {
                     <h1 className="text-[42px] font-bold leading-[1.15] text-white mb-4">
                       {slide.title}
                     </h1>
-                    <p className="text-[14px] leading-relaxed text-white/85 mb-6 max-w-[420px]">
+                    <p className=" text-sm sm:text-lg leading-relaxed text-white/85 mb-6 max-w-[420px]">
                       {slide.description}
                     </p>
                     <div className="flex gap-4">
@@ -181,8 +184,9 @@ export default function HeroSection() {
                         href={slide.ctaLink}
                         target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
                       >
-                        <button className="btn-slide btn-primary font-medium text-[15px] px-7 py-3 ">
+                        <button className="btn-slide btn-primary font-medium text-[15px] px-7 py-3 flex items-center gap-2 group">
                           <span className="relative z-10">{slide.ctaText}</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </button>
                       </Link>
 
@@ -192,13 +196,14 @@ export default function HeroSection() {
                             href={slide.ctaLink2}
                             target={slide.ctaLink2?.startsWith("http") ? "_blank" : "_self"}
                           >
-                            <button className="btn-slide btn-primary  font-medium text-[15px] px-7 py-3 ">
+                            <button className="btn-slide btn-primary  font-medium text-[15px] px-7 py-3 flex items-center gap-2 group">
                               <span className="relative z-10">{slide.ctaText2}</span>
+                              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </button>
                           </Link>
                         )
                       }
-        
+
                     </div>
                   </div>
                 </div>

@@ -9,6 +9,8 @@ import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
 
 interface Hospital {
+  addressBn: string | null | undefined;
+  address: string | null | undefined;
   _id: string;
   name: string;
   nameBn?: string;
@@ -46,6 +48,7 @@ export default function HospitalPartnersSection() {
       try {
         const response = await fetch("/api/locations/hospitals");
         const data = await response.json();
+        console.log(data);
         if (response.ok) {
           setHospitals(data.hospitals);
         }
@@ -78,11 +81,11 @@ export default function HospitalPartnersSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-3xl sm:text-4xl font-bold mb-3  tracking-tight leading-snug ">
+            <h2 className="text-3xl sm:text-4xl text-white font-bold mb-3  tracking-tight leading-snug ">
               {t.title}
             </h2>
             <div className="w-20 h-1.5 bg-primary mx-auto mb-6 shadow-[0_0_15px_rgba(13,148,136,0.5)]" />
-            <p className="text-[13px] sm:text-[14px] text-slate-400 max-w-sm mx-auto leading-relaxed font-medium">
+            <p className=" text-sm sm:text-lg text-white/90 max-w-sm mx-auto leading-relaxed font-medium">
               {t.subtitle}
             </p>
           </motion.div>
@@ -122,8 +125,8 @@ export default function HospitalPartnersSection() {
                       </h3>
                       <p className="text-white/70 text-[13px] font-medium flex items-center gap-1">
                         {getLocalizedValue(
-                          hospital.location || hospital.thana?.name || "Savar, Dhaka",
-                          hospital.thana?.nameBn || "সাভার, ঢাকা",
+                          hospital.address,
+                          hospital.addressBn,
                           language
                         )}
                       </p>

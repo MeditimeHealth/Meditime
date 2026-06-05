@@ -16,7 +16,7 @@ import { Plus, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
-
+import { SearchableSelect } from "@/components/ui/searchable-select";
 const doctorSchema = z.object({
   name: z.string().optional(),
   specialty: z.string().optional(),
@@ -1109,18 +1109,17 @@ export default function EditDoctorPage() {
                     <Label className="mb-2 block">
                       {t("hospitalName", language)} <span className="text-red-500">*</span>
                     </Label>
-                    <select
-                      value={slot.hospital || ""}
-                      onChange={(e) => updateSlotHospital(slotIndex, e.target.value)}
-                      className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                    >
-                      <option value="">{t("selectHospital", language)}</option>
-                      {hospitals.map((h) => (
-                        <option key={h._id} value={h.slug || h.name}>
-                          {language === 'bn' && h.nameBn ? h.nameBn : h.name}
-                        </option>
-                      ))}
-                    </select>
+                    <SearchableSelect
+                      options={hospitals.map(h => ({
+                        value: h.slug || h.name,
+                        label: language === 'bn' && h.nameBn ? h.nameBn : h.name
+                      }))}
+                      value={slot.hospital || ''}
+                      onChange={(value) => updateSlotHospital(slotIndex, value)}
+                      placeholder={t("selectHospital", language)}
+                      className="mt-1"
+                      error={!!errors.availabilitySlots?.[slotIndex]?.hospital}
+                    />
                     {errors.availabilitySlots?.[slotIndex]?.hospital && (
                       <p className="text-sm text-red-500 mt-1">
                         {errors.availabilitySlots[slotIndex]?.hospital?.message}

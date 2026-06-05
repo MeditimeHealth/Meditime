@@ -53,6 +53,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import DoctorCard from "@/components/doctor-card";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
+import PageLoader from "@/components/page-loader";
 
 interface Department {
   _id: string;
@@ -685,25 +686,7 @@ function DoctorListPageContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <Navbar />
-        <div className="flex items-center justify-center min-h-[80vh]">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center"
-          >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"
-            />
-            <p className="text-xl font-semibold text-gray-700">
-              {t.loading}
-            </p>
-          </motion.div>
-        </div>
-      </div>
+      <PageLoader />
     );
   }
 
@@ -1558,9 +1541,7 @@ export default function DoctorListPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-gray-500">Loading... / লোড হচ্ছে...</div>
-        </div>
+        <PageLoader/>
       }
     >
       <DoctorListPageContent />

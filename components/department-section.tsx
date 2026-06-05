@@ -97,7 +97,7 @@ export default function DepartmentSection() {
 
   if (loading) {
     return (
-      <div className="w-full py-16 bg-white flex justify-center">
+      <div className="w-full py-16 bg-white flex justify-center ">
         <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -105,7 +105,7 @@ export default function DepartmentSection() {
 
   return (
     <div className="w-full px-0 sm:px-6 lg:px-0 py-12 sm:py-20 bg-[var(--background-dark)] overflow-hidden  mx-auto rounded-none shadow-2xl">
-      <div className="mb-12 text-center max-w-7xl mx-auto px-4 sm:px-0">
+      <div className="mb-12 text-center container mx-auto px-4 sm:px-6 lg:px-8">
         {/* ── Header ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -113,11 +113,11 @@ export default function DepartmentSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl sm:text-4xl font-bold mb-3  tracking-tight leading-snug ">
+          <h2 className="text-3xl sm:text-4xl text-white font-bold mb-3  tracking-tight leading-snug ">
             {t.title}
           </h2>
           <div className="w-20 h-1.5 bg-primary mx-auto mb-6 shadow-[0_0_15px_rgba(13,148,136,0.5)]" />
-          <p className="text-[13px] sm:text-[14px] max-w-sm mx-auto leading-relaxed font-medium">
+          <p className="text-sm sm:text-lg max-w-sm mx-auto leading-relaxed font-medium text-white/90">
             {t.subtitle}
           </p>
         </motion.div>

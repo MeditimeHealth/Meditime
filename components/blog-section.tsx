@@ -74,7 +74,7 @@ export default function BlogSection() {
 
   return (
     <div className="w-full py-10 sm:py-16 bg-white">
-      <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header — two columns */}
         <div className="flex flex-col gap-4 sm:gap-6 mb-8 sm:mb-12">

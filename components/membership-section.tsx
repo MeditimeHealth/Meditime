@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, PlayCircle } from "lucide-react";
+import { ArrowRight, ChevronRight, PlayCircle } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
@@ -14,7 +14,7 @@ export default function MembershipSection() {
 
   return (
     <div className="w-full py-10 sm:py-16 bg-[#F5F6F8]">
-      <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -46,7 +46,7 @@ export default function MembershipSection() {
                   <button className="btn-slide group/btn btn-primary rounded-none border border-primary text-primary font-bold text-sm sm:text-base py-3 px-8 sm:px-10 shadow-lg transition-all inline-flex items-center gap-3 active:scale-95 overflow-hidden">
                     <span className="relative z-10 flex items-center gap-3">
                       {t.availBtn}
-                      <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </span>
                   </button>
                 </Link>
