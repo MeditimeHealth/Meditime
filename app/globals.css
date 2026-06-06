@@ -267,10 +267,22 @@ p {
   transition: all 0.2s ease-in-out;
   box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.3);
 }
+.btn-primaryx {
+  background: var(--background-dark);
+  color: white;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.3);
+}
 
 
 
 .btn-primary:active {
+  transform: translateY(0);
+}
+.btn-primaryx:active {
   transform: translateY(0);
 }
 
@@ -383,6 +395,43 @@ html {
 
 /* Group trigger variant */
 .group:hover .group-btn-slide::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ── Reusable Left-to-Right Slide Animation ────────────────────────── */
+.btn-slidex {
+  position: relative;
+  overflow: hidden;
+  transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.btn-slidex::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+.btn-slidex:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.btn-slidex:hover {
+  color: white !important;
+}
+
+/* Group trigger variant */
+.group:hover .group-btn-slidex::before {
   transform: scaleX(1);
   transform-origin: left;
 }

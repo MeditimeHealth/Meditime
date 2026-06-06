@@ -600,7 +600,7 @@ export default function UserProfilePage() {
                 </div>
                 {language === "bn" ? "নতুন অ্যাপয়েন্টমেন্ট" : "Book New Appointment"}
               </Button>
-              <Button onClick={() => router.push('/appointments')} className="w-full h-14 rounded-2xl justify-start px-6 gap-4 font-bold group" variant="outline">
+              <Button onClick={() => router.push('/user/dashboard')} className="w-full h-14 rounded-2xl justify-start px-6 gap-4 font-bold group" variant="outline">
                 <div className="h-8 w-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
                   <ShieldCheck className="h-4 w-4" />
                 </div>

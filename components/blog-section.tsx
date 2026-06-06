@@ -78,18 +78,19 @@ export default function BlogSection() {
 
         {/* Header — two columns */}
         <div className="flex flex-col gap-4 sm:gap-6 mb-8 sm:mb-12">
-          <h2 className="text-[24px] sm:text-[32px] lg:text-[42px] font-bold text-slate-900 leading-[1.2] lg:max-w-xl">
+          <h2 className="text-[24px] sm:text-[32px] lg:text-[42px] font-bold text-[#017991] leading-[1.2] lg:max-w-xl">
             {t.title}
           </h2>
           <div className="flex flex-col items-start gap-5 lg:max-w-md text-left">
-            <p className="text-[15px] text-slate-500 leading-relaxed font-normal">
-              {t.subtitle}
-            </p>
+            <p className="text-[#193252]  text-sm sm:text-lg max-w-[650px] mx-auto leading-relaxed">
+            {t.subtitle}
+          </p>
             <Link
               href="/blog"
-              className="btn-slide btn-primary"
+              className="btn-slide btn-primary flex items-center gap-2 group"
             >
-              {t.viewMore}
+              <h4 className="text-white  "> {t.viewMore}</h4>
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-white" />
             </Link>
           </div>
         </div>
@@ -142,9 +143,9 @@ export default function BlogSection() {
                     {stripHtml(post.excerpt.rendered)}
                   </p>
                   {/* Read More */}
-                  <div className="inline-flex  p-2 border border-primary rounded-2xl btn-slide items-center gap-1 text-primary text-sm font-semibold">
+                  <div className="btn-slide btn-primary flex items-center gap-2 group w-fit text-sm">
                     {t.readMore}
-                    <ArrowUpRight className="w-3.5 h-3.5" />
+                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
               </SwiperSlide>

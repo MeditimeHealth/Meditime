@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useInView, useSpring, useTransform } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronRight } from "lucide-react";
 import { PiUsersThreeDuotone, PiHospitalDuotone, PiFlaskDuotone, PiDropDuotone, PiStethoscopeDuotone, PiPlusCircleDuotone } from "react-icons/pi";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
@@ -271,7 +271,7 @@ export default function ServicePage() {
                         <button className="btn-slide group/btn btn-primary overflow-hidden">
                           <span className="relative z-10 flex items-center gap-3">
                             {service.cta}
-                            <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                           </span>
                         </button>
                       </Link>

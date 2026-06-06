@@ -153,7 +153,7 @@ export default function Navbar() {
                 window.scrollTo({ top: 0, behavior: "smooth" })
               }}>
                 <img
-                  src="/SVG/asset-3.svg"
+                  src="/SVG/asset-3.png"
                   alt="Logo"
                   className="h-8 sm:h-8 md:h-8 w-auto cursor-pointer"
                 />

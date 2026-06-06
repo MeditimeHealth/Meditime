@@ -183,11 +183,11 @@ export default function LoginPage() {
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 mb-8">
                     <Image 
-                      src="/logo.png" 
+                      src="/SVG/asset-3.png" 
                       alt="Logo" 
                       width={120} 
                       height={120} 
-                      className="h-12 w-auto cursor-pointer bg-white p-2 rounded-xl" 
+                      className="h-12 w-auto cursor-pointer" 
                       style={{ width: "auto", height: "auto" }}
                       priority
                     />

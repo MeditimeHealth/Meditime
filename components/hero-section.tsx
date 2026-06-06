@@ -27,17 +27,17 @@ export default function HeroSection() {
       ctaLink2: "/",
     },
     {
-      title: t.slide3.title,
-      description: t.slide3.description,
-      image: "/slide3.jpg",
-      ctaText: t.slide3.cta,
-      ctaLink: "https://play.google.com/store",
-    },
-    {
       title: t.slide2.title,
       description: t.slide2.description,
       image: "/slide2.jpg",
       ctaText: t.slide2.cta,
+      ctaLink: "https://play.google.com/store",
+    },
+    {
+      title: t.slide3.title,
+      description: t.slide3.description,
+      image: "/slide3.jpg",
+      ctaText: t.slide3.cta,
       ctaLink: "/membership",
     },
     {
@@ -130,7 +130,7 @@ export default function HeroSection() {
                           href={slide.ctaLink2}
                           target={slide.ctaLink2.startsWith("http") ? "_blank" : "_self"}
                         >
-                          <button className="btn-slide btn-primary w-full md:w-fit flex items-center gap-2">
+                          <button className="btn-slidex btn-primaryx w-full md:w-fit flex items-center gap-2">
                             <span className="relative z-10">{slide.ctaText2}</span>
                             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                           </button>
@@ -196,7 +196,7 @@ export default function HeroSection() {
                             href={slide.ctaLink2}
                             target={slide.ctaLink2?.startsWith("http") ? "_blank" : "_self"}
                           >
-                            <button className="btn-slide btn-primary  font-medium text-[15px] px-7 py-3 flex items-center gap-2 group">
+                            <button className="btn-slidex btn-primaryx  font-medium text-[15px] px-7 py-3 flex items-center gap-2 group">
                               <span className="relative z-10">{slide.ctaText2}</span>
                               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </button>

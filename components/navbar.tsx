@@ -156,7 +156,7 @@ export default function Navbar() {
                 window.scrollTo({ top: 0, behavior: "smooth" })
               }}>
                 <img
-                  src="/SVG/asset-3.svg"
+                  src="/SVG/asset-3.png"
                   alt="Logo"
                   className="h-8 sm:h-8 md:h-8 w-auto cursor-pointer"
                 />
@@ -239,7 +239,7 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/user/dashboard"
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20  transition-all hover:scale-105 active:scale-95"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-primary font-bold text-sm  "
                   >
                     <Activity className="h-4 w-4" />
                     {language === 'bn' ? 'ড্যাশবোর্ড' : 'Dashboard'}
@@ -248,7 +248,7 @@ export default function Navbar() {
               ) : affiliate ? (
                 <Link
                   href="/affiliate-program/dashboard"
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all hover:scale-105 active:scale-95"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-primary font-bold text-sm shadow-lg  "
                 >
                   <Wallet className="h-4 w-4" />
                   {language === 'bn' ? 'ড্যাশবোর্ড' : 'Dashboard'}
@@ -269,10 +269,7 @@ export default function Navbar() {
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link
                       href="/signup"
-                      className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${scrolled
-                        ? "bg-white hover:bg-primary/90 text-primary"
-                        : "bg-primary hover:bg-white/35 backdrop-blur-sm text-white"
-                        }`}
+                      className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300  bg-white hover:bg-primary/90 text-primary`}
                     >
                       {t.signup}
                     </Link>

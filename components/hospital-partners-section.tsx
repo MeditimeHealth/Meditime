@@ -70,7 +70,7 @@ export default function HospitalPartnersSection() {
   }
 
   return (
-    <div className="w-full bg-[var(--background-dark)] py-20 overflow-hidden">
+    <div className="w-full bg-[var(--background-dark)] py-10 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* ── Header ── */}

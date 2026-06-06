@@ -70,7 +70,7 @@ export const homepageTranslations = {
       callNowBtn: "Call Now",
     },
     whyChoose: {
-      title: "Choose Meditime Section",
+      title: "Why Choose Meditime?",
       subtitle: "Health issues don't wait for office hours, and neither do we. Book your consultations any time of the day or night, seven days a week.",
       quickCareTitle: "Quick Care with Meditime",
       quickCareDesc: "Stop worrying about long waits. With Meditime, booking your doctor is fast and easy, so you get the care you need exactly when you need it.",
@@ -499,7 +499,7 @@ export const homepageTranslations = {
     },
     footer: {
       aboutTitle: "About Meditime",
-      tagline: "Meditime- Right Care On Time",
+      tagline: "Meditime | Right Care on Time",
       getStarted: "Get started and book your appointment.",
       emailPlaceholder: "Enter E-Mail",
       sendEmail: "Submit",
@@ -634,25 +634,25 @@ export const homepageTranslations = {
     },
     hero: {
       slide1: {
-        title: "বিশেষজ্ঞ ডাক্তারদের সিরিয়াল এখন এক ক্লিকেই!",
-        description: "সেরা চিকিৎসকের পরামর্শ এখন আপনার হাতের মুঠোয়! সাভার ও এর আশেপাশে বিশেষজ্ঞ ডাক্তারদের সিরিয়াল নিন ঝামেলাহীনভাবে।",
+        title: "বিশেষজ্ঞ ডাক্তারদের সিরিয়াল এখন এক ক্লিকেই!",
+        description: " সেরা চিকিৎসকের পরামর্শ এখন আপনার হাতের মুঠোয়! সাভার ও এর আশেপাশে বিশেষজ্ঞ ডাক্তারদের সিরিয়াল নিন ঝামেলাহীনভাবে।",
         cta: "ডাক্তার বুক করুন",
-        cta2: "ভিডিও পরামর্শ"
+        cta2: "ভিডিও কনসালটেশন"
       },
       slide2: {
-        title: "১০০+ ডায়াগনস্টিক টেস্টের তথ্য এখন এক জায়গায়!",
-        description: "সেরা রেট যাচাই করুন এবং খরচ বাঁচান। একই সাথে ১০০-এর বেশি প্যাথলজি টেস্টের তথ্য আর খরচ জানুন এক প্ল্যাটফর্মে। মেডিটাইম কার্ড ব্যবহার করে আপনার টেস্ট খরচে সাশ্রয় করুন সর্বোচ্চ ৩০% পর্যন্ত!",
+        title: "১০০+ ডায়াগনস্টিক টেস্টের তথ্য এখন এক জায়গায়!",
+        description: "সেরা রেট যাচাই করুন এবং খরচ বাঁচান। একই সাথে ১০০-এর বেশি প্যাথলজি টেস্টের তথ্য আর খরচ জানুন এক প্ল্যাটফর্মে। মেডিটাইম কার্ড ব্যবহার করে আপনার টেস্ট খরচে সাশ্রয় করুন সর্বোচ্চ ৩০% পর্যন্ত।",
         cta: "টেস্ট খুঁজুন",
         ctaLink: "/diagnostic",
       },
       slide3: {
-        title: "মেডিটাইম কার্ড: প্রতি মেডিকেল বিলে নিশ্চিত সাশ্রয়",
-        description: "আমাদের হেলথ ডিসকাউন্ট কার্ড ব্যবহার করে ডাক্তার ফি এবং মেডিকেল টেস্টের বিল পরিশোধ করুন অনেক কম খরচে। আপনার কার্ডটি ৭ দিনের মধ্যে পৌঁছে যাবে এবং কার্ডটি হাতে পাওয়া মাত্রই ডিসকাউন্ট সুবিধা উপভোগ করতে পারবেন।",
+        title: "মেডিটাইম কার্ড — প্রতি মেডিকেল বিলে নিশ্চিত সাশ্রয়",
+        description: "আমাদের হেলথ ডিসকাউন্ট কার্ড ব্যবহার করে ডাক্তার ফি এবং মেডিকেল টেস্টের বিল পরিশোধ করুন অনেক কম খরচে। আপনার কার্ডটি ৭ দিনের মধ্যে পৌঁছে যাবে এবং কার্ড হাতে পাওয়ার মাত্রই ডিসকাউন্ট সুবিধা উপভোগ করতে পারবেন।",
         cta: "কার্ডটি সংগ্রহ করুন",
       },
       slide4: {
         title: "ডাউনলোড করুন মেডিটাইম মোবাইল অ্যাপ!",
-        description: "ডাক্তার দেখানো থেকে শুরু করে জরুরি অ্যাম্বুলেন্স--সবই এখন আপনার হাতের মুঠোয়। যেকোনো সময়, যেকোনো প্রয়োজনে সরাসরি অ্যাপ থেকেই সব ধরনের সাহায্য পাবেন। আজই ডাউনলোড করে নিশ্চিন্ত থাকুন।",
+        description: "ডাক্তার দেখানো থেকে শুরু করে জরুরি অ্যাম্বুলেন্স — সবই এখন আপনার হাতের মুঠোয়। যেকোনো সময়, যেকোনো প্রয়োজনে সরাসরি অ্যাপ থেকেই সব ধরনের সাহায্য পাবেন। আজই ডাউনলোড করে নিশ্চিন্ত থাকুন।",
         cta: "এখনই ডাউনলোড করুন",
       },
 
@@ -758,7 +758,7 @@ export const homepageTranslations = {
       viewAll: "সবগুলো দেখুন",
     },
     blog: {
-      title: "স্বাস্থ্য টিপস ও পরামর্শ:",
+      title: "স্বাস্থ্য টিপস ও পরামর্শ",
       subtitle: "আমাদের বিশেষজ্ঞদের লেখা ব্লকগুলো পড়ুন এবং প্রতিদিন নিজেকে স্বাস্থ্য সচেতন রাখুন। সেরা টিপস আর মেডিকেল তথ্য এখন আপনার হাতের মুঠোয়।",
       viewMore: "সবগুলো দেখুন",
       readMore: "বিস্তারিত পড়ুন",
@@ -1121,7 +1121,7 @@ export const homepageTranslations = {
     },
     footer: {
       aboutTitle: "মেডিটাইম সম্পর্কে",
-      tagline: "মেডিটাইম- সঠিক সময়ে সঠিক সেবা",
+      tagline: "মেডিটাইম | সঠিক সময়ে সঠিক সেবা",
       getStarted: "শুরু করুন এবং আপনার অ্যাপয়েন্টমেন্ট বুক করুন",
       emailPlaceholder: "ইমেইল দিন",
       sendEmail: "সম্পন্ন করুন",

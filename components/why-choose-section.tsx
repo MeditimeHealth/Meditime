@@ -79,7 +79,7 @@ export default function WhyChooseSection() {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-[20px] sm:text-[24px] font-bold mb-5 leading-tight shrink-0 text-slate-900 transition-colors duration-300 group-hover:text-white">
+                <h3 className="text-[20px] sm:text-[24px] font-bold mb-5 leading-tight shrink-0 text-[#017991] transition-colors duration-300 group-hover:text-white">
                   <span className="relative z-10">{title}</span>
                 </h3>
 

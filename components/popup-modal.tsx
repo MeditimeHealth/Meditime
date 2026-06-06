@@ -51,7 +51,7 @@ export default function PopupModal() {
     };
 
     fetchPopup();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // empty array: runs once on mount only, not on every route change
 
   const handleClose = () => {
@@ -93,57 +93,60 @@ export default function PopupModal() {
             >
               <X className="w-5 h-5" />
             </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 w-full">
+              <div className="w-full  relative min-h-[250px] md:min-h-[450px]">
+                <Image
+                  src={popupData.imageUrl}
+                  alt={currentTitle}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              </div>
+
+              {/* Content Section */}
+              <div className="w-full p-8 md:p-12 flex flex-col justify-center bg-white">
+                <div className="mb-2">
+                  <span className="text-[var(--primary)] font-bold text-xs uppercase tracking-[0.2em]">Latest Update</span>
+                </div>
+
+                <motion.h2
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-2xl md:text-4xl font-bold text-[#017991] mb-6 leading-tight"
+                >
+                  {currentTitle}
+                </motion.h2>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-slate-500 mb-10 text-lg leading-relaxed"
+                >
+                  {currentDesc}
+                </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <Link href={popupData.buttonLink} onClick={handleClose} className="inline-block w-full sm:w-auto">
+                    <button
+                      className="btn-primary btn-slide flex items-center justify-center gap-3 w-full"
+                    >
+                      {currentBtnText}
+                      <ArrowRight className="w-5 h-5" />
+                    </button>
+                  </Link>
+                </motion.div>
+              </div>
+            </div>
 
             {/* Image Section */}
-            <div className="w-full md:w-5/12 relative min-h-[250px] md:min-h-[450px]">
-              <Image
-                src={popupData.imageUrl}
-                alt={currentTitle}
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-            </div>
 
-            {/* Content Section */}
-            <div className="w-full md:w-7/12 p-8 md:p-12 flex flex-col justify-center bg-white">
-              <div className="mb-2">
-                <span className="text-[var(--primary)] font-bold text-xs uppercase tracking-[0.2em]">Latest Update</span>
-              </div>
-              
-              <motion.h2 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-2xl md:text-4xl font-bold text-slate-900 mb-6 leading-tight"
-              >
-                {currentTitle}
-              </motion.h2>
-              
-              <motion.p 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-slate-500 mb-10 text-lg leading-relaxed"
-              >
-                {currentDesc}
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <Link href={popupData.buttonLink} onClick={handleClose} className="inline-block w-full sm:w-auto">
-                  <button 
-                    className="btn-primary btn-slide flex items-center justify-center gap-3 w-full"
-                  >
-                    {currentBtnText}
-                    <ArrowRight className="w-5 h-5" />
-                  </button>
-                </Link>
-              </motion.div>
-            </div>
           </motion.div>
         </div>
       )}
