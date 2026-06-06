@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Doctor from "@/models/Doctor";
 import mongoose from "mongoose";
+import Hospital from "@/models/Hospital";
+import Thana from "@/models/Thana";
+import District from "@/models/District";
+import Division from "@/models/Division";
 import { generateUniqueSlug } from "@/lib/slug";
 import { verifyAdmin } from "@/lib/auth";
 
@@ -25,6 +29,9 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
     const specialty = searchParams.get("specialty");
     const hospitalSlug = searchParams.get("hospitalSlug") || searchParams.get("hospital");
+    const divisionName = searchParams.get("division");
+    const districtName = searchParams.get("district");
+    const thanaName = searchParams.get("thana");
     const department = searchParams.get("department");
     const qualification = searchParams.get("qualification");
     const minFee = searchParams.get("minFee");
@@ -57,11 +64,46 @@ export async function GET(request: NextRequest) {
 
     // Exact matches
     if (specialty) query.specialty = specialty;
-    if (hospitalSlug) query["availability.hospital"] = hospitalSlug;
     if (department) query.department = department;
     if (qualification) query.qualification = qualification;
 
+    let hospitalSlugs: string[] = [];
+    if (hospitalSlug) {
+      hospitalSlugs.push(hospitalSlug);
+    } else if (thanaName || districtName || divisionName) {
+      let thanaIds: mongoose.Types.ObjectId[] = [];
+      if (thanaName) {
+        const thana = await Thana.findOne({ name: thanaName });
+        if (thana) thanaIds.push(thana._id);
+      } else if (districtName) {
+        const district = await District.findOne({ name: districtName });
+        if (district) {
+          const thanas = await Thana.find({ district: district._id });
+          thanaIds = thanas.map(t => t._id);
+        }
+      } else if (divisionName) {
+        const division = await Division.findOne({ name: divisionName });
+        if (division) {
+          const districts = await District.find({ division: division._id });
+          const districtIds = districts.map(d => d._id);
+          const thanas = await Thana.find({ district: { $in: districtIds } });
+          thanaIds = thanas.map(t => t._id);
+        }
+      }
 
+      if (thanaIds.length > 0) {
+        const hospitals = await Hospital.find({ thana: { $in: thanaIds } });
+        hospitalSlugs = hospitals.map(h => h.slug).filter(Boolean) as string[];
+      } else {
+        // If location is provided but no hospitals found, we should return empty result
+        // By adding a non-existent slug, the query will return nothing.
+        hospitalSlugs.push("NON_EXISTENT_HOSPITAL_SLUG_FOR_EMPTY_LOCATION");
+      }
+    }
+
+    if (hospitalSlugs.length > 0) {
+      query["availability.hospital"] = { $in: hospitalSlugs };
+    }
 
     // Range filters
     if (minFee || maxFee) {
@@ -140,7 +182,6 @@ export async function POST(request: NextRequest) {
       newPatientFeeBn,
 
       // English counterparts for fields stored in Bangla
-      slugBn,
       diseasesEn,
     } = body;
 
@@ -204,11 +245,6 @@ export async function POST(request: NextRequest) {
 
     // Generate slugs
     doctorData.slug = await generateUniqueSlug(doctorData.name || doctorData.nameBn || "doctor", Doctor);
-    if (slugBn) {
-      doctorData.slugBn = slugBn;
-    } else {
-      doctorData.slugBn = await generateUniqueSlug(doctorData.nameBn || doctorData.name || "doctor", Doctor, undefined, 'slugBn');
-    }
 
     // Log the data being sent for debugging
     console.log('Creating doctor with data:', JSON.stringify(doctorData, null, 2));

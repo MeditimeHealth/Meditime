@@ -137,10 +137,10 @@ export default function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 
+        className={`fixed top-0 left-0 right-0 z-50 text-[var(--font-primary-heading)]
           transition-all duration-500 border-b border-primary py-4 sm:py-5 ${scrolled
             ? "bg-[#017991] shadow-md border-none"
-            : "lg:bg-transparent bg-[#017991] lg:border-b border-primary"
+            : "lg:bg-transparent bg-[#017991] lg:border-b border-primary "
           }`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -182,7 +182,7 @@ export default function Navbar() {
                         className={`${language === 'bn'
                           ? "text-[13px] xl:text-[15px] font-bold"
                           : "text-[11px] xl:text-[13px] font-semibold"
-                          }  whitespace-nowrap text-center ${isActive
+                          }  whitespace-nowrap text-center hover:border-primary hover:border-b-2 ${isActive
                             ? scrolled ? "text-primary" : "text-primary"
                             : scrolled ? "text-white   group-hover:text-primary" : "text-white group-hover:text-primary"
                           }`}

@@ -16,10 +16,8 @@ export interface IDoctor extends Document {
 
   /**
    * slug: English text slug used for English pages.
-   * slugBn: Bangla text slug used for Bangla pages.
    */
   slug: string;
-  slugBn?: string;
 
   // ── Department ─────────────────────────────────────────────────
   department?: string;
@@ -82,15 +80,9 @@ const DoctorSchema: Schema = new Schema(
     designation: { type: String, trim: true },
     designationBn: { type: String, trim: true },
 
-    // slug (English) + slugBn (Bangla)
+    // slug (English)
     slug: {
       type: String,
-      index: true,
-      trim: true,
-    },
-    slugBn: {
-      type: String,
-      sparse: true,   // allows multiple nulls while still being unique when set
       index: true,
       trim: true,
     },

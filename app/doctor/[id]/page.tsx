@@ -21,10 +21,7 @@ export async function generateMetadata(
       query = { _id: decodedId };
     } else {
       query = {
-        $or: [
-          { slug: decodedId },
-          { slugBn: decodedId },
-        ],
+        slug: decodedId
       };
     }
 
@@ -80,9 +77,8 @@ export async function generateMetadata(
       description,
 
       alternates: {
-        canonical: `https://meditime.com.bd/doctor/${
+        canonical: `https://meditime.com.bd/doctors/${
           doctor.slug ||
-          doctor.slugBn ||
           doctor._id
         }`,
       },

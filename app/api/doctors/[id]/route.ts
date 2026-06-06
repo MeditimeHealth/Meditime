@@ -22,10 +22,8 @@ export async function GET(
     if (!doctor) {
       doctor = await Doctor.findOne({ slug: decodedId });
     }
-    if (!doctor) {
-      doctor = await Doctor.findOne({ slugBn: decodedId });
-    }
     
+
     if (!doctor) {
       return NextResponse.json(
         { error: "Doctor not found" },
@@ -66,7 +64,6 @@ export async function PUT(
       qualification,
       designation,
       slug,       // Optional manual English slug override
-      slugBn,     // Optional manual Bangla slug override
 
       email,
       phoneNumber,
@@ -145,19 +142,7 @@ export async function PUT(
       }
     }
 
-    // 2. Bangla slug (slugBn)
-    if (slugBn) {
-      doctorData.slugBn = slugBn; // Use provided Bangla slug if any
-    } else {
-      const newNameBn = body.nameBn || name;
-      const oldNameBn = existingDoctor?.nameBn || existingDoctor?.name;
 
-      if (existingDoctor && !existingDoctor.slugBn && (newNameBn || oldNameBn)) {
-        doctorData.slugBn = await generateUniqueSlug(newNameBn || oldNameBn || 'doctor', Doctor, id, 'slugBn');
-      } else if (existingDoctor && newNameBn && newNameBn !== oldNameBn) {
-        doctorData.slugBn = await generateUniqueSlug(newNameBn, Doctor, id, 'slugBn');
-      }
-    }
 
     // Add optional fields
     if (specialty) doctorData.specialty = specialty;
@@ -184,7 +169,6 @@ export async function PUT(
     if (departmentBn) doctorData.departmentBn = departmentBn;
     if (reportShowFeeBn) doctorData.reportShowFeeBn = reportShowFeeBn;
     if (newPatientFeeBn) doctorData.newPatientFeeBn = newPatientFeeBn;
-    if (slugBn) doctorData.slugBn = slugBn;
 
     const doctor = await Doctor.findByIdAndUpdate(
       id,

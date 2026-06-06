@@ -217,9 +217,6 @@ export default function EditDoctorPage() {
     }
   };
 
-  useEffect(() => {
-    fetchHospitals("", 1);
-  }, []);
 
   // Sync internal language with global language on mount
   useEffect(() => {
@@ -324,13 +321,14 @@ export default function EditDoctorPage() {
 
   useEffect(() => {
     const loadInitialData = async () => {
-      // Fetch all required data in parallel
-      const [deptsRes, diseasesRes, divsRes, distsRes, thanasRes] = await Promise.all([
+      // Fetch all required data in parallel, including hospitals
+      const [deptsRes, diseasesRes, divsRes, distsRes, thanasRes, hospitalsRes] = await Promise.all([
         fetch("/api/departments"),
         fetch("/api/diseases"),
         fetch("/api/locations/divisions"),
         fetch("/api/locations/districts"),
-        fetch("/api/locations/thanas")
+        fetch("/api/locations/thanas"),
+        fetch("/api/locations/hospitals?limit=200"),
       ]);
 
       if (deptsRes.ok) {
@@ -365,9 +363,21 @@ export default function EditDoctorPage() {
         setThanas(data.thanas || []);
       }
 
-      // Load doctor data
+      // Load hospitals list and make it available before fetching doctor
+      let loadedHospitalsList: any[] = [];
+      if (hospitalsRes.ok) {
+        const hospitalsData = await hospitalsRes.json();
+        if (hospitalsData.hospitals) {
+          loadedHospitalsList = hospitalsData.hospitals;
+          setHospitals(loadedHospitalsList);
+          setAvailableHospitals(loadedHospitalsList);
+          setHasMoreHospitals(Boolean(hospitalsData.hasMore));
+        }
+      }
+
+      // Load doctor data — pass hospitals list so missing ones can be resolved
       if (doctorId) {
-        await fetchDoctor(loadedDiseasesList);
+        await fetchDoctor(loadedDiseasesList, loadedHospitalsList);
       }
     };
 
@@ -377,7 +387,7 @@ export default function EditDoctorPage() {
 
 
 
-  const fetchDoctor = async (loadedDiseases?: any[]) => {
+  const fetchDoctor = async (loadedDiseases?: any[], loadedHospitals?: any[]) => {
     try {
       setIsFetching(true);
       const response = await fetch(`/api/doctors/${doctorId}`);
@@ -411,6 +421,76 @@ export default function EditDoctorPage() {
         }
 
         setAvailabilitySlots(availabilityArray);
+
+        // Ensure all referenced hospitals are present in the hospitals list
+        // (they may not be in the initial paginated fetch of 20 results)
+        const referencedSlugs = availabilityArray
+          .map(s => s.hospital)
+          .filter(Boolean);
+
+        if (referencedSlugs.length > 0) {
+          // Use the hospitals that were passed in (from loadInitialData), or fall back to current state
+          const knownHospitals = loadedHospitals && loadedHospitals.length > 0
+            ? loadedHospitals
+            : undefined; // will be handled inside setHospitals callback
+
+          if (knownHospitals) {
+            const knownSlugs = new Set(knownHospitals.map((h: any) => h.slug || h.name));
+            const missingSlugs = referencedSlugs.filter(slug => !knownSlugs.has(slug));
+
+            if (missingSlugs.length > 0) {
+              // Fetch the missing hospitals by searching their slugs
+              const results = await Promise.all(
+                missingSlugs.map(slug =>
+                  fetch(`/api/locations/hospitals?search=${encodeURIComponent(slug)}&limit=5`)
+                    .then(r => r.json())
+                    .then(d => (d.hospitals || []) as any[])
+                    .catch(() => [] as any[])
+                )
+              );
+              const found = results.flat();
+              if (found.length > 0) {
+                const merged = [
+                  ...knownHospitals,
+                  ...found.filter((h: any) => !knownSlugs.has(h.slug || h.name))
+                ];
+                setHospitals(merged);
+                setAvailableHospitals(merged);
+              }
+            }
+          } else {
+            // Fall back: compare against current state
+            setHospitals(prev => {
+              const prevSlugs = new Set(prev.map((h: any) => h.slug || h.name));
+              const missingSlugs = referencedSlugs.filter(slug => !prevSlugs.has(slug));
+
+              if (missingSlugs.length === 0) return prev;
+
+              Promise.all(
+                missingSlugs.map(slug =>
+                  fetch(`/api/locations/hospitals?search=${encodeURIComponent(slug)}&limit=5`)
+                    .then(r => r.json())
+                    .then(d => (d.hospitals || []) as any[])
+                    .catch(() => [] as any[])
+                )
+              ).then(results => {
+                const found = results.flat();
+                if (found.length > 0) {
+                  setHospitals(current => {
+                    const currentSlugs = new Set(current.map((h: any) => h.slug || h.name));
+                    const newOnes = found.filter((h: any) => !currentSlugs.has(h.slug || h.name));
+                    if (newOnes.length === 0) return current;
+                    const merged = [...current, ...newOnes];
+                    setAvailableHospitals(merged);
+                    return merged;
+                  });
+                }
+              });
+
+              return prev;
+            });
+          }
+        }
 
         // Set diseases — match existing Bangla (or fallback English) names back to IDs
         const activeDiseases = loadedDiseases || diseases;
