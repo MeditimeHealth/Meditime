@@ -1,5 +1,5 @@
 import React from "react";
-import { RotateCcw, Ticket, Loader2 } from "lucide-react";
+import { RotateCcw, Ticket, Loader2, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,8 +44,8 @@ export default function DiagnosticPatientForm({
 }: DiagnosticPatientFormProps): React.JSX.Element {
   const { language } = useLanguage();
   return (
-    <Card className="p-6 bg-white border-2 border-[#00B7B5]/10 shadow-xl relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#00B7B5] to-[#FF6B00]" />
+    <Card className="p-6 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
+      <div className="absolute top-0 left-0 w-full h-1 " />
       <div className="flex items-center justify-between mb-5">
         <h2
           className="text-2xl font-bold text-gray-900"
@@ -84,7 +84,7 @@ export default function DiagnosticPatientForm({
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Patient Name - Required */}
         <div>
-          <Label htmlFor="patientName" className="flex items-center gap-1 font-bold text-gray-700" >
+          <Label htmlFor="patientName" className="flex items-center gap-1  " >
             {t("patientNameLabel", language)} <span className="text-red-500 font-bold">*</span>
           </Label>
           <Input
@@ -93,13 +93,13 @@ export default function DiagnosticPatientForm({
             onChange={(e) => setPatientName(e.target.value)}
             required
             placeholder={t("patientNameLabel", language)}
-            className={`mt-1 border-2 h-12 rounded-xl transition-all focus-visible:ring-[#00B7B5] ${!patientName ? 'border-gray-100' : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'}`}
+            className={`mt-1 border-primary rounded-none  ${!patientName ? 'border-gray-100' : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'}`}
           />
         </div>
 
         {/* Mobile Number - Required */}
         <div>
-          <Label htmlFor="mobileNumber" className="flex items-center gap-1 font-bold text-gray-700" >
+          <Label htmlFor="mobileNumber" className="flex items-center gap-1 " >
             {t("mobileNumberLabel", language)} <span className="text-red-500 font-bold">*</span>
           </Label>
           <Input
@@ -109,13 +109,13 @@ export default function DiagnosticPatientForm({
             onChange={(e) => setMobileNumber(e.target.value)}
             required
             placeholder={t("mobileNumberLabel", language)}
-            className={`mt-1 border-2 h-12 rounded-xl transition-all focus-visible:ring-[#00B7B5] ${!mobileNumber ? 'border-gray-100' : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'}`}
+            className={`mt-1 border-primary rounded-none  ${!mobileNumber ? 'border-gray-100' : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'}`}
           />
         </div>
 
         {/* Gender - Optional */}
         <div>
-          <Label htmlFor="gender" className="font-bold text-gray-700" >
+          <Label htmlFor="gender" className="" >
             {t("genderLabel", language)}
           </Label>
           <select
@@ -133,7 +133,7 @@ export default function DiagnosticPatientForm({
 
         {/* Age - Optional */}
         <div>
-          <Label htmlFor="age" className="font-bold text-gray-700" >
+          <Label htmlFor="age" className="" >
             {t("ageLabel", language)}
           </Label>
           <Input
@@ -148,8 +148,8 @@ export default function DiagnosticPatientForm({
         </div>
 
         {/* Affiliate Code - with Serial Input Option */}
-        <div className="p-4 bg-slate-50 rounded-xl border-2 border-dashed border-[#00B7B5]/20">
-          <Label htmlFor="affiliateCode" className="flex items-center gap-2 text-[#004B50] font-bold" >
+        <div className="p-4 bg-primary/10 rounded-xl border-2 border-primary/20">
+          <Label htmlFor="affiliateCode" className="flex items-center gap-2 text-primary" >
             <Ticket className="h-4 w-4" />
             {t("serialAffiliateCode", language)}
           </Label>
@@ -158,9 +158,9 @@ export default function DiagnosticPatientForm({
             value={affiliateCode}
             onChange={(e) => setAffiliateCode(e.target.value.toUpperCase())}
             placeholder={t("serialAffiliateCode", language)}
-            className="mt-2 border-2 border-gray-200 h-12 rounded-xl focus:border-[#00B7B5] bg-white uppercase font-bold tracking-wider"
+                    className={`mt-2 border-2 border-primary focus:border-primary bg-white ${!affiliateCode ? '' : 'border-primary bg-green-50/30'}`}
           />
-          <p className="mt-2 text-xs text-gray-500 font-medium" >
+          <p className="mt-2 text-xs text-primary" >
             {t("referralCodeHelp", language)}
           </p>
         </div>
@@ -168,7 +168,7 @@ export default function DiagnosticPatientForm({
         <Button
           type="submit"
           disabled={!selectedDate || !patientName || !mobileNumber || submitting}
-          className="w-full h-14 bg-[#00B7B5] hover:bg-[#004B50] text-white font-bold py-4 text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-xl"
+          className="w-full h-14 btn-primary btn-slide text-white font-bold py-4 text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-xl"
 
         >
           {submitting ? (
@@ -177,7 +177,10 @@ export default function DiagnosticPatientForm({
               {t("bookingInProgress", language)}
             </>
           ) : (
-            t("proceedFile", language)
+            <div className="flex items-center justify-center gap-2">
+              <span>{t("proceedFile", language)}</span>
+              <ChevronRight className="h-4 w-4" />
+            </div>
           )}
         </Button>
       </form>

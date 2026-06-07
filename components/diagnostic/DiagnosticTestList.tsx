@@ -59,7 +59,7 @@ const DiagnosticTestList = forwardRef<HTMLDivElement, DiagnosticTestListProps>(
                       </div>
                       <Button 
                         onClick={() => handleBooking(test)}
-                        className={`w-full ${bookedTests.some(t => t._id === test._id) ? 'bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 border border-red-200' : 'bg-primary text-white'} font-bold rounded-xl gap-2 h-11 transition-all`}
+                        className={`w-full ${bookedTests.some(t => t._id === test._id) ? 'bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 border border-red-200 hover:border-none' : 'bg-primary text-white'}  btn-slide font-bold rounded-none gap-2 h-11 transition-all`}
                       >
                         {bookedTests.some(t => t._id === test._id) ? (
                           <>
@@ -67,10 +67,10 @@ const DiagnosticTestList = forwardRef<HTMLDivElement, DiagnosticTestListProps>(
                             {language === 'en' ? "Remove from Cart" : "কার্ট থেকে মুছুন"}
                           </>
                         ) : (
-                          <>
-                            <Activity className="w-4 h-4" />
+                          <div className="flex justify-center items-center">
                             {language === 'en' ? "Add to Cart" : "কার্টে যুক্ত করুন"}
-                          </>
+                            
+                          </div>
                         )}
                       </Button>
                     </div>

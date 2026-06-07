@@ -41,21 +41,10 @@ export const generateDiagnosticBookingPDF = async (booking: DiagnosticBookingRec
         });
       };
 
-      const logoImg = await loadImage('/SVG/asset-3.png').catch(() => null);
+      const logoImg = await loadImage('/SVG/Asset-4.png').catch(() => null);
       if (logoImg) {
-        const logoWidth = 35; 
+        const logoWidth = 30; 
         const logoHeight = (logoImg.height * logoWidth) / logoImg.width;
-
-        // Draw white background rectangle for logo
-        const bgPadding = 2;
-        doc.setFillColor(255, 255, 255);
-        doc.roundedRect(
-          (W - logoWidth) / 2 - bgPadding, 
-          7 - bgPadding, 
-          logoWidth + bgPadding * 2, 
-          logoHeight + bgPadding * 2, 
-          2, 2, 'F'
-        );
 
         doc.addImage(logoImg, 'PNG', (W - logoWidth) / 2, 7, logoWidth, logoHeight);
       }
@@ -66,11 +55,11 @@ export const generateDiagnosticBookingPDF = async (booking: DiagnosticBookingRec
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text(selectedVenue.name || 'MediTime Diagnostics', M, 25);
+    doc.text(selectedVenue.name || 'MediTime Diagnostics', M, 28);
     
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text('Booked via MediTime Portal', M, 31);
+    doc.text('Booked via MediTime Portal', M, 33);
     
     // Booking reference (right side)
     doc.setFontSize(7);

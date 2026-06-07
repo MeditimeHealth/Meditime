@@ -22,8 +22,8 @@ export default function DiagnosticInvoice({
       {/* Teal Header */}
       <div className="bg-[var(--primary)] text-white px-8 py-6">
         <div className="flex justify-center mb-6">
-          <div className="bg-white p-2 rounded-xl">
-            <img src="/SVG/asset-3.svg" alt="MediTime Logo" className="h-8 w-auto" />
+          <div className="">
+            <img src="/SVG/Asset-4.png" alt="MediTime Logo" className="h-20 w-auto" />
           </div>
         </div>
         <div className="flex justify-between items-start">

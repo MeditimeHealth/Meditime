@@ -193,17 +193,17 @@ export default function DoctorCard({
 
         {/* Doctor Info */}
         <div className="w-full min-w-0 flex flex-col gap-3">
-          <h3 className="text-base font-bold text-gray-900 leading-snug mb-1 group-hover:text-primary transition-colors">
+          <h3 className="text-lg font-bold text-[#193252] leading-snug mb-1 group-hover:text-[#00B1C2] transition-colors">
             {displayName}
           </h3>
           {displaySpecialty && (
-            <p className="text-sm text-primary font-semibold mb-1">{displaySpecialty}</p>
+            <section className="text-md text-[#017991] font-semibold mb-1">{displaySpecialty}</section>
           )}
           {displayQualification && (
-            <p className="text-xs text-gray-500 font-medium mb-0.5">{displayQualification}</p>
+            <section className="text-sm text-[#193252] font-medium mb-0.5">{displayQualification}</section>
           )}
           {displayDesignation && (
-            <p className="text-[11px] text-slate-400 font-medium">{displayDesignation}</p>
+            <section className="text-sm text-[#193252] font-medium">{displayDesignation}</section>
           )}
         </div>
       </div>
@@ -219,7 +219,7 @@ export default function DoctorCard({
                 <div key={idx} className="p-3 border-b bg-[#F6FAFD] border-gray-100/50 last:border-b-0">
                   <div className="flex gap-2 mb-2">
                     <Building2 className="w-4 h-4 mt-0.5 text-[#10B981] shrink-0" />
-                    <span className="font-bold text-[#1F2937] text-sm leading-tight">
+                    <span className="font-bold text-[#193252] text-sm leading-tight">
                       {group.hospital}
                     </span>
                   </div>
@@ -227,17 +227,17 @@ export default function DoctorCard({
                     {group.texts.map((text, tIdx) => (
                       <div key={tIdx} className="flex items-start gap-2 text-xs text-gray-600">
                         <Clock className="w-3.5 h-3.5 mt-0.5 text-gray-400 shrink-0" />
-                        <span className="font-medium leading-relaxed">
+                        <section className="font-medium leading-relaxed">
                           {text}
-                        </span>
+                        </section>
                       </div>
                     ))}
                   </div>
                 </div>
               ))}
               {groupedAvailability.length > 1 && (
-                <div 
-                  className="bg-[#E0F2FE] hover:bg-[#BAE6FD] text-[#0369A1] text-xs font-bold py-2.5 px-3 flex items-center justify-center gap-1.5 cursor-pointer transition-colors m-2 rounded-lg"
+                <section 
+                  className="bg-[#E0F2FE] hover:bg-[#BAE6FD] text-[#193252] text-xs font-bold py-2.5 px-3 flex items-center justify-center gap-1.5 cursor-pointer transition-colors m-2 rounded-lg"
                   onClick={(e) => {
                     e.preventDefault();
                     setIsExpanded(!isExpanded);
@@ -249,7 +249,7 @@ export default function DoctorCard({
                     : (language === 'bn' 
                         ? `আরও ${groupedAvailability.length - 1}টি চেম্বার দেখুন` 
                         : `See ${groupedAvailability.length - 1} more chamber${groupedAvailability.length > 2 ? 's' : ''}`)}
-                </div>
+                </section>
               )}
             </div>
           ) : (
@@ -266,7 +266,7 @@ export default function DoctorCard({
 
         {/* Action Button */}
         {!disableLink && (
-          <div className="w-full py-6 btn-primary btn-slide flex items-center justify-center gap-2">
+          <div className="w-full py-6 btn-primary btn-slide text-white hover:text-[#017991] flex items-center justify-center gap-2">
             {language === 'bn' ? 'অ্যাপয়েন্টমেন্ট নিন' : 'Book Appointment'}
             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </div>

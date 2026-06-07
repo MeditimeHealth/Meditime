@@ -20,6 +20,7 @@ import {
   Check,
   Calendar,
   Stethoscope,
+  ChevronRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import DoctorCard from "@/components/doctor-card";
@@ -79,7 +80,7 @@ export default function DoctorProfilePage() {
   const [selectedHospitalSlug, setSelectedHospitalSlug] = useState<string>("");
 
 
-    const availabilityArray = Array.isArray(doctor?.availability)
+  const availabilityArray = Array.isArray(doctor?.availability)
     ? doctor?.availability
     : [doctor?.availability];
 
@@ -546,8 +547,7 @@ export default function DoctorProfilePage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
                     <h1
-                      className="text-3xl md:text-4xl font-bold "
-
+                      className="text-3xl md:text-4xl font-bold text-[#193252] transition-colors duration-300 hover:text-[#00B1C2]"
                     >
                       {getLocalizedValue(doctor.name, doctor.nameBn, language)}
                     </h1>
@@ -561,26 +561,26 @@ export default function DoctorProfilePage() {
                   </div>
                   <div className="space-y-2">
                     {/* Specialty */}
-                    <p className=" font-bold text-lg md:text-2xl">
+                    <section className=" font-bold text-lg md:text-2xl text-[#017991]">
                       {getLocalizedValue(doctor.specialty, doctor.specialtyBn, language)}
-                    </p>
+                    </section>
 
                     {/* Degree/Qualification */}
-                    <p
-                      className="text-lg md:text-xl  font-semibold"
+                    <section
+                      className="text-lg md:text-xl text-[#193252]  font-semibold"
 
                     >
                       {getLocalizedValue(doctor.qualification, doctor.qualificationBn, language)}
-                    </p>
+                    </section>
 
                     {/* Designation */}
                     {getLocalizedValue(doctor.designation, doctor.designationBn, language) && (
-                      <p className=" md:text-lg  font-medium">
+                      <section className=" md:text-lg  text-[#193252] font-medium">
                         {getLocalizedValue(doctor.designation, doctor.designationBn, language)}
-                      </p>
+                      </section>
                     )}
 
-                    <div className="flex items-start gap-2 pt-1 flex-wrap">
+                    {/* <div className="flex items-start gap-2 pt-1 flex-wrap">
                       <div className="flex flex-col">
                         {Array.from(new Set(availabilityArray.map((s: any) => s.hospital).filter(Boolean))).map((hSlug: any, i) => {
                           const hObj = hospitals.find(h => h.name === hSlug || (h as any).slug === hSlug);
@@ -597,7 +597,7 @@ export default function DoctorProfilePage() {
                           );
                         })}
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
@@ -625,8 +625,8 @@ export default function DoctorProfilePage() {
                         key={index}
                         className="flex items-start gap-3  md:text-lg font-semibold text-gray-800"
                       >
-                        <span className="text-primary mt-1">•</span>
-                        <span>{getLocalizedValue(disease.name, disease.bangla, language)}</span>
+                        <section className="text-primary mt-1">•</section>
+                        <section>{getLocalizedValue(disease.name, disease.bangla, language)}</section>
                       </li>
                     ))}
                   </ul>
@@ -645,8 +645,7 @@ export default function DoctorProfilePage() {
                 </h2>
                 <div className="bg-white p-6 rounded-xl border-2 border-primary/10 shadow-md">
                   <p
-                    className=" md:text-lg text-gray-800 leading-relaxed whitespace-pre-line"
-
+                    className=" md:text-lg text-[#193252] leading-relaxed whitespace-pre-line"
                   >
                     {getLocalizedValue(doctor.bio, doctor.bioBn, language)}
                   </p>
@@ -694,11 +693,10 @@ export default function DoctorProfilePage() {
                     <div
                       key={index}
                       onClick={() => setSelectedHospitalSlug(hospitalSlug)}
-                      className={`p-5 border-2 transition-all duration-300 cursor-pointer select-none relative flex flex-col gap-3 group ${
-                        isSelected
+                      className={`p-5 border-2 transition-all duration-300 cursor-pointer select-none relative flex flex-col gap-3 group ${isSelected
                           ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/5 scale-[1.01]"
                           : "border-gray-100 bg-white hover:border-primary/30 hover:bg-gray-50/50 shadow-sm"
-                      }`}
+                        }`}
                     >
                       {hospitalSlug !== 'unknown' && (
                         <div className="flex items-center justify-between gap-4">
@@ -709,9 +707,8 @@ export default function DoctorProfilePage() {
                             </p>
                           </div>
                           {/* Custom Radio Button */}
-                          <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                            isSelected ? 'border-primary bg-primary/10 scale-110' : 'border-gray-300 bg-white'
-                          }`}>
+                          <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${isSelected ? 'border-primary bg-primary/10 scale-110' : 'border-gray-300 bg-white'
+                            }`}>
                             {isSelected && (
                               <div className="h-2.5 w-2.5 rounded-full bg-primary" />
                             )}
@@ -720,9 +717,8 @@ export default function DoctorProfilePage() {
                       )}
                       <div className="space-y-2 pl-7">
                         {group.slots.map((slot: any, sIdx: number) => (
-                          <div key={sIdx} className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-colors ${
-                            isSelected ? 'bg-primary/5' : 'bg-gray-50'
-                          }`}>
+                          <div key={sIdx} className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-colors ${isSelected ? 'bg-primary/5' : 'bg-gray-50'
+                            }`}>
                             <Clock className={`h-4 w-4 shrink-0 mt-0.5 ${isSelected ? 'text-primary' : 'text-gray-400'}`} />
                             <span className={`text-sm font-bold ${isSelected ? 'text-primary-dark' : 'text-gray-600'}`}>
                               {formatSlot(slot)}
@@ -741,9 +737,11 @@ export default function DoctorProfilePage() {
               <div className="space-y-5">
                 <Link href={`/doctor/${doctorId}/book?hospital=${selectedHospitalSlug}`}>
                   <Button
-                    className="w-full btn-primary btn-slide h-12"
+                    className="w-full flex justify-center items-center btn-primary btn-slide h-12"
                   >
                     {language === 'bn' ? 'বুক অ্যাপয়েন্টমেন্ট' : 'Book Appointment'}
+                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+
                   </Button>
                 </Link>
               </div>
@@ -751,9 +749,9 @@ export default function DoctorProfilePage() {
 
             {/* Fees Section */}
             <Card className="overflow-hidden border-2 border-primary/20 shadow-xl">
-              <div className="bg-primary p-4 flex items-center justify-center gap-3">
+              <div className="text-[#193252] p-4 flex items-center justify-center gap-3 border-b border-primary/20">
 
-                <h2 className="text-xl md:text-2xl font-bold text-white">
+                <h2 className="text-xl md:text-2xl font-bold">
                   {language === 'bn' ? 'ডাক্তারের পরামর্শ ফি' : 'Consultation Fee'}
                 </h2>
               </div>
@@ -876,16 +874,15 @@ export default function DoctorProfilePage() {
               <div className="space-y-4">
                 {groupedAvailability.map((group: any, index: number) => {
                   const isSelected = selectedHospitalSlug === group.hospitalSlug;
-                  
+
                   return (
                     <div
                       key={index}
                       onClick={() => setSelectedHospitalSlug(group.hospitalSlug)}
-                      className={`p-5 rounded-2xl border-2 transition-all duration-300 cursor-pointer select-none relative flex flex-col gap-3 group ${
-                        isSelected
+                      className={`p-5 rounded-2xl border-2 transition-all duration-300 cursor-pointer select-none relative flex flex-col gap-3 group ${isSelected
                           ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/5 scale-[1.01]"
                           : "border-gray-100 bg-white hover:border-primary/30 hover:bg-gray-50/50 shadow-sm"
-                      }`}
+                        }`}
                     >
                       {group.hospitalSlug !== 'unknown' && (
                         <div className="flex items-center justify-between gap-4">
@@ -896,9 +893,8 @@ export default function DoctorProfilePage() {
                             </p>
                           </div>
                           {/* Custom Radio Button */}
-                          <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                            isSelected ? 'border-primary bg-primary/10 scale-110' : 'border-gray-300 bg-white'
-                          }`}>
+                          <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${isSelected ? 'border-primary bg-primary/10 scale-110' : 'border-gray-300 bg-white'
+                            }`}>
                             {isSelected && (
                               <div className="h-2.5 w-2.5 rounded-full bg-primary" />
                             )}
@@ -907,9 +903,8 @@ export default function DoctorProfilePage() {
                       )}
                       <div className="space-y-2 pl-7">
                         {group.slots.map((slotInfo: any, sIdx: number) => (
-                          <div key={sIdx} className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-colors ${
-                            isSelected ? 'bg-primary/5' : 'bg-gray-50'
-                          }`}>
+                          <div key={sIdx} className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-colors ${isSelected ? 'bg-primary/5' : 'bg-gray-50'
+                            }`}>
                             <Clock className={`h-4 w-4 shrink-0 mt-0.5 ${isSelected ? 'text-primary' : 'text-gray-400'}`} />
                             <span className={`text-sm font-bold ${isSelected ? 'text-primary-dark' : 'text-gray-600'}`}>
                               {slotInfo.formattedText}

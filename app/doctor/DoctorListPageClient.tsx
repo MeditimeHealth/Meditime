@@ -227,7 +227,7 @@ function DoctorListPageContent() {
     ];
 
     const n = name.toLowerCase();
-    
+
     // Nearest name logic
     if (n.includes('heart') || n.includes('cardio') || n.includes('হার্ট') || n.includes('হৃদ')) return "/icon_of_dept/Cardiology & Medicine.png";
     if (n.includes('kidney') || n.includes('nephro') || n.includes('কিডনি')) return "/icon_of_dept/Nephrology & Medicine.png";
@@ -238,22 +238,22 @@ function DoctorListPageContent() {
     if (n.includes('dental') || n.includes('teeth') || n.includes('দাঁত')) return "/icon_of_dept/Oral & Dental Diseases.png";
     if (n.includes('ent') || n.includes('ear') || n.includes('nose') || n.includes('নাক') || n.includes('কান')) return "/icon_of_dept/ENT-Ear Nose & Throat.png";
     if (n.includes('gastro') || n.includes('liver') || n.includes('যকৃত')) return "/icon_of_dept/Gastro-Liver Diseases.png";
-    
+
     if (n.includes('surgery') || n.includes('সার্জারি')) {
-       if (n.includes('plastic') || n.includes('burn')) return "/icon_of_dept/Burn-Plastic & Reconstructive Surgery.png";
-       if (n.includes('vascular')) return "/icon_of_dept/Vascular Surgery (Blood vessels).png";
-       if (n.includes('thoracic') || n.includes('chest')) return "/icon_of_dept/Chest Thoracic Surgery.png";
-       if (n.includes('ortho') || n.includes('trauma')) return "/icon_of_dept/Trauma & Orthopedic Surgery.png";
-       if (n.includes('hepato') || n.includes('liver')) return "/icon_of_dept/Hepato-Biliary & Liver Transplant Surgery.png";
-       return "/icon_of_dept/General & Laparoscopic Surgery.png";
+      if (n.includes('plastic') || n.includes('burn')) return "/icon_of_dept/Burn-Plastic & Reconstructive Surgery.png";
+      if (n.includes('vascular')) return "/icon_of_dept/Vascular Surgery (Blood vessels).png";
+      if (n.includes('thoracic') || n.includes('chest')) return "/icon_of_dept/Chest Thoracic Surgery.png";
+      if (n.includes('ortho') || n.includes('trauma')) return "/icon_of_dept/Trauma & Orthopedic Surgery.png";
+      if (n.includes('hepato') || n.includes('liver')) return "/icon_of_dept/Hepato-Biliary & Liver Transplant Surgery.png";
+      return "/icon_of_dept/General & Laparoscopic Surgery.png";
     }
-    
+
     if (n.includes('medicine') || n.includes('মেডিসিন')) {
-        if (n.includes('nuclear')) return "/icon_of_dept/Nuclear Medicine.png";
-        if (n.includes('pain')) return "/icon_of_dept/Pain Medicine & Rheumatology .png";
-        return "/icon_of_dept/Medicine Specialist.png";
+      if (n.includes('nuclear')) return "/icon_of_dept/Nuclear Medicine.png";
+      if (n.includes('pain')) return "/icon_of_dept/Pain Medicine & Rheumatology .png";
+      return "/icon_of_dept/Medicine Specialist.png";
     }
-    
+
     if (n.includes('cancer') || n.includes('onco') || n.includes('ক্যানসার')) return "/icon_of_dept/Oncology Cancer).png";
     if (n.includes('hormone') || n.includes('thyroid') || n.includes('হরমোন')) return "/icon_of_dept/Thyroid & Hormone .png";
     if (n.includes('diabetes') || n.includes('ডায়াবেটিস')) return "/icon_of_dept/Diabetes  Endocrinology.png";
@@ -270,7 +270,7 @@ function DoctorListPageContent() {
     // Fallback search in icon list
     const fallback = icons.find(icon => icon.toLowerCase().includes(n) || n.includes(icon.toLowerCase().replace('.png', '')));
     if (fallback) return `/icon_of_dept/${fallback}`;
-    
+
     return null;
   };
 
@@ -301,7 +301,7 @@ function DoctorListPageContent() {
 
       const response = await fetch(`/api/doctors?${params.toString()}`);
       const data = await response.json();
-      
+
       if (response.ok) {
         if (isNewFilter) {
           setDoctors(data.doctors);
@@ -429,7 +429,7 @@ function DoctorListPageContent() {
         const res = await fetch(`/api/doctors?search=${encodeURIComponent(debouncedSuggestQuery)}&limit=8`);
         const data = await res.json();
         if (res.ok) setSuggestionDoctors(data.doctors || []);
-      } catch {}
+      } catch { }
     };
     fetchSuggestions();
   }, [debouncedSuggestQuery]);
@@ -553,10 +553,10 @@ function DoctorListPageContent() {
         const specialtyMatches = doctor.specialty.toLowerCase().includes(query) || doctor.specialtyBn?.includes(searchQuery);
 
         if (nameMatches) {
-          results.push({ 
-            type: 'Doctor', 
-            typeBn: 'ডাক্তার', 
-            value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name, 
+          results.push({
+            type: 'Doctor',
+            typeBn: 'ডাক্তার',
+            value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name,
             doctor,
             link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
           });
@@ -565,17 +565,17 @@ function DoctorListPageContent() {
           !results.some(r => r.type === 'Specialty' && r.value === (language === 'bn' && doctor.specialtyBn ? doctor.specialtyBn : doctor.specialty))
         ) {
           const specialtyName = language === 'bn' && doctor.specialtyBn ? doctor.specialtyBn : doctor.specialty;
-          results.push({ 
-            type: 'Specialty', 
-            typeBn: 'বিশেষজ্ঞতা', 
+          results.push({
+            type: 'Specialty',
+            typeBn: 'বিশেষজ্ঞতা',
             value: specialtyName,
             link: `/doctor?specialty=${encodeURIComponent(doctor.specialty)}`
           });
         } else {
-          results.push({ 
-            type: 'Doctor', 
-            typeBn: 'ডাক্তার', 
-            value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name, 
+          results.push({
+            type: 'Doctor',
+            typeBn: 'ডাক্তার',
+            value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name,
             doctor,
             link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
           });
@@ -774,7 +774,7 @@ function DoctorListPageContent() {
               <h1 className="text-2xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
                 {t.heroTitle}
               </h1>
-              <p className="text-sm text-white/90 max-w-2xl mx-auto lg:mb-8 font-light">
+              <p className="text-sm md:text-xl text-white/90 max-w-2xl mx-auto lg:mb-8 font-light">
                 {t.heroDesc}
               </p>
             </motion.div>
@@ -852,15 +852,14 @@ function DoctorListPageContent() {
                 >
                   {suggestions.map((suggestion, index) => {
                     console.log(suggestion);
-                    
+
                     const content = (
                       <motion.div
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        className={`px-6 py-4 cursor-pointer hover:bg-gray-50 transition-colors ${
-                          index === focusedIndex ? "bg-gray-50" : ""
-                        }`}
+                        className={`px-6 py-4 cursor-pointer hover:bg-gray-50 transition-colors ${index === focusedIndex ? "bg-gray-50" : ""
+                          }`}
                         onClick={() => {
                           if (suggestion.link) {
                             router.push(suggestion.link);
@@ -889,13 +888,12 @@ function DoctorListPageContent() {
                             )}
                           </div>
                           <span
-                            className={`text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider ${
-                              suggestion.type === "Doctor"
-                                ? "bg-blue-100 text-blue-700"
-                                : suggestion.type === "Specialty"
-                                  ? "bg-purple-100 text-purple-700"
-                                  : "bg-green-100 text-green-700"
-                            }`}
+                            className={`text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider ${suggestion.type === "Doctor"
+                              ? "bg-blue-100 text-blue-700"
+                              : suggestion.type === "Specialty"
+                                ? "bg-purple-100 text-purple-700"
+                                : "bg-green-100 text-green-700"
+                              }`}
                           >
                             {language === 'bn' ? suggestion.typeBn : suggestion.type || suggestion.type}
                           </span>
@@ -952,15 +950,14 @@ function DoctorListPageContent() {
                 }}
                 breakpoints={{
                   480: { slidesPerView: 2 },
-                  640: { slidesPerView: 3 },
-                  768: { slidesPerView: 4 },
-                  1024: { slidesPerView: 5 },
+                  768: { slidesPerView: 3 },
+                  1024: { slidesPerView: 4 },
                 }}
-                loop={departments.length > 5}
+                loop={departments.length > 4}
                 className="pb-4"
               >
                 {departments.map((dept, index) => (
-                            <SwiperSlide key={dept._id || dept.name}>
+                  <SwiperSlide key={dept._id || dept.name}>
                     <motion.button
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -972,56 +969,41 @@ function DoctorListPageContent() {
                         setSelectedDept(dept.name);
                         setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
                       }}
-                      className={`flex flex-col items-center justify-center gap-2 p-3 md:p-5 rounded-lg w-full h-[120px] md:h-[160px] transition-all duration-300 ${
-                        selectedDept === dept.name
-                          ? "bg-primary text-white shadow-md"
-                          : "bg-white text-gray-700 border border-gray-200"
-                      }`}
+                      className={`btn-slide group  w-[220px] h-[280px] border border-primary bg-white flex flex-col items-center justify-between shrink-0 rounded-3xl p-8 ${selectedDept === dept.name
+                        ? "bg-primary text-white shadow-md"
+                        : "bg-white text-gray-700 border border-gray-200"
+                        }`}
                     >
-                      {/* Circular Icon Container */}
-                      <div
-                        className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center overflow-hidden shrink-0`}
-                      >
-                        {getDeptPublicIcon(dept.name) ? (
-                          <img
-                            src={getDeptPublicIcon(dept.name)!}
-                            alt={dept.name}
-                            className="object-contain"
-                          />
-                        ) : dept.image ? (
-                          <img
-                            src={dept.image}
-                            alt={dept.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <span className={selectedDept === dept.name ? "text-white" : "text-[#3DB5A0]"}>
-                            {getDeptIcon(dept.name)}
-                          </span>
-                        )}
+                      <div className="relative z-10 w-full flex-grow flex items-center justify-center p-2">
+                        <Image
+                          src={getDeptPublicIcon(dept.name) || "/default.png"}
+                          alt={dept.name}
+                          width={140}
+                          height={140}
+                          className="object-contain transition-all duration-500 group-hover:scale-110 drop-shadow-md"
+                        />
                       </div>
                       {/* Department Name */}
-                      <p
-                        className={`font-bold text-xs md:text-sm text-center mt-1 leading-tight ${
-                          selectedDept === dept.name ? "text-white" : "text-gray-900"
-                        }`}
-                      >
-                        {getLocalizedValue(dept.name, dept.nameBn, language)}
-                      </p>
+                      <div className="relative z-10 w-full text-center">
+                        <h3 className="text-[17px] font-bold text-slate-800 group-hover:text-white transition-colors duration-300 leading-tight">
+                          {getLocalizedValue(dept.name, dept.nameBn, language)}
+                        </h3>
+                        <div className="mt-2 h-1 w-0 group-hover:w-full bg-white/30 mx-auto transition-all duration-500 rounded-full" />
+                      </div>
                     </motion.button>
                   </SwiperSlide>
                 ))}
               </Swiper>
 
               {/* Navigation Buttons */}
-               <button className="department-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 text-primary hover:bg-primary hover:text-white transition-colors border border-gray-100 disabled:opacity-50">
+              <button className="department-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 text-primary hover:bg-primary hover:text-white transition-colors border border-gray-100 disabled:opacity-50">
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <button className="department-next absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 text-primary hover:bg-primary hover:text-white transition-colors border border-gray-100 disabled:opacity-50">
                 <ChevronRight className="w-6 h-6" />
               </button>
             </div>
-            
+
             {/* View All Button - Bottom for All Screens */}
             <div className="mt-6 flex justify-center">
               <Link href="/departments" className="text-primary font-medium hover:underline flex items-center gap-1">
@@ -1059,23 +1041,23 @@ function DoctorListPageContent() {
                   ১. {t.division}
                 </Label>
                 <div className="relative">
-                <select
-                  id="filter-division"
-                  value={selectedDivision}
-                  onChange={(e) => handleDivisionSelect(e.target.value)}
-                  className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
-                >
-                  <option value="">{t.selectDivision}</option>
-                  {divisions.map((div) => (
-                    <option key={div._id} value={div.name}>
-                      {div.name}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                  <ChevronLeft className="w-4 h-4 -rotate-90" />
+                  <select
+                    id="filter-division"
+                    value={selectedDivision}
+                    onChange={(e) => handleDivisionSelect(e.target.value)}
+                    className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="">{t.selectDivision}</option>
+                    {divisions.map((div) => (
+                      <option key={div._id} value={div.name}>
+                        {div.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                    <ChevronLeft className="w-4 h-4 -rotate-90" />
+                  </div>
                 </div>
-              </div>
               </div>
 
               <div>
@@ -1086,28 +1068,28 @@ function DoctorListPageContent() {
                   ২. {t.district}
                 </Label>
                 <div className="relative">
-                <select
-                  id="filter-district"
-                  value={selectedDistrict}
-                  onChange={(e) => handleDistrictSelect(e.target.value)}
-                  disabled={!selectedDivision}
-                  className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <option value="">
-                    {selectedDivision
-                      ? t.selectDistrict
-                      : t.selectDivisionFirst}
-                  </option>
-                  {districts.map((dist) => (
-                    <option key={dist._id} value={dist.name}>
-                      {dist.name}
+                  <select
+                    id="filter-district"
+                    value={selectedDistrict}
+                    onChange={(e) => handleDistrictSelect(e.target.value)}
+                    disabled={!selectedDivision}
+                    className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <option value="">
+                      {selectedDivision
+                        ? t.selectDistrict
+                        : t.selectDivisionFirst}
                     </option>
-                  ))}
-                </select>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                  <ChevronLeft className="w-4 h-4 -rotate-90" />
+                    {districts.map((dist) => (
+                      <option key={dist._id} value={dist.name}>
+                        {dist.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                    <ChevronLeft className="w-4 h-4 -rotate-90" />
+                  </div>
                 </div>
-              </div>
               </div>
 
               <div>
@@ -1118,28 +1100,28 @@ function DoctorListPageContent() {
                   ৩. {t.thana}
                 </Label>
                 <div className="relative">
-                <select
-                  id="filter-thana"
-                  value={selectedThana}
-                  onChange={(e) => handleThanaSelect(e.target.value)}
-                  disabled={!selectedDistrict || !selectedDivision}
-                  className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <option value="">
-                    {selectedDivision && selectedDistrict
-                      ? t.selectThana
-                      : t.selectDistrictFirst}
-                  </option>
-                  {thanas.map((thana) => (
-                    <option key={thana._id} value={thana.name}>
-                      {thana.name}
+                  <select
+                    id="filter-thana"
+                    value={selectedThana}
+                    onChange={(e) => handleThanaSelect(e.target.value)}
+                    disabled={!selectedDistrict || !selectedDivision}
+                    className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <option value="">
+                      {selectedDivision && selectedDistrict
+                        ? t.selectThana
+                        : t.selectDistrictFirst}
                     </option>
-                  ))}
-                </select>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                  <ChevronLeft className="w-4 h-4 -rotate-90" />
+                    {thanas.map((thana) => (
+                      <option key={thana._id} value={thana.name}>
+                        {thana.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                    <ChevronLeft className="w-4 h-4 -rotate-90" />
+                  </div>
                 </div>
-              </div>
               </div>
 
               <div>
@@ -1150,23 +1132,23 @@ function DoctorListPageContent() {
                   ৪. {t.hospital}
                 </Label>
                 <div className="relative">
-                <select
-                  id="filter-hospital-hierarchical"
-                  value={selectedHospital}
-                  onChange={(e) => handleHospitalSelect(e.target.value)}
-                  className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
-                >
-                  <option value="">{t.allHospitals}</option>
-                  {hospitalsFilterList.map((hosp) => (
-                    <option key={hosp.slug} value={hosp.slug}>
-                      {language === 'bn' ? hosp.nameBn : hosp.name}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                  <ChevronLeft className="w-4 h-4 -rotate-90" />
+                  <select
+                    id="filter-hospital-hierarchical"
+                    value={selectedHospital}
+                    onChange={(e) => handleHospitalSelect(e.target.value)}
+                    className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="">{t.allHospitals}</option>
+                    {hospitalsFilterList.map((hosp) => (
+                      <option key={hosp.slug} value={hosp.slug}>
+                        {language === 'bn' ? hosp.nameBn : hosp.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                    <ChevronLeft className="w-4 h-4 -rotate-90" />
+                  </div>
                 </div>
-              </div>
               </div>
 
               <div>
@@ -1177,23 +1159,23 @@ function DoctorListPageContent() {
                   ৫. {t.department}
                 </Label>
                 <div className="relative">
-                <select
-                  id="filter-department-hierarchical"
-                  value={selectedDepartment}
-                  onChange={(e) => handleDepartmentSelect(e.target.value)}
-                  className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
-                >
-                  <option value="">{t.allDepartments}</option>
-                  {departmentNames.map((dept) => (
-                    <option key={dept} value={dept}>
-                      {language === 'en' ? dept : (departments.find(d => d.name === dept)?.nameBn || '')}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                  <ChevronLeft className="w-4 h-4 -rotate-90" />
+                  <select
+                    id="filter-department-hierarchical"
+                    value={selectedDepartment}
+                    onChange={(e) => handleDepartmentSelect(e.target.value)}
+                    className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-700 bg-gray-50/50 hover:bg-white transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="">{t.allDepartments}</option>
+                    {departmentNames.map((dept) => (
+                      <option key={dept} value={dept}>
+                        {language === 'en' ? dept : (departments.find(d => d.name === dept)?.nameBn || '')}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                    <ChevronLeft className="w-4 h-4 -rotate-90" />
+                  </div>
                 </div>
-              </div>
               </div>
             </div>
 
@@ -1201,27 +1183,27 @@ function DoctorListPageContent() {
               selectedDistrict ||
               selectedThana ||
               selectedDepartment) && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="mt-6 flex justify-end"
-              >
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSelectedDivision("");
-                    setSelectedDistrict("");
-                    setSelectedThana("");
-                    setSelectedDepartment("");
-                    setSelectedHospital("");
-                  }}
-                  className="flex items-center gap-2 px-5 py-2.5"
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mt-6 flex justify-end"
                 >
-                  <X className="h-5 w-5" />
-                  {t.reset}
-                </Button>
-              </motion.div>
-            )}
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedDivision("");
+                      setSelectedDistrict("");
+                      setSelectedThana("");
+                      setSelectedDepartment("");
+                      setSelectedHospital("");
+                    }}
+                    className="flex items-center gap-2 px-5 py-2.5"
+                  >
+                    <X className="h-5 w-5" />
+                    {t.reset}
+                  </Button>
+                </motion.div>
+              )}
           </div>
         </motion.div>
 
@@ -1384,11 +1366,10 @@ function DoctorListPageContent() {
                           onClick={() => toggleDay(day)}
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          className={`px-5 py-2.5 rounded-xl text-base font-semibold transition-all shadow-md hover:shadow-lg ${
-                            selectedDays.includes(day)
-                              ? "bg-[#3DB5A0] text-white"
-                              : "bg-white text-gray-700 hover:bg-gray-100 border-2 border-gray-300"
-                          }`}
+                          className={`px-5 py-2.5 rounded-xl text-base font-semibold transition-all shadow-md hover:shadow-lg ${selectedDays.includes(day)
+                            ? "bg-[#3DB5A0] text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100 border-2 border-gray-300"
+                            }`}
                         >
                           {currentDays[index]}
                         </motion.button>
@@ -1403,133 +1384,133 @@ function DoctorListPageContent() {
 
         {/* Results Count Section */}
         <div ref={resultsRef}>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="mb-8"
-        >
-          <Card className="p-5 bg-white border border-gray-100 shadow-sm rounded-2xl">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div
-                className="text-base font-semibold text-gray-700"
-              >
-                {searchQuery ? (
-                  <span>
-                    {t.found}{" "}
-                    <span className="text-primary font-bold text-lg">
-                      {filteredAndSortedDoctors.length}
-                    </span>{" "}
-                    {t.doctors} {t.matching} &quot;
-                    {searchQuery}&quot;
-                  </span>
-                ) : (
-                  <span>
-                    {t.showing}{" "}
-                    <span className="text-primary font-bold text-lg">
-                      {doctors.length}
-                    </span>{" "}
-                    {t.of}{" "}
-                    <span className="text-primary font-bold text-lg">
-                      {totalDoctors}
-                    </span>{" "}
-                    {t.totalDoctors}
-                  </span>
-                )}
-              </div>
-              {searchQuery && filteredAndSortedDoctors.length > 0 && (
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="mb-8"
+          >
+            <Card className="p-5 bg-white border border-gray-100 shadow-sm rounded-2xl">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div
+                  className="text-base font-semibold text-gray-700"
                 >
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSearchQuery("")}
-                    className="flex items-center gap-2 px-4 py-2.5 border-2 shadow-md hover:shadow-lg"
-                  >
-                    <X className="h-5 w-5" />
-                    {t.clearSearch}
-                  </Button>
-                </motion.div>
-              )}
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* Doctor Cards Section */}
-        <div className="relative">
-          {isSearching && (
-            <div className="absolute inset-0 z-10 bg-white/50 backdrop-blur-[1px] flex items-center justify-center rounded-2xl min-h-[400px]">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
-              />
-            </div>
-          )}
-
-          {filteredAndSortedDoctors.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-              className="mb-8"
-            >
-              <Card className="p-12 text-center bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 shadow-lg">
-                <div className="mb-6">
-                  <Stethoscope className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <p
-                    className="text-xl font-semibold text-gray-600 mb-4"
-                  >
-                    {t.noDoctors}
-                  </p>
+                  {searchQuery ? (
+                    <span>
+                      {t.found}{" "}
+                      <span className="text-primary font-bold text-lg">
+                        {filteredAndSortedDoctors.length}
+                      </span>{" "}
+                      {t.doctors} {t.matching} &quot;
+                      {searchQuery}&quot;
+                    </span>
+                  ) : (
+                    <span>
+                      {t.showing}{" "}
+                      <span className="text-primary font-bold text-lg">
+                        {doctors.length}
+                      </span>{" "}
+                      {t.of}{" "}
+                      <span className="text-primary font-bold text-lg">
+                        {totalDoctors}
+                      </span>{" "}
+                      {t.totalDoctors}
+                    </span>
+                  )}
                 </div>
-                {hasActiveFilters && (
+                {searchQuery && filteredAndSortedDoctors.length > 0 && (
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     <Button
-                      onClick={clearFilters}
                       variant="outline"
-                      className="px-6 py-3 border-2 shadow-md hover:shadow-lg"
+                      size="sm"
+                      onClick={() => setSearchQuery("")}
+                      className="flex items-center gap-2 px-4 py-2.5 border-2 shadow-md hover:shadow-lg"
                     >
-                      {t.clearFilters}
+                      <X className="h-5 w-5" />
+                      {t.clearSearch}
                     </Button>
                   </motion.div>
                 )}
-              </Card>
-            </motion.div>
-          ) : (
-            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 transition-opacity duration-300 ${isSearching ? 'opacity-30' : 'opacity-100'}`}>
-              {doctors.map((doctor, index) => {
-                const doctorWithBnHospital = {
-                  ...doctor,
-                  hospitalBn: "",
-                  hospital: ""
-                };
-                return (
-                  <DoctorCard key={`${doctor._id}-${index}`} doctor={doctor} index={index} />
-                );
-              })}
-            </div>
-          )}
-        </div>
+              </div>
+            </Card>
+          </motion.div>
 
-        {/* Loading Indicator for Infinite Scroll */}
-        <div ref={observerTarget} className="py-10 flex justify-center w-full">
-          {loadingMore && (
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full"
-            />
-          )}
-          {!hasMore && doctors.length > 0 && (
-            <p className="text-gray-500 font-medium">{language === 'bn' ? 'আর কোনো ডাক্তার নেই' : 'No more doctors to show'}</p>
-          )}
-        </div>
+          {/* Doctor Cards Section */}
+          <div className="relative">
+            {isSearching && (
+              <div className="absolute inset-0 z-10 bg-white/50 backdrop-blur-[1px] flex items-center justify-center rounded-2xl min-h-[400px]">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
+                />
+              </div>
+            )}
+
+            {filteredAndSortedDoctors.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="mb-8"
+              >
+                <Card className="p-12 text-center bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 shadow-lg">
+                  <div className="mb-6">
+                    <Stethoscope className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <p
+                      className="text-xl font-semibold text-gray-600 mb-4"
+                    >
+                      {t.noDoctors}
+                    </p>
+                  </div>
+                  {hasActiveFilters && (
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Button
+                        onClick={clearFilters}
+                        variant="outline"
+                        className="px-6 py-3 border-2 shadow-md hover:shadow-lg"
+                      >
+                        {t.clearFilters}
+                      </Button>
+                    </motion.div>
+                  )}
+                </Card>
+              </motion.div>
+            ) : (
+              <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 transition-opacity duration-300 ${isSearching ? 'opacity-30' : 'opacity-100'}`}>
+                {doctors.map((doctor, index) => {
+                  const doctorWithBnHospital = {
+                    ...doctor,
+                    hospitalBn: "",
+                    hospital: ""
+                  };
+                  return (
+                    <DoctorCard key={`${doctor._id}-${index}`} doctor={doctor} index={index} />
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Loading Indicator for Infinite Scroll */}
+          <div ref={observerTarget} className="py-10 flex justify-center w-full">
+            {loadingMore && (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full"
+              />
+            )}
+            {!hasMore && doctors.length > 0 && (
+              <p className="text-gray-500 font-medium">{language === 'bn' ? 'আর কোনো ডাক্তার নেই' : 'No more doctors to show'}</p>
+            )}
+          </div>
         </div>{/* /resultsRef */}
       </div>
       <Footer />
@@ -1541,7 +1522,7 @@ export default function DoctorListPage() {
   return (
     <Suspense
       fallback={
-        <PageLoader/>
+        <PageLoader />
       }
     >
       <DoctorListPageContent />

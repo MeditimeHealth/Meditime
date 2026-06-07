@@ -87,7 +87,7 @@ export default function DiagnosticCalendarPicker({
     (currentYear === maxYear && currentMonthIndex >= maxMonth);
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-white to-orange-50 border-2 border-[#FF6B00]/20 shadow-xl">
+    <Card className="p-6 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
       <h2
         className="text-2xl font-bold text-gray-900 mb-5"
 
@@ -106,7 +106,7 @@ export default function DiagnosticCalendarPicker({
           <ArrowLeft className="h-5 w-5 text-[#FF6B00]" />
         </button>
         <h3
-          className="text-xl font-bold text-gray-900"
+          className="text-xl font-bold"
 
         >
           {t(`month_${currentMonthIndex}` as any, language)} {convertToBengaliNumber(currentYear, language)}
@@ -122,7 +122,7 @@ export default function DiagnosticCalendarPicker({
       </div>
 
       {/* Calendar Days Header */}
-      <div className="grid grid-cols-7 gap-2 mb-4">
+      <div className="grid grid-cols-7 gap-3 lg:gap-6">
         {[1, 2, 3, 4, 5, 6, 0].map((dayIndex) => (
           <div
             key={dayIndex}
@@ -135,7 +135,7 @@ export default function DiagnosticCalendarPicker({
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-7 gap-3 lg:gap-6">
         {calendarDays.map((date, index) => {
           if (!date) {
             return <div key={index} className="aspect-square" />;
@@ -157,10 +157,10 @@ export default function DiagnosticCalendarPicker({
                 }
               }}
               disabled={!isAvailable}
-              className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center text-base md:text-2xl ${isSelected
+              className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center md:text-2xl text-sm  ${isSelected
                   ? "text-white shadow-lg scale-110 ring-4 ring-orange-300 bg-[#FF6B00]"
                   : isAvailable
-                    ? "bg-white text-slate-700 border border-slate-200 hover:border-[#FF6B00] hover:text-[#FF6B00] hover:shadow-md"
+                    ? "bg-primary text-white border border-slate-200  hover:shadow-md"
                     : "bg-gray-100 text-gray-400 cursor-not-allowed border border-transparent"
                 } ${isToday && !isSelected && !isAvailable ? "ring-2 ring-gray-400" : ""}`}
       
@@ -172,7 +172,7 @@ export default function DiagnosticCalendarPicker({
       </div>
 
       {selectedDate && (
-        <div className="mt-6 p-4 bg-[#FF6B00]/10 rounded-xl border-2 border-[#FF6B00]/20">
+        <div className="mt-6 p-4 bg-primary/10 rounded-xl border-2 border-primary/20">
           <p
             className="text-lg font-semibold text-gray-900"
 

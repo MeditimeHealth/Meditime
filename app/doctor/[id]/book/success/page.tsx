@@ -222,8 +222,8 @@ function BookingSuccessContent() {
             {/* Slip Header */}
             <div className="bg-[var(--color-primary)] px-6 py-6 text-center">
             <div className="flex justify-center mb-4">
-              <div className="bg-white p-2 rounded-xl">
-                <img src="/SVG/asset-3.svg" alt="MediTime Logo" className="h-8 w-auto" />
+              <div className="">
+                <img src="/SVG/Asset-4.png" alt="MediTime Logo" className="h-14 w-auto" />
               </div>
             </div>
             

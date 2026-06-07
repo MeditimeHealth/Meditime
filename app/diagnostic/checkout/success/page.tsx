@@ -5,15 +5,18 @@ import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Navbar_for_details from "@/components/nav_for_details";
-import { ArrowLeft, Loader2, CheckCircle2, Download } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle2, Download, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "@/lib/toast";
 
 import { generateDiagnosticBookingPDF } from "@/lib/diagnostic-pdf";
 import DiagnosticInvoice from "@/components/diagnostic/DiagnosticInvoice";
+import Loading from "@/app/loading";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function DiagnosticSuccessPage() {
   const router = useRouter();
+  const { language } = useLanguage();
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -21,7 +24,8 @@ export default function DiagnosticSuccessPage() {
   const [bookedTests, setBookedTests] = useState<any[]>([]);
   const [selectedVenue, setSelectedVenue] = useState<any | null>(null);
   const [checkoutData, setCheckoutData] = useState<any | null>(null);
-  
+    const [agreed, setAgreed] = useState(false);
+
   const [payLater, setPayLater] = useState(false);
   const [bookingComplete, setBookingComplete] = useState(false);
   const [savedBookingData, setSavedBookingData] = useState<any | null>(null);
@@ -138,9 +142,7 @@ export default function DiagnosticSuccessPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#00B7B5]" />
-      </div>
+      <Loading />
     );
   }
 
@@ -201,53 +203,100 @@ export default function DiagnosticSuccessPage() {
             </div>
           )}
 
-          {/* Pay Later / Confirm */}
-          {!bookingComplete && (
-            <Card className="p-6 border border-slate-200 shadow-sm bg-white">
-              <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
-                {/* Left side */}
-                <div className="flex-1">
-                  <label className="flex items-center gap-3 cursor-pointer group">
-                    <input 
-                      type="checkbox" 
-                      checked={payLater}
-                      onChange={(e) => setPayLater(e.target.checked)}
-                      className="w-5 h-5 rounded border-slate-300 text-[#00B7B5] focus:ring-[#00B7B5] accent-[#00B7B5]"
+          
+            <div className="bg-white p-3 lg:p-6 border border-slate-200 rounded-xl">
+              {/* Agreement Checkbox */}
+              <div className="mb-5">
+                <div className="flex items-start gap-3">
+                  <div className="relative mt-0.5 flex-shrink-0">
+                    <input
+                      type="checkbox"
+                      id="agree-checkbox"
+                      checked={agreed}
+                      onChange={(e) => setAgreed(e.target.checked)}
+                      className="sr-only"
                     />
-                    <span className="font-bold text-slate-700 group-hover:text-slate-900 transition-colors">
-                      I want to pay later at the hospital desk
-                    </span>
+                    <label
+                      htmlFor="agree-checkbox"
+                      className={`w-5 h-5 rounded border-2 transition-all flex items-center justify-center cursor-pointer select-none ${agreed
+                        ? "bg-primary border-primary"
+                        : "bg-white border-slate-300 hover:border-primary"
+                        }`}
+                    >
+                      {agreed && (
+                        <svg
+                          className="w-3 h-3 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={3}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </label>
+                  </div>
+                  <label
+                    htmlFor="agree-checkbox"
+                    className="text-sm text-slate-600 leading-relaxed cursor-pointer select-none"
+                  >
+                    <Link href="/terms" className="text-primary hover:underline">
+                      {language == 'en' ? "Terms and Conditions" : "শর্তাবলী"}
+                    </Link>
                   </label>
                 </div>
-
-                {/* Right side */}
-                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                  {payLater ? (
-                    <Button 
-                      onClick={handleBook}
-                      disabled={submitting}
-                      className="w-full sm:w-auto px-8 py-6 text-base md:text-lg font-bold bg-[#00B7B5] hover:bg-[#009b9a] text-white rounded-xl shadow-lg transition-all"
-                    >
-                      {submitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <CheckCircle2 className="w-5 h-5 mr-2" />}
-                      Confirm Booking
-                    </Button>
-                  ) : (
-                    <Button 
-                      disabled
-                      className="w-full sm:w-auto px-8 py-6 text-base md:text-lg font-bold bg-slate-800 text-white rounded-xl shadow-lg transition-all opacity-50 cursor-not-allowed"
-                    >
-                      Pay Now ৳{totalPrice}
-                    </Button>
-                  )}
-                </div>
               </div>
-            </Card>
-          )}
+
+           
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  onClick={handleBook}
+                  className="w-full btn-slidex btn-primaryx transition-all"
+                  disabled={!agreed || submitting}
+                >
+                  {language == 'en' ? "Pay later" : "পরে পে করুন"}
+                </Button>
+
+                <Button
+                  onClick={handleBook}
+                  disabled={true}
+                  className={` font-bold py-3 text-base transition-all hover:scale-100 ${agreed && !submitting
+                    ? "btn-primary btn-slide"
+                    : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    }`}
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                      {language == 'en' ? "Confirming..." : "নিশ্চিত হচ্ছে..."}
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="h-5 w-5 mr-2" />
+                      {language == 'en' ? "Pay now" : "এখন পেমেন্ট করুন"}
+                    </>
+                  )}
+                </Button>
+              </div>
+
+               <div className="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                  <p className="text-sm text-primary">
+                    {language == 'en' ? "Confirm your booking via secure online payment or pay the fee directly at the chamber."
+                      : "নিরাপদ অনলাইন পেমেন্টের মাধ্যমে বুকিং নিশ্চিত করুন অথবা চেম্বারে গিয়ে সরাসরি ফি প্রদান করুন।"}
+                  </p>
+                </div>
+            </div>
+
+          {/* Pay Later / Confirm */}
+         
 
           {bookingComplete && (
             <div className="bg-green-50 text-green-700 border border-green-200 p-6 rounded-2xl flex items-center justify-center gap-3 text-center">
               <CheckCircle2 className="w-6 h-6 shrink-0" />
-              <p className="font-bold">Your booking has been confirmed successfully! Present this summary at the hospital.</p>
+              <p className="font-bold">{language == 'en' ? "Your booking has been confirmed successfully! Present this summary at the hospital." : "আপনার বুকিং সফলভাবে নিশ্চিত হয়েছে! হাসপাতালের যেকোনো শাখায় এই সারাংশ দেখান।"}</p>
             </div>
           )}
         </div>

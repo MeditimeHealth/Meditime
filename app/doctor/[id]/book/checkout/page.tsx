@@ -210,7 +210,7 @@ function CheckoutContent() {
 
   if (!booking) {
     return (
-    <PageLoader/>
+      <PageLoader />
     );
   }
 
@@ -218,7 +218,7 @@ function CheckoutContent() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Nav_for_details />
 
-   
+
 
       <div className="max-w-3xl mt-16 mx-auto px-4 sm:px-6 py-8 pb-16">
         {/* Page heading */}
@@ -239,16 +239,14 @@ function CheckoutContent() {
           {/* Card Header */}
           <div className="bg-gradient-to-r from-[#00B7B5] to-teal-600 px-6 py-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                <Stethoscope className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-white font-bold text-lg leading-tight" style={fontStyle}>
-                  MediTime
-                </h2>
-                <p className="text-white/80 text-xs font-medium tracking-wider uppercase">
-                  Appointment Preview
-                </p>
+
+              <div className="flex items-center justify-center w-full">
+                <Image
+                  src="/SVG/Asset-4.png"
+                  alt="Meditime"
+                  width={150}
+                  height={150}
+                />
               </div>
             </div>
           </div>
@@ -441,106 +439,109 @@ function CheckoutContent() {
                 )}
               </div>
             </div>
+
+            <div>
+              {/* Agreement Checkbox */}
+              <div className="mb-5">
+                <div className="flex items-start gap-3">
+                  <div className="relative mt-0.5 flex-shrink-0">
+                    <input
+                      type="checkbox"
+                      id="agree-checkbox"
+                      checked={agreed}
+                      onChange={(e) => setAgreed(e.target.checked)}
+                      className="sr-only"
+                    />
+                    <label
+                      htmlFor="agree-checkbox"
+                      className={`w-5 h-5 rounded border-2 transition-all flex items-center justify-center cursor-pointer select-none ${agreed
+                        ? "bg-primary border-primary"
+                        : "bg-white border-slate-300 hover:border-primary"
+                        }`}
+                    >
+                      {agreed && (
+                        <svg
+                          className="w-3 h-3 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={3}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </label>
+                  </div>
+                  <label
+                    htmlFor="agree-checkbox"
+                    className="text-sm text-slate-600 leading-relaxed cursor-pointer select-none"
+                    style={fontStyle}
+                  >
+                    <Link href="/terms" className="text-primary hover:underline">
+                      {language == 'en' ? "Terms and Conditions" : "শর্তাবলী"}
+                    </Link>
+                  </label>
+                </div>
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl">
+                  <p className="text-sm text-red-600" style={fontStyle}>
+                    {error}
+                  </p>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  onClick={handleConfirm}
+                  className="w-full btn-slidex btn-primaryx transition-all"
+                  style={fontStyle}
+                  disabled={!agreed || submitting}
+                >
+                  {language == 'en' ? "Pay later" : "পরে পে করুন"}
+                </Button>
+
+                <Button
+                  onClick={handleConfirm}
+                  disabled={true}
+                  className={` font-bold py-3 text-base transition-all hover:scale-100 ${agreed && !submitting
+                    ? "btn-primary btn-slide"
+                    : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    }`}
+                  style={fontStyle}
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                      {txt.confirming}
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="h-5 w-5 mr-2" />
+                      {language == 'en' ? "Pay now" : "এখন পেমেন্ট করুন"}
+                    </>
+                  )}
+                </Button>
+              </div>
+
+               <div className="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                  <p className="text-sm text-primary" style={fontStyle}>
+                    {language == 'en' ? "Confirm your booking via secure online payment or pay the fee directly at the chamber."
+                      : "নিরাপদ অনলাইন পেমেন্টের মাধ্যমে বুকিং নিশ্চিত করুন অথবা চেম্বারে গিয়ে সরাসরি ফি প্রদান করুন।"}
+                  </p>
+                </div>
+            </div>
+
           </div>
 
-          {/* Pay Later Notice */}
-          <div className="bg-amber-50 border-t border-amber-100 px-6 py-4">
-            <div className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4 text-amber-600 flex-shrink-0" />
-              <p className="text-xs text-amber-700 font-medium" style={fontStyle}>
-                {txt.payLaterNote}
-              </p>
-            </div>
-          </div>
+
         </Card>
 
-        {/* Agreement Checkbox */}
-        <div className="mb-5">
-          <div className="flex items-start gap-3">
-            <div className="relative mt-0.5 flex-shrink-0">
-              <input
-                type="checkbox"
-                id="agree-checkbox"
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-                className="sr-only"
-              />
-              <label
-                htmlFor="agree-checkbox"
-                className={`w-5 h-5 rounded border-2 transition-all flex items-center justify-center cursor-pointer select-none ${
-                  agreed
-                    ? "bg-primary border-primary"
-                    : "bg-white border-slate-300 hover:border-primary"
-                }`}
-              >
-                {agreed && (
-                  <svg
-                    className="w-3 h-3 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={3}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                )}
-              </label>
-            </div>
-            <label
-              htmlFor="agree-checkbox"
-              className="text-sm text-slate-600 leading-relaxed cursor-pointer select-none"
-              style={fontStyle}
-            >
-              {txt.agreeLabel}
-            </label>
-          </div>
-        </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl">
-            <p className="text-sm text-red-600" style={fontStyle}>
-              {error}
-            </p>
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Link href={`/doctor/${doctorId}/book`} className="sm:flex-1">
-            <Button
-              variant="outline"
-              className="w-full border-2 border-slate-300 hover:border-primary hover:text-primary transition-all"
-              style={fontStyle}
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              {txt.back}
-            </Button>
-          </Link>
-
-          <Button
-            onClick={handleConfirm}
-            disabled={!agreed || submitting}
-            className={`sm:flex-[2] font-bold py-3 text-base shadow-lg transition-all duration-300 ${
-              agreed && !submitting
-                ? "btn-primary btn-slide"
-                : "bg-slate-200 text-slate-400 cursor-not-allowed"
-            }`}
-            style={fontStyle}
-          >
-            {submitting ? (
-              <>
-                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                {txt.confirming}
-              </>
-            ) : (
-              <>
-                <CreditCard className="h-5 w-5 mr-2" />
-                {txt.payLaterBtn}
-              </>
-            )}
-          </Button>
-        </div>
       </div>
 
       <Footer />

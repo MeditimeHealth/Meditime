@@ -182,9 +182,9 @@ export default function Navbar() {
                         className={`${language === 'bn'
                           ? "text-[13px] xl:text-[15px] font-bold"
                           : "text-[11px] xl:text-[13px] font-semibold"
-                          }  whitespace-nowrap text-center hover:border-primary hover:border-b-2 ${isActive
+                          }  whitespace-nowrap text-center hover:border-primary  ${isActive
                             ? scrolled ? "text-primary" : "text-primary"
-                            : scrolled ? "text-white   group-hover:text-primary" : "text-white group-hover:text-primary"
+                            : scrolled ? "text-white hover:border-b-2  group-hover:text-primary" : "text-white hover:border-b-2 group-hover:text-primary"
                           }`}
                       >
                         {link.label}
@@ -221,8 +221,8 @@ export default function Navbar() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleLanguage}
-                className={`text-xs font-semibold px-3 py-2 rounded-lg h-[50px] border border-primary h-full transition-colors duration-300 ${scrolled
-                  ? "text-white hover:text-primary hover:bg-primary/5"
+                className={`text-xs font-semibold px-3 py-2 rounded-lg h-[50px] h-full ${scrolled
+                  ? "text-white hover:text-white hover:bg-primary/5"
                   : "text-white hover:text-primary hover:bg-white/10"
                   }`}
                 title={language === 'en' ? 'Switch to Bangla' : 'Switch to English'}
@@ -258,7 +258,7 @@ export default function Navbar() {
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link
                       href="/login"
-                      className={`text-sm font-semibold px-3 py-2 rounded-lg h-[54px] border border-primary h-full transition-colors duration-300 ${scrolled
+                      className={`text-sm font-semibold rounded-lg px-6 py-2.5 border border-primary transition-colors duration-300 ${scrolled
                         ? "text-white hover:text-primary hover:bg-primary/5"
                         : "text-white hover:text-primary hover:bg-white/10"
                         }`}
@@ -269,7 +269,7 @@ export default function Navbar() {
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Link
                       href="/signup"
-                      className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300  bg-white hover:bg-primary/90 text-primary`}
+                      className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300  bg-white hover:bg-primary/90 text-primary hover:text-white`}
                     >
                       {t.signup}
                     </Link>

@@ -120,7 +120,7 @@ export default function ContactPage() {
             >
               <h1 className="text-2xl md:text-5xl lg:text-7xl font-bold text-white mb-4 drop-shadow-2xl leading-tight">
                 {language === 'bn' ? "আমাদের সাথে যোগাযোগ করুন" : "Contact Us"}              </h1>
-              <p className="text-sm md:text-xl text-white/90 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
+              <p className="text-sm  md:text-xl text-white/90 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
                 {language === 'bn'
                   ? "আপনার যেকোনো জিজ্ঞাসা বা সাহায্যের জন্য আমরা ২৪/৭ নিয়োজিত আছি।"
                   : "Have questions or need help? Our support team is here for you 24/7."}
@@ -139,21 +139,19 @@ export default function ContactPage() {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="bg-[#ff5e29] rounded-[32px] p-8 text-white shadow-2xl relative overflow-hidden group"
+              className="bg-[#193252] rounded-[32px] p-8 text-white shadow-2xl relative overflow-hidden group"
             >
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
                 <FaHeadset className="w-32 h-32" />
               </div>
               <div className="relative z-10">
-                <p className="text-orange-100 font-bold uppercase tracking-widest text-sm mb-2">
-                  {language === 'bn' ? "জরুরি হটলাইন" : "Emergency Hot line Number"}
-                </p>
+               
                 <h2 className="text-3xl font-bold mb-6">
-                  {language === 'bn' ? "আমাদের কাছে কি কোনো প্রশ্ন আছে?" : "Have a Question For Us?"}
+                  {language === 'bn' ? "জরুরি হেল্পলাইন" : "Emergency Helpline"}
                 </h2>
                 <a
                   href="tel:+8801610384444"
-                  className="inline-flex items-center gap-4 bg-white text-[#ff5e29] px-8 py-4 rounded-2xl font-bold text-2xl shadow-lg hover:bg-orange-50 transition-all active:scale-95"
+                  className="inline-flex items-center gap-4 bg-white text-[#193252] px-8 py-4 rounded-2xl font-bold text-2xl shadow-lg hover:bg-orange-50 transition-all active:scale-95"
                 >
                   <Phone className="w-6 h-6" />
                   +880 1610-384444
@@ -174,7 +172,7 @@ export default function ContactPage() {
 
               <div className="space-y-8">
                 <div className="flex gap-6">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-[#3DB5A0] shrink-0 border border-slate-100">
+                  <div className="w-14 h-14 rounded-2xl bg-[#00B1C2] flex items-center justify-center text-white shrink-0 border border-slate-100">
                     <FaEnvelope className="w-6 h-6" />
                   </div>
                   <div>
@@ -186,7 +184,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex gap-6">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-[#3DB5A0] shrink-0 border border-slate-100">
+                  <div className="w-14 h-14 rounded-2xl bg-[#00B1C2] flex items-center justify-center text-white shrink-0 border border-slate-100">
                     <Phone className="w-6 h-6" />
                   </div>
                   <div>
@@ -198,7 +196,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex gap-6">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-[#3DB5A0] shrink-0 border border-slate-100">
+                  <div className="w-14 h-14 rounded-2xl bg-[#00B1C2] flex items-center justify-center text-white shrink-0 border border-slate-100">
                     <FaFacebookF className="w-6 h-6" />
                   </div>
                   <div>
@@ -210,7 +208,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex gap-6">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-[#3DB5A0] shrink-0 border border-slate-100">
+                  <div className="w-14 h-14 rounded-2xl bg-[#00B1C2] flex items-center justify-center text-white shrink-0 border border-slate-100">
                     <FaMapMarkerAlt className="w-6 h-6" />
                   </div>
                   <div>
@@ -232,12 +230,12 @@ export default function ContactPage() {
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-8 h-full"
           >
-            <Card className="bg-white rounded-[40px] p-8 shadow-[0_40px_80px_rgba(0,0,0,0.06)] border border-slate-50 h-full">
+            <Card className="bg-white rounded-[40px] p-8 shadow-[0_40px_80px_rgba(0,0,0,0.06)] border border-[#00B1C2] h-full">
               <div className="text-center mb-12">
                 <h3 className="text-[32px] md:text-[42px] font-bold text-[#1a1a1a] ">
                   {language === 'bn' ? "আমাদের কাছে কি কোনো প্রশ্ন আছে?" : "Have a question for us?"}
                 </h3>
-                <p className="text-slate-500 text-lg">
+                <p className="text-[#00B1C2]0 text-lg">
                   {language === 'bn' ? "আমাদের সাপোর্ট টিম আপনার সমস্ত প্রশ্নের উত্তর দেবে।" : "Our support team will answer all your questions."}
                 </p>
               </div>
@@ -355,7 +353,7 @@ export default function ContactPage() {
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="btn-slide bg-white text-black border border-primary px-12 h-14 text-lg min-w-[160px] flex items-center justify-center gap-3 group/btn overflow-hidden"
+                    className="btn-slide btn-primary rounded-none px-12 h-14 text-lg min-w-[160px] flex items-center justify-center gap-3 group/btn overflow-hidden"
                   >
                     {isLoading ? (
                       <Loader2 className="animate-spin w-6 h-6" />

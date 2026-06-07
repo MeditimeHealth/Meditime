@@ -16,9 +16,6 @@ import Footer from "@/components/footer";
 import { showToast } from "@/lib/toast";
 
 const loginSchema = z.object({
-  userType: z.enum(["user", "doctor", "bloodDonor", "ambulance"], {
-    message: "Please select a user type",
-  }),
   phoneOrEmail: z.string().min(1, "Phone number or email is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
@@ -66,13 +63,7 @@ export default function LoginPage() {
         window.dispatchEvent(new Event("userLogin"));
         
         const userType = result.user.userType || result.user.role;
-        if (userType === 'bloodDonor') {
-          router.push("/blood-donor/profile");
-        } else if (userType === 'ambulance') {
-          router.push("/ambulance/profile");
-        } else if (userType === 'doctor') {
-          router.push("/doctor/dashboard");
-        } else {
+        if (userType === 'user') {
           router.push("/");
         }
         router.refresh();
@@ -215,23 +206,7 @@ export default function LoginPage() {
                       <p className="text-gray-600 mb-8">{t.loginSubtitle}</p>
 
                       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                        <div>
-                          <Label htmlFor="userType">{t.signInAs} <span className="text-red-500">*</span></Label>
-                          <select
-                            id="userType"
-                            {...register("userType")}
-                            className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                          >
-                            <option value="">{t.userTypePlaceholder}</option>
-                            <option value="user">{t.user}</option>
-                            <option value="doctor">{t.doctor}</option>
-                            <option value="bloodDonor">{t.bloodDonor}</option>
-                            <option value="ambulance">{t.ambulance}</option>
-                          </select>
-                          {errors.userType && (
-                            <p className="text-sm text-red-500 mt-1">{errors.userType.message}</p>
-                          )}
-                        </div>
+                
 
                         <div>
                           <Label htmlFor="phoneOrEmail">{t.phoneOrEmail}</Label>

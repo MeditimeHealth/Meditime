@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const body = await request.json();
-    const { phoneOrEmail, password, userType } = body;
+    const { phoneOrEmail, password } = body;
 
     if (!phoneOrEmail || !password) {
       return NextResponse.json(
@@ -34,20 +34,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check user type if provided
-    if (userType && user.userType !== userType) {
-      const typeLabels: Record<string, string> = {
-        'bloodDonor': 'Blood Donor',
-        'ambulance': 'Ambulance',
-        'affiliate': 'Affiliate',
-        'doctor': 'Doctor',
-        'user': 'User'
-      };
-      return NextResponse.json(
-        { error: `Invalid user type. Please sign in as ${typeLabels[user.userType || 'user'] || 'User'}` },
-        { status: 401 }
-      );
-    }
+   
 
     // Check if affiliate account is active
     if (user.userType === 'affiliate' && user.isActive === false) {

@@ -20,6 +20,7 @@ import Footer from "@/components/footer";
 import { motion } from "framer-motion";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import DoctorCard from "@/components/doctor-card";
+import Loading from "@/app/loading";
 
 interface Hospital {
   slug: string;
@@ -119,15 +120,16 @@ export default function HospitalDetailPage() {
   const getHospitalLocationString = (h: Hospital | null): string => {
     if (!h) return "";
     const parts: string[] = [];
-    
+
     const division = getLocalizedValue(h.thana?.district?.division?.name, h.thana?.district?.division?.nameBn, language);
     const district = getLocalizedValue(h.thana?.district?.name, h.thana?.district?.nameBn, language);
     const thana = getLocalizedValue(h.thana?.name, h.thana?.nameBn, language);
-
-    if (division) parts.push(division);
-    if (district) parts.push(district);
     if (thana) parts.push(thana);
-    
+    if (district) parts.push(district);
+    if (division) parts.push(division);
+
+
+
     return parts.join(", ");
   };
 
@@ -154,26 +156,14 @@ export default function HospitalDetailPage() {
     return doctors.filter((doctor) => {
       const name = getLocalizedValue(doctor.name, doctor.nameBn, language).toLowerCase();
       const department = getLocalizedValue(doctor.department, doctor.departmentBn, language).toLowerCase();
-      
+
       return name.includes(query) || department.includes(query);
     });
   }, [doctors, searchQuery, language]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <Navbar />
-        <div className="flex items-center justify-center min-h-[80vh]">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"
-            />
-            <p className="text-xl font-semibold text-gray-700">{language === 'bn' ? banglaLabels.loading : "Loading hospital information..."}</p>
-          </motion.div>
-        </div>
-      </div>
+      <Loading></Loading>
     );
   }
 
@@ -258,7 +248,7 @@ export default function HospitalDetailPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Main Content */}
           <div className="flex-1">
-    
+
             {/* Hospital Header */}
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
               <Card className="p-8 md:p-10 bg-gradient-to-br from-primary/10 via-primary/5 to-white border-2 border-primary/20 shadow-xl">
@@ -310,8 +300,8 @@ export default function HospitalDetailPage() {
                   </h3>
                   <div className="text-base md:text-lg leading-relaxed text-gray-700">
                     <p className="text-justify">
-                      {hospitalName} {language === 'bn' 
-                        ? "একটি আধুনিক ও উন্নত চিকিৎসা সেবা প্রদানকারী স্বাস্থ্যসেবা প্রতিষ্ঠান। আমাদের হাসপাতালে অভিজ্ঞ ও দক্ষ চিকিৎসকগণ সর্বোচ্চ মানের চিকিৎসা সেবা প্রদান করে থাকেন। আধুনিক চিকিৎসা সরঞ্জাম ও প্রযুক্তির সমন্বয়ে আমরা রোগীদের জন্য সর্বোত্তম চিকিৎসা নিশ্চিত করি।" 
+                      {hospitalName} {language === 'bn'
+                        ? "একটি আধুনিক ও উন্নত চিকিৎসা সেবা প্রদানকারী স্বাস্থ্যসেবা প্রতিষ্ঠান। আমাদের হাসপাতালে অভিজ্ঞ ও দক্ষ চিকিৎসকগণ সর্বোচ্চ মানের চিকিৎসা সেবা প্রদান করে থাকেন। আধুনিক চিকিৎসা সরঞ্জাম ও প্রযুক্তির সমন্বয়ে আমরা রোগীদের জন্য সর্বোত্তম চিকিৎসা নিশ্চিত করি।"
                         : "is a modern healthcare institution providing advanced medical services. Our experienced and skilled doctors provide the highest quality medical care. We ensure the best treatment for patients with modern medical equipment and technology."}
                     </p>
                   </div>

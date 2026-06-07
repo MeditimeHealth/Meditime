@@ -69,9 +69,9 @@ function FAQItem({ question, answer, isOpen, onClick }: { question: string; answ
         onClick={onClick}
         className="w-full py-6 flex items-center justify-between text-left group"
       >
-        <span className="text-lg font-semibold text-slate-900 group-hover:text-primary transition-colors pr-8">
+        <section className="text-lg font-semibold text-slate-900 group-hover:text-primary transition-colors pr-8">
           {question}
-        </span>
+        </section>
         <div className={`flex-shrink-0 w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center transition-all duration-300 ${isOpen ? 'bg-primary border-primary text-white rotate-180' : 'text-slate-400'}`}>
           <ChevronDown className="w-5 h-5" />
         </div>
@@ -85,9 +85,9 @@ function FAQItem({ question, answer, isOpen, onClick }: { question: string; answ
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="pb-6 text-slate-600 leading-relaxed">
+            <section className="pb-6 text-slate-600 leading-relaxed">
               {answer}
-            </div>
+            </section>
           </motion.div>
         )}
       </AnimatePresence>
@@ -181,7 +181,7 @@ export default function ServicePage() {
               <h1 className="text-2xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
                 {t.heroTitle}
               </h1>
-              <p className="text-sm text-white/90 max-w-2xl mx-auto mb-8 font-light">
+              <p className="text-sm md:text-xl text-white/90 max-w-2xl mx-auto mb-8 font-light">
                 {t.heroDesc}
               </p>
             </motion.div>
@@ -191,7 +191,7 @@ export default function ServicePage() {
 
       {/* ── Social Proof Section (Matches Homepage StatsSection) ── */}
       <div className="relative z-30 max-w-7xl mx-auto px-4 mt-10 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-18">
           {socialProof.map(({ value, suffix, label, icon: Icon }, index) => (
             <motion.div
               key={index}
@@ -200,7 +200,7 @@ export default function ServicePage() {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <div className="btn-slide group flex flex-col items-center text-center p-12 sm:p-16 rounded-3xl btn-primary min-h-[280px] h-full justify-center">
+              <div className="btn-slide group flex flex-col items-center text-center p-6 rounded-3xl btn-primary min-h-[200px] h-full justify-center">
                 {/* Icon */}
                 <div className="mb-6 text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
                   <Icon size={72} height="duotone" />

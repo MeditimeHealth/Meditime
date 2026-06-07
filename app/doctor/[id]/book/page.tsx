@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-import { ArrowLeft, MapPin, Loader2, RotateCcw, Ticket, Building2 } from "lucide-react";
+import { ArrowLeft, MapPin, Loader2, RotateCcw, Ticket, Building2, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "@/lib/toast";
 import { translations } from "@/lib/translations";
@@ -419,9 +419,9 @@ export default function BookAppointmentPage() {
           {/* Left Column - Hospital Info & Calendar */}
           <div className="lg:col-span-2 space-y-6">
             {/* Hospital Info Display */}
-            <Card className="p-6 bg-gradient-to-br from-white to-blue-50 border-2 border-primary/20 shadow-xl">
+            <Card className="p-6 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
               <h2
-                className="text-2xl font-bold text-gray-900 mb-5"
+                className="text-2xl font-bold mb-5"
               >
                 {t('hospital')}
               </h2>
@@ -433,17 +433,17 @@ export default function BookAppointmentPage() {
                     const hNameBn = hObj?.nameBn || hName;
                     return (
                       <div className="p-4 bg-primary text-white rounded-xl border-2 border-primary shadow-lg">
-                        <p className="text-lg font-semibold flex items-center gap-2" >
+                        <h3 className="text-lg font-semibold flex items-center gap-2" >
                           <Building2 className="h-5 w-5" />
                           {language === 'bn' ? hNameBn : hName}
-                        </p>
+                        </h3>
                       </div>
                     );
                   })()
                 ) : (
-                  <p className="text-gray-500 p-4 bg-gray-50 rounded-xl" >
+                  <h3 className=" p-4 bg-gray-50 rounded-xl" >
                     {t('noHospitalAssigned')}
-                  </p>
+                  </h3>
                 )}
               </div>
             </Card>
@@ -452,7 +452,7 @@ export default function BookAppointmentPage() {
             {selectedHospitalSlug && (
               <Card className="p-6 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
                 <h2
-                  className="text-2xl font-bold text-gray-900 mb-5"
+                  className="text-2xl font-bold mb-5"
                 >
                   {t('selectDate')}
                 </h2>
@@ -469,7 +469,7 @@ export default function BookAppointmentPage() {
                       <ArrowLeft className="h-5 w-5 text-primary" />
                     </button>
                     <h3
-                      className="text-lg lg:text-xl font-bold text-gray-900"
+                      className="text-lg lg:text-xl font-bold "
 
                     >
                       {banglaMonths[currentMonthIndex]} {toBengaliNumber(currentYear)}
@@ -565,10 +565,10 @@ export default function BookAppointmentPage() {
 
           {/* Right Column - Form */}
           <div className="space-y-6">
-            <Card className="p-6 bg-gradient-to-br from-white to-amber-50 border-2 border-primary/20 shadow-xl">
+            <Card className="p-6 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
               <div className="flex items-center justify-between mb-5">
                 <h2
-                  className="text-2xl font-bold text-gray-900"
+                  className="text-2xl font-bold "
                 >
                   {t('patientInfo')}
                 </h2>
@@ -611,7 +611,7 @@ export default function BookAppointmentPage() {
                     onChange={(e) => setPatientName(e.target.value)}
                     required
                     placeholder={t('patientNamePlaceholder')}
-                    className={`mt-1 border-2 ${!patientName ? 'border-red-300 bg-red-50/50' : 'border-green-300 bg-green-50/30'}`}
+                    className={`mt-1 rounded-none  ${!patientName ? '' : 'border-primary bg-green-50/30'}`}
                   />
                 </div>
 
@@ -627,7 +627,7 @@ export default function BookAppointmentPage() {
                     onChange={(e) => setMobileNumber(e.target.value)}
                     required
                     placeholder={t('mobileNumberPlaceholder')}
-                    className={`mt-1 border-2 ${!mobileNumber ? 'border-red-300 bg-red-50/50' : 'border-green-300 bg-green-50/30'}`}
+                    className={`mt-1  ${!mobileNumber ? '' : 'border-primary bg-green-50/30'}`}
                   />
                 </div>
 
@@ -665,8 +665,8 @@ export default function BookAppointmentPage() {
                 </div>
 
                 {/* Affiliate Code - with Serial Input Option */}
-                <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200">
-                  <Label htmlFor="affiliateCode" className="flex items-center gap-2 text-purple-700" >
+                <div className="p-4 bg-primary/10 rounded-xl border-2 border-primary/20">
+                  <Label htmlFor="affiliateCode" className="flex items-center gap-2 text-primary" >
                     <Ticket className="h-4 w-4" />
                     {t('serialAffiliateCodeLabel')}
                   </Label>
@@ -675,9 +675,9 @@ export default function BookAppointmentPage() {
                     value={affiliateCode}
                     onChange={(e) => setAffiliateCode(e.target.value.toUpperCase())}
                     placeholder={t('serialAffiliateCodePlaceholder')}
-                    className="mt-2 border-2 border-purple-300 focus:border-purple-500 bg-white"
+                    className={`mt-2 border-2 border-primary focus:border-primary bg-white ${!affiliateCode ? '' : 'border-primary bg-green-50/30'}`}
                   />
-                  <p className="mt-2 text-xs text-purple-600" >
+                  <p className="mt-2 text-xs text-primary" >
                     {t('enterReferralCode')}
                   </p>
                 </div>
@@ -729,7 +729,7 @@ export default function BookAppointmentPage() {
                 <Button
                   type="submit"
                   disabled={!selectedHospitalSlug || !selectedDate || !patientName || !mobileNumber || submitting}
-                  className="w-full btn-primary btn-slide disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full btn-primary btn-slide disabled:opacity-50 text-md h-12 disabled:cursor-not-allowed"
                 >
                   {submitting ? (
                     <>
@@ -737,7 +737,10 @@ export default function BookAppointmentPage() {
                       {language === 'en' ? 'Waiting...' : 'অপেক্ষা করুন...'}
                     </>
                   ) : (
-                    t('nextStep')
+                    <div className="flex justify-center items-center gap-2">
+                      {language === 'en' ? 'Review Appointment' : 'অ্যাপয়েন্টমেন্ট রিভিউ করুন'}
+                      <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   )}
                 </Button>
               </form>

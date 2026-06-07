@@ -18,7 +18,7 @@ export default function DiagnosticCart({
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-lg overflow-hidden flex flex-col">
       {/* Header matching Invoice */}
-      <div className="bg-[#004B50] text-white px-5 py-4 flex justify-between items-center">
+      <div className="bg-primary text-white px-5 py-4 flex justify-between items-center">
         <div>
           <h3 className="text-lg font-bold tracking-tight">
             {language === 'en' ? "Selected Tests" : "নির্বাচিত টেস্টসমূহ"}

@@ -14,6 +14,8 @@ import DiagnosticPatientForm from "@/components/diagnostic/DiagnosticPatientForm
 import { useLanguage } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
 import { convertToBengaliNumber } from "@/lib/utils";
+import Nav_for_details from "@/components/nav_for_details";
+import Loading from "@/app/loading";
 
 export default function DiagnosticCheckoutPage() {
   const router = useRouter();
@@ -99,12 +101,7 @@ export default function DiagnosticCheckoutPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="flex items-center justify-center min-h-[80vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-[#00B7B5]" />
-        </div>
-      </div>
+      <Loading />
     );
   }
 
@@ -125,24 +122,10 @@ export default function DiagnosticCheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+    <div className="min-h-screen bg-gray-50 mt-20">
+      <Nav_for_details />
 
-      {/* Breadcrumbs */}
-      <div className="bg-gradient-to-r from-gray-50 to-white border-b-2 border-gray-200 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <Link href={`/diagnostic`}>
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                <span >
-                  {t("back", language)}
-                </span>
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
+
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -150,8 +133,8 @@ export default function DiagnosticCheckoutPage() {
           <div className="lg:col-span-2 space-y-6">
 
             {/* Selected Tests Summary */}
-            <Card className="p-6 bg-gradient-to-br from-white to-[#00B7B5]/5 border-2 border-[#00B7B5]/20 shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#00B7B5]/5 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+            <Card className="p-6 bg-gradient-to-br from-white to-primary/10 border-2 border-primary shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/5 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
               <h2
                 className="text-2xl font-bold text-gray-900 mb-5 flex items-center gap-2"
 
@@ -185,20 +168,20 @@ export default function DiagnosticCheckoutPage() {
             </Card>
 
             {/* Hospital Info Display */}
-            <Card className="p-6 bg-gradient-to-br from-white to-blue-50 border-2 border-[#0088FF]/20 shadow-xl">
+            <Card className="p-6 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
               <h2
-                className="text-2xl font-bold text-gray-900 mb-5 flex items-center gap-2"
+                className="text-2xl font-bold mb-5 flex items-center gap-2"
 
               >
-                <div className="p-2 bg-[#0088FF]/10 text-[#0088FF] rounded-xl"><MapPin className="w-5 h-5" /></div>
+                <div className="p-2 bg-primary/10 text-primary rounded-xl"><MapPin className="w-5 h-5" /></div>
                 {t("selectedHospital", language)}
               </h2>
               <div className="relative">
-                <div className="p-4 bg-[#0088FF] text-white rounded-xl border-2 border-[#0088FF] shadow-lg">
-                  <p className="text-xl font-semibold flex items-center gap-2" >
+                <div className="p-4 bg-primary text-white rounded-xl border-2 border-primary shadow-lg">
+                  <h1 className="text-xl font-semibold flex items-center gap-2" >
                     <Building2 className="h-6 w-6" />
                     {selectedVenue.name}
-                  </p>
+                  </h1>
                   <p className="text-white/80 text-sm mt-1">{selectedVenue.address || selectedVenue.thana?.name}</p>
                 </div>
               </div>

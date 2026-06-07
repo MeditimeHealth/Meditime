@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowRight } from "lucide-react";
+import { X, ArrowRight, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -138,7 +138,7 @@ export default function PopupModal() {
                       className="btn-primary btn-slide flex items-center justify-center gap-3 w-full"
                     >
                       {currentBtnText}
-                      <ArrowRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </Link>
                 </motion.div>

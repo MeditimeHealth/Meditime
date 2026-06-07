@@ -46,7 +46,7 @@ export default function MembershipSection() {
                   <button className="btn-slide group/btn btn-primary rounded-none border border-primary text-primary font-bold text-sm sm:text-base py-3 px-8 sm:px-10 shadow-lg transition-all inline-flex items-center gap-3 active:scale-95 overflow-hidden">
                     <span className="relative z-10 flex items-center gap-3">
                       {t.availBtn}
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </span>
                   </button>
                 </Link>
@@ -90,8 +90,10 @@ export default function MembershipSection() {
             {/* BUTTON — Shown ONLY on mobile, after the video */}
             <div className="lg:hidden flex justify-center order-3 mt-4">
               <Link href="/membership">
-                <button className="btn-primary btn-slide">
-                  {t.availBtn}
+                <button className="btn-primary btn-slide flex justify-center items-center gap-2">
+                  <h4>{t.availBtn}</h4>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+
                 </button>
               </Link>
             </div>

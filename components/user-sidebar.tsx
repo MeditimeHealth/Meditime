@@ -84,7 +84,7 @@ export default function UserSidebar({ user, onLogout }: UserSidebarProps) {
           <div className="h-20 flex items-center px-6 border-b border-white/10">
             <Link href="/" className="flex items-center gap-3 group">
               <Image 
-                src="/SVG/asset-3.png" 
+                src="/SVG/Asset-3.png" 
                 alt="Meditime Logo" 
                 width={120} 
                 height={40} 

@@ -364,10 +364,10 @@ export default function DiagnosticPage() {
 
 
   const categories = [
-    { id: 'blood', backendId: 'Blood', icon: Droplet, title: t.categories.blood, count: stats['Blood'] || 0, color: "bg-[#0088FF]" },
-    { id: 'cardio', backendId: 'Cardiology', icon: HeartPulse, title: t.categories.cardio, count: stats['Cardiology'] || 0, color: "bg-[#00D084]" },
-    { id: 'imaging', backendId: 'Imaging', icon: Scan, title: t.categories.imaging, count: stats['Imaging'] || 0, color: "bg-[#FF6B00]" },
-    { id: 'pathology', backendId: 'Pathology', icon: FlaskConical, title: t.categories.pathology, count: stats['Pathology'] || 0, color: "bg-slate-200" },
+    { id: 'blood', backendId: 'Blood', icon: "/blood.png", title: t.categories.blood, count: stats['Blood'] || 0, color: "bg-[#0088FF]" },
+    { id: 'cardio', backendId: 'Cardiology', icon: "/cardio.png", title: t.categories.cardio, count: stats['Cardiology'] || 0, color: "bg-[#00D084]" },
+    { id: 'imaging', backendId: 'Imaging', icon: "/imaging.png", title: t.categories.imaging, count: stats['Imaging'] || 0, color: "bg-[#FF6B00]" },
+    { id: 'pathology', backendId: 'Pathology', icon: "/path.png", title: t.categories.pathology, count: stats['Pathology'] || 0, color: "bg-slate-200" },
   ];
 
 
@@ -430,7 +430,7 @@ export default function DiagnosticPage() {
               <h1 className="text-2xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
                 {t.heroTitle}
               </h1>
-              <p className="text-sm text-white/90 max-w-2xl mx-auto mb-8 font-light">
+              <p className="text-sm md:text-xl text-white/90 max-w-2xl mx-auto mb-8 font-light">
                 {t.heroSubtitle}
               </p>
 
@@ -462,8 +462,13 @@ export default function DiagnosticPage() {
                 onClick={() => setSelectedCategory(isSelected ? null : cat.backendId)}
                   className={`p-6 rounded-[2rem] border transition-all cursor-pointer flex flex-col items-center group ${isSelected ? 'border-[#00B7B5] ring-2 ring-[#00B7B5] bg-slate-50' : 'border-slate-100 hover:shadow-lg hover:border-slate-200'}`}
               >
-                  <div className={`w-14 h-14 ${cat.id === 'pathology' ? 'bg-slate-100 text-slate-400' : `${cat.color} text-white`} rounded-2xl flex items-center justify-center mb-4 group-hover:-translate-y-1 transition-transform shadow-sm`}>
-                  <Icon className="w-6 h-6" />
+                  <div className={`w-14 h-14`}>
+                  <Image 
+                    src={cat.icon}
+                    alt={cat.title}
+                    width={50}
+                    height={50}
+                  />
                 </div>
                   <h3 className="font-bold text-slate-900 mb-1 text-sm md:text-base">{cat.title}</h3>
                 <p className="text-[10px] md:text-xs text-slate-500 font-medium">{cat.count} {t.testsPlus}</p>

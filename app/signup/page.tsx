@@ -18,9 +18,9 @@ import { showToast } from "@/lib/toast";
 
 const signupSchema = z
   .object({
-    userType: z.enum(["user", "bloodDonor", "ambulance"], {
+    userType: z.enum(["user"], {
       message: "Please select a user type",
-    }),
+    }).default("user"),
     email: z.string().email("Invalid email address").optional().or(z.literal("")),
     phoneNumber: z.string().min(10, "Phone number must be at least 10 digits").regex(/^[0-9]+$/, "Phone number must contain only digits"),
     fullName: z.string().min(2, "Full name is required"),
@@ -92,13 +92,7 @@ export default function SignupPage() {
         }
 
         const userType = data.userType;
-        if (userType === 'bloodDonor') {
-          router.push("/blood-donor/profile");
-          showToast.success(language === 'en' ? "Account created successfully! Please complete your profile." : "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! আপনার প্রোফাইল সম্পূর্ণ করুন।");
-        } else if (userType === 'ambulance') {
-          router.push("/ambulance/profile");
-          showToast.success(language === 'en' ? "Account created successfully! Please complete your profile." : "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! আপনার প্রোফাইল সম্পূর্ণ করুন।");
-        } else {
+        if (userType === 'user') {
           router.push("/");
           showToast.success(language === 'en' ? "Account created successfully! You are now logged in." : "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! আপনি এখন লগ ইন করেছেন।");
         }
@@ -157,19 +151,7 @@ export default function SignupPage() {
 
                   <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-3 sm:space-y-4">
                     <div>
-                      <Label htmlFor="userType" className="text-sm sm:text-base">
-                        {t.signUpAs} <span className="text-red-500">*</span>
-                      </Label>
-                      <select
-                        id="userType"
-                        {...register("userType")}
-                        className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm sm:text-base ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                      >
-                        <option value="">{t.userTypePlaceholder}</option>
-                        <option value="user">{t.user}</option>
-                        <option value="bloodDonor">{t.bloodDonor}</option>
-                        <option value="ambulance">{t.ambulance}</option>
-                      </select>
+                    
                       {errors.userType && (
                         <p className="text-xs sm:text-sm text-red-500 mt-1">{errors.userType.message}</p>
                       )}

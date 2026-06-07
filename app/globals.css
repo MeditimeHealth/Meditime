@@ -150,6 +150,14 @@ textarea,
   font-family: 'Google Sans Flex', sans-serif !important;
 }
 
+[data-language="en"] section {
+  font-family: 'Roboto', Sans-Serif !important;
+}
+
+[data-language="bn"] section {
+  font-family: 'Noto Sans Bengali', Sans-Serif !important;
+}
+
 /* Ensure global typography override to supersede inline hardcoded tags */
 h1,
 h2,
