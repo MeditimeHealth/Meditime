@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Clock, MapPin, Stethoscope, ChevronRight, Building2, ChevronDown } from "lucide-react";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
+
 
 export interface Doctor {
   _id: string;
@@ -85,7 +86,7 @@ const areDaysConsecutive = (sortedDays: string[]): boolean => {
   return true;
 };
 
-const groupAvailabilityByHospital = (
+const groupAvailabilityByHospital = async (
   availability: Array<{
     days: string[];
     daysBn?: string[];
@@ -94,13 +95,35 @@ const groupAvailabilityByHospital = (
     hospital: string;
   }>,
   language: string = "en"
-): { hospital: string, texts: string[] }[] => {
+): Promise<{ hospital: any; texts: string[] }[]> => {
   const slots = Array.isArray(availability) ? availability : [availability];
 
-  const grouped = slots.reduce((acc: any[], slot) => {
-    if (!slot || !slot.hospital) return acc;
-    const hospital = slot.hospital;
-    let group = acc.find((g: any) => g.hospital === hospital);
+  // 1. Collect unique hospital slugs
+  const uniqueSlugs = [...new Set(slots.map((s) => s?.hospital).filter(Boolean))];
+  console.log(uniqueSlugs)
+  // 2. Fetch all hospitals in parallel and cache by slug
+  const hospitalMap = new Map<string, any>();
+  await Promise.all(
+    uniqueSlugs.map(async (slug) => {
+      try {
+        const response = await fetch(`/api/locations/hospitals/${slug}`);
+        if (!response.ok) throw new Error(`Failed to fetch hospital: ${slug}`);
+        const hospital = await response.json();
+        hospitalMap.set(slug, hospital);
+      } catch (err) {
+        console.error(`Error fetching hospital "${slug}":`, err);
+      }
+    })
+  );
+
+  // 3. Group slots by resolved hospital object (synchronously)
+  const grouped = slots.reduce((acc: { hospital: any; slots: typeof slots }[], slot) => {
+    if (!slot?.hospital) return acc;
+
+    const hospital = hospitalMap.get(slot.hospital);
+    if (!hospital) return acc; // skip if fetch failed
+
+    let group = acc.find((g) => g.hospital === hospital?.slug);
     if (!group) {
       group = { hospital, slots: [] };
       acc.push(group);
@@ -109,46 +132,52 @@ const groupAvailabilityByHospital = (
     return acc;
   }, []);
 
-  return grouped.map((group) => {
-    const texts = group.slots.map((slot: any) => {
-      const sortedDays = (slot.days || []).sort((a: string, b: string) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b));
-      if (!sortedDays.length) return "";
+  // 4. Map groups to output shape
+  return grouped
+    .map((group) => {
+      const texts = group.slots
+        .map((slot) => {
+          const sortedDays = (slot.days || []).sort(
+            (a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b)
+          );
+          if (!sortedDays.length) return "";
 
-      const time = (language === 'bn' && slot.timeBn) ? slot.timeBn : (slot.time || "");
-      const isOnCall = time === "On Call" || time === "অন কল";
+          const time = language === "bn" && slot.timeBn ? slot.timeBn : slot.time || "";
+          const isOnCall = time === "On Call" || time === "অন কল";
 
-      if (isOnCall) return time;
+          if (isOnCall) return time;
 
-      const consecutive = areDaysConsecutive(sortedDays);
+          const consecutive = areDaysConsecutive(sortedDays);
 
-      if (language === 'bn') {
-        const getBnDay = (d: string) => {
-          if ((slot as any).daysBn && Array.isArray((slot as any).daysBn) && (slot as any).daysBn.length === slot.days.length) {
-            const idx = slot.days.indexOf(d);
-            if (idx !== -1 && (slot as any).daysBn[idx]) return (slot as any).daysBn[idx];
+          if (language === "bn") {
+            const getBnDay = (d: string) => {
+              if (
+                slot.daysBn &&
+                Array.isArray(slot.daysBn) &&
+                slot.daysBn.length === slot.days.length
+              ) {
+                const idx = slot.days.indexOf(d);
+                if (idx !== -1 && slot.daysBn[idx]) return slot.daysBn[idx];
+              }
+              return getBengaliDay(d);
+            };
+
+            if (sortedDays.length === 1) return `${getBnDay(sortedDays[0])} — ${time}`;
+            if (consecutive)
+              return `${getBnDay(sortedDays[0])} থেকে ${getBnDay(sortedDays[sortedDays.length - 1])} — ${time}`;
+            return `${sortedDays.map((d) => getBnDay(d)).join(", ")} — ${time}`;
+          } else {
+            if (sortedDays.length === 1) return `${sortedDays[0]} — ${time}`;
+            if (consecutive)
+              return `${sortedDays[0]} to ${sortedDays[sortedDays.length - 1]} — ${time}`;
+            return `${sortedDays.join(", ")} — ${time}`;
           }
-          return getBengaliDay(d);
-        };
+        })
+        .filter((t) => t !== "");
 
-        if (sortedDays.length === 1) return `${getBnDay(sortedDays[0])} — ${time}`;
-        if (consecutive) {
-          return `${getBnDay(sortedDays[0])} থেকে ${getBnDay(sortedDays[sortedDays.length - 1])} — ${time}`;
-        }
-        return `${sortedDays.map((d: string) => getBnDay(d)).join(", ")} — ${time}`;
-      } else {
-        if (sortedDays.length === 1) return `${sortedDays[0]} — ${time}`;
-        if (consecutive) {
-          return `${sortedDays[0]} to ${sortedDays[sortedDays.length - 1]} — ${time}`;
-        }
-        return `${sortedDays.join(", ")} — ${time}`;
-      }
-    }).filter((t: string) => t !== "");
-
-    return {
-      hospital: group.hospital,
-      texts
-    };
-  }).filter(g => g.texts.length > 0);
+      return { hospital: group.hospital.hospital, texts };
+    })
+    .filter((g) => g.texts.length > 0);
 };
 
 export default function DoctorCard({
@@ -166,8 +195,13 @@ export default function DoctorCard({
   const displaySpecialty = getLocalizedValue(doctor.specialty, doctor.specialtyBn, language);
   const displayQualification = getLocalizedValue(doctor.qualification, doctor.qualificationBn, language);
   const displayDesignation = getLocalizedValue(doctor.designation, doctor.designationBn, language);
-  const groupedAvailability = groupAvailabilityByHospital(doctor.availability, language);
 
+  const [groupedAvailability, setGroupedAvailability] = useState<{ hospital: any; texts: string[] }[]>([]);
+
+  useEffect(() => {
+    groupAvailabilityByHospital(doctor.availability, language).then(setGroupedAvailability);
+    console.log(groupedAvailability)
+  }, [doctor.availability, language]);
 
   const CardContent = (
     <Card className={`p-5 bg-white border border-gray-100 hover:border-primary/30 shadow-sm transition-all duration-300 h-fit flex flex-col ${!disableLink ? 'hover:shadow-xl cursor-pointer group' : ''}`}>
@@ -215,13 +249,14 @@ export default function DoctorCard({
         <div className="flex flex-col gap-2   transition-colors overflow-hidden">
           {groupedAvailability.length > 0 ? (
             <div className="flex flex-col gap-2">
-              {groupedAvailability.slice(0, isExpanded ? groupedAvailability.length : 1).map((group, idx) => (
+              {groupedAvailability.slice(0, isExpanded ? groupedAvailability.length : 1).map((group, idx) => {
+                return (
                 <div key={idx} className="p-3 border-b bg-[#F6FAFD] border-gray-100/50 last:border-b-0">
                   <div className="flex gap-2 mb-2">
                     <Building2 className="w-4 h-4 mt-0.5 text-[#10B981] shrink-0" />
-                    <span className="font-bold text-[#193252] text-sm leading-tight">
-                      {group.hospital}
-                    </span>
+                    {
+                      getLocalizedValue(group.hospital?.name, group.hospital?.nameBn, language)
+                    }
                   </div>
                   <div className="flex flex-col gap-1.5 ml-1">
                     {group.texts.map((text, tIdx) => (
@@ -234,9 +269,10 @@ export default function DoctorCard({
                     ))}
                   </div>
                 </div>
-              ))}
+              )
+              })}
               {groupedAvailability.length > 1 && (
-                <section 
+                <section
                   className="bg-[#E0F2FE] hover:bg-[#BAE6FD] text-[#193252] text-xs font-bold py-2.5 px-3 flex items-center justify-center gap-1.5 cursor-pointer transition-colors m-2 rounded-lg"
                   onClick={(e) => {
                     e.preventDefault();
@@ -244,11 +280,11 @@ export default function DoctorCard({
                   }}
                 >
                   <MapPin className="w-3.5 h-3.5" />
-                  {isExpanded 
+                  {isExpanded
                     ? (language === 'bn' ? 'কম দেখান' : 'Show less')
-                    : (language === 'bn' 
-                        ? `আরও ${groupedAvailability.length - 1}টি চেম্বার দেখুন` 
-                        : `See ${groupedAvailability.length - 1} more chamber${groupedAvailability.length > 2 ? 's' : ''}`)}
+                    : (language === 'bn'
+                      ? `আরও ${groupedAvailability.length - 1}টি চেম্বার দেখুন`
+                      : `See ${groupedAvailability.length - 1} more chamber${groupedAvailability.length > 2 ? 's' : ''}`)}
                 </section>
               )}
             </div>

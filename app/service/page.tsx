@@ -199,15 +199,16 @@ export default function ServicePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
+              className=""
             >
-              <div className="btn-slide group flex flex-col items-center text-center p-6 rounded-3xl btn-primary min-h-[200px] h-full justify-center">
+              <div className="btn-slide p-8 group flex flex-col items-center text-center rounded-3xl btn-primary min-h-[100px] h-full justify-center">
                 {/* Icon */}
-                <div className="mb-6 text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
+                <div className=" text-[#20E7E7] py-4 transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
                   <Icon size={72} height="duotone" />
                 </div>
 
                 {/* Stat number with Counter */}
-                <div className="text-[48px] sm:text-[60px] font-bold text-white mb-2 leading-none transition-colors duration-300">
+                <div className="text-[48px] sm:text-[60px] font-bold text-white leading-none transition-colors duration-300">
                   <Counter value={value} suffix={suffix} />
                 </div>
 

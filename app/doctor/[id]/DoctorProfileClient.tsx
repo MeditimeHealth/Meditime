@@ -72,7 +72,7 @@ export default function DoctorProfilePage() {
   const doctorId = params?.id as string;
   const [doctor, setDoctor] = useState<IDoctor | null>(null);
   const [relatedDoctors, setRelatedDoctors] = useState<IDoctor[]>([]);
-  const [hospitals, setHospitals] = useState<{ name: string, nameBn?: string, slug: string }[]>([]);
+  const [hospitals, setHospitals] = useState<{ name: string, nameBn?: string, slug: string, address?: string, addressBn?: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [departmentDiseases, setDepartmentDiseases] = useState<Array<{ name: string, bangla: string }>>([]);
@@ -684,9 +684,11 @@ export default function DoctorProfilePage() {
               <div className="space-y-4">
                 {groupedAvailability.map((group: any, index: number) => {
                   const hospitalSlug = group.hospital;
-                  const hObj = hospitals.find(h => h.name === hospitalSlug || (h as any).slug === hospitalSlug);
+                  const hObj = hospitals.find(h => h.slug === hospitalSlug || (h as any).slug === hospitalSlug);
                   const hospitalName = hObj?.name || hospitalSlug;
                   const hospitalBnName = hObj?.nameBn || hospitalName;
+                  const hospitalAddress = hObj?.address || '';
+                  const hospitalBnAddress = hObj?.addressBn || '';
                   const isSelected = selectedHospitalSlug === hospitalSlug;
 
                   return (
@@ -702,9 +704,14 @@ export default function DoctorProfilePage() {
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex items-center gap-2.5">
                             <MapPin className={`h-5 w-5 shrink-0 transition-colors ${isSelected ? 'text-primary' : 'text-gray-400 group-hover:text-primary/70'}`} />
-                            <p className={`md:text-lg font-extrabold transition-colors ${isSelected ? 'text-primary' : 'text-gray-800'}`}>
-                              {language === 'bn' ? hospitalBnName : hospitalName}
-                            </p>
+                            <div className="flex flex-col gap-1">
+                              <p className={`md:text-lg font-extrabold transition-colors ${isSelected ? 'text-primary' : 'text-gray-800'}`}>
+                                {language === 'bn' ? hospitalBnName : hospitalName}
+                              </p>
+                              <p className={`md:text-sm font-medium transition-colors ${isSelected ? 'text-primary/80' : 'text-gray-500'}`}>
+                                {language === 'bn' ? hospitalBnAddress : hospitalAddress}
+                              </p>
+                            </div>
                           </div>
                           {/* Custom Radio Button */}
                           <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${isSelected ? 'border-primary bg-primary/10 scale-110' : 'border-gray-300 bg-white'

@@ -36,6 +36,7 @@ export async function GET(
         },
       });
     }
+    console.log(hospital)
 
     if (!hospital) {
       return NextResponse.json(

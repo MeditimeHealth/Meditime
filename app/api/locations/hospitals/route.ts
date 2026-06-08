@@ -52,9 +52,6 @@ export async function GET(request: NextRequest) {
         },
       })
       .sort({ name: 1 })
-      .skip(skip)
-      .limit(limit)
-      .lean();
 
     const totalCount = await Hospital.countDocuments(query);
     const hasMore = skip + hospitals.length < totalCount;

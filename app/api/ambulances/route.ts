@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       name,
+      nameBn,
       phoneNumber,
       division,
       district,
@@ -81,6 +82,7 @@ export async function POST(request: NextRequest) {
     // Create ambulance
     const ambulance = await Ambulance.create({
       name,
+      nameBn: nameBn || undefined,
       phoneNumber,
       division: division || undefined,
       district: district || undefined,

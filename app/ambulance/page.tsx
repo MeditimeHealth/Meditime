@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-import { MapPin, Phone, Car, Loader2, Search, CheckCircle, BadgeCheck, FileText, X } from "lucide-react";
+import { MapPin, Phone, Car, Loader2, Search, CheckCircle, BadgeCheck, FileText, X, Contact, ChevronRight } from "lucide-react";
 import { motion, useInView, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
 import { Input } from "@/components/ui/input";
@@ -63,7 +63,7 @@ interface Thana {
 function Counter({ value, suffix = "" }: { value: number | string; suffix?: string }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.5 });
-  
+
   const numericValue = typeof value === 'number' ? value : parseInt(value);
   const isNumeric = !isNaN(numericValue);
 
@@ -72,7 +72,7 @@ function Counter({ value, suffix = "" }: { value: number | string; suffix?: stri
     damping: 20,
     restDelta: 0.001
   });
-  
+
   const displayValue = useTransform(spring, (current) => Math.floor(current));
 
   useEffect(() => {
@@ -83,7 +83,7 @@ function Counter({ value, suffix = "" }: { value: number | string; suffix?: stri
 
   return (
     <span ref={ref}>
-      {isNumeric ? <motion.span>{displayValue}</motion.span> : value}
+      {isNumeric ? <motion.span className="">{displayValue}</motion.span> : value}
       {suffix}
     </span>
   );
@@ -104,7 +104,7 @@ export default function AmbulancePage() {
   const [selectedThana, setSelectedThana] = useState("");
   const [availabilityStatusFilter, setAvailabilityStatusFilter] = useState("");
   const [vehicleTypeFilter, setVehicleTypeFilter] = useState("");
-  
+
   const { language } = useLanguage() as { language: 'en' | 'bn' };
   const t = homepageTranslations[language].ambulance;
   const tH = homepageTranslations[language].hospitalsPage;
@@ -273,7 +273,7 @@ export default function AmbulancePage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
-      
+
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -295,10 +295,10 @@ export default function AmbulancePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
+              <h1 className="text-2xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
                 {t.title}
               </h1>
-              <p className="text-lg md:text-xl text-white/95 mb-8 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
+              <p className="text-sm md:text-xl text-white/95 mb-8 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
                 {t.subtitle}
               </p>
             </motion.div>
@@ -308,7 +308,7 @@ export default function AmbulancePage() {
 
       {/* ── Social Proof Section ── */}
       <div className="relative mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-18">
           {socialProof.map(({ value, suffix, label, icon: Icon }, index) => (
             <motion.div
               key={index}
@@ -321,7 +321,7 @@ export default function AmbulancePage() {
                 <div className="mb-4 text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
                   <Icon size={56} height="duotone" />
                 </div>
-                <div className="text-[32px] md:text-[40px] font-bold text-white mb-1 leading-none">
+                <div className="text-[22px] font-bold text-white ">
                   <Counter value={value} suffix={suffix} />
                 </div>
                 <div className="text-[14px] md:text-[16px] text-teal-100/70 font-bold uppercase tracking-wider">
@@ -342,8 +342,9 @@ export default function AmbulancePage() {
               <h2 className="text-xl font-bold text-[#009A98]">{t.findByLocation}</h2>
               <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                 <DialogTrigger asChild>
-                  <Button className="btn-primary btn-slide font-semibold">
+                  <Button className="btn-primary btn-slide font-semibold flex justify-center items-center gap-2">
                     {t.becomePartnerBtn}
+                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -361,19 +362,19 @@ export default function AmbulancePage() {
                       </div>
                       <div className="space-y-2">
                         <Label>{language === 'bn' ? 'অ্যাম্বুলেন্সের নাম (বাংলা)' : 'Ambulance Name (Bangla)'}</Label>
-                        <Input value={formData.nameBn} onChange={e => setFormData({ ...formData, nameBn: e.target.value })} placeholder="উদা: সিটি অ্যাম্বুলেন্স" />
+                        <Input  value={formData.nameBn} onChange={e => setFormData({ ...formData, nameBn: e.target.value })} placeholder="উদা: সিটি অ্যাম্বুলেন্স" />
                       </div>
                       <div className="space-y-2">
                         <Label>{language === 'bn' ? 'ফোন নম্বর' : 'Phone Number'} *</Label>
                         <Input required value={formData.phoneNumber} onChange={e => setFormData({ ...formData, phoneNumber: e.target.value })} placeholder="+880" />
                       </div>
                       <div className="space-y-2">
-                        <Label>{language === 'bn' ? 'গাড়ির নম্বর' : 'Vehicle Number'}</Label>
-                        <Input value={formData.ambulanceNumber} onChange={e => setFormData({ ...formData, ambulanceNumber: e.target.value })} placeholder="DHAKA-METRO-KA-1234" />
+                        <Label>{language === 'bn' ? 'গাড়ির নম্বর' : 'Vehicle Number'} *</Label>
+                        <Input required value={formData.ambulanceNumber} onChange={e => setFormData({ ...formData, ambulanceNumber: e.target.value })} placeholder="DHAKA-METRO-KA-1234" />
                       </div>
                       <div className="space-y-2">
-                        <Label>{language === 'bn' ? 'ড্রাইভিং লাইসেন্স নম্বর' : 'Driving Licence'}</Label>
-                        <Input value={formData.drivingLicence} onChange={e => setFormData({ ...formData, drivingLicence: e.target.value })} />
+                        <Label>{language === 'bn' ? 'ড্রাইভিং লাইসেন্স নম্বর' : 'Driving Licence'} *</Label>
+                        <Input required value={formData.drivingLicence} onChange={e => setFormData({ ...formData, drivingLicence: e.target.value })} />
                       </div>
                       <div className="space-y-2">
                         <Label>{language === 'bn' ? 'বিভাগ' : 'Division'} *</Label>
@@ -531,9 +532,9 @@ export default function AmbulancePage() {
                               <span className="text-[10px] font-bold text-primary uppercase
                                 flex justify-end w-full h-fit">
                                 <p className="flex items-center bg-primary/10 p-2 w-fit gap-1 rounded-md">
-                                   {t.card.verified}
+                                  {t.card.verified}
                                 </p>
-                               
+
                               </span>
                             )}
                           </div>
@@ -543,11 +544,17 @@ export default function AmbulancePage() {
 
                       <div className="space-y-2 text-sm">
                         <div className="flex items-start gap-2 text-gray-600">
+                          <Contact className="h-4 w-4 shrink-0 mt-0.5" />
+                          <span>
+                            <strong>{t.card.vehicleNumber}:</strong> {ambulance.ambulanceNumber}
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2 text-gray-600">
                           <MapPin className="h-4 w-4 shrink-0 mt-0.5" />
                           <span>
-                            <strong>{t.card.address}:</strong> {language === 'bn' ? 
-                              [ambulance.thanaBn, ambulance.districtBn, ambulance.divisionBn].filter(Boolean).join(", ") :
-                              [ambulance.thana, ambulance.district, ambulance.division].filter(Boolean).join(", ")
+                            <strong>{t.card.address}:</strong> {language === 'bn' ?
+                              [ambulance.thanaBn, ambulance.districtBn].filter(Boolean).join(", ") :
+                              [ambulance.thana, ambulance.district].filter(Boolean).join(", ")
                             }
                           </span>
                         </div>
@@ -556,13 +563,12 @@ export default function AmbulancePage() {
                           <CheckCircle className="h-4 w-4" />
                           <div className="flex items-center gap-2">
                             <strong>{t.card.status}:</strong>
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                              ambulance.availabilityStatus === "Available" ? "bg-green-100 text-green-700" :
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${ambulance.availabilityStatus === "Available" ? "bg-green-100 text-green-700" :
                               ambulance.availabilityStatus === "On Call" ? "bg-yellow-100 text-yellow-700" :
-                              "bg-red-100 text-red-700"
-                            }`}>
-                              {ambulance.availabilityStatus === 'Available' ? t.statuses.available : 
-                               ambulance.availabilityStatus === 'On Call' ? t.statuses.onCall : t.statuses.unavailable}
+                                "bg-red-100 text-red-700"
+                              }`}>
+                              {ambulance.availabilityStatus === 'Available' ? t.statuses.available :
+                                ambulance.availabilityStatus === 'On Call' ? t.statuses.onCall : t.statuses.unavailable}
                             </span>
                           </div>
                         </div>

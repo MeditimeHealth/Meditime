@@ -735,6 +735,8 @@ function DoctorListPageContent() {
     ]
   };
 
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       <Navbar />
@@ -851,7 +853,6 @@ function DoctorListPageContent() {
                   className="absolute top-full left-0 right-0 mt-4 bg-white border border-gray-100 rounded-2xl shadow-2xl z-50 max-h-96 overflow-y-auto overflow-hidden divide-y divide-gray-50"
                 >
                   {suggestions.map((suggestion, index) => {
-                    console.log(suggestion);
 
                     const content = (
                       <motion.div

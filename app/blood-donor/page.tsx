@@ -78,8 +78,10 @@ export default function BloodDonorPage() {
   const [selectedGroup, setSelectedGroup] = useState("");
   const [divisions, setDivisions] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
+  const [thanas, setThanas] = useState<any[]>([]);
   const [selectedDivision, setSelectedDivision] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedThana, setSelectedThana] = useState("");
   const [donors, setDonors] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -125,6 +127,21 @@ export default function BloodDonorPage() {
     }
   }, [divisions]);
 
+  const fetchThanas = useCallback(async (districtId: string, target: 'filter' | 'modal' = 'filter') => {
+    try {
+      const dist = districts.find(d => d._id === districtId || d.name === districtId);
+      if (!dist) return;
+      const res = await fetch(`/api/locations/thanas?district=${dist._id}`);
+      const data = await res.json();
+      if (res.ok) {
+        if (target === 'filter') setThanas(data.thanas);
+        return data.thanas;
+      }
+    } catch (error) {
+      console.error("Error fetching districts:", error);
+    }
+  }, [districts]);
+
   useEffect(() => {
     fetchDivisions();
   }, [fetchDivisions]);
@@ -137,6 +154,14 @@ export default function BloodDonorPage() {
     }
     setSelectedDistrict("");
   }, [selectedDivision, fetchDistricts]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      fetchThanas(selectedDistrict);
+    } else {
+      setThanas([]);
+    }
+  }, [selectedDistrict, fetchThanas]);
 
   const handleSearch = async () => {
     setLoading(true);
@@ -279,10 +304,10 @@ export default function BloodDonorPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
+            <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
               {language === 'en' ? "Be a Hero in Someone's Story" : "কারো জীবনের গল্পে নায়ক হয়ে উঠুন"}
             </h1>
-            <p className="text-lg md:text-xl text-white/95 mb-10 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
+            <p className="text-sm md:text-xl text-white/95 mb-10 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
               {t.subtitle[language]}
             </p>
 
@@ -299,7 +324,7 @@ export default function BloodDonorPage() {
 
       {/* ── Social Proof Section (Using Primary Color) ── */}
       <div className="relative mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-18">
           {socialProof.map(({ value, suffix, label, icon: Icon }, index) => (
             <motion.div
               key={index}
@@ -354,7 +379,7 @@ export default function BloodDonorPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
                     {language === 'en' ? "Division" : "বিভাগ"}
@@ -372,6 +397,7 @@ export default function BloodDonorPage() {
                     ))}
                   </select>
                 </div>
+               
                 <div>
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
                     {language === 'en' ? "District" : "জেলা"}
@@ -386,6 +412,25 @@ export default function BloodDonorPage() {
                     {districts.map((dist) => (
                       <option key={dist._id} value={dist._id}>
                         {getLocalizedValue(dist.name, dist.nameBn, language)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                 <div>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
+                    {language === 'en' ? "Thana" : "থানা"}
+                  </label>
+                  <select
+                    value={selectedThana}
+                    onChange={(e) => setSelectedThana(e.target.value)}
+                    disabled={!selectedDistrict}
+                    className="w-full h-14 px-4 bg-slate-50 border-none rounded-xl font-medium focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                  >
+                    <option value="">{language === 'en' ? "Select Thana" : "থানা নির্বাচন করুন"}</option>
+                    {thanas.map((thana) => (
+                      <option key={thana._id} value={thana._id}>
+                        {getLocalizedValue(thana.name, thana.nameBn, language)}
                       </option>
                     ))}
                   </select>
@@ -592,10 +637,10 @@ export default function BloodDonorPage() {
               <h2 className="text-3xl md:text-6xl font-black text-white mb-8">{language === 'en' ? "Emergency Need?" : "জরুরি প্রয়োজন?"}</h2>
               <p className="text-white/80 text-xl mb-12 max-w-2xl mx-auto font-medium">{language === 'en' ? "Our support team is available 24/7 to help you find blood in critical situations." : "আপনার জরুরি অবস্থায় রক্তদাতা খুঁজে পেতে আমাদের সাপোর্ট টিম ২৪/৭ প্রস্তুত।"}</p>
               <div className="flex flex-wrap justify-center gap-6">
-                <a href={`tel:${"+880 1234 567890"}`}>
+                <a href={`tel:${"+8801610384444"}`}>
 
                    <Button className="h-16 px-12 bg-white text-primary text-xl shadow-2xl transition-all active:scale-95">
-                  <Phone className="w-6 h-6 mr-3 fill-current" />+880 1234 567890
+                  <Phone className="w-6 h-6 mr-3 fill-current" />+8801610384444
                 </Button>
                 </a>
                

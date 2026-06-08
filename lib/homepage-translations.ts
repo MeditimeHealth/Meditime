@@ -527,8 +527,8 @@ export const homepageTranslations = {
       }
     },
     ambulance: {
-      title: "Fast & Reliable Ambulance Services: Dhaka and Surrounding Areas",
-      subtitle: "Need help fast? We have a complete list of 24/7 ambulance services in Savar and surrounding areas.",
+      title: "Fast & Reliable Ambulance Services",
+      subtitle: "Need help fast? We have a complete list of 24/7 ambulance services in Dhaka, Gazipur, and surrounding areas.",
       callBtn: "Call Now",
       findByLocation: "Find Ambulance by Location",
       becomePartnerBtn: "Become an Ambulance Partner",
@@ -565,8 +565,8 @@ export const homepageTranslations = {
       }
     },
     bloodDonor: {
-      title: "Give the Gift of Life: Become a Proud Blood Donor.",
-      subtitle: "Every drop counts in the fight for life. Be a part of Meditime’s mission to ensure no one suffers due to a lack of blood. Your contribution is vital, selfless, and life-changing",
+      title: "Be a Hero in Someone's Story",
+      subtitle: "Meditime connects life-saving blood donors with patients in need across Bangladesh.",
       registerBtn: "Register as Donor",
       contact: "Contact"
     },
@@ -1149,8 +1149,8 @@ export const homepageTranslations = {
       },
     },
     ambulance: {
-      title: "দ্রুত ও নির্ভরযোগ্য অ্যাম্বুলেন্স সেবা: ঢাকা ও পার্শ্ববর্তী এলাকা",
-      subtitle: "দ্রুত সাহায্য প্রয়োজন? সাভার ও এর আশেপাশে ২৪/৭ অ্যাম্বুলেন্স সার্ভিসের সম্পূর্ণ তালিকা এখানে পাবেন।",
+      title: "দ্রুত ও নির্ভরযোগ্য অ্যাম্বুলেন্স সেবা",
+      subtitle: "জরুরি সাহায্য প্রয়োজন? ঢাকা, গাজীপুর এবং আশেপাশের এলাকার সকল ২৪/৭ অ্যাম্বুলেন্স সেবার সম্পূর্ণ তালিকা রয়েছে আমাদের কাছে।",
       callBtn: "এখনই কল করুন",
       findByLocation: "অবস্থান অনুযায়ী অ্যাম্বুলেন্স খুঁজুন",
       becomePartnerBtn: "অ্যাম্বুলেন্স পার্টনার হন",
@@ -1187,9 +1187,8 @@ export const homepageTranslations = {
       }
     },
     bloodDonor: {
-      title: "রক্ত দিন, জীবন বাচাঁন: গর্বিত রক্তদাতা হোন।",
-      subtitle: "জীবনের লড়াইয়ে প্রতিটি রক্তবিন্দুই মূল্যবান। রক্তের অভাবে যাতে কেউ কষ্ট না পায়, সেই মিশনে মেডিটাইম-এর সাথে যুক্ত হোন। আপনার ক্ষুদ্র অবদান হতে পারে অন্যের নতুন জীবনের কারণ।",
-      registerBtn: "রক্তদাতা হিসেবে নিবন্ধন করুন",
+      title: "কারো জীবনের গল্পে আপনিও হোন একজন হিরো",
+      subtitle: "সমগ্র বাংলাদেশ জুড়ে মুমূর্ষু মানুষের পাশে জীবন রক্ষাকারী রক্তদাতাদের পৌঁছে দিচ্ছে মেডিটাইম।",
       contact: "যোগাযোগ"
     },
     affiliate: {

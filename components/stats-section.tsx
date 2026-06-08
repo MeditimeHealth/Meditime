@@ -42,9 +42,9 @@ const stats = [
 
 export default function StatsSection() {
   return (
-    <div className="w-full mx-auto my-6 sm:my-10 py-12 sm:py-20 bg-white relative overflow-hidden mx-auto rounded-none sm:rounded-[40px] shadow-sm border-y sm:border border-slate-100">
+    <div className="w-full my-6 sm:my-10 py-12 sm:py-20 bg-white relative overflow-hidden mx-auto rounded-none sm:rounded-[40px] shadow-sm border-y sm:border border-slate-100">
       <div className="relative z-10 container mx-auto px-6 sm:px-10 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4  gap-6 lg:gap-18">
           {stats.map(({ value, suffix, label, icon: Icon }, index) => (
             <motion.div
               key={index}
@@ -54,16 +54,16 @@ export default function StatsSection() {
               transition={{ duration: 0.4, delay: index * 0.1 }}
             >
               <div className={`btn-slide
-               group flex flex-col items-center text-center p-12 sm:p-16 
+               group flex flex-col items-center text-center p-6
                rounded-none transition-all duration-500 btn-primary shadow-xl 
-               min-h-[280px] h-full justify-center ${index === 0 ? "rounded-none rounded-tl-[3rem]" : index === 3 ? "rounded-none rounded-br-[3rem]" : "rounded-none" }`}>
+               min-h-[100px] h-full justify-center ${index === 0 ? "rounded-none rounded-tl-[3rem]" : index === 3 ? "rounded-none rounded-br-[3rem]" : "rounded-none" }`}>
                 {/* Icon */}
-                <div className="mb-6 text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
+                <div className="text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
                   <Icon size={72} height="duotone" />
                 </div>
 
                 {/* Stat number with Counter */}
-                <div className="text-[48px] sm:text-[60px] font-bold text-white mb-2 leading-none transition-colors duration-300">
+                <div className="text-[48px] sm:text-[60px] font-bold text-white leading-none transition-colors duration-300">
                   <Counter value={value} suffix={suffix} />
                 </div>
 
