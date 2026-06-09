@@ -95,14 +95,14 @@ export default function HeroSection() {
           {slides.map((slide, index) => (
             <SwiperSlide key={index} className="h-full!">
               <div className="relative h-full w-full">
-                <Image
-                  src={slide.image}
-                  alt={slide.title}
-                  fill
-                  sizes="100vw"
-                  className="object-cover object-center"
-                  priority={index === 0}
-                />
+             <Image
+  src={slide.image}
+  alt={slide.title}
+  fill
+  sizes="100vw"
+  className="object-cover object-left md:object-center"
+  priority={index === 0}
+/>
                 <div className="absolute inset-0 bg-black/45" />
 
                 {/* ── Text: vertically & horizontally centered ── */}
