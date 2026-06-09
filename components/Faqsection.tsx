@@ -31,13 +31,13 @@ export default function FaqSection() {
           >
           
             
-            <h2 className="text-4xl sm:text-5xl lg:text-[64px] font-bold text-[#017991] leading-[1.1] mb-8 tracking-tight">
+            <h2 className="text-4xl sm:text-5xl lg:text-[64px] font-bold text-[#193252] leading-[1.1] mb-8 tracking-tight">
               {t.title}
             </h2>
             
-            <p className="text-lg text-slate-500 leading-relaxed mb-10 max-w-lg">
+            <section className="text-lg text-slate-500 leading-relaxed mb-10 max-w-lg">
               {t.subtitle} {language === 'bn' ? "আমরা আপনাকে সাহায্য করতে এখানে আছি।" : "We're here to help you navigate your healthcare journey."}
-            </p>
+            </section>
 
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-4">
@@ -108,9 +108,9 @@ export default function FaqSection() {
                       >
                         <div className="px-8 pb-8">
                           <div className="w-full h-px bg-slate-100 mb-6" />
-                          <p className="text-lg text-slate-500 leading-relaxed">
+                          <section className="text-lg text-slate-500 leading-relaxed">
                             {faq.answer}
-                          </p>
+                          </section>
                         </div>
                       </motion.div>
                     )}

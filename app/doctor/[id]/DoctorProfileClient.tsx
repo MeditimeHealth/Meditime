@@ -78,6 +78,18 @@ export default function DoctorProfilePage() {
   const [departmentDiseases, setDepartmentDiseases] = useState<Array<{ name: string, bangla: string }>>([]);
   const [departmentInfo, setDepartmentInfo] = useState<{ name: string, nameBn?: string } | null>(null);
   const [selectedHospitalSlug, setSelectedHospitalSlug] = useState<string>("");
+    const MAX_WORDS = 35;
+
+  function truncateToWords(text: any, wordLimit: any) {
+    if (!text) return '';
+    const words = text.trim().split(/\s+/);
+    if (words.length <= wordLimit) return { text, isTruncated: false };
+    return { text: words.slice(0, wordLimit).join(' ') + '...', isTruncated: true };
+  }
+
+  const [bioExpanded, setBioExpanded] = useState(false);
+
+
 
 
   const availabilityArray = Array.isArray(doctor?.availability)
@@ -267,6 +279,13 @@ export default function DoctorProfilePage() {
       console.error("Error fetching related doctors:", error);
     }
   };
+
+  const bioText = getLocalizedValue(doctor?.bio, doctor?.bioBn, language);
+const words = bioText ? bioText.trim().split(/\s+/) : [];
+const needsTruncation = words.length > 35;
+const displayedBio = needsTruncation && !bioExpanded
+  ? words.slice(0, 35).join(' ') + '...'
+  : bioText;
 
 
   // Trigger fetchRelatedDoctors when doctor is loaded
@@ -478,6 +497,9 @@ export default function DoctorProfilePage() {
     ]
   };
 
+
+
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* JSON-LD Schema Markup */}
@@ -636,25 +658,32 @@ export default function DoctorProfilePage() {
 
             {/* About Section */}
             {doctor.bio && (
-              <Card className="p-8 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
-                <h2
-                  className="text-2xl md:text-3xl font-bold  mb-6"
-
-                >
-                  {language === 'bn' ? `${getLocalizedValue(doctor.name, doctor.nameBn, language)} সম্পর্কে` : `About ${getLocalizedValue(doctor.name, doctor.nameBn, language)}`}
+              <Card className="p-8 bg-gradient-to-br from-white to-blue-50 border-2 border-primary/20 shadow-xl">
+                <h2 className="text-2xl md:text-3xl font-bold mb-6">
+                  {language === 'bn'
+                    ? `${getLocalizedValue(doctor.name, doctor.nameBn, language)} সম্পর্কে`
+                    : `About ${getLocalizedValue(doctor.name, doctor.nameBn, language)}`}
                 </h2>
                 <div className="bg-white p-6 rounded-xl border-2 border-primary/10 shadow-md">
-                  <p
-                    className=" md:text-lg text-[#193252] leading-relaxed whitespace-pre-line"
-                  >
-                    {getLocalizedValue(doctor.bio, doctor.bioBn, language)}
+                  <p className="md:text-lg text-[#193252] leading-relaxed whitespace-pre-line">
+                    {displayedBio}
                   </p>
+                  {needsTruncation && (
+                    <button
+                      onClick={() => setBioExpanded(!bioExpanded)}
+                      className="mt-3 text-primary font-semibold text-sm hover:underline focus:outline-none"
+                    >
+                      {bioExpanded
+                        ? (language === 'bn' ? 'কম দেখুন' : 'See Less')
+                        : (language === 'bn' ? 'আরও দেখুন' : 'See More')}
+                    </button>
+                  )}
                 </div>
               </Card>
             )}
 
             {/* Related Doctors - Desktop/Tablet */}
-            <div className="hidden md:block">
+            <div className="hidden lg:block">
               {relatedDoctors.length > 0 && (
                 <Card className="p-8 bg-gradient-to-br from-white to-purple-50 border-2 border-primary/20 shadow-xl">
                   <h2
@@ -696,8 +725,8 @@ export default function DoctorProfilePage() {
                       key={index}
                       onClick={() => setSelectedHospitalSlug(hospitalSlug)}
                       className={`p-5 border-2 transition-all duration-300 cursor-pointer select-none relative flex flex-col gap-3 group ${isSelected
-                          ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/5 scale-[1.01]"
-                          : "border-gray-100 bg-white hover:border-primary/30 hover:bg-gray-50/50 shadow-sm"
+                        ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/5 scale-[1.01]"
+                        : "border-gray-100 bg-white hover:border-primary/30 hover:bg-gray-50/50 shadow-sm"
                         }`}
                     >
                       {hospitalSlug !== 'unknown' && (
@@ -705,9 +734,9 @@ export default function DoctorProfilePage() {
                           <div className="flex items-center gap-2.5">
                             <MapPin className={`h-5 w-5 shrink-0 transition-colors ${isSelected ? 'text-primary' : 'text-gray-400 group-hover:text-primary/70'}`} />
                             <div className="flex flex-col gap-1">
-                              <p className={`md:text-lg font-extrabold transition-colors ${isSelected ? 'text-primary' : 'text-gray-800'}`}>
+                              <h1 className={`md:text-lg font-extrabold transition-colors ${isSelected ? 'text-primary' : 'text-gray-800'}`}>
                                 {language === 'bn' ? hospitalBnName : hospitalName}
-                              </p>
+                              </h1>
                               <p className={`md:text-sm font-medium transition-colors ${isSelected ? 'text-primary/80' : 'text-gray-500'}`}>
                                 {language === 'bn' ? hospitalBnAddress : hospitalAddress}
                               </p>
@@ -872,32 +901,42 @@ export default function DoctorProfilePage() {
               </div>
             </Card>
 
-            {/* Hospital Schedule - Mobile */}
-            <Card id="schedule-mobile" className="p-6 bg-gradient-to-br from-white to-indigo-50/50 border-2 border-primary/20 shadow-xl ">
+            <Card id="schedule" className="p-6 bg-gradient-to-br from-white to-indigo-50/50 border-2 border-primary/20 shadow-xl ">
               <h2 className="text-xl md:text-2xl font-bold mb-5 text-gray-900 flex items-center gap-2">
                 <Building2 className="h-6 w-6 text-primary" />
                 {language === 'bn' ? 'চেম্বার নির্বাচন করুন' : 'Select Chamber'}
               </h2>
               <div className="space-y-4">
                 {groupedAvailability.map((group: any, index: number) => {
-                  const isSelected = selectedHospitalSlug === group.hospitalSlug;
+                  const hospitalSlug = group.hospital;
+                  const hObj = hospitals.find(h => h.slug === hospitalSlug || (h as any).slug === hospitalSlug);
+                  const hospitalName = hObj?.name || hospitalSlug;
+                  const hospitalBnName = hObj?.nameBn || hospitalName;
+                  const hospitalAddress = hObj?.address || '';
+                  const hospitalBnAddress = hObj?.addressBn || '';
+                  const isSelected = selectedHospitalSlug === hospitalSlug;
 
                   return (
                     <div
                       key={index}
-                      onClick={() => setSelectedHospitalSlug(group.hospitalSlug)}
-                      className={`p-5 rounded-2xl border-2 transition-all duration-300 cursor-pointer select-none relative flex flex-col gap-3 group ${isSelected
-                          ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/5 scale-[1.01]"
-                          : "border-gray-100 bg-white hover:border-primary/30 hover:bg-gray-50/50 shadow-sm"
+                      onClick={() => setSelectedHospitalSlug(hospitalSlug)}
+                      className={`p-5 border-2 transition-all duration-300 cursor-pointer select-none relative flex flex-col gap-3 group ${isSelected
+                        ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/5 scale-[1.01]"
+                        : "border-gray-100 bg-white hover:border-primary/30 hover:bg-gray-50/50 shadow-sm"
                         }`}
                     >
-                      {group.hospitalSlug !== 'unknown' && (
+                      {hospitalSlug !== 'unknown' && (
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex items-center gap-2.5">
                             <MapPin className={`h-5 w-5 shrink-0 transition-colors ${isSelected ? 'text-primary' : 'text-gray-400 group-hover:text-primary/70'}`} />
-                            <p className={`md:text-lg font-extrabold transition-colors ${isSelected ? 'text-primary' : 'text-gray-800'}`}>
-                              {language === 'bn' ? group.hospitalBnName : group.hospitalName}
-                            </p>
+                            <div className="flex flex-col gap-1">
+                              <p className={`md:text-lg font-extrabold transition-colors ${isSelected ? 'text-primary' : 'text-gray-800'}`}>
+                                {language === 'bn' ? hospitalBnName : hospitalName}
+                              </p>
+                              <p className={`md:text-sm font-medium transition-colors ${isSelected ? 'text-primary/80' : 'text-gray-500'}`}>
+                                {language === 'bn' ? hospitalBnAddress : hospitalAddress}
+                              </p>
+                            </div>
                           </div>
                           {/* Custom Radio Button */}
                           <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${isSelected ? 'border-primary bg-primary/10 scale-110' : 'border-gray-300 bg-white'
@@ -909,12 +948,12 @@ export default function DoctorProfilePage() {
                         </div>
                       )}
                       <div className="space-y-2 pl-7">
-                        {group.slots.map((slotInfo: any, sIdx: number) => (
+                        {group.slots.map((slot: any, sIdx: number) => (
                           <div key={sIdx} className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-colors ${isSelected ? 'bg-primary/5' : 'bg-gray-50'
                             }`}>
                             <Clock className={`h-4 w-4 shrink-0 mt-0.5 ${isSelected ? 'text-primary' : 'text-gray-400'}`} />
                             <span className={`text-sm font-bold ${isSelected ? 'text-primary-dark' : 'text-gray-600'}`}>
-                              {slotInfo.formattedText}
+                              {formatSlot(slot)}
                             </span>
                           </div>
                         ))}
@@ -924,6 +963,8 @@ export default function DoctorProfilePage() {
                 })}
               </div>
             </Card>
+
+
 
             {/* Book Appointment - Mobile */}
             <Card className="p-6 bg-gradient-to-br from-white to-emerald-50 border-2 border-primary/20 shadow-xl">

@@ -78,7 +78,7 @@ export default function BlogSection() {
 
         {/* Header — two columns */}
         <div className="flex flex-col gap-4 sm:gap-6 mb-8 sm:mb-12">
-          <h2 className="text-[24px] sm:text-[32px] lg:text-[42px] font-bold text-[#017991] leading-[1.2] lg:max-w-xl">
+          <h2 className="text-[24px] sm:text-[32px] lg:text-[42px] font-bold text-[#193252] leading-[1.2] lg:max-w-xl">
             {t.title}
           </h2>
           <div className="flex flex-col items-start gap-5 lg:max-w-md text-left">

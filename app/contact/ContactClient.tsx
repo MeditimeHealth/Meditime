@@ -235,9 +235,9 @@ export default function ContactPage() {
                 <h3 className="text-[32px] md:text-[42px] font-bold text-[#1a1a1a] ">
                   {language === 'bn' ? "আমাদের কাছে কি কোনো প্রশ্ন আছে?" : "Have a question for us?"}
                 </h3>
-                <p className="text-[#00B1C2]0 text-lg">
+                <section className="text-[#1a1a1a] text-lg">
                   {language === 'bn' ? "আমাদের সাপোর্ট টিম আপনার সমস্ত প্রশ্নের উত্তর দেবে।" : "Our support team will answer all your questions."}
-                </p>
+                </section>
               </div>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">

@@ -78,7 +78,7 @@ export default function ServicesSection() {
           transition={{ duration: 0.5 }}
           className="mb-16 text-center"
         >
-          <h2 className="text-[28px] sm:text-[48px]  font-bold mb-4 text-[#017991] tracking-tight max-w-[804px] mx-auto leading-[1.1]">
+          <h2 className="text-[28px] sm:text-[48px]  font-bold mb-4 text-[#193252] tracking-tight max-w-[804px] mx-auto leading-[1.1]">
             {t.title}
           </h2>
                     <div className="w-20 h-1.5 bg-primary mx-auto mb-6 shadow-[0_0_15px_rgba(13,148,136,0.5)]" />
@@ -115,7 +115,7 @@ export default function ServicesSection() {
 
                   {/* CONTENT SIDE */}
                   <div className={`p-8 sm:p-12 lg:p-20 flex flex-col justify-center ${isEven ? 'lg:order-2' : 'lg:order-1'}`}>
-                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#017991] leading-tight mb-6">
+                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#193252] leading-tight mb-6">
                       {service.title}
                     </h3>
 

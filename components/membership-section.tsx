@@ -32,7 +32,7 @@ export default function MembershipSection() {
               transition={{ duration: 0.6, delay: 0.15 }}
               className="p-4 sm:p-8 lg:pl-16 lg:pr-12 flex flex-col justify-center items-center lg:items-start text-center lg:text-left order-1 lg:order-2"
             >
-              <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-[#017991] leading-tight mb-3 sm:mb-5">
+              <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-[#193252] leading-tight mb-3 sm:mb-5">
                 {t.title}
               </h2>
 

@@ -472,7 +472,7 @@ export default function BloodDonorPage() {
                         <Card className="p-6 rounded-[2rem] border-none shadow-lg hover:shadow-xl transition-all bg-white relative overflow-hidden">
                           <div className="flex items-center gap-4 mb-6">
                             <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 ring-4 ring-slate-50 flex items-center justify-center">
-                              {donor.photo ? <Image src={donor.photo} alt={donor.name} fill className="object-cover" /> : <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary text-2xl font-black">{donor.bloodGroup}</div>}
+                               <Image src={'/blood-drop.png'} alt={donor.name} fill className="object-cover" /> 
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-start gap-2">

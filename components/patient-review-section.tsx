@@ -144,9 +144,9 @@ export default function PatientReviewSection() {
               <h2 className="text-3xl sm:text-4xl font-bold mb-2 text-white">
                 {language === 'bn' ? 'আমাদের সেবা নিয়ে রোগীদের মতামত' : 'What Our Patients Say About Us'}
               </h2>
-              <p className="text-lg max-w-lg leading-relaxed mb-8 text-white/90 ">
+              <section className="text-lg max-w-lg leading-relaxed mb-8 text-white/90 ">
                 {language === 'bn' ? 'মেডিটাইম কীভাবে রোগীদের সঠিক বিশেষজ্ঞ ডাক্তারের সাথে যুক্ত হতে সাহায্য করে, তা নিজেই দেখে নিন।' : 'See how Meditime helps patients connect with the right specialists.'}
-              </p>
+              </section>
             </div>
 
             {/* CAROUSEL SECTION (FULL WIDTH CONTROL) */}
@@ -214,9 +214,9 @@ export default function PatientReviewSection() {
               <h2 className="text-3xl sm:text-4xl text-white font-bold mb-2">
                 {formTranslations.title}
               </h2>
-              <p className="text-lg max-w-lg leading-relaxed mb-8 text-white/90 ">
+              <section className="text-lg max-w-lg leading-relaxed mb-8 text-white/90 ">
                 {formTranslations.subtitle}
-              </p>
+              </section>
             </div>
 
             <div className="flex flex-col justify-center py-4 px-4 sm:px-8 bg-white rounded-xl" >

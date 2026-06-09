@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
 import { formatBlogDate, toBengaliNumber } from "@/lib/time-utils";
+import Footer from "@/components/footer";
 
 interface WordPressPost {
   id: number;
@@ -349,6 +350,7 @@ export default function HealthTipsPage() {
           <p>{t.blogPage.showing} {language === 'bn' ? toBengaliNumber(posts.length) : posts.length} {posts.length === 1 ? t.blogPage.post : t.blogPage.posts}</p>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

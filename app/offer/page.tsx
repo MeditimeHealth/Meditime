@@ -76,7 +76,7 @@ export default function OfferPage() {
               transition={{ delay: 0.1 }}
               className="text-4xl sm:text-6xl lg:text-[80px] font-bold text-white leading-[1.1] mb-8 tracking-tight"
             >
-              {language === 'bn' ? "আপনার সুস্বাস্থ্যের জন্য বিশেষ অফার" : "Special Offers for Your Better Health"}
+              {language === 'bn' ? "সুস্বাস্থ্যের জন্য বিশেষ অফার" : " Special Offers for Better Health"}
             </motion.h1>
             
             <motion.p 
@@ -86,8 +86,8 @@ export default function OfferPage() {
               className="text-xl text-slate-400 leading-relaxed max-w-2xl"
             >
               {language === 'bn' 
-                ? "সাভারের সেরা হাসপাতাল এবং ডায়াগনস্টিক সেন্টারে উপভোগ করুন আকর্ষণীয় ডিসকাউন্ট।" 
-                : "Enjoy attractive discounts at the best hospitals and diagnostic centers around Savar."}
+                ? "সাভার ও আশেপাশের এলাকার সেরা হাসপাতাল এবং ডায়াগনস্টিক সেন্টারগুলোতে আকর্ষণীয় ডিসকাউন্ট উপভোগ করুন।" 
+                : "Enjoy exclusive discounts at the top hospitals and diagnostic centers in Savar and surrounding areas."}
             </motion.p>
           </div>
         </div>

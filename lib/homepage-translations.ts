@@ -19,7 +19,7 @@ export const homepageTranslations = {
       },
       slide2: {
         title: "Find 100+ Diagnostic Tests in One Place!",
-        description: "Compare prices, find the best rates, and save up to 30% with your Meditime Health Discount card.",
+        description: "Compare prices, find the best labs, and save up to 30% with your Meditime Health Discount Card.",
         cta: "Find Tests",
         ctaLink: "/diagnostic",
       },
@@ -600,8 +600,8 @@ export const homepageTranslations = {
       hasAccount: "Already have an account?",
     },
     blogPage: {
-      heroTitle: "Health Tips & Medical Blog",
-      heroDesc: "Expert advice and insights to help you live a healthier life",
+      heroTitle: "Your Guide to Better Health",
+      heroDesc: "Verified medical insights and practical tips for your daily wellness.",
       filterCategory: "Filter by Category:",
       allPosts: "All Posts",
       featuredArticle: "Featured Article",
@@ -1221,8 +1221,8 @@ export const homepageTranslations = {
       hasAccount: "ইতিমধ্যে অ্যাকাউন্ট আছে?",
     },
     blogPage: {
-      heroTitle: "স্বাস্থ্য টিপস ও মেডিকেল ব্লগ",
-      heroDesc: "আপনাকে এবং আপনার প্রিয়জনদের সুস্থ রাখতে আমাদের বিশেষজ্ঞদের পরামর্শ ও স্বাস্থ্য সচেতনতা বিষয়ক ব্লগ",
+      heroTitle: "সুস্থ জীবনের সঠিক গাইডলাইন",
+      heroDesc: "আপনার প্রতিদিনের সুস্বাস্থ্যের জন্য নির্ভরযোগ্য চিকিৎসা তথ্য এবং কার্যকরী টিপস।",
       filterCategory: "ক্যাটাগরি অনুযায়ী খুঁজুন:",
       allPosts: "সব পোস্ট",
       featuredArticle: "বিশেষ আর্টিকেল",
