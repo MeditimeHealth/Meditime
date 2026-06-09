@@ -24,7 +24,7 @@ export const homepageTranslations = {
         ctaLink: "/diagnostic",
       },
       slide3: {
-        title: "Meditime Card: Save on Every Medical Bill!",
+        title: "Meditime Card — Save on Every Medical Bill",
         description: "Enjoy on spot discounts in your medical bills using Meditime Health Discount Cards. Your Meditime card arrives in 7 days-- discounts start instantly.",
         cta: "Get Your Card",
       },
