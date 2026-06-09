@@ -270,7 +270,7 @@ p {
   background: var(--primary);
   color: white;
   font-weight: 500;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.3);
@@ -279,12 +279,19 @@ p {
   background: var(--background-dark);
   color: white;
   font-weight: 500;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.3);
 }
 
+
+@media (min-width: 768px) {
+  .btn-primary,
+  .btn-primaryx {
+    padding: 0.75rem 1.5rem;
+  }
+}
 
 
 .btn-primary:active {

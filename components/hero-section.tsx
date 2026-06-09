@@ -80,7 +80,7 @@ export default function HeroSection() {
       `}</style>
 
       {/* ── MOBILE ──────────────────────────────────────────────────────── */}
-      <div className="lg:hidden w-full h-[95vh] min-h-[500px] relative">
+      <div className="lg:hidden w-full h-[45vh] min-h-[400px] relative">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           spaceBetween={0}
@@ -95,30 +95,30 @@ export default function HeroSection() {
           {slides.map((slide, index) => (
             <SwiperSlide key={index} className="h-full!">
               <div className="relative h-full w-full">
-             <Image
-  src={slide.image}
-  alt={slide.title}
-  fill
-  sizes="100vw"
-  className="object-cover object-left md:object-center"
-  priority={index === 0}
-/>
+                <Image
+                  src={slide.image}
+                  alt={slide.title}
+                  fill
+                  sizes="100vw"
+                  className="object-cover  object-[95%_center] lg:object-center"
+                  priority={index === 0}
+                />
                 <div className="absolute inset-0 bg-black/45" />
 
                 {/* ── Text: vertically & horizontally centered ── */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                  <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight text-white mb-6 max-w-[320px] tracking-tight">
+                  <h1 className="text-2xl lg:text-5xl font-extrabold leading-tight text-white mb-2 max-w-[320px] tracking-tight">
                     {slide.title}
                   </h1>
-                  <p className=" text-sm sm:text-lg text-white/90 leading-relaxed mb-10 max-w-[300px]">
+                  <p className=" text-sm lg:text-lg text-white/90 leading-relaxed mb-4 max-w-[300px]">
                     {slide.description}
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex flex-col sm:flex-row gap-2 md:gap-4">
                     <Link
                       href={slide.ctaLink}
                       target={slide.ctaLink.startsWith("http") ? "_blank" : "_self"}
                     >
-                      <button className="btn-slide btn-primary w-full md:w-fit flex items-center gap-2 group">
+                      <button className="btn-slide text-[12px]  btn-primary w-full md:w-fit flex items-center gap-2 group">
                         <span className="relative z-10">{slide.ctaText}</span>
                         <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </button>
@@ -130,7 +130,7 @@ export default function HeroSection() {
                           href={slide.ctaLink2}
                           target={slide.ctaLink2.startsWith("http") ? "_blank" : "_self"}
                         >
-                          <button className="btn-slidex btn-primaryx w-full md:w-fit flex items-center gap-2">
+                          <button className="btn-slidex text-[12px] btn-primaryx w-full md:w-fit flex items-center gap-2">
                             <span className="relative z-10">{slide.ctaText2}</span>
                             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                           </button>
