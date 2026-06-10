@@ -380,9 +380,9 @@ export default function HospitalDetailPage() {
                               <h4 className="text-lg font-bold text-gray-900 mb-1 line-clamp-2">
                                 {getLocalizedValue(rec.name, rec.nameBn, language)}
                               </h4>
-                              <div className="flex items-center gap-1 text-sm text-gray-600">
-                                <MapPin className="h-4 w-4 text-primary shrink-0" />
-                                <span className="line-clamp-1">{getHospitalLocationString(rec)}</span>
+                              <div className="flex gap-1 text-sm text-gray-600">
+                                <MapPin className="h-4 w-4 text-primary shrink-0 mt-1" />
+                                <span className="">{getLocalizedValue(rec.address, rec.addressBn, language)}</span>
                               </div>
                             </div>
                           </div>

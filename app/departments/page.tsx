@@ -132,13 +132,13 @@ export default function DepartmentsPage() {
           }}
         />
         <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-7xl mx-auto text-center lg:text-left">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl">
+              <h1 className="text-4xl md:text-6xl lg:text-[50px] font-bold text-white mb-6 drop-shadow-2xl">
                 কোন রোগে কোন ডাক্তার?
               </h1>
               <p className="text-xl md:text-2xl text-white/95 mb-8 drop-shadow-lg">
@@ -204,8 +204,8 @@ export default function DepartmentsPage() {
               const iconSrc = department.image
                 ? department.image
                 : matchedIcon
-                ? `/icon_of_dept/${encodeURIComponent(matchedIcon)}.png`
-                : null;
+                  ? `/icon_of_dept/${encodeURIComponent(matchedIcon)}.png`
+                  : null;
 
               return (
                 <motion.div

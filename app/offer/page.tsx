@@ -10,6 +10,7 @@ import Footer from "@/components/footer";
 import { Calendar, Tag, ArrowRight, Loader2, Sparkles, Gift } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
+import { homepageTranslations } from "@/lib/homepage-translations";
 
 interface Offer {
   _id: string;
@@ -29,6 +30,8 @@ export default function OfferPage() {
   const { language } = useLanguage();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
+  const t = homepageTranslations[language];
+
 
   useEffect(() => {
     fetchOffers();
@@ -51,48 +54,43 @@ export default function OfferPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
-      
+
       {/* Hero Section */}
-      <div className="relative pt-32 pb-20 overflow-hidden bg-[#111827]">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-[#3DB5A0] rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#3DB5A0] rounded-full blur-[100px] translate-x-1/2 translate-y-1/2" />
-        </div>
-        
-        <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[#3DB5A0]/20 border border-[#3DB5A0]/30 text-[#3DB5A0] text-sm font-bold tracking-widest uppercase mb-8"
-            >
-              <Sparkles className="w-4 h-4" />
-              {language === 'bn' ? "এক্সক্লুসিভ অফার" : "Exclusive Offers"}
-            </motion.div>
-            
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-4xl sm:text-6xl lg:text-[80px] font-bold text-white leading-[1.1] mb-8 tracking-tight"
-            >
-              {language === 'bn' ? "সুস্বাস্থ্যের জন্য বিশেষ অফার" : " Special Offers for Better Health"}
-            </motion.h1>
-            
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-xl text-slate-400 leading-relaxed max-w-2xl"
-            >
-              {language === 'bn' 
-                ? "সাভার ও আশেপাশের এলাকার সেরা হাসপাতাল এবং ডায়াগনস্টিক সেন্টারগুলোতে আকর্ষণীয় ডিসকাউন্ট উপভোগ করুন।" 
-                : "Enjoy exclusive discounts at the top hospitals and diagnostic centers in Savar and surrounding areas."}
-            </motion.p>
+      <div className="relative px-0">
+        <div className=" mx-auto">
+          <div className="h-[650px] rounded-none overflow-hidden">
+            <div className="relative h-full w-full">
+              {/* Background Image */}
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage: `url(/OfferBanner.png)`,
+                  backgroundColor: "#000000"
+                }}
+              >
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/50"></div>
+              </div>
+
+              {/* Content */}
+              <div className="relative z-10 flex h-full items-center justify-center">
+                <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                  <div className="mx-auto max-w-7xl text-center lg:text-left text-white">
+                    <h1 className="mb-6 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+                      {t.blogPage.heroTitle}
+                    </h1>
+                    <p className="mb-8 text-base leading-relaxed sm:text-lg lg:text-xl">
+                      {t.blogPage.heroDesc}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      
+
+
       <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 py-20">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-40">
@@ -128,7 +126,7 @@ export default function OfferPage() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="p-10 flex-1 flex flex-col">
                         <div className="flex items-center gap-3 text-slate-400 text-sm font-medium mb-6">
                           <Calendar className="w-4 h-4" />
@@ -138,15 +136,15 @@ export default function OfferPage() {
                             day: 'numeric'
                           })}
                         </div>
-                        
+
                         <h3 className="text-2xl font-bold text-slate-900 mb-6 leading-tight group-hover:text-[#3DB5A0] transition-colors line-clamp-2">
                           {language === 'bn' ? offer.titleBn : offer.title}
                         </h3>
-                        
+
                         <p className="text-slate-500 text-lg leading-relaxed mb-8 line-clamp-3 flex-1">
                           {language === 'bn' ? offer.descriptionBn : offer.description}
                         </p>
-                        
+
                         <div className="mt-auto">
                           <div className="flex items-center gap-3 text-[#3DB5A0] font-bold text-base uppercase tracking-wider group-hover:gap-5 transition-all">
                             {language === 'bn' ? offer.buttonTextBn : offer.buttonText}

@@ -104,7 +104,7 @@ export default function MembershipPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
-      
+
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -122,16 +122,16 @@ export default function MembershipPage() {
           }}
         />
         <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-7xl w-full text-center lg:text-left">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-2xl md:text-5xl lg:text-7xl font-bold text-white mb-4 drop-shadow-2xl leading-tight">
+              <h1 className="text-2xl md:text-5xl lg:text-[50px] font-bold text-white mb-4 drop-shadow-2xl leading-tight">
                 {t.headerTitle}
               </h1>
-              <p className="text-sm md:text-xl text-white/90 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
+              <p className="text-[16px] md:text-xl text-white/90 drop-shadow-lg max-w-3xl  leading-relaxed">
                 {t.desc}
               </p>
             </motion.div>

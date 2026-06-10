@@ -28,9 +28,17 @@ const banglaMonths = [
 
 // Convert English number to Bengali
 // Convert English number to Bengali (Now returns English)
-const toBengaliNumber = (num: number): string => {
-  return num.toString();
+const convertToBengaliNumber = (num: number | string, language: 'en' | 'bn'): string => {
+  const str = num.toString();
+  if (language === 'en') return str;
+  const englishDigits = '0123456789'.split('');
+  const bengaliDigits = '০১২৩৪৫৬৭৮৯'.split('');
+  return str.split('').map(digit => {
+    const index = englishDigits.indexOf(digit);
+    return index !== -1 ? bengaliDigits[index] : digit;
+  }).join('');
 };
+
 
 // Get Bengali day name
 const getBengaliDay = (day: string): string => {
@@ -472,7 +480,7 @@ export default function BookAppointmentPage() {
                       className="text-lg lg:text-xl font-bold "
 
                     >
-                      {banglaMonths[currentMonthIndex]} {toBengaliNumber(currentYear)}
+                      {banglaMonths[currentMonthIndex]} {convertToBengaliNumber(currentYear, language)}
                     </h3>
                     <button
                       onClick={() => changeMonth(1)}
@@ -543,7 +551,7 @@ export default function BookAppointmentPage() {
                             backgroundColor: isSelected ? "#ff5e29" : undefined
                           }}
                         >
-                          {toBengaliNumber(date.getDate())}
+                          {convertToBengaliNumber(date.getDate(), language)}
                         </button>
                       );
                     })}
@@ -599,7 +607,7 @@ export default function BookAppointmentPage() {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-2">
                 {/* Patient Name - Required */}
                 <div>
                   <Label htmlFor="patientName" className="flex items-center gap-1" >
@@ -611,7 +619,7 @@ export default function BookAppointmentPage() {
                     onChange={(e) => setPatientName(e.target.value)}
                     required
                     placeholder={t('patientNamePlaceholder')}
-                    className={`mt-1 rounded-none  ${!patientName ? '' : 'border-primary bg-green-50/30'}`}
+                    className={`mt-1 rounded-none h-10 ${!patientName ? '' : 'border-primary bg-green-50/30'}`}
                   />
                 </div>
 
@@ -627,7 +635,7 @@ export default function BookAppointmentPage() {
                     onChange={(e) => setMobileNumber(e.target.value)}
                     required
                     placeholder={t('mobileNumberPlaceholder')}
-                    className={`mt-1  ${!mobileNumber ? '' : 'border-primary bg-green-50/30'}`}
+                    className={`mt-1 h-10 ${!mobileNumber ? '' : 'border-primary bg-green-50/30'}`}
                   />
                 </div>
 
@@ -645,6 +653,7 @@ export default function BookAppointmentPage() {
                     <option value="">{t('selectGenderOption')}</option>
                     <option value="male">{t('male')}</option>
                     <option value="female">{t('female')}</option>
+                    <option value="others">{t('others')}</option>
                   </select>
                 </div>
 
@@ -659,7 +668,7 @@ export default function BookAppointmentPage() {
                     value={age}
                     onChange={(e) => setAge(e.target.value)}
                     placeholder={t('agePlaceholder')}
-                    className="mt-1 border-2 border-gray-200"
+                    className="mt-1 h-10 border-2 border-gray-200"
                     min="0"
                   />
                 </div>
@@ -675,7 +684,7 @@ export default function BookAppointmentPage() {
                     value={affiliateCode}
                     onChange={(e) => setAffiliateCode(e.target.value.toUpperCase())}
                     placeholder={t('serialAffiliateCodePlaceholder')}
-                    className={`mt-2 border-2 border-primary focus:border-primary bg-white ${!affiliateCode ? '' : 'border-primary bg-green-50/30'}`}
+                    className={`mt-2 h-10 border-2 border-primary focus:border-primary bg-white ${!affiliateCode ? '' : 'border-primary bg-green-50/30'}`}
                   />
                   <p className="mt-2 text-xs text-primary" >
                     {t('enterReferralCode')}

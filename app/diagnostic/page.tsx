@@ -80,7 +80,7 @@ export default function DiagnosticPage() {
       const savedVenue = localStorage.getItem("diagnosticVenue");
       const savedBookings = localStorage.getItem("myDiagnosticBookings");
       const userData = localStorage.getItem("user");
-      
+
       if (savedTests) setBookedTests(JSON.parse(savedTests));
       if (savedVenue) setSelectedVenue(JSON.parse(savedVenue));
       if (savedBookings) setMyBookingsHistory(JSON.parse(savedBookings));
@@ -115,7 +115,7 @@ export default function DiagnosticPage() {
 
     // If there ARE tests OR if we want to CLEAR an existing cart (tests.length === 0)
     // we should trigger the sync. The API now handles delete if tests is empty.
-    
+
     // We only skip if EVERYTHING is empty and we haven't started (not likely here)
     // but the main change is removing the early return on length === 0.
 
@@ -146,20 +146,20 @@ export default function DiagnosticPage() {
   useEffect(() => {
     const fetchUserBookings = async () => {
       if (!user) return;
-      
+
       try {
         const userId = user.id || user._id;
         const res = await fetch(`/api/diagnostic/bookings?userId=${userId}`);
         const data = await res.json();
-        
+
         if (res.ok && data.bookings) {
           // Merge with local storage bookings (prioritizing DB)
           const localBookings = JSON.parse(localStorage.getItem("myDiagnosticBookings") || "[]");
-          
+
           // Use a Map to deduplicate by bookingRef or _id
           const combined = [...data.bookings, ...localBookings];
           const unique = Array.from(new Map(combined.map(b => [b._id || b.bookingRef, b])).values());
-          
+
           setMyBookingsHistory(unique);
           localStorage.setItem("myDiagnosticBookings", JSON.stringify(unique));
         }
@@ -421,27 +421,27 @@ export default function DiagnosticPage() {
           }}
         />
         <div className="relative z-20 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 ">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-7xl mx-auto w-full text-center lg:text-left">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-2xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
+              <h1 className="text-2xl md:text-6xl lg:text-[50px] font-bold text-white mb-6 drop-shadow-2xl leading-tight">
                 {t.heroTitle}
               </h1>
-              <p className="text-sm md:text-xl text-white/90 max-w-2xl mx-auto mb-8 font-light">
+              <p className="text-[16px] md:text-xl text-white/90 max-w-2xl mb-8 font-light">
                 {t.heroSubtitle}
               </p>
 
-              <div className="flex justify-center mb-8">
+              <div className="flex justify-center lg:justify-start mb-8">
                 <Button onClick={() => setShowBookingsModal(true)} variant="outline" className="gap-2 border-white/30 text-white hover:bg-white hover:text-[#00B7B5] rounded-xl shadow-lg bg-white/10 backdrop-blur-md border-2 transition-all">
                   <Activity className="w-5 h-5" />
                   {language === 'en' ? 'My Booking History' : 'আমার বুকিং ইতিহাস'}
                   {myBookingsHistory.length > 0 && <span className="bg-white text-[#00B7B5] px-2 py-0.5 rounded-md text-xs ml-1 font-black">{myBookingsHistory.length}</span>}
                 </Button>
-                </div>
-              </motion.div>
+              </div>
+            </motion.div>
 
 
 
@@ -453,28 +453,28 @@ export default function DiagnosticPage() {
       <section className="pt-12 pb-12 relative overflow-hidden bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {categories.map((cat, idx) => {
-            const Icon = cat.icon;
-            const isSelected = selectedCategory === cat.backendId;
-            return (
-              <Card
-                key={idx}
-                onClick={() => setSelectedCategory(isSelected ? null : cat.backendId)}
+            {categories.map((cat, idx) => {
+              const Icon = cat.icon;
+              const isSelected = selectedCategory === cat.backendId;
+              return (
+                <Card
+                  key={idx}
+                  onClick={() => setSelectedCategory(isSelected ? null : cat.backendId)}
                   className={`p-6 rounded-[2rem] border transition-all cursor-pointer flex flex-col items-center group ${isSelected ? 'border-[#00B7B5] ring-2 ring-[#00B7B5] bg-slate-50' : 'border-slate-100 hover:shadow-lg hover:border-slate-200'}`}
-              >
+                >
                   <div className={`w-14 h-14`}>
-                  <Image 
-                    src={cat.icon}
-                    alt={cat.title}
-                    width={50}
-                    height={50}
-                  />
-                </div>
+                    <Image
+                      src={cat.icon}
+                      alt={cat.title}
+                      width={50}
+                      height={50}
+                    />
+                  </div>
                   <h3 className="font-bold text-slate-900 mb-1 text-sm md:text-base">{cat.title}</h3>
-                <p className="text-[10px] md:text-xs text-slate-500 font-medium">{cat.count} {t.testsPlus}</p>
-              </Card>
-            );
-          })}
+                  <p className="text-[10px] md:text-xs text-slate-500 font-medium">{cat.count} {t.testsPlus}</p>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -543,16 +543,16 @@ export default function DiagnosticPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`${selectedVenue ? 'bg-[#00B7B5] border-[#00B7B5] shadow-[#00B7B5]/20' : 'bg-slate-50 border-slate-200 shadow-slate-200/50'} rounded-3xl p-5 shadow-lg border flex flex-col gap-3 transition-colors duration-300`}
+                  className={`${selectedVenue ? 'bg-primary border-primary shadow-[#00B7B5]/20' : 'bg-slate-50 border-slate-200 shadow-slate-200/50'} rounded-3xl p-5 shadow-lg border flex flex-col gap-3 transition-colors duration-300`}
                 >
                   <div className={selectedVenue ? "text-white" : "text-slate-600"}>
-                    <p className="text-xs font-medium opacity-90">
+                    <p className="text-xs font-medium ">
                       {selectedVenue
                         ? (language === 'en' ? "Ready for Booking" : "বুকিং এর জন্য প্রস্তুত")
                         : (language === 'en' ? "Hospital Selection Required" : "হাসপাতাল নির্বাচন আবশ্যক")}
                     </p>
                     {selectedVenue ? (
-                      <p className="text-sm font-bold truncate mt-1">{getLocalizedValue(selectedVenue.name, selectedVenue.nameBn, language)}</p>
+                      <h2 className="text-sm font-bold truncate mt-1">{getLocalizedValue(selectedVenue.name, selectedVenue.nameBn, language)}</h2>
                     ) : (
                       <p className="text-xs font-bold text-red-500 mt-1 flex items-center gap-1.5">
                         <AlertCircle className="w-3.5 h-3.5 shrink-0" />

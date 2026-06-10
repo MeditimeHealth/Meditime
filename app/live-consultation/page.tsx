@@ -5,13 +5,13 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { 
-  Video, 
-  Calendar, 
-  Clock, 
-  Shield, 
-  Smartphone, 
-  UserRound, 
+import {
+  Video,
+  Calendar,
+  Clock,
+  Shield,
+  Smartphone,
+  UserRound,
   Activity,
   CheckCircle2,
   ChevronRight,
@@ -55,7 +55,7 @@ export default function LiveConsultationPage() {
       <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-[#00B7B5]/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -78,7 +78,7 @@ export default function LiveConsultationPage() {
                 )}
               </h1>
               <p className="text-lg text-slate-600 mb-8 max-w-xl">
-                {language === 'en' 
+                {language === 'en'
                   ? "Connect with certified specialists in minutes via secure video consultation. Quality healthcare is now just a tap away."
                   : "সহজ এবং নিরাপদ ভিডিও কলের মাধ্যমে সরাসরি বিশেষজ্ঞ ডাক্তারদের সাথে কথা বলুন। মানসম্পন্ন চিকিৎসা সেবা এখন আপনার হাতের নাগালে।"}
               </p>
@@ -102,10 +102,10 @@ export default function LiveConsultationPage() {
               className="relative"
             >
               <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border-8 border-white">
-                <Image 
-                  src="https://images.unsplash.com/photo-1576091160550-217359f4ecf8?q=80&w=2070&auto=format&fit=crop" 
-                  alt="Live Consultation" 
-                  width={600} 
+                <Image
+                  src="https://images.unsplash.com/photo-1576091160550-217359f4ecf8?q=80&w=2070&auto=format&fit=crop"
+                  alt="Live Consultation"
+                  width={600}
                   height={400}
                   className="object-cover"
                 />
@@ -120,7 +120,7 @@ export default function LiveConsultationPage() {
                     </div>
                   </div>
                   <div className="flex -space-x-2">
-                    {[1,2,3].map(i => (
+                    {[1, 2, 3].map(i => (
                       <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
                         <Image src={`https://i.pravatar.cc/150?u=${i}`} alt="Avatar" width={32} height={32} />
                       </div>
@@ -176,10 +176,10 @@ export default function LiveConsultationPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="relative order-2 lg:order-1">
               <div className="aspect-square relative rounded-[3rem] overflow-hidden">
-                <Image 
-                  src="https://images.unsplash.com/photo-1581056399312-6031844f4955?q=80&w=2070&auto=format&fit=crop" 
-                  alt="Steps" 
-                  fill 
+                <Image
+                  src="https://images.unsplash.com/photo-1581056399312-6031844f4955?q=80&w=2070&auto=format&fit=crop"
+                  alt="Steps"
+                  fill
                   className="object-cover"
                 />
               </div>
@@ -229,8 +229,8 @@ export default function LiveConsultationPage() {
               <h2 className="text-3xl md:text-5xl font-black text-white mb-8">
                 {language === 'en' ? "Ready to Consult?" : "পরামর্শ করতে প্রস্তুত?"}
               </h2>
-              <p className="text-slate-400 text-lg mb-10 max-w-2xl mx-auto">
-                {language === 'en' 
+              <p className="text-slate-400 text-lg mb-10 max-w-2xl">
+                {language === 'en'
                   ? "Don't wait for your symptoms to get worse. Talk to a professional doctor now and get the care you deserve."
                   : "আপনার লক্ষণগুলো খারাপ হওয়ার জন্য অপেক্ষা করবেন না। এখনই একজন পেশাদার ডাক্তারের সাথে কথা বলুন এবং আপনার প্রয়োজনীয় যত্ন নিন।"}
               </p>

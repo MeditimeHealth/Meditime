@@ -66,8 +66,8 @@ function Counter({ value, suffix = "" }: { value: number | string; suffix?: stri
   }, [isInView, spring, numericValue, isNumeric]);
 
   return (
-    <span ref={ref}>
-      {isNumeric ? <motion.span>{displayValue}</motion.span> : value}
+    <span ref={ref} className="text-2xl">
+      {isNumeric ? <motion.span className="text-4xl">{displayValue}</motion.span> : <motion.span >{value}</motion.span>}
       {suffix}
     </span>
   );
@@ -298,18 +298,18 @@ export default function BloodDonorPage() {
             backgroundImage: "url('https://images.unsplash.com/photo-1615461066159-fea0960485d5?auto=format&fit=crop&q=80')",
           }}
         />
-        <div className="relative z-20 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-20 h-full flex flex-col max-w-7xl mx-auto justify-center px-4 sm:px-6 lg:px-8 text-center lg:text-left  ">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
+            <h1 className="text-2xl md:text-5xl lg:text-[50px] font-bold text-white mb-6 drop-shadow-2xl leading-tight">
               {language === 'en' ? "Be a Hero in Someone's Story" : "কারো জীবনের গল্পে নায়ক হয়ে উঠুন"}
             </h1>
-            <p className="text-sm md:text-xl text-white/95 mb-10 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
+            <section className="text-[16px] text-white/95 mb-10 drop-shadow-lg max-w-3xl  leading-relaxed">
               {t.subtitle[language]}
-            </p>
+            </section>
 
             <Button
               onClick={scrollToJoin}
@@ -324,7 +324,7 @@ export default function BloodDonorPage() {
 
       {/* ── Social Proof Section (Using Primary Color) ── */}
       <div className="relative mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-18">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-18">
           {socialProof.map(({ value, suffix, label, icon: Icon }, index) => (
             <motion.div
               key={index}
@@ -333,14 +333,14 @@ export default function BloodDonorPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <div className="btn-slide group flex flex-col items-center text-center btn-primary rounded-2xl min-h-[220px] h-full justify-center">
-                <div className="mb-4  transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
+              <div className="btn-slide group flex flex-col items-center text-center rounded-3xl btn-primary min-h-[100px] h-full justify-center">
+                <div className=" pt-4 transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
                   <Icon size={56} height="duotone" />
                 </div>
                 <div className="text-[32px] md:text-[30px] font-bold text-white mb-1 leading-none">
                   <Counter value={value} suffix={suffix} />
                 </div>
-                <div className="text-[14px] md:text-[16px] text-teal-100/70 font-bold uppercase tracking-wider">
+                <div className="text-[14px] lg:pb-4 md:text-[16px] text-teal-100/70 font-bold uppercase tracking-wider">
                   {label}
                 </div>
               </div>
@@ -397,7 +397,7 @@ export default function BloodDonorPage() {
                     ))}
                   </select>
                 </div>
-               
+
                 <div>
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
                     {language === 'en' ? "District" : "জেলা"}
@@ -417,7 +417,7 @@ export default function BloodDonorPage() {
                   </select>
                 </div>
 
-                 <div>
+                <div>
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
                     {language === 'en' ? "Thana" : "থানা"}
                   </label>
@@ -472,7 +472,7 @@ export default function BloodDonorPage() {
                         <Card className="p-6 rounded-[2rem] border-none shadow-lg hover:shadow-xl transition-all bg-white relative overflow-hidden">
                           <div className="flex items-center gap-4 mb-6">
                             <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 ring-4 ring-slate-50 flex items-center justify-center">
-                               <Image src={'/blood-drop.png'} alt={donor.name} fill className="object-cover" /> 
+                              <Image src={'/blood-drop.png'} alt={donor.name} fill className="object-cover" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-start gap-2">
@@ -639,11 +639,11 @@ export default function BloodDonorPage() {
               <div className="flex flex-wrap justify-center gap-6">
                 <a href={`tel:${"+8801610384444"}`}>
 
-                   <Button className="h-16 px-12 bg-white text-primary text-xl shadow-2xl transition-all active:scale-95">
-                  <Phone className="w-6 h-6 mr-3 fill-current" />+8801610384444
-                </Button>
+                  <Button className="h-16 px-12 bg-white text-primary text-xl shadow-2xl transition-all active:scale-95">
+                    <Phone className="w-6 h-6 mr-3 fill-current" />+8801610384444
+                  </Button>
                 </a>
-               
+
               </div>
             </div>
           </div>

@@ -178,9 +178,7 @@ strong {
   font-family: var(--font-primary-heading) !important;
 }
 
-p {
-  opacity: 0.6;
-}
+
 
 /* Glassmorphism Utilities */
 .glass {

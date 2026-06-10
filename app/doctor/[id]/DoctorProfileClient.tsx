@@ -645,7 +645,7 @@ const displayedBio = needsTruncation && !bioExpanded
                     {departmentDiseases.map((disease, index) => (
                       <li
                         key={index}
-                        className="flex items-start gap-3  md:text-lg font-semibold text-gray-800"
+                        className="flex items-start gap-3  md:text-lg  text-gray-800"
                       >
                         <section className="text-primary mt-1">•</section>
                         <section>{getLocalizedValue(disease.name, disease.bangla, language)}</section>
@@ -666,18 +666,19 @@ const displayedBio = needsTruncation && !bioExpanded
                 </h2>
                 <div className="bg-white p-6 rounded-xl border-2 border-primary/10 shadow-md">
                   <p className="md:text-lg text-[#193252] leading-relaxed whitespace-pre-line">
-                    {displayedBio}
-                  </p>
-                  {needsTruncation && (
+                    {displayedBio} 
+                      {needsTruncation && (
                     <button
                       onClick={() => setBioExpanded(!bioExpanded)}
-                      className="mt-3 text-primary font-semibold text-sm hover:underline focus:outline-none"
+                      className="ml-2 text-primary font-semibold  hover:underline focus:outline-none"
                     >
                       {bioExpanded
                         ? (language === 'bn' ? 'কম দেখুন' : 'See Less')
                         : (language === 'bn' ? 'আরও দেখুন' : 'See More')}
                     </button>
                   )}
+                  </p>
+                
                 </div>
               </Card>
             )}
@@ -714,8 +715,8 @@ const displayedBio = needsTruncation && !bioExpanded
                 {groupedAvailability.map((group: any, index: number) => {
                   const hospitalSlug = group.hospital;
                   const hObj = hospitals.find(h => h.slug === hospitalSlug || (h as any).slug === hospitalSlug);
-                  const hospitalName = hObj?.name || hospitalSlug;
-                  const hospitalBnName = hObj?.nameBn || hospitalName;
+                  const hospitalName = hObj?.name;
+                  const hospitalBnName = hObj?.nameBn;
                   const hospitalAddress = hObj?.address || '';
                   const hospitalBnAddress = hObj?.addressBn || '';
                   const isSelected = selectedHospitalSlug === hospitalSlug;
@@ -869,9 +870,9 @@ const displayedBio = needsTruncation && !bioExpanded
           <div className="lg:hidden space-y-6">
             {/* Fees Section - Mobile */}
             <Card className="overflow-hidden border-2 border-primary/20 shadow-xl">
-              <div className="bg-primary p-4 flex items-center justify-center gap-3">
+               <div className="text-[#193252] p-4 flex items-center justify-center gap-3 border-b border-primary/20">
 
-                <h2 className="text-xl md:text-2xl font-bold text-white">
+                <h2 className="text-xl md:text-2xl font-bold">
                   {language === 'bn' ? 'ডাক্তারের পরামর্শ ফি' : 'Consultation Fee'}
                 </h2>
               </div>
@@ -973,10 +974,12 @@ const displayedBio = needsTruncation && !bioExpanded
               </h2>
               <div className="space-y-5">
                 <Link href={`/doctor/${doctorId}/book?hospitalSlug=${encodeURIComponent(selectedHospitalSlug)}`}>
-                  <Button
-                    className="w-full btn-primary btn-slide py-6"
+                   <Button
+                    className="w-full flex justify-center items-center btn-primary btn-slide h-12"
                   >
                     {language === 'bn' ? 'বুক অ্যাপয়েন্টমেন্ট' : 'Book Appointment'}
+                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+
                   </Button>
                 </Link>
               </div>

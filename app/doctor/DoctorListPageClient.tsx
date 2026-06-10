@@ -16,6 +16,9 @@ import { Label } from "@/components/ui/label";
 import Footer from "@/components/footer";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/autoplay";
 
 import {
   Search,
@@ -767,16 +770,16 @@ function DoctorListPageContent() {
           }}
         />
         <div className="relative z-20 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pb-20">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-7xl w-full mx-auto text-center lg:text-left">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-2xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
+              <h1 className="text-2xl md:text-5xl lg:text-[48px] font-bold text-white mb-6 drop-shadow-2xl leading-tight">
                 {t.heroTitle}
               </h1>
-              <p className="text-sm md:text-xl text-white/90 max-w-2xl mx-auto lg:mb-8 font-light">
+              <p className="text-[16px] md:text-xl text-white/90 max-w-2xl lg:mb-8 font-light">
                 {t.heroDesc}
               </p>
             </motion.div>
@@ -936,11 +939,15 @@ function DoctorListPageContent() {
                 <p className="text-gray-500 mt-1 text-sm md:text-base">{t.departmentSubtitle}</p>
               </div>
             </div>
-            <div className="relative px-4">
+            <div className="relative px-16">
               <Swiper
                 modules={[Autoplay, Navigation]}
                 spaceBetween={20}
                 slidesPerView={1}
+                observer
+                observeParents
+                resizeObserver
+                watchOverflow
                 navigation={{
                   nextEl: ".department-next",
                   prevEl: ".department-prev",
@@ -950,15 +957,27 @@ function DoctorListPageContent() {
                   disableOnInteraction: false,
                 }}
                 breakpoints={{
-                  480: { slidesPerView: 2 },
-                  768: { slidesPerView: 3 },
-                  1024: { slidesPerView: 4 },
+                  0: {
+                    slidesPerView: 1,
+                  },
+                  640: {
+                    slidesPerView: 2,
+                  },
+                  768: {
+                    slidesPerView: 3,
+                  },
+                  1024: {
+                    slidesPerView: 4,
+                  },
                 }}
                 loop={departments.length > 4}
-                className="pb-4"
+                className="w-full px-2 pb-4"
               >
                 {departments.map((dept, index) => (
-                  <SwiperSlide key={dept._id || dept.name}>
+                  <SwiperSlide
+                    key={dept._id || dept.name}
+                    className="!flex !justify-center"
+                  >
                     <motion.button
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -970,7 +989,7 @@ function DoctorListPageContent() {
                         setSelectedDept(dept.name);
                         setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
                       }}
-                      className={`btn-slide group  w-[220px] h-[280px] border border-primary bg-white flex flex-col items-center justify-between shrink-0 rounded-3xl p-8 ${selectedDept === dept.name
+                      className={`btn-slide group w-full max-w-[220px] h-[260px] border border-primary bg-white flex flex-col items-center justify-between shrink-0 rounded-3xl p-8 ${selectedDept === dept.name
                         ? "bg-primary text-white shadow-md"
                         : "bg-white text-gray-700 border border-gray-200"
                         }`}
@@ -979,8 +998,8 @@ function DoctorListPageContent() {
                         <Image
                           src={getDeptPublicIcon(dept.name) || "/default.png"}
                           alt={dept.name}
-                          width={140}
-                          height={140}
+                          width={120}
+                          height={120}
                           className="object-contain transition-all duration-500 group-hover:scale-110 drop-shadow-md"
                         />
                       </div>

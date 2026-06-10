@@ -81,7 +81,7 @@ export default function DiagnosticPatientForm({
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-2">
         {/* Patient Name - Required */}
         <div>
           <Label htmlFor="patientName" className="flex items-center gap-1  " >
@@ -93,7 +93,7 @@ export default function DiagnosticPatientForm({
             onChange={(e) => setPatientName(e.target.value)}
             required
             placeholder={t("patientNameLabel", language)}
-            className={`mt-1 border-primary rounded-none  ${!patientName ? 'border-gray-100' : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'}`}
+            className={`mt-1 h-10 border-primary rounded-none  ${!patientName ? 'border-gray-100' : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'}`}
           />
         </div>
 
@@ -109,7 +109,7 @@ export default function DiagnosticPatientForm({
             onChange={(e) => setMobileNumber(e.target.value)}
             required
             placeholder={t("mobileNumberLabel", language)}
-            className={`mt-1 border-primary rounded-none  ${!mobileNumber ? 'border-gray-100' : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'}`}
+            className={`mt-1 h-10 border-primary rounded-none  ${!mobileNumber ? 'border-gray-100' : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'}`}
           />
         </div>
 
@@ -122,12 +122,13 @@ export default function DiagnosticPatientForm({
             id="gender"
             value={gender}
             onChange={(e) => setGender(e.target.value)}
-            className="mt-1 w-full h-12 px-4 border-2 border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00B7B5] bg-white transition-all"
+            className="mt-1 h-12 w-full px-4 border-2 border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00B7B5] bg-white transition-all"
 
           >
             <option value="">{t("selectGender", language)}</option>
             <option value="male">{t("male", language)}</option>
             <option value="female">{t("female", language)}</option>
+            <option value="others">{t("others", language)}</option>
           </select>
         </div>
 
@@ -142,7 +143,7 @@ export default function DiagnosticPatientForm({
             value={age}
             onChange={(e) => setAge(e.target.value)}
             placeholder={t("ageLabel", language)}
-            className="mt-1 border-2 border-gray-100 h-12 rounded-xl transition-all focus-visible:ring-[#00B7B5]"
+            className="mt-1 h-10 border-2 border-gray-100 rounded-xl transition-all focus-visible:ring-[#00B7B5]"
             min="0"
           />
         </div>
@@ -158,7 +159,7 @@ export default function DiagnosticPatientForm({
             value={affiliateCode}
             onChange={(e) => setAffiliateCode(e.target.value.toUpperCase())}
             placeholder={t("serialAffiliateCode", language)}
-                    className={`mt-2 border-2 border-primary focus:border-primary bg-white ${!affiliateCode ? '' : 'border-primary bg-green-50/30'}`}
+                    className={`mt-2 h-10 border-2 border-primary focus:border-primary bg-white ${!affiliateCode ? '' : 'border-primary bg-green-50/30'}`}
           />
           <p className="mt-2 text-xs text-primary" >
             {t("referralCodeHelp", language)}

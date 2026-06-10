@@ -81,7 +81,7 @@ export default function ServicesSection() {
           <h2 className="text-[28px] sm:text-[48px]  font-bold mb-4 text-[#193252] tracking-tight max-w-[804px] mx-auto leading-[1.1]">
             {t.title}
           </h2>
-                    <div className="w-20 h-1.5 bg-primary mx-auto mb-6 shadow-[0_0_15px_rgba(13,148,136,0.5)]" />
+                    <div className="w-20 h-1.5 bg-primary mx-auto mb-6 " />
 
           <p className="text-[#193252]  text-sm sm:text-lg max-w-[650px] mx-auto leading-relaxed">
             {t.subtitle}

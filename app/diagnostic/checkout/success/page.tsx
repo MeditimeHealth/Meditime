@@ -205,7 +205,7 @@ export default function DiagnosticSuccessPage() {
 
           
             <div className="bg-white p-3 lg:p-6 border border-slate-200 rounded-xl">
-              {/* Agreement Checkbox */}
+                  {/* Agreement Checkbox */}
               <div className="mb-5">
                 <div className="flex items-start gap-3">
                   <div className="relative mt-0.5 flex-shrink-0">
@@ -240,9 +240,15 @@ export default function DiagnosticSuccessPage() {
                     htmlFor="agree-checkbox"
                     className="text-sm text-slate-600 leading-relaxed cursor-pointer select-none"
                   >
+                    <span>
+                      {language === 'en' ? "I agree to the" : "আমি "}
+                    </span>
                     <Link href="/terms" className="text-primary hover:underline">
-                      {language == 'en' ? "Terms and Conditions" : "শর্তাবলী"}
+                      {language == 'en' ? "Terms and Conditions and Privacy Policy" : "শর্তাবলী এবং গোপনীয়তা নীতি "}
                     </Link>
+                    <span>
+                      {language === 'en' ? "" : "মেনে নিচ্ছি"}
+                    </span>
                   </label>
                 </div>
               </div>
@@ -250,35 +256,33 @@ export default function DiagnosticSuccessPage() {
            
 
               {/* Action Buttons */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2  gap-3">
                 <Button
                   variant="outline"
                   onClick={handleBook}
-                  className="w-full btn-slidex btn-primaryx transition-all"
+                  className="w-full btn-slidex bg-white  transition-all order-2 lg:order-none"
                   disabled={!agreed || submitting}
                 >
                   {language == 'en' ? "Pay later" : "পরে পে করুন"}
                 </Button>
 
                 <Button
-                  onClick={handleBook}
-                  disabled={true}
-                  className={` font-bold py-3 text-base transition-all hover:scale-100 ${agreed && !submitting
+                  className={` font-bold order-1 lg:order-none py-3 text-base transition-all hover:scale-100 ${agreed && !submitting
                     ? "btn-primary btn-slide"
                     : "bg-slate-200 text-slate-400 cursor-not-allowed"
                     }`}
                 >
-                  {submitting ? (
+                  {/* {submitting ? (
                     <>
                       <Loader2 className="h-5 w-5 mr-2 animate-spin" />
                       {language == 'en' ? "Confirming..." : "নিশ্চিত হচ্ছে..."}
                     </>
-                  ) : (
+                  ) : ( */}
                     <>
                       <CreditCard className="h-5 w-5 mr-2" />
                       {language == 'en' ? "Pay now" : "এখন পেমেন্ট করুন"}
                     </>
-                  )}
+                  {/* )} */}
                 </Button>
               </div>
 
@@ -294,7 +298,7 @@ export default function DiagnosticSuccessPage() {
          
 
           {bookingComplete && (
-            <div className="bg-green-50 text-green-700 border border-green-200 p-6 rounded-2xl flex items-center justify-center gap-3 text-center">
+            <div className="bg-primary/10 text-primary border border-primary p-6 rounded-2xl flex items-center justify-center gap-3 text-center">
               <CheckCircle2 className="w-6 h-6 shrink-0" />
               <p className="font-bold">{language == 'en' ? "Your booking has been confirmed successfully! Present this summary at the hospital." : "আপনার বুকিং সফলভাবে নিশ্চিত হয়েছে! হাসপাতালের যেকোনো শাখায় এই সারাংশ দেখান।"}</p>
             </div>

@@ -112,15 +112,15 @@ export default function ContactPage() {
           }}
         />
         <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-7xl w-full text-center lg:text-left">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-2xl md:text-5xl lg:text-7xl font-bold text-white mb-4 drop-shadow-2xl leading-tight">
+              <h1 className="text-2xl md:text-5xl lg:text-[50px] font-bold text-white mb-4 drop-shadow-2xl leading-tight">
                 {language === 'bn' ? "আমাদের সাথে যোগাযোগ করুন" : "Contact Us"}              </h1>
-              <p className="text-sm  md:text-xl text-white/90 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
+              <p className="text-sm  md:text-xl text-white/90 drop-shadow-lg max-w-3xl  leading-relaxed">
                 {language === 'bn'
                   ? "আপনার যেকোনো জিজ্ঞাসা বা সাহায্যের জন্য আমরা ২৪/৭ নিয়োজিত আছি।"
                   : "Have questions or need help? Our support team is here for you 24/7."}
@@ -134,24 +134,21 @@ export default function ContactPage() {
         <div className="grid lg:grid-cols-12 gap-8 items-start">
 
           {/* Left Column: Info Cards */}
-          <div className="lg:col-span-4 relative space-y-6 h-full">
+          <div className="lg:col-span-4 flex flex-col space-y-6 h-full ">
             {/* Emergency Hotline Card */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="bg-[#193252] rounded-[32px] p-8 text-white shadow-2xl relative overflow-hidden group"
+              className="bg-[#193252] rounded-[32px] p-8 text-white shadow-2xl overflow-hidden group"
             >
-              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
-                <FaHeadset className="w-32 h-32" />
-              </div>
-              <div className="relative z-10">
-               
+
+              <div className="">
                 <h2 className="text-3xl font-bold mb-6">
                   {language === 'bn' ? "জরুরি হেল্পলাইন" : "Emergency Helpline"}
                 </h2>
                 <a
                   href="tel:+8801610384444"
-                  className="inline-flex items-center gap-4 bg-white text-[#193252] px-8 py-4 rounded-2xl font-bold text-2xl shadow-lg hover:bg-orange-50 transition-all active:scale-95"
+                  className="inline-flex items-center gap-4 bg-white text-[#193252] md:px-8 px-4 py-4 rounded-2xl font-bold text-2xl shadow-lg hover:bg-orange-50 transition-all active:scale-95"
                 >
                   <Phone className="w-6 h-6" />
                   +880 1610-384444
@@ -164,7 +161,7 @@ export default function ContactPage() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-[32px] p-7 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100"
+              className="bg-white rounded-[32px] flex-1 p-7 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100"
             >
               <h3 className="text-3xl font-bold text-slate-900 mb-10">
                 {language === 'bn' ? "যোগাযোগের মাধ্যম" : "Get in Touch"}
@@ -173,7 +170,7 @@ export default function ContactPage() {
               <div className="space-y-8">
                 <div className="flex gap-6">
                   <div className="w-14 h-14 rounded-2xl bg-[#00B1C2] flex items-center justify-center text-white shrink-0 border border-slate-100">
-                    <FaEnvelope className="w-6 h-6" />
+                    <a href="mailto:support@meditime.com.bd">   <FaEnvelope className="w-6 h-6" /></a>
                   </div>
                   <div>
                     <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-1">Email</p>
@@ -185,7 +182,7 @@ export default function ContactPage() {
 
                 <div className="flex gap-6">
                   <div className="w-14 h-14 rounded-2xl bg-[#00B1C2] flex items-center justify-center text-white shrink-0 border border-slate-100">
-                    <Phone className="w-6 h-6" />
+                    <a href="tel:+8801610384444">   <Phone className="w-6 h-6" /></a>
                   </div>
                   <div>
                     <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-1">Phone</p>
@@ -197,7 +194,9 @@ export default function ContactPage() {
 
                 <div className="flex gap-6">
                   <div className="w-14 h-14 rounded-2xl bg-[#00B1C2] flex items-center justify-center text-white shrink-0 border border-slate-100">
-                    <FaFacebookF className="w-6 h-6" />
+                    <a href="https://www.facebook.com/meditime.health" target="_blank">
+                      <FaFacebookF className="w-6 h-6" />
+                    </a>
                   </div>
                   <div>
                     <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-1">Facebook</p>

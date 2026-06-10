@@ -160,7 +160,7 @@ export default function DiagnosticCalendarPicker({
               className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center md:text-2xl text-sm  ${isSelected
                   ? "text-white shadow-lg scale-110 ring-4 ring-orange-300 bg-[#FF6B00]"
                   : isAvailable
-                    ? "bg-primary text-white border border-slate-200  hover:shadow-md"
+                    ? "bg-primary/60 text-white border border-slate-200  hover:shadow-md"
                     : "bg-gray-100 text-gray-400 cursor-not-allowed border border-transparent"
                 } ${isToday && !isSelected && !isAvailable ? "ring-2 ring-gray-400" : ""}`}
       

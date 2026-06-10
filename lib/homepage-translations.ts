@@ -53,7 +53,7 @@ export const homepageTranslations = {
       doctorAppointmentTitle: "Doctor Appointment Booking",
       doctorAppointmentDesc: "Get expert care from 20+ specialties. Skip the long lines and book a guaranteed visit with the best doctors.",
       bookAppointmentBtn: "Book Appointment",
-      hospitalsTitle: "Find the Best Hospitals Near you",
+      hospitalsTitle: "Find the Best Hospitals Near You",
       hospitalsDesc: "Looking for the right hospital? Discover top-rated specialized and general healthcare centers right here in Savar",
       hospitalListBtn: "Hospital List",
       videoConsultTitle: "Talk to a Doctor from Home",
@@ -355,7 +355,7 @@ export const homepageTranslations = {
       }
     },
     membershipPage: {
-      headerTitle: "Meditime Health Card: Pay once, save always",
+      headerTitle: "Meditime Health Card — Pay once, save always",
       desc: "The Meditime Health Card cuts your medical bills by up to 30%, so you can focus on getting better, not stressing over costs.",
       howToGetTitle: "How to Get Your Health Discount Card:",
       step1: "1. Pick a Package: Select a membership plan for you and your family.",

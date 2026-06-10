@@ -65,6 +65,8 @@ const genderLabels: Record<string, { en: string; bn: string }> = {
   other: { en: "Other", bn: "অন্যান্য" },
 };
 
+
+
 const t = {
   en: {
     checkoutTitle: "Review Your Appointment",
@@ -237,7 +239,7 @@ function CheckoutContent() {
         {/* Appointment Preview Card */}
         <Card className="bg-white border border-slate-200 shadow-2xl overflow-hidden mb-6">
           {/* Card Header */}
-          <div className="bg-gradient-to-r from-[#00B7B5] to-teal-600 px-6 py-5">
+          <div className="bg-primary px-6 py-5">
             <div className="flex items-center gap-3">
 
               <div className="flex items-center justify-center w-full">
@@ -477,9 +479,15 @@ function CheckoutContent() {
                     className="text-sm text-slate-600 leading-relaxed cursor-pointer select-none"
                     style={fontStyle}
                   >
+                    <span>
+                      {language === 'en' ? "I agree to the" : "আমি "}
+                    </span>
                     <Link href="/terms" className="text-primary hover:underline">
-                      {language == 'en' ? "Terms and Conditions" : "শর্তাবলী"}
+                      {language == 'en' ? "Terms and Conditions and Privacy Policy" : "শর্তাবলী এবং গোপনীয়তা নীতি "}
                     </Link>
+                    <span>
+                      {language === 'en' ? "" : "মেনে নিচ্ছি"}
+                    </span>
                   </label>
                 </div>
               </div>
@@ -498,7 +506,7 @@ function CheckoutContent() {
                 <Button
                   variant="outline"
                   onClick={handleConfirm}
-                  className="w-full btn-slidex btn-primaryx transition-all"
+                  className="w-full btn-slidex bg-white order-2 lg:order-none transition-all"
                   style={fontStyle}
                   disabled={!agreed || submitting}
                 >
@@ -506,25 +514,24 @@ function CheckoutContent() {
                 </Button>
 
                 <Button
-                  onClick={handleConfirm}
-                  disabled={true}
-                  className={` font-bold py-3 text-base transition-all hover:scale-100 ${agreed && !submitting
+
+                  className={` font-bold py-3 order-1 lg:order-none text-base transition-all hover:scale-100 ${agreed && !submitting
                     ? "btn-primary btn-slide"
                     : "bg-slate-200 text-slate-400 cursor-not-allowed"
                     }`}
                   style={fontStyle}
                 >
-                  {submitting ? (
+                  {/* {submitting ? (
                     <>
                       <Loader2 className="h-5 w-5 mr-2 animate-spin" />
                       {txt.confirming}
                     </>
-                  ) : (
+                  ) : ( */}
                     <>
                       <CreditCard className="h-5 w-5 mr-2" />
                       {language == 'en' ? "Pay now" : "এখন পেমেন্ট করুন"}
                     </>
-                  )}
+                  {/* )} */}
                 </Button>
               </div>
 

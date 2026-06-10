@@ -172,16 +172,16 @@ export default function ServicePage() {
           }}
         />
         <div className="relative z-20 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 ">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-7xl w-full text-center lg:text-left">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-2xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
+              <h1 className="text-2xl md:text-6xl lg:text-[50px] font-bold text-white mb-6 drop-shadow-2xl leading-tight">
                 {t.heroTitle}
               </h1>
-              <p className="text-sm md:text-xl text-white/90 max-w-2xl mx-auto mb-8 font-light">
+              <p className="text-[16px] md:text-xl text-white/90 max-w-2xl mb-8 font-light">
                 {t.heroDesc}
               </p>
             </motion.div>
@@ -201,14 +201,14 @@ export default function ServicePage() {
               transition={{ duration: 0.4, delay: index * 0.1 }}
               className=""
             >
-              <div className="btn-slide p-8 group flex flex-col items-center text-center rounded-3xl btn-primary min-h-[100px] h-full justify-center">
+              <div className="btn-slide group flex flex-col items-center text-center rounded-3xl btn-primary min-h-[100px] h-full justify-center">
                 {/* Icon */}
-                <div className=" text-[#20E7E7] py-4 transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
-                  <Icon size={72} height="duotone" />
+                <div className=" text-[#20E7E7] pt-4 transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
+                  <Icon size={50} height="duotone" />
                 </div>
 
                 {/* Stat number with Counter */}
-                <div className="text-[48px] sm:text-[60px] font-bold text-white leading-none transition-colors duration-300">
+                <div className="text-[30px] sm:text-[60px] font-bold text-white leading-none transition-colors duration-300">
                   <Counter value={value} suffix={suffix} />
                 </div>
 
@@ -272,7 +272,7 @@ export default function ServicePage() {
                         <button className="btn-slide group/btn btn-primary overflow-hidden">
                           <span className="relative z-10 flex items-center gap-3">
                             {service.cta}
-                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                           </span>
                         </button>
                       </Link>

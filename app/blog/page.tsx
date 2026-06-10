@@ -154,7 +154,7 @@ export default function HealthTipsPage() {
               {/* Content */}
               <div className="relative z-10 flex h-full items-center justify-center">
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
-                  <div className="mx-auto max-w-3xl text-center text-white">
+                  <div className="mx-auto max-w-7xl text-center lg:text-left text-white">
                     <h1 className="mb-6 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
                       {t.blogPage.heroTitle}
                     </h1>

@@ -56,7 +56,7 @@ export default function StatsSection() {
               <div className={`btn-slide
                group flex flex-col items-center text-center p-6
                rounded-none transition-all duration-500 btn-primary shadow-xl 
-               min-h-[100px] h-full justify-center ${index === 0 ? "rounded-none rounded-tl-[3rem]" : index === 3 ? "rounded-none rounded-br-[3rem]" : "rounded-none" }`}>
+               min-h-[100px] lg:min-h-[240px] h-full justify-center ${index === 0 ? "rounded-none rounded-tl-[3rem]" : index === 3 ? "rounded-none rounded-br-[3rem]" : "rounded-none" }`}>
                 {/* Icon */}
                 <div className="text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
                   <Icon size={72} height="duotone" />

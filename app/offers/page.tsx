@@ -5,14 +5,14 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { 
-  Tag, 
-  Calendar, 
-  Clock, 
-  ChevronRight, 
-  ArrowRight, 
-  Gift, 
-  Flame, 
+import {
+  Tag,
+  Calendar,
+  Clock,
+  ChevronRight,
+  ArrowRight,
+  Gift,
+  Flame,
   Percent,
   Sparkles
 } from "lucide-react";
@@ -81,7 +81,7 @@ export default function OffersPage() {
           <div className="absolute top-10 left-10 w-32 h-32 bg-[#00B7B5] rounded-full blur-3xl animate-pulse" />
           <div className="absolute bottom-10 right-10 w-64 h-64 bg-orange-500 rounded-full blur-3xl" />
         </div>
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -99,8 +99,8 @@ export default function OffersPage() {
                 <>আপনার স্বাস্থ্যের জন্য <span className="text-[#00B7B5]">সেরা সঞ্চয়</span></>
               )}
             </h1>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-10 font-medium leading-relaxed">
-              {language === 'en' 
+            <p className="text-xl text-slate-400 max-w-2xl mb-10 font-medium leading-relaxed">
+              {language === 'en'
                 ? "Discover the best medical offers, discounts, and packages from top-rated hospitals and diagnostic centers."
                 : "সেরা হাসপাতাল এবং ডায়াগনস্টিক সেন্টার থেকে সেরা মেডিকেল অফার, ছাড় এবং প্যাকেজগুলো খুঁজে নিন।"}
             </p>
@@ -134,14 +134,14 @@ export default function OffersPage() {
               >
                 {/* Image Container */}
                 <div className="relative aspect-[16/10] overflow-hidden">
-                  <Image 
-                    src={offer.image} 
-                    alt={offer.title.en} 
-                    fill 
-                    className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                  <Image
+                    src={offer.image}
+                    alt={offer.title.en}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-60" />
-                  
+
                   {/* Category Badge */}
                   <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-md rounded-xl px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900">
                     {offer.category[language as keyof typeof offer.category]}
@@ -168,7 +168,7 @@ export default function OffersPage() {
                   <p className="text-slate-500 leading-relaxed text-sm mb-8 flex-1">
                     {offer.desc[language as keyof typeof offer.desc]}
                   </p>
-                  
+
                   <div className="pt-6 border-t border-slate-50 flex items-center justify-between mt-auto">
                     <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
                       <Calendar className="w-4 h-4" />
@@ -196,13 +196,13 @@ export default function OffersPage() {
             {language === 'en' ? "Don't Miss Any Offer!" : "কোনো অফার মিস করবেন না!"}
           </h2>
           <p className="text-slate-500 text-lg mb-10">
-            {language === 'en' 
+            {language === 'en'
               ? "Subscribe to our priority list and get the latest healthcare deals directly in your email."
               : "আমাদের প্রায়োরিটি লিস্টে যুক্ত হোন এবং আপনার ইমেইলে সরাসরি সর্বশেষ অফারগুলো পান।"}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-            <input 
-              type="email" 
+            <input
+              type="email"
               placeholder={language === 'en' ? "Enter your email" : "আপনার ইমেইল দিন"}
               className="h-16 px-8 rounded-2xl border-2 border-slate-200 focus:border-[#00B7B5] focus:outline-none flex-1 font-bold"
             />

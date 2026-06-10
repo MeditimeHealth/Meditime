@@ -107,7 +107,7 @@ export default function HeroSection() {
 
                 {/* ── Text: vertically & horizontally centered ── */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                  <h1 className="text-2xl lg:text-5xl font-extrabold leading-tight text-white mb-2 max-w-[320px] tracking-tight">
+                  <h1 className="text-2xl lg:text-[48px] font-bold leading-tight text-white mb-2 max-w-[320px] tracking-tight">
                     {slide.title}
                   </h1>
                   <p className=" text-sm lg:text-lg text-white/90 leading-relaxed mb-4 max-w-[300px]">
@@ -173,12 +173,12 @@ export default function HeroSection() {
 
                 <div className="absolute inset-0 flex flex-col justify-center max-w-7xl mx-auto">
                   <div>
-                    <h1 className="text-[42px] font-bold leading-[1.15] text-white mb-4">
+                    <h1 className="text-[48px] font-bold leading-[1.15] text-white mb-4">
                       {slide.title}
                     </h1>
-                    <p className=" text-sm sm:text-lg leading-relaxed text-white/85 mb-6 max-w-[420px]">
+                    <section className=" text-sm sm:text-lg leading-relaxed text-white/85 mb-6 max-w-[420px]">
                       {slide.description}
-                    </p>
+                    </section>
                     <div className="flex gap-4">
                       <Link
                         href={slide.ctaLink}

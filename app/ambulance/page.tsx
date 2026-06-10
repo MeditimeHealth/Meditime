@@ -82,8 +82,8 @@ function Counter({ value, suffix = "" }: { value: number | string; suffix?: stri
   }, [isInView, spring, numericValue, isNumeric]);
 
   return (
-    <span ref={ref}>
-      {isNumeric ? <motion.span className="">{displayValue}</motion.span> : value}
+    <span ref={ref} className="text-2xl">
+      {isNumeric ? <motion.span className="text-4xl">{displayValue}</motion.span> : <motion.span >{value}</motion.span>}
       {suffix}
     </span>
   );
@@ -289,16 +289,16 @@ export default function AmbulancePage() {
           }}
         />
         <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-7xl mx-auto text-center lg:text-left">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-2xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
+              <h1 className="text-2xl md:text-6xl lg:text-[50px] font-bold text-white mb-6 drop-shadow-2xl leading-tight">
                 {t.title}
               </h1>
-              <p className="text-sm md:text-xl text-white/95 mb-8 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
+              <p className="text-[16px] md:text-xl text-white/95 mb-8 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
                 {t.subtitle}
               </p>
             </motion.div>
@@ -317,14 +317,14 @@ export default function AmbulancePage() {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <div className="btn-slide group flex flex-col items-center text-center p-8 md:p-12 rounded-3xl btn-primary min-h-[220px] h-full justify-center">
-                <div className="mb-4 text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
-                  <Icon size={56} height="duotone" />
+              <div className="btn-slide group flex flex-col items-center text-center rounded-3xl btn-primary min-h-[100px] h-full justify-center">
+                <div className="pt-4 text-[#20E7E7] transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
+                  <Icon size={50} height="duotone" />
                 </div>
-                <div className="text-[22px] font-bold text-white ">
+                <div className="text-[30px] font-bold text-white ">
                   <Counter value={value} suffix={suffix} />
                 </div>
-                <div className="text-[14px] md:text-[16px] text-teal-100/70 font-bold uppercase tracking-wider">
+                <div className="text-[16px]  lg:pb-4 text-teal-100/70 font-bold uppercase tracking-wider">
                   {label}
                 </div>
               </div>
@@ -362,7 +362,7 @@ export default function AmbulancePage() {
                       </div>
                       <div className="space-y-2">
                         <Label>{language === 'bn' ? 'অ্যাম্বুলেন্সের নাম (বাংলা)' : 'Ambulance Name (Bangla)'}</Label>
-                        <Input  value={formData.nameBn} onChange={e => setFormData({ ...formData, nameBn: e.target.value })} placeholder="উদা: সিটি অ্যাম্বুলেন্স" />
+                        <Input value={formData.nameBn} onChange={e => setFormData({ ...formData, nameBn: e.target.value })} placeholder="উদা: সিটি অ্যাম্বুলেন্স" />
                       </div>
                       <div className="space-y-2">
                         <Label>{language === 'bn' ? 'ফোন নম্বর' : 'Phone Number'} *</Label>
@@ -418,8 +418,9 @@ export default function AmbulancePage() {
                       </div>
                     </div>
                     <div className="pt-4">
-                      <Button type="submit" disabled={isSubmitting} className="w-full bg-[#009A98] hover:bg-[#00817e]">
+                      <Button type="submit" disabled={isSubmitting} className="w-full btn-primary btn-slide flex justify-center items-center gap-2">
                         {isSubmitting ? (language === 'bn' ? 'প্রক্রিয়াধীন...' : 'Submitting...') : (language === 'bn' ? 'আবেদন জমা দিন' : 'Submit Application')}
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </div>
                   </form>
@@ -575,7 +576,7 @@ export default function AmbulancePage() {
 
                         <div className="pt-2">
                           <a href={`tel:${ambulance.phoneNumber}`} className="block">
-                            <Button className="w-full bg-primary hover:bg-primary-dark text-white font-bold flex items-center justify-center gap-2">
+                            <Button className="w-full btn-primary btn-slide text-white font-bold flex items-center justify-center gap-2">
                               <Phone className="h-4 w-4" />
                               {t.card.callNow}
                             </Button>
