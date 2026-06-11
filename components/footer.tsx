@@ -80,7 +80,7 @@ export default function Footer() {
             <div className="flex flex-col gap-3">
               <Link href="/" className="inline-block">
                 <Image
-                  src="/SVG/Asset-3.png"
+                  src="/SVG/asset-3.png"
                   alt="Meditime"
                   width={180}
                   height={40}
