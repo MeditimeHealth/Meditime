@@ -67,7 +67,7 @@ const getGenderLabel = (gender: string, language: "en" | "bn") => {
   const labels: Record<string, Record<"en" | "bn", string>> = {
     male: { en: "Male", bn: "পুরুষ" },
     female: { en: "Female", bn: "মহিলা" },
-    other: { en: "Other", bn: "অন্যান্য" },
+    others: { en: "Other", bn: "অন্যান্য" },
   };
   return labels[gender]?.[language] || gender;
 };

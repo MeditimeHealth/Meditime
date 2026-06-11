@@ -43,6 +43,67 @@ export default function DiagnosticPatientForm({
   handleSubmit
 }: DiagnosticPatientFormProps): React.JSX.Element {
   const { language } = useLanguage();
+
+  // Load saved patient form data from localStorage
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userData = localStorage.getItem("user");
+      let loggedInUser: any = null;
+      if (userData) {
+        try {
+          loggedInUser = JSON.parse(userData);
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+        }
+      }
+
+      const savedFormData = localStorage.getItem("diagnosticPatientFormData");
+      if (savedFormData) {
+        try {
+          const parsed = JSON.parse(savedFormData);
+          if (parsed.patientName) setPatientName(parsed.patientName);
+          if (parsed.mobileNumber) setMobileNumber(parsed.mobileNumber);
+          if (parsed.gender) setGender(parsed.gender);
+          if (parsed.age) setAge(parsed.age);
+          if (parsed.patientType) setPatientType(parsed.patientType);
+          if (parsed.affiliateCode) setAffiliateCode(parsed.affiliateCode);
+          return;
+        } catch (e) {
+          console.error("Error parsing diagnostic saved form data:", e);
+        }
+      }
+
+      if (loggedInUser) {
+        if (loggedInUser.fullName) {
+          setPatientName(loggedInUser.fullName);
+        }
+        if (loggedInUser.phoneNumber) {
+          const phone = loggedInUser.phoneNumber.startsWith("+880")
+            ? loggedInUser.phoneNumber.slice(4)
+            : loggedInUser.phoneNumber;
+          setMobileNumber(phone);
+        }
+      }
+    }
+  }, [setPatientName, setMobileNumber, setGender, setAge, setPatientType, setAffiliateCode]);
+
+  // Save diagnostic form data on changes
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && (patientName || mobileNumber || gender || age || affiliateCode)) {
+      localStorage.setItem(
+        "diagnosticPatientFormData",
+        JSON.stringify({
+          patientName,
+          mobileNumber,
+          gender,
+          age,
+          patientType,
+          affiliateCode,
+        })
+      );
+    }
+  }, [patientName, mobileNumber, gender, age, patientType, affiliateCode]);
+
   return (
     <Card className="p-6 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
       <div className="absolute top-0 left-0 w-full h-1 " />
@@ -64,6 +125,9 @@ export default function DiagnosticPatientForm({
             setAge("");
             setPatientType("new");
             setAffiliateCode("");
+            if (typeof window !== "undefined") {
+              localStorage.removeItem("diagnosticPatientFormData");
+            }
           }}
           className="flex items-center gap-2 text-gray-600 hover:text-[#00B7B5] hover:border-[#00B7B5] rounded-lg"
 
@@ -102,15 +166,24 @@ export default function DiagnosticPatientForm({
           <Label htmlFor="mobileNumber" className="flex items-center gap-1 " >
             {t("mobileNumberLabel", language)} <span className="text-red-500 font-bold">*</span>
           </Label>
-          <Input
-            id="mobileNumber"
-            type="tel"
-            value={mobileNumber}
-            onChange={(e) => setMobileNumber(e.target.value)}
-            required
-            placeholder={t("mobileNumberLabel", language)}
-            className={`mt-1 h-10 border-primary rounded-none  ${!mobileNumber ? 'border-gray-100' : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'}`}
-          />
+          <div className="relative flex items-center mt-1">
+            <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-gray-300 pointer-events-none select-none">
+              <span>🇧🇩</span>
+              <span>+880</span>
+            </span>
+            <Input
+              id="mobileNumber"
+              type="tel"
+              value={mobileNumber}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, '');
+                setMobileNumber(val);
+              }}
+              required
+              placeholder={t("mobileNumberLabel", language)}
+              className={`pl-[4.5rem] h-10 w-full border-primary rounded-none ${!mobileNumber ? 'border-gray-100' : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'}`}
+            />
+          </div>
         </div>
 
         {/* Gender - Optional */}

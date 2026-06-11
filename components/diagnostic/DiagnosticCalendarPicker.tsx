@@ -14,7 +14,7 @@ const convertToBengaliNumber = (num: number | string, language: 'en' | 'bn'): st
   const str = num.toString();
   if (language === 'en') return str;
   const englishDigits = '0123456789'.split('');
-  const bengaliDigits = '০১২৩৪৫৬৭৮৯'.split('');
+  const bengaliDigits = '0123456789'.split('');
   return str.split('').map(digit => {
     const index = englishDigits.indexOf(digit);
     return index !== -1 ? bengaliDigits[index] : digit;
@@ -85,12 +85,19 @@ export default function DiagnosticCalendarPicker({
   const isNextDisabled =
     currentYear > maxYear ||
     (currentYear === maxYear && currentMonthIndex >= maxMonth);
+  // Precompute the next 2 available dates starting today
+  const latestAvailableDates = (() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    return [today.toDateString(), tomorrow.toDateString()];
+  })();
 
   return (
     <Card className="p-6 bg-gradient-to-br from-white to-green-50 border-2 border-primary/20 shadow-xl">
       <h2
         className="text-2xl font-bold text-gray-900 mb-5"
-
       >
         {t("selectDate", language)}
       </h2>
@@ -101,13 +108,12 @@ export default function DiagnosticCalendarPicker({
           onClick={() => changeMonth(-1)}
           type="button"
           disabled={isPrevDisabled}
-          className={`p-2 rounded-lg transition-colors ${isPrevDisabled ? 'opacity-30 cursor-not-allowed' : 'hover:bg-[#FF6B00]/10'}`}
+          className={`p-2 rounded-lg transition-colors ${isPrevDisabled ? 'opacity-30 cursor-not-allowed' : 'hover:bg-primary/10'}`}
         >
-          <ArrowLeft className="h-5 w-5 text-[#FF6B00]" />
+          <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
         <h3
           className="text-xl font-bold"
-
         >
           {t(`month_${currentMonthIndex}` as any, language)} {convertToBengaliNumber(currentYear, language)}
         </h3>
@@ -115,9 +121,9 @@ export default function DiagnosticCalendarPicker({
           onClick={() => changeMonth(1)}
           type="button"
           disabled={isNextDisabled}
-          className={`p-2 rounded-lg transition-colors ${isNextDisabled ? 'opacity-30 cursor-not-allowed' : 'hover:bg-[#FF6B00]/10'}`}
+          className={`p-2 rounded-lg transition-colors ${isNextDisabled ? 'opacity-30 cursor-not-allowed' : 'hover:bg-primary/10'}`}
         >
-          <ArrowLeft className="h-5 w-5 text-[#FF6B00] rotate-180" />
+          <ArrowLeft className="h-5 w-5 text-primary rotate-180" />
         </button>
       </div>
 
@@ -127,7 +133,6 @@ export default function DiagnosticCalendarPicker({
           <div
             key={dayIndex}
             className="text-center font-semibold text-gray-700 py-2"
-
           >
             {t(`day_${dayIndex}` as any, language)}
           </div>
@@ -142,6 +147,7 @@ export default function DiagnosticCalendarPicker({
           }
 
           const isAvailable = isDateAvailable(date);
+          const isSuggested = isAvailable && latestAvailableDates.includes(date.toDateString());
           const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
           const isToday = date.toDateString() === new Date().toDateString();
 
@@ -157,13 +163,14 @@ export default function DiagnosticCalendarPicker({
                 }
               }}
               disabled={!isAvailable}
-              className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center md:text-2xl text-sm  ${isSelected
-                  ? "text-white shadow-lg scale-110 ring-4 ring-orange-300 bg-[#FF6B00]"
+              className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center md:text-2xl text-sm ${isSelected
+                  ? "bg-primary text-white"
                   : isAvailable
-                    ? "bg-primary/60 text-white border border-slate-200  hover:shadow-md"
-                    : "bg-gray-100 text-gray-400 cursor-not-allowed border border-transparent"
+                    ? "bg-primary/10 text-primary border-none hover:bg-primary/20 hover:scale-105"
+                    : isAvailable
+                      ? "bg-white text-primary border-2 border-primary hover:bg-primary/5 hover:scale-105"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed border-none"
                 } ${isToday && !isSelected && !isAvailable ? "ring-2 ring-gray-400" : ""}`}
-      
             >
               {convertToBengaliNumber(date.getDate(), language)}
             </button>
@@ -175,7 +182,6 @@ export default function DiagnosticCalendarPicker({
         <div className="mt-6 p-4 bg-primary/10 rounded-xl border-2 border-primary/20">
           <p
             className="text-lg font-semibold text-gray-900"
-
           >
             {t("selectedDatePrefix", language)} {getDayName(selectedDate, language)}, {convertToBengaliNumber(selectedDate.getDate(), language)} {t(`month_${selectedDate.getMonth()}` as any, language)}, {convertToBengaliNumber(selectedDate.getFullYear(), language)}
           </p>

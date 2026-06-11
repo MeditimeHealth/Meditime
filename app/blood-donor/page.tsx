@@ -253,8 +253,8 @@ export default function BloodDonorPage() {
   };
 
   const t = {
-    title: { en: "Find a Blood Donor", bn: "রক্তদাতা খুঁজুন" },
-    subtitle: { en: "Connecting life-saving blood donors with those in need across Bangladesh.", bn: "সারা বাংলাদেশে রক্তদাতাদের সাথে প্রয়োজনে ব্যক্তিদের সংযোগ স্থাপন করছি।" },
+    title: { en: "Find a Blood Donor", bn: "কারো জীবনের গল্পে আপনিও হোন একজন হিরো" },
+    subtitle: { en: "Meditime connects life-saving blood donors with patients in need across Bangladesh.", bn: "সমগ্র বাংলাদেশ জুড়ে মুমূর্ষু মানুষের পাশে জীবন রক্ষাকারী রক্তদাতাদের পৌঁছে দিচ্ছে মেডিটাইম।" },
     searchBtn: { en: "Search Donors", bn: "দাতা খুঁজুন" },
     becomeDonor: { en: "Become a Blood Donor", bn: "রক্তদাতা হোন" },
     socialProof: {
@@ -440,9 +440,11 @@ export default function BloodDonorPage() {
               <Button
                 onClick={handleSearch}
                 disabled={loading}
-                className="w-full h-16 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black text-lg shadow-xl shadow-primary/20 gap-2"
+                className="w-full btn-slide btn-primary h-14"
               >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Search className="w-5 h-5" /> {t.searchBtn[language]}</>}
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <div className="flex justify-center items-center gap-2 w-full"><Search className="w-5 h-5" /> {t.searchBtn[language]}
+                  <ChevronRight className="h-5 w-5" />
+                </div>}
               </Button>
             </div>
           </Card>

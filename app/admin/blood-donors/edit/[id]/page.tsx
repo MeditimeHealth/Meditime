@@ -29,6 +29,7 @@ const bloodDonorSchema = z.object({
     message: "Availability status is required",
   }),
   lastDonationDate: z.string().optional(),
+  isApproved: z.boolean().default(true)
 });
 
 type BloodDonorFormValues = z.infer<typeof bloodDonorSchema>;
@@ -59,7 +60,7 @@ export default function EditBloodDonorPage() {
     reset,
     formState: { errors },
   } = useForm<BloodDonorFormValues>({
-    resolver: zodResolver(bloodDonorSchema),
+    resolver: zodResolver(bloodDonorSchema) as any,
     defaultValues: {
       availabilityStatus: "Available",
     },
@@ -97,6 +98,7 @@ export default function EditBloodDonorPage() {
               availabilityStatus: donor.availabilityStatus || "Available",
               lastDonationDate: donor.lastDonationDate ? donor.lastDonationDate.split('T')[0] : "",
               photo: donor.photo || "",
+              isApproved: donor.isApproved ?? true,
             });
             if (donor.photo) {
               setImagePreview(donor.photo);
@@ -257,7 +259,7 @@ export default function EditBloodDonorPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Language Toggle */}
           <div className="flex justify-end mb-8">
-            <div className="bg-gray-100/80 p-1.5 rounded-xl inline-flex shadow-inner">
+            <div className="bg-gray-150/80 p-1.5 rounded-xl inline-flex shadow-inner">
               <button
                 type="button"
                 onClick={() => setLanguage('en')}
@@ -375,6 +377,11 @@ export default function EditBloodDonorPage() {
                 id="division"
                 {...register("division")}
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                onChange={(e) => {
+                  setValue("division", e.target.value);
+                  setValue("district", "");
+                  setValue("thana", "");
+                }}
               >
                 <option value="">{t("selectDivision", language)}</option>
                 {divisions.map((div) => (
@@ -392,6 +399,10 @@ export default function EditBloodDonorPage() {
                 {...register("district")}
                 disabled={!watchedDivision}
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                onChange={(e) => {
+                  setValue("district", e.target.value);
+                  setValue("thana", "");
+                }}
               >
                 <option value="">{t("selectDistrict", language)}</option>
                 {districts.map((dist) => (

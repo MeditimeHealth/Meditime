@@ -75,6 +75,14 @@ export default function SignupPage() {
     try {
       const { confirmPassword, agreeToTerms, ...userData } = data;
       
+      // Prepend +880 and strip leading zero if present
+      let formattedPhone = userData.phoneNumber;
+      if (!formattedPhone.startsWith("+880")) {
+        const cleanPhone = formattedPhone.replace(/^0+/, '');
+        formattedPhone = `+880${cleanPhone}`;
+      }
+      userData.phoneNumber = formattedPhone;
+      
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -176,13 +184,23 @@ export default function SignupPage() {
                       <Label htmlFor="phoneNumber" className="text-sm sm:text-base">
                         {t.phoneNumber} <span className="text-red-500">*</span>
                       </Label>
-                      <Input
-                        id="phoneNumber"
-                        type="tel"
-                        placeholder={t.phoneNumberPlaceholder}
-                        {...register("phoneNumber")}
-                        className="mt-1 text-sm sm:text-base"
-                      />
+                      <div className="relative flex items-center mt-1">
+                        <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-gray-300 pointer-events-none select-none">
+                          <span>🇧🇩</span>
+                          <span>+880</span>
+                        </span>
+                        <Input
+                          id="phoneNumber"
+                          type="tel"
+                          placeholder={t.phoneNumberPlaceholder}
+                          {...register("phoneNumber", {
+                            onChange: (e) => {
+                              e.target.value = e.target.value.replace(/\D/g, '');
+                            }
+                          })}
+                          className="pl-[4.5rem] w-full text-sm sm:text-base"
+                        />
+                      </div>
                       {errors.phoneNumber && (
                         <p className="text-xs sm:text-sm text-red-500 mt-1">{errors.phoneNumber.message}</p>
                       )}

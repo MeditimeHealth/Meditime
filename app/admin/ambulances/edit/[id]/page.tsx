@@ -28,10 +28,7 @@ const ambulanceSchema = z.object({
   }),
   vehicleType: z.enum(
     [
-      "Basic Life Support",
-      "Advanced Life Support",
-      "Critical Care",
-      "Air Ambulance",
+      "AC Ambulance", "Non AC Ambulance", "ICU Ambulance", "Freezing Ambulance", "NICU Ambulance", "Air Ambulance"
     ],
     {
       message: "Vehicle type is required",
@@ -328,10 +325,12 @@ export default function EditAmbulancePage() {
                 {...register("vehicleType")}
                 className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500"
               >
-                <option value="">{t("selectVehicleType", language)}</option>
-                <option value="Basic Life Support">{t("basicLifeSupport", language)}</option>
-                <option value="Advanced Life Support">{t("advancedLifeSupport", language)}</option>
-                <option value="Critical Care">{t("criticalCare", language)}</option>
+             <option value="">{t("selectVehicleType", language)}</option>
+                <option value="AC Ambulance">{t("acAmbulance", language)}</option>
+                <option value="Non AC Ambulance">{t("nonAcAmbulance", language)}</option>
+                <option value="ICU Ambulance">{t("icuAmbulance", language)}</option>
+                <option value="Freezing Ambulance">{t("freezingAmbulance", language)}</option>
+                <option value="NICU Ambulance">{t("nicuAmbulance", language)}</option>
                 <option value="Air Ambulance">{t("airAmbulance", language)}</option>
               </select>
               {errors.vehicleType && (

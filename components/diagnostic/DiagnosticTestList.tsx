@@ -1,5 +1,5 @@
 import React, { forwardRef } from "react";
-import { CheckCircle2, AlertCircle, X, Activity, Loader2 } from "lucide-react";
+import { CheckCircle2, AlertCircle, X, Activity, Loader2, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BookedTest } from "@/types/diagnostic";
@@ -59,7 +59,7 @@ const DiagnosticTestList = forwardRef<HTMLDivElement, DiagnosticTestListProps>(
                       </div>
                       <Button 
                         onClick={() => handleBooking(test)}
-                        className={`w-full ${bookedTests.some(t => t._id === test._id) ? 'bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 border border-red-200 hover:border-none' : 'bg-primary text-white'}  btn-slide font-bold rounded-none gap-2 h-11 transition-all`}
+                        className={`w-full ${bookedTests.some(t => t._id === test._id) ? 'bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 border border-red-200 hover:border-none' : 'bg-primary text-white'}  btn-slide font-bold rounded-none h-10 transition-all`}
                       >
                         {bookedTests.some(t => t._id === test._id) ? (
                           <>
@@ -69,7 +69,7 @@ const DiagnosticTestList = forwardRef<HTMLDivElement, DiagnosticTestListProps>(
                         ) : (
                           <div className="flex justify-center items-center">
                             {language === 'en' ? "Add to Cart" : "কার্টে যুক্ত করুন"}
-                            
+                            <ChevronRight className="w-4 h-4" />
                           </div>
                         )}
                       </Button>

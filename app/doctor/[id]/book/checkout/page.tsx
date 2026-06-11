@@ -18,6 +18,7 @@ import {
   CreditCard,
   Loader2,
   Shield,
+  Home,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -88,6 +89,8 @@ const t = {
     back: "Go Back",
     payLaterNote: "No upfront payment required. Pay at the chamber during your visit.",
     loadingDoctor: "Loading doctor details...",
+    backToProfile: "Back to Profile",
+    goHome: "Go to Home",
   },
   bn: {
     checkoutTitle: "অ্যাপয়েন্টমেন্ট নিশ্চিত করুন",
@@ -109,6 +112,8 @@ const t = {
     back: "ফিরে যান",
     payLaterNote: "কোনো অগ্রিম পেমেন্ট নেই। চেম্বারে গিয়ে পেমেন্ট করুন।",
     loadingDoctor: "ডাক্তারের তথ্য লোড হচ্ছে...",
+    backToProfile: "প্রোফাইল-এ ফিরে যান",
+    goHome: "হোম-এ যান",
   },
 };
 
@@ -527,20 +532,42 @@ function CheckoutContent() {
                       {txt.confirming}
                     </>
                   ) : ( */}
-                    <>
-                      <CreditCard className="h-5 w-5 mr-2" />
-                      {language == 'en' ? "Pay now" : "এখন পেমেন্ট করুন"}
-                    </>
+                  <>
+                    <CreditCard className="h-5 w-5 mr-2" />
+                    {language == 'en' ? "Pay now" : "এখন পেমেন্ট করুন"}
+                  </>
                   {/* )} */}
                 </Button>
               </div>
 
-               <div className="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                  <p className="text-sm text-primary" style={fontStyle}>
-                    {language == 'en' ? "Confirm your booking via secure online payment or pay the fee directly at the chamber."
-                      : "নিরাপদ অনলাইন পেমেন্টের মাধ্যমে বুকিং নিশ্চিত করুন অথবা চেম্বারে গিয়ে সরাসরি ফি প্রদান করুন।"}
-                  </p>
-                </div>
+              <div className="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                <p className="text-sm text-primary" style={fontStyle}>
+                  {language == 'en' ? "Confirm your booking via secure online payment or pay the fee directly at the chamber."
+                    : "নিরাপদ অনলাইন পেমেন্টের মাধ্যমে বুকিং নিশ্চিত করুন অথবা চেম্বারে গিয়ে সরাসরি ফি প্রদান করুন।"}
+                </p>
+              </div>
+
+               <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6 print:hidden">
+          <Link href={`/doctor/${booking.doctorSlug}`}>
+            <Button
+              variant="outline"
+              className="w-full sm:w-auto hover:border-primary hover:text-primary transition-all"
+              
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              {language == 'en' ? 'Back to Profile' : 'প্রোফাইল-এ ফিরে যান'}
+            </Button>
+          </Link>
+          <Link href="/">
+            <Button
+              className="w-full sm:w-auto btn-primary btn-slide"
+              
+            >
+              <Home className="h-4 w-4 mr-2" />
+              {language == 'en' ? 'Go to Home' : 'হোম-এ যান'}
+            </Button>
+          </Link>
+        </div>
             </div>
 
           </div>

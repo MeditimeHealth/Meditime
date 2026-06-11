@@ -63,7 +63,7 @@ export default function StatsSection() {
                 </div>
 
                 {/* Stat number with Counter */}
-                <div className="text-[48px] sm:text-[60px] font-bold text-white leading-none transition-colors duration-300">
+                <div className="text-[30px] sm:text-[60px] font-bold text-white leading-none transition-colors duration-300">
                   <Counter value={value} suffix={suffix} />
                 </div>
 

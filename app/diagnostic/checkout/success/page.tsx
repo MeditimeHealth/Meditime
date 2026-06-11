@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Navbar_for_details from "@/components/nav_for_details";
-import { ArrowLeft, Loader2, CheckCircle2, Download, CreditCard } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle2, Download, CreditCard, Home } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "@/lib/toast";
 
@@ -157,27 +157,8 @@ export default function DiagnosticSuccessPage() {
     <div className="min-h-screen bg-gray-50 pb-20">
       <Navbar_for_details />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        {/* Navigation */}
-        <div className="flex items-center justify-between mb-8">
-          {!bookingComplete ? (
-            <Link href="/diagnostic/checkout">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Edit
-              </Button>
-            </Link>
-          ) : (
-            <Link href="/diagnostic">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Diagnostics
-              </Button>
-            </Link>
-          )}
-        </div>
-
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-20">
+     
         {/* Invoice Preview Component */}
         <DiagnosticInvoice 
           selectedVenue={selectedVenue}
@@ -292,6 +273,30 @@ export default function DiagnosticSuccessPage() {
                       : "নিরাপদ অনলাইন পেমেন্টের মাধ্যমে বুকিং নিশ্চিত করুন অথবা চেম্বারে গিয়ে সরাসরি ফি প্রদান করুন।"}
                   </p>
                 </div>
+
+                
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6 print:hidden">
+          <Link href={`/diagnostic`}>
+            <Button
+              variant="outline"
+              className="w-full sm:w-auto hover:border-primary hover:text-primary transition-all"
+              
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              { language === 'bn' ? "ফিরে যান": "Back"}
+            </Button>
+          </Link>
+          <Link href="/">
+            <Button
+              className="w-full sm:w-auto btn-primary btn-slide"
+              
+            >
+              <Home className="h-4 w-4 mr-2" />
+              {language === 'bn' ? "হোমে ফিরে যান": "Back To Home"}
+            </Button>
+          </Link>
+        </div>
             </div>
 
           {/* Pay Later / Confirm */}

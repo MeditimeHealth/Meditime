@@ -105,7 +105,7 @@ export default function DepartmentSection() {
 
   return (
     <div className="w-full px-0 sm:px-6 lg:px-0 py-12 sm:py-20 bg-[var(--background-dark)] overflow-hidden  mx-auto rounded-none shadow-2xl">
-      <div className="mb-12 text-center container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center container mx-auto px-4 sm:px-6 lg:px-8">
         {/* ── Header ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -117,14 +117,14 @@ export default function DepartmentSection() {
             {t.title}
           </h2>
           <div className="w-20 h-1.5 bg-primary mx-auto mb-6 shadow-[0_0_15px_rgba(13,148,136,0.5)]" />
-          <p className="text-sm sm:text-lg max-w-sm mx-auto leading-relaxed font-medium text-white/90">
+          <p className="text-sm sm:text-lg max-w-xl mx-auto leading-relaxed font-medium text-white/90">
             {t.subtitle}
           </p>
         </motion.div>
       </div>
 
       {/* ── Marquee Slider ── */}
-      <div className="relative w-full overflow-hidden py-10  container mx-auto">
+      <div className="relative w-full overflow-hidden  container mx-auto">
         <div className="animate-marquee flex gap-8 mt-20">
           {[...departments].map((dept, idx) => {
             const iconPath = getIconPath(dept.name);

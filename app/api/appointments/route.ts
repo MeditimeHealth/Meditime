@@ -177,6 +177,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    console.log(body)
+
     // Create appointment (serial number will be assigned by admin when confirming)
     const appointment = await Appointment.create({
       doctorId: actualDoctorId,

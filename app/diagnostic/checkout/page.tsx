@@ -77,9 +77,13 @@ export default function DiagnosticCheckoutPage() {
 
     setSubmitting(true);
     try {
+      const formattedMobileNumber = mobileNumber.startsWith("+880")
+        ? mobileNumber
+        : `+880${mobileNumber.replace(/^0+/, "")}`;
+
       const checkoutData = {
         patientName,
-        mobileNumber,
+        mobileNumber: formattedMobileNumber,
         gender,
         age,
         patientType,
@@ -148,10 +152,10 @@ export default function DiagnosticCheckoutPage() {
                   <div key={i} className="flex justify-between items-center p-3 sm:p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
                     <div>
                       <p className="font-bold text-slate-800">
-                        {language === 'bn' && test.nameBn ? test.nameBn : test.name}
+                        {language === 'bn' ? (test.nameBn || '') : (test.name || '')}
                       </p>
                       <p className="text-sm text-slate-500 mt-0.5">
-                        {language === 'bn' ? test.name : (test.nameBn || '')}
+                        {language === 'bn' ? (test.nameBn || '') : (test.name || '')}
                       </p>
                     </div>
                     <div className="text-right">
@@ -180,9 +184,9 @@ export default function DiagnosticCheckoutPage() {
                 <div className="p-4 bg-primary text-white rounded-xl border-2 border-primary shadow-lg">
                   <h1 className="text-xl font-semibold flex items-center gap-2" >
                     <Building2 className="h-6 w-6" />
-                    {selectedVenue.name}
+                    {language === 'bn' && selectedVenue.nameBn ? selectedVenue.nameBn : selectedVenue.name}
                   </h1>
-                  <p className="text-white/80 text-sm mt-1">{selectedVenue.address || selectedVenue.thana?.name}</p>
+                  <p className="text-white/80 text-sm mt-1">{language === 'bn' ? selectedVenue.addressBn : selectedVenue.address || selectedVenue.thana?.name}</p>
                 </div>
               </div>
             </Card>

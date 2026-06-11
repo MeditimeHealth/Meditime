@@ -17,33 +17,16 @@ import { IDoctor } from "@/models/Doctor";
 import Nav_for_details from "@/components/nav_for_details";
 import PageLoader from "@/components/page-loader";
 
-
-
-const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const banglaDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const banglaMonths = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
-
 // Convert English number to Bengali
-// Convert English number to Bengali (Now returns English)
 const convertToBengaliNumber = (num: number | string, language: 'en' | 'bn'): string => {
   const str = num.toString();
   if (language === 'en') return str;
   const englishDigits = '0123456789'.split('');
-  const bengaliDigits = '০১২৩৪৫৬৭৮৯'.split('');
+  const bengaliDigits = '0123456789'.split('');
   return str.split('').map(digit => {
     const index = englishDigits.indexOf(digit);
     return index !== -1 ? bengaliDigits[index] : digit;
   }).join('');
-};
-
-
-// Get Bengali day name
-const getBengaliDay = (day: string): string => {
-  const dayIndex = daysOfWeek.indexOf(day);
-  return dayIndex >= 0 ? banglaDays[dayIndex] : day;
 };
 
 // Get day name from date
@@ -56,9 +39,19 @@ export default function BookAppointmentPage() {
   const params = useParams();
   const router = useRouter();
 
- const { language } = useLanguage();
+  const { language } = useLanguage();
   const t = (key: keyof typeof translations.en) => translations[language][key] || translations.en[key];
   const doctorId = params?.id as string;
+
+  const days = [
+    t('day_1'), // Mon
+    t('day_2'), // Tue
+    t('day_3'), // Wed
+    t('day_4'), // Thu
+    t('day_5'), // Fri
+    t('day_6'), // Sat
+    t('day_0'), // Sun
+  ];
 
   const [doctor, setDoctor] = useState<IDoctor | null>(null);
   const [loading, setLoading] = useState(true);
@@ -208,21 +201,62 @@ export default function BookAppointmentPage() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const userData = localStorage.getItem("user");
+      let loggedInUser: any = null;
       if (userData) {
         try {
-          const user = JSON.parse(userData);
-          if (user.fullName) {
-            setPatientName(user.fullName);
-          }
-          if (user.phoneNumber) {
-            setMobileNumber(user.phoneNumber);
-          }
+          loggedInUser = JSON.parse(userData);
         } catch (error) {
           console.error("Error parsing user data:", error);
         }
       }
+
+      // Load form inputs from localStorage (priority: localStorage > logged-in user data)
+      const savedFormData = localStorage.getItem("patientFormData");
+      if (savedFormData) {
+        try {
+          const parsed = JSON.parse(savedFormData);
+          if (parsed.patientName) setPatientName(parsed.patientName);
+          if (parsed.mobileNumber) setMobileNumber(parsed.mobileNumber);
+          if (parsed.gender) setGender(parsed.gender);
+          if (parsed.age) setAge(parsed.age);
+          if (parsed.patientType) setPatientType(parsed.patientType);
+          if (parsed.affiliateCode) setAffiliateCode(parsed.affiliateCode);
+          return;
+        } catch (e) {
+          console.error("Error parsing saved form data:", e);
+        }
+      }
+
+      if (loggedInUser) {
+        if (loggedInUser.fullName) {
+          setPatientName(loggedInUser.fullName);
+        }
+        if (loggedInUser.phoneNumber) {
+          const phone = loggedInUser.phoneNumber.startsWith("+880")
+            ? loggedInUser.phoneNumber.slice(4)
+            : loggedInUser.phoneNumber;
+          setMobileNumber(phone);
+        }
+      }
     }
   }, []);
+
+  // Save form data to localStorage on change
+  useEffect(() => {
+    if (typeof window !== "undefined" && (patientName || mobileNumber || gender || age || affiliateCode)) {
+      localStorage.setItem(
+        "patientFormData",
+        JSON.stringify({
+          patientName,
+          mobileNumber,
+          gender,
+          age,
+          patientType,
+          affiliateCode,
+        })
+      );
+    }
+  }, [patientName, mobileNumber, gender, age, patientType, affiliateCode]);
 
   // Update latest available dates when doctor or appointments change
   useEffect(() => {
@@ -336,6 +370,11 @@ export default function BookAppointmentPage() {
 
       const slotForDate = getSlotForDate(selectedDate);
 
+      // Prepend +880 to mobile number when submitting
+      const formattedMobileNumber = mobileNumber.startsWith("+880")
+        ? mobileNumber
+        : `+880${mobileNumber.replace(/^0+/, "")}`;
+
       // Save booking data to localStorage and go to checkout page
       const checkoutData = {
         doctorId: doctor?._id || doctorId,
@@ -354,7 +393,7 @@ export default function BookAppointmentPage() {
           availability: doctor?.availability,
         },
         patientName,
-        mobileNumber,
+        mobileNumber: formattedMobileNumber,
         gender: gender || undefined,
         age: age ? parseInt(age) : undefined,
         patientType,
@@ -480,7 +519,7 @@ export default function BookAppointmentPage() {
                       className="text-lg lg:text-xl font-bold "
 
                     >
-                      {banglaMonths[currentMonthIndex]} {convertToBengaliNumber(currentYear, language)}
+                      {t(`month_${currentMonthIndex}` as any)} {convertToBengaliNumber(currentYear, language)}
                     </h3>
                     <button
                       onClick={() => changeMonth(1)}
@@ -505,7 +544,7 @@ export default function BookAppointmentPage() {
 
                   {/* Calendar Days Header */}
                   <div className="grid grid-cols-7 gap-1 mb-3">
-                    {banglaDays.map((day, index) => (
+                    {days.map((day, index) => (
                       <div
                         key={index}
                         className="text-center font-semibold text-gray-700 py-1 text-x lg:text-base"
@@ -538,18 +577,15 @@ export default function BookAppointmentPage() {
                               showToast.error(t('pleaseSelectLatestTwo'));
                             }
                           }}
-                          disabled={!isAvailable}
+                          disabled={!isAvailable && !isInScheduleButNotAvailable}
                           className={`aspect-square rounded-full transition-all font-semibold flex items-center justify-center md:text-2xl text-sm ${isSelected
-                              ? "text-white shadow-lg scale-110 ring-4 ring-orange-300 "
+                              ? "bg-primary text-white"
                               : isAvailable
-                                ? "bg-primary text-white border-2 border-primary hover:bg-primary/90 hover:shadow-md hover:scale-105"
+                                ? "bg-primary/10 text-primary border-none hover:bg-primary/20 hover:scale-105"
                                 : isInScheduleButNotAvailable
-                                  ? "bg-blue-100 text-blue-700 border-2 border-blue-300 cursor-not-allowed opacity-75"
-                                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                            } ${isToday && !isSelected && !isAvailable ? "ring-2 ring-gray-400" : ""}`}
-                          style={{
-                            backgroundColor: isSelected ? "#ff5e29" : undefined
-                          }}
+                                  ? "bg-white text-primary border-2 border-primary hover:bg-primary/5 hover:scale-105"
+                                  : "bg-gray-100 text-gray-400 cursor-not-allowed border-none"
+                            } ${isToday && !isSelected && !isAvailable && !isInScheduleButNotAvailable ? "ring-2 ring-gray-400" : ""}`}
                         >
                           {convertToBengaliNumber(date.getDate(), language)}
                         </button>
@@ -562,7 +598,7 @@ export default function BookAppointmentPage() {
                       <p
                         className="text-base font-semibold text-gray-900"
                       >
-                        {t('selectedDate')}: {getDayName(selectedDate)}, {selectedDate.getDate()} {banglaMonths[selectedDate.getMonth()]}, {selectedDate.getFullYear()}
+                        {t('selectedDate')}: {language === 'en' ? getDayName(selectedDate) : t(`day_long_${selectedDate.getDay()}` as any)}, {convertToBengaliNumber(selectedDate.getDate(), language)} {t(`month_${selectedDate.getMonth()}` as any)}, {convertToBengaliNumber(selectedDate.getFullYear(), language)}
                       </p>
                     </div>
                   )}
@@ -591,6 +627,9 @@ export default function BookAppointmentPage() {
                     setAge("");
                     setPatientType("new");
                     setAffiliateCode("");
+                    if (typeof window !== "undefined") {
+                      localStorage.removeItem("patientFormData");
+                    }
                   }}
                   className="flex items-center gap-2 text-gray-600 hover:text-primary hover:border-primary"
                 >
@@ -628,15 +667,24 @@ export default function BookAppointmentPage() {
                   <Label htmlFor="mobileNumber" className="flex items-center gap-1" >
                     {t('mobileNumber')} <span className="text-red-500 font-bold">*</span>
                   </Label>
-                  <Input
-                    id="mobileNumber"
-                    type="tel"
-                    value={mobileNumber}
-                    onChange={(e) => setMobileNumber(e.target.value)}
-                    required
-                    placeholder={t('mobileNumberPlaceholder')}
-                    className={`mt-1 h-10 ${!mobileNumber ? '' : 'border-primary bg-green-50/30'}`}
-                  />
+                  <div className="relative flex items-center mt-1">
+                    <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-gray-300 pointer-events-none select-none">
+                      <span>🇧🇩</span>
+                      <span>+880</span>
+                    </span>
+                    <Input
+                      id="mobileNumber"
+                      type="tel"
+                      value={mobileNumber}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        setMobileNumber(val);
+                      }}
+                      required
+                      placeholder={t('mobileNumberPlaceholder')}
+                      className={`pl-[4.5rem] h-10 w-full rounded-none ${!mobileNumber ? '' : 'border-primary bg-green-50/30'}`}
+                    />
+                </div>
                 </div>
 
                 {/* Gender - Optional */}

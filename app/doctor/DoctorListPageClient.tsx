@@ -989,7 +989,7 @@ function DoctorListPageContent() {
                         setSelectedDept(dept.name);
                         setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
                       }}
-                      className={`btn-slide group w-full max-w-[220px] h-[260px] border border-primary bg-white flex flex-col items-center justify-between shrink-0 rounded-3xl p-8 ${selectedDept === dept.name
+                      className={`btn-slide group w-full max-w-[2500px] md:max-w-[220px] h-[260px] border border-primary bg-white flex flex-col items-center justify-between shrink-0 rounded-3xl p-8 ${selectedDept === dept.name
                         ? "bg-primary text-white shadow-md"
                         : "bg-white text-gray-700 border border-gray-200"
                         }`}

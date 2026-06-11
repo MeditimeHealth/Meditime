@@ -141,7 +141,7 @@ export default function DiagnosticLocationFilter({
                 </div>
                 
                 <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
-                  {filteredHospitals.slice(0, 10).map((center) => (
+                  {filteredHospitals.map((center) => (
                     <Card 
                       key={center._id} 
                       onClick={() => setSelectedVenue(selectedVenue?._id === center._id ? null : center)}

@@ -640,7 +640,7 @@ const displayedBio = needsTruncation && !bioExpanded
                 >
                   {language === 'bn' ? 'যে সকল রোগের চিকিৎসা করা হয়' : 'Diseases Treated'}
                 </h2>
-                <div className="bg-white p-6 rounded-xl border-2 border-primary/10 shadow-md">
+                <div className="lg:bg-white lg:p-6 lg:rounded-xl lg:border-2 border-primary/10 lg:shadow-md">
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
                     {departmentDiseases.map((disease, index) => (
                       <li
@@ -664,7 +664,7 @@ const displayedBio = needsTruncation && !bioExpanded
                     ? `${getLocalizedValue(doctor.name, doctor.nameBn, language)} সম্পর্কে`
                     : `About ${getLocalizedValue(doctor.name, doctor.nameBn, language)}`}
                 </h2>
-                <div className="bg-white p-6 rounded-xl border-2 border-primary/10 shadow-md">
+                <div className="lg:bg-white lg:p-6 rounded-xl lg:border-2 border-primary/10 lg:shadow-md">
                   <p className="md:text-lg text-[#193252] leading-relaxed whitespace-pre-line">
                     {displayedBio} 
                       {needsTruncation && (
@@ -968,7 +968,7 @@ const displayedBio = needsTruncation && !bioExpanded
 
 
             {/* Book Appointment - Mobile */}
-            <Card className="p-6 bg-gradient-to-br from-white to-emerald-50 border-2 border-primary/20 shadow-xl">
+            <Card className="p-6 bg-gradient-to-br from-white to-blue-50 border-2 border-primary/20 shadow-xl">
               <h2 className="text-xl md:text-2xl font-bold mb-5 text-gray-900">
                 {language === 'bn' ? 'অ্যাপয়েন্টমেন্ট বুক করুন' : 'Book Appointment'}
               </h2>

@@ -72,6 +72,7 @@ const AmbulanceSchema: Schema = new Schema(
       enum: ['AC Ambulance', 'Non AC Ambulance', 'ICU Ambulance', 'Freezing Ambulance', 'NICU Ambulance', 'Air Ambulance'],
       trim: true,
     },
+
     isApproved: {
       type: Boolean,
       default: false,

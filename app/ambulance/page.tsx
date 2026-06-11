@@ -289,7 +289,7 @@ export default function AmbulancePage() {
           }}
         />
         <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center lg:text-left">
+          <div className="max-w-7xl w-full mx-auto text-center lg:text-left">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -298,7 +298,7 @@ export default function AmbulancePage() {
               <h1 className="text-2xl md:text-6xl lg:text-[50px] font-bold text-white mb-6 drop-shadow-2xl leading-tight">
                 {t.title}
               </h1>
-              <p className="text-[16px] md:text-xl text-white/95 mb-8 drop-shadow-lg max-w-3xl mx-auto leading-relaxed">
+              <p className="text-[16px] md:text-xl text-white/95 mb-8 drop-shadow-lg max-w-3xl leading-relaxed">
                 {t.subtitle}
               </p>
             </motion.div>

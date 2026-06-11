@@ -248,7 +248,7 @@ export default function ContactPage() {
                     </Label>
                     <Input
                       id="name"
-                      placeholder=""
+                      placeholder= {language === 'en' ? "Karim Ahmed" : "করিম আহমেদ"}
                       {...register("name")}
                       className="h-14 rounded-xl border-slate-200 bg-white focus:ring-slate-100 transition-all text-base"
                     />
@@ -265,7 +265,7 @@ export default function ContactPage() {
                     <Input
                       id="email"
                       type="email"
-                      placeholder=""
+                      placeholder="abc@gmail.com"
                       {...register("email")}
                       className="h-14 rounded-xl border-slate-200 bg-white focus:ring-slate-100 transition-all text-base"
                     />

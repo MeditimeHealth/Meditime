@@ -29,6 +29,7 @@ const bloodDonorSchema = z.object({
     message: "Availability status is required",
   }),
   lastDonationDate: z.string().optional(),
+  isApproved: z.boolean().default(true)
 });
 
 type BloodDonorFormValues = z.infer<typeof bloodDonorSchema>;
@@ -54,9 +55,10 @@ export default function CreateBloodDonorPage() {
     setValue,
     formState: { errors },
   } = useForm<BloodDonorFormValues>({
-    resolver: zodResolver(bloodDonorSchema),
+    resolver: zodResolver(bloodDonorSchema) as any,
     defaultValues: {
       availabilityStatus: "Available",
+      isApproved: true
     },
   });
 
@@ -165,7 +167,7 @@ export default function CreateBloodDonorPage() {
         }
       }
 
-      const response = await fetch("/api/blood-donors", {
+      const response = await fetch("/api/admin/blood-donor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
