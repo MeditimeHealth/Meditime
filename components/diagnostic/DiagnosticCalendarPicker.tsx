@@ -170,7 +170,7 @@ export default function DiagnosticCalendarPicker({
                     : isAvailable
                       ? "bg-white text-primary border-2 border-primary hover:bg-primary/5 hover:scale-105"
                       : "bg-gray-100 text-gray-400 cursor-not-allowed border-none"
-                } ${!isSelected && !isAvailable ? "ring-2 ring-gray-400" : ""}`}
+                } `}
             >
               {convertToBengaliNumber(date.getDate(), language)}
             </button>

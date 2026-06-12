@@ -547,7 +547,7 @@ export default function BookAppointmentPage() {
                     {days.map((day, index) => (
                       <div
                         key={index}
-                        className="text-center font-semibold text-gray-700 py-1 text-x lg:text-base"
+                        className="text-center font-semibold text-gray-700 py-1 text-lg lg:text-xl"
 
                       >
                         {day}
@@ -584,8 +584,8 @@ export default function BookAppointmentPage() {
                                 ? "bg-primary/10 text-primary border-none hover:bg-primary/20 hover:scale-105"
                                 : isInScheduleButNotAvailable
                                   ? "bg-white text-primary border-2 border-primary hover:bg-primary/5 hover:scale-105"
-                                  : "bg-gray-100 text-gray-400 cursor-not-allowed border-none"
-                            } ${!isSelected && !isAvailable && !isInScheduleButNotAvailable ? "ring-2 ring-gray-400" : ""}`}
+                                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            } `}
                         >
                           {convertToBengaliNumber(date.getDate(), language)}
                         </button>
