@@ -20,8 +20,8 @@ const DiagnosticTestList = forwardRef<HTMLDivElement, DiagnosticTestListProps>(
     return (
       <div className="flex-1 lg:w-2/3">
         <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
-          <h2 className="text-xl font-bold text-slate-900">{language === 'en' ? 'Popular Tests' : 'জনপ্রিয় টেস্টসমূহ'}</h2>
-          <span className="text-sm font-medium text-[#00B7B5]">{totalTests} {language === 'en' ? 'tests found' : 'টি টেস্ট পাওয়া গেছে'}</span>
+          <h2 className="text-xl lg:text-2xl font-bold text-slate-900">{language === 'en' ? 'Popular Tests' : 'জনপ্রিয় টেস্টসমূহ'}</h2>
+          <span className="text-md font-medium text-[#00B7B5]">{totalTests} {language === 'en' ? 'tests found' : 'টি টেস্ট পাওয়া গেছে'}</span>
         </div>
 
         <div className="space-y-4">
@@ -32,15 +32,15 @@ const DiagnosticTestList = forwardRef<HTMLDivElement, DiagnosticTestListProps>(
                   <div className="flex flex-col md:flex-row justify-between md:items-center gap-6">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2 flex-wrap">
-                        <h4 className="text-lg font-bold text-slate-900">{getLocalizedValue(test.name, test.nameBn, language)}</h4>
+                        <h4 className="text-xl lg:text-2xl font-bold text-slate-900">{getLocalizedValue(test.name, test.nameBn, language)}</h4>
                         <span className="px-2.5 py-1 bg-slate-50 text-slate-600 border border-slate-200 rounded-md text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">
                           {getLocalizedValue(test.category, test.categoryBn, language) || t.categories.blood}
                         </span>
                       </div>
-                      <p className="text-sm text-slate-500 mb-4 line-clamp-2">
+                      <p className="text-md text-slate-500 mb-4 line-clamp-2">
                         {getLocalizedValue(test.description, test.descriptionBn, language) || `${getLocalizedValue(test.name, test.nameBn, language)} analysis and measurement`}
                       </p>
-                      <div className="flex gap-4 text-xs font-semibold text-slate-500 items-center">
+                      <div className="flex gap-4 text-sm font-semibold text-slate-500 items-center">
                         
                         {(test.fastingRequired || i % 2 === 0) && (
                           <div className="flex items-center gap-1">

@@ -145,16 +145,19 @@ export default function DiagnosticLocationFilter({
                     <Card 
                       key={center._id} 
                       onClick={() => setSelectedVenue(selectedVenue?._id === center._id ? null : center)}
-                      className={`p-3 rounded-xl shadow-sm relative overflow-hidden bg-white hover:shadow-md cursor-pointer transition-all border-2 ${selectedVenue?._id === center._id ? 'border-[#00B7B5] ring-2 ring-[#00B7B5]/20 bg-[#00B7B5]/5' : 'border-slate-100 hover:border-[#00B7B5]/30'}`}
+                      className={`p-3 rounded-xl shadow-sm relative overflow-hidden
+                         bg-white hover:shadow-md cursor-pointer transition-all border-2
+                          ${selectedVenue?._id === center._id ? 
+                            'border-[#00B7B5] ring-2 ring-[#00B7B5]/20 bg-[#00B7B5]/5' : 'border-slate-100 hover:border-[#00B7B5]/30'}`}
                     >
                       {selectedVenue?._id === center._id && (
                         <div className="absolute top-2 right-2">
                           <CheckCircle2 className="w-4 h-4 text-[#00B7B5]" />
                         </div>
                       )}
-                      <h4 className="font-bold text-slate-900 text-xs mb-1.5 leading-tight pr-6">{getLocalizedValue(center.name, center.nameBn, language)}</h4>
+                      <h4 className="font-bold text-slate-900 text-md mb-1.5 leading-tight pr-6">{getLocalizedValue(center.name, center.nameBn, language)}</h4>
                       
-                      <div className="flex flex-col gap-1 text-[10px] text-slate-500 mb-2 font-medium">
+                      <div className="flex flex-col gap-1 text-[12px] text-slate-500 mb-2 font-medium">
                          <div className="flex items-start gap-1 text-slate-400">
                            <MapPin className="w-3 h-3 shrink-0 mt-0.5" /> 
                            <span className="line-clamp-2">{center.address || center.thana?.name || "Address not provided"}</span>

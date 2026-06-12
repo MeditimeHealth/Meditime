@@ -241,7 +241,7 @@ export const translations = {
     selectGender: "Select Gender",
     male: "Male",
     female: "Female",
-    others: "Others",
+    others: "Other",
     serialAffiliateCode: "Serial/Affiliate Code (Optional)",
     referralCodeHelp: "Enter referral code if any",
     proceedFile: "Confirm Booking",

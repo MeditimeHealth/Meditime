@@ -20,10 +20,10 @@ export default function DiagnosticCart({
       {/* Header matching Invoice */}
       <div className="bg-primary text-white px-5 py-4 flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-bold tracking-tight">
+          <h3 className="text-xl lg:text-2xl font-bold tracking-tight">
             {language === 'en' ? "Selected Tests" : "নির্বাচিত টেস্টসমূহ"}
           </h3>
-          <p className="text-white/60 text-xs mt-0.5">
+          <p className="text-white/60 text-sm mt-0.5">
             {bookedTests.length} {language === 'en' ? "tests added" : "টেস্ট যোগ করা হয়েছে"}
           </p>
         </div>
@@ -34,7 +34,7 @@ export default function DiagnosticCart({
       
       <div className="p-5 flex-1 flex flex-col">
         {/* Table Header Area */}
-        <div className="flex text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 border-b border-slate-200 pb-2">
+        <div className="flex text-[12px] font-bold text-slate-400 uppercase tracking-wider mb-2 border-b border-slate-200 pb-2">
           <div className="flex-1">{language === 'en' ? "Test Name" : "টেস্টের নাম"}</div>
           <div className="w-16 text-right pr-6">{language === 'en' ? "Amount" : "মূল্য"}</div>
         </div>
@@ -43,10 +43,10 @@ export default function DiagnosticCart({
           {bookedTests.map((test) => (
             <div key={test._id} className="flex items-center justify-between py-2.5 border-b border-slate-50 hover:bg-slate-50 transition-colors px-1 rounded">
               <div className="flex-1 min-w-0 pr-3">
-                <p className="text-xs font-bold text-slate-900 truncate">{getLocalizedValue(test.name, test.nameBn, language)}</p>
+                <p className="text-md font-bold text-slate-900 truncate">{getLocalizedValue(test.name, test.nameBn, language)}</p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-900">৳{test.price || 0}</span>
+                <span className="text-md font-bold text-slate-900">৳{test.price || 0}</span>
                 <button onClick={() => handleBooking(test)} className="text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors p-1.5 rounded-lg shrink-0">
                   <X className="w-3 h-3" />
                 </button>
@@ -56,12 +56,12 @@ export default function DiagnosticCart({
         </div>
         
         {/* Totals Section */}
-        <div className="mt-auto space-y-2 text-sm pt-4 border-t border-slate-200">
+        <div className="mt-auto space-y-2 text-md pt-4 border-t border-slate-200">
           <div className="flex justify-between text-slate-500">
             <span>{language === 'en' ? "Subtotal:" : "সাবটোটাল:"}</span>
             <span>৳{bookedTests.reduce((acc, curr) => acc + (curr.price || 0), 0)}</span>
           </div>
-          <div className="border-t border-slate-200 pt-3 mt-1 flex justify-between text-base font-bold text-[#004B50]">
+          <div className="border-t border-slate-200 pt-3 mt-1 flex justify-between text-md font-bold text-[#004B50]">
             <span>{language === 'en' ? "Total Due:" : "সর্বমোট:"}</span>
             <span>৳{bookedTests.reduce((acc, curr) => acc + (curr.price || 0), 0)}</span>
           </div>

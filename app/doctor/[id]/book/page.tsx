@@ -585,7 +585,7 @@ export default function BookAppointmentPage() {
                                 : isInScheduleButNotAvailable
                                   ? "bg-white text-primary border-2 border-primary hover:bg-primary/5 hover:scale-105"
                                   : "bg-gray-100 text-gray-400 cursor-not-allowed border-none"
-                            } ${isToday && !isSelected && !isAvailable && !isInScheduleButNotAvailable ? "ring-2 ring-gray-400" : ""}`}
+                            } ${!isSelected && !isAvailable && !isInScheduleButNotAvailable ? "ring-2 ring-gray-400" : ""}`}
                         >
                           {convertToBengaliNumber(date.getDate(), language)}
                         </button>
@@ -669,7 +669,7 @@ export default function BookAppointmentPage() {
                   </Label>
                   <div className="relative flex items-center mt-1">
                     <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-gray-300 pointer-events-none select-none">
-                      <span>🇧🇩</span>
+                        <img src="https://flagcdn.com/w40/bd.png" alt="BD" className="w-6 h-4 rounded-sm object-cover" />
                       <span>+880</span>
                     </span>
                     <Input
@@ -682,7 +682,7 @@ export default function BookAppointmentPage() {
                       }}
                       required
                       placeholder={t('mobileNumberPlaceholder')}
-                      className={`pl-[4.5rem] h-10 w-full rounded-none ${!mobileNumber ? '' : 'border-primary bg-green-50/30'}`}
+                      className={`pl-[5.5rem] h-10 w-full rounded-none ${!mobileNumber ? '' : 'border-primary bg-green-50/30'}`}
                     />
                 </div>
                 </div>

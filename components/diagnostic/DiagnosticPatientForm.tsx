@@ -168,8 +168,8 @@ export default function DiagnosticPatientForm({
           </Label>
           <div className="relative flex items-center mt-1">
             <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-gray-300 pointer-events-none select-none">
-              <span>🇧🇩</span>
-              <span>+880</span>
+              <img src="https://flagcdn.com/w40/bd.png" alt="BD" className="w-6 h-4 rounded-sm object-cover" />
+              <span className="">+880</span>
             </span>
             <Input
               id="mobileNumber"
@@ -181,7 +181,7 @@ export default function DiagnosticPatientForm({
               }}
               required
               placeholder={t("mobileNumberLabel", language)}
-              className={`pl-[4.5rem] h-10 w-full border-primary rounded-none ${!mobileNumber ? 'border-gray-100' : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'}`}
+              className={`pl-[5.5rem] h-10 w-full border-primary rounded-none ${!mobileNumber ? 'border-gray-100' : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'}`}
             />
           </div>
         </div>
@@ -232,7 +232,7 @@ export default function DiagnosticPatientForm({
             value={affiliateCode}
             onChange={(e) => setAffiliateCode(e.target.value.toUpperCase())}
             placeholder={t("serialAffiliateCode", language)}
-                    className={`mt-2 h-10 border-2 border-primary focus:border-primary bg-white ${!affiliateCode ? '' : 'border-primary bg-green-50/30'}`}
+            className={`mt-2 h-10 border-2 border-primary focus:border-primary bg-white ${!affiliateCode ? '' : 'border-primary bg-green-50/30'}`}
           />
           <p className="mt-2 text-xs text-primary" >
             {t("referralCodeHelp", language)}
