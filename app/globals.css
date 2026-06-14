@@ -397,11 +397,7 @@ html {
   z-index: -1;
 }
 
-@media (hover: none) {
-  .btn-slide::before {
-    display: none;
-  }
-}
+
 
 .btn-slide:hover::before {
   transform: scaleX(1);
@@ -410,6 +406,10 @@ html {
 
 .btn-slide:hover {
   color: white !important;
+}
+
+.btn-slide:hover * {
+  color: inherit !important;
 }
 
 /* Group trigger variant */

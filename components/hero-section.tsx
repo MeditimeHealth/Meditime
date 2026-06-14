@@ -107,7 +107,7 @@ export default function HeroSection() {
 
                 {/* ── Text: vertically & horizontally centered ── */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                  <h1 className="text-2xl lg:text-[48px] font-bold leading-tight text-white mb-2 max-w-[320px] tracking-tight">
+                  <h1 className="text-2xl lg:text-[48px] pt-4 font-bold leading-tight text-white mb-2 max-w-[320px] tracking-tight">
                     {slide.title}
                   </h1>
                   <p className=" text-sm lg:text-lg text-white/90 leading-relaxed mb-4 max-w-[300px]">

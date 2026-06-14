@@ -52,7 +52,7 @@ export default function WhyChooseSection() {
           <h2 className="text-[28px] sm:text-[48px]  font-bold mb-4 text-white tracking-tight max-w-[804px] mx-auto leading-[1.1]">
             {t.title}
           </h2>
-                    <div className="w-20 h-1.5 bg-primary mx-auto mb-6 shadow-[0_0_15px_rgba(13,148,136,0.5)]" />
+          <div className="w-20 h-1.5 bg-primary mx-auto mb-6 shadow-[0_0_15px_rgba(13,148,136,0.5)]" />
 
           <p className="text-white/90  text-sm sm:text-lg max-w-[650px] mx-auto leading-relaxed">
             {t.subtitle}
@@ -71,20 +71,23 @@ export default function WhyChooseSection() {
               className="h-full"
             >
               <Card
-                className="btn-slide touch-none border-none rounded-2xl md:rounded-none group p-8 sm:p-10 h-full flex flex-col items-start text-left  shadow-xl transition-all duration-300 hover:shadow-2xl md:min-h-[420px]"
+                className="btn-slide border-none rounded-none group p-8 sm:p-10 h-full flex flex-col items-start text-left  shadow-xl transition-all duration-300 hover:shadow-2xl md:min-h-[420px]"
               >
                 {/* Icon Container */}
                 <div className="mb-10 shrink-0 relative">
-                  <Icon className="w-16 h-16 sm:w-20 sm:h-20 text-primary transition-all duration-300 group-hover:text-white group-hover:scale-110" strokeWidth={1.2} />
+                  <Icon
+                    className="w-16 h-16 sm:w-20 sm:h-20 text-primary transition-all duration-300 group-hover:text-white group-hover:scale-110"
+                    strokeWidth={1.2}
+                  />
                 </div>
 
                 {/* Title */}
-                <h3 className="text-[20px] sm:text-[24px] font-bold mb-5 leading-tight shrink-0 text-[#193252] transition-colors duration-300 group-hover:text-white">
+                <h3 className="text-[20px] sm:text-[24px] font-bold mb-5 leading-tight shrink-0 text-[#193252] transition-colors duration-300">
                   <span className="relative z-10">{title}</span>
                 </h3>
 
                 {/* Description */}
-                <p className="text-[15px] sm:text-[16px] leading-relaxed flex-grow text-slate-600 transition-colors duration-300 group-hover:text-white/90">
+                <p className="text-[15px] sm:text-[16px] leading-relaxed flex-grow text-slate-600 transition-colors duration-300">
                   <span className="relative z-10">{description}</span>
                 </p>
               </Card>
