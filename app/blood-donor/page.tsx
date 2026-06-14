@@ -165,7 +165,6 @@ export default function BloodDonorPage() {
 
   const handleSearch = async () => {
     setLoading(true);
-    setHasSearched(true);
     try {
       let url = `/api/blood-donors?`;
       if (selectedGroup) url += `bloodGroup=${encodeURIComponent(selectedGroup)}&`;
@@ -187,11 +186,6 @@ export default function BloodDonorPage() {
       console.error("Error searching donors:", error);
     } finally {
       setLoading(false);
-      // Smooth scroll to results
-      setTimeout(() => {
-        const results = document.getElementById("results");
-        if (results) results.scrollIntoView({ behavior: "smooth" });
-      }, 100);
     }
   };
 
@@ -279,6 +273,10 @@ export default function BloodDonorPage() {
     { label: t.socialProof.verified[language], value: t.socialProof.verifiedLabel[language], suffix: "", icon: PiShieldCheckDuotone },
     { label: t.socialProof.responseTime[language], value: t.socialProof.responseTimeLabel[language], suffix: "", icon: PiClockDuotone },
   ];
+
+  useEffect(() => {
+    handleSearch();
+  }, [])
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -451,12 +449,12 @@ export default function BloodDonorPage() {
 
           {/* Results Grid */}
           <AnimatePresence>
-            {hasSearched && (
+            {donors?.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 id="results"
-                className="scroll-mt-24"
+                className=""
               >
                 <div className="flex items-center justify-between mb-8">
                   <h2 className="text-2xl font-black text-slate-900">
@@ -477,7 +475,7 @@ export default function BloodDonorPage() {
                               <Image src={'/blood-drop.png'} alt={donor.name} fill className="object-cover" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-start gap-2">
+                              <div className="flex items-start justify-between gap-2">
                                 <h3 className="font-bold text-lg text-slate-900 ">{getLocalizedValue(donor.name, donor.nameBn, language)}</h3>
                                 {donor.isApproved && (
                                   <span className="text-[10px] font-bold text-primary uppercase bg-primary/5 px-2 py-0.5 rounded border border-primary/10">
@@ -486,22 +484,20 @@ export default function BloodDonorPage() {
                                 )}
                               </div>
                               <div className="flex items-center gap-2 mt-1">
-                                <MapPin className="w-3 h-3 text-slate-400" />
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest truncate">{language === 'bn' ? [donor.thanaBn, donor.districtBn].filter(Boolean).join(", ") : [donor.thana, donor.district].filter(Boolean).join(", ") || "Location N/A"}</p>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest truncate">{language === 'en' ? "Blood Group : " : "রক্তের গ্রুপ : "} <span className="text-slate-900 font-bold">{donor.bloodGroup}</span></p>
                               </div>
                             </div>
-                            <div className="ml-auto w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center font-black text-lg shadow-lg shadow-primary/20 shrink-0">{donor.bloodGroup}</div>
                           </div>
 
                           <div className="space-y-3 mb-6">
-                            <div className="flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-8 text-sm">
                               <span className="text-slate-500 font-medium">{t.card.status[language]}</span>
                               <span className={`font-bold ${donor.availabilityStatus === 'Available' ? 'text-green-500' : 'text-orange-500'}`}>
-                                {donor.availabilityStatus === 'Available' ? (language === 'bn' ? 'উপলব্ধ' : 'Available') : (language === 'bn' ? 'অনুপলব্ধ' : donor.availabilityStatus)}
+                                {donor.availabilityStatus === 'Available' ? (language === 'bn' ? 'উপলব্ধ : ' : 'Available : ') : (language === 'bn' ? 'অনুপলব্ধ : ' : donor.availabilityStatus)}
                               </span>
                             </div>
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-slate-500 font-medium">{language === 'en' ? "Last Donation" : "শেষ রক্তদান"}</span>
+                            <div className="flex items-center gap-8 text-sm">
+                              <span className="text-slate-500 font-medium">{language === 'en' ? "Last Donation : " : "শেষ রক্তদান : "}</span>
                               <span className="font-bold text-slate-700">{donor.lastDonationDate ? new Date(donor.lastDonationDate).toLocaleDateString() : (language === 'bn' ? 'কখনো নয়' : 'Never')}</span>
                             </div>
                           </div>
