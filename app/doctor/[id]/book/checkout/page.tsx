@@ -415,7 +415,7 @@ function CheckoutContent() {
                 )}
 
                 {/* Age */}
-                {booking.age && (
+                {booking.age || booking.age === 0 && (
                   <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
                     <Clock className="h-4 w-4 text-orange-400 mt-0.5 flex-shrink-0" />
                     <div>
