@@ -16,7 +16,8 @@
  *       ...
  */
 
-const { MongoClient } = require('mongodb');
+const { MongoClient, BSON } = require('mongodb');
+const { EJSON } = BSON;
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env.local') });
@@ -89,7 +90,7 @@ async function exportDatabase() {
       process.stdout.write(`   ⏳ Exporting "${name}"...`);
 
       const docs = await db.collection(name).find({}).toArray();
-      const json = JSON.stringify(docs, null, 2);
+      const json = EJSON.stringify(docs, { relaxed: false }, 2);
       const filePath = path.join(exportDir, `${name}.json`);
 
       fs.writeFileSync(filePath, json, 'utf-8');
