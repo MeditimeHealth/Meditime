@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "create-admin": "node scripts/create-admin.js"
+    "create-admin": "node scripts/create-admin.js",
+    "db:export": "node scripts/export-db.js",
+    "db:import": "node scripts/import-db.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
