@@ -39,5 +39,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 # local development
-/scripts/
 /data-export/
+/db_backups/
