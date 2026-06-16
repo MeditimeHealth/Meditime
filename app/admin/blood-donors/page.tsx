@@ -141,101 +141,65 @@ export default function BloodDonorsPage() {
            </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDonors.map((donor) => (
-            <Card key={donor._id} className="group relative p-0 bg-white border-2 border-gray-100 hover:border-primary/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all duration-500 rounded-[2rem] overflow-hidden flex flex-col h-full">
-               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary/50 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-               <div className="p-8 space-y-6 flex-1">
-                  <div className="flex items-start justify-between gap-5">
-                     <div className="flex items-start gap-4 flex-1 min-w-0">
-                        <div className="shrink-0">
-                           <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-white shadow-md ring-1 ring-gray-100 group-hover:ring-primary/20 transition-all bg-gray-50">
-                              {donor.photo ? (
-                                <Image src={donor.photo} alt={donor.name} fill className="object-cover" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-red-50 text-red-600 font-black text-2xl">
-                                  {donor.name.charAt(0)}
-                                </div>
-                              )}
-                           </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                           <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-primary transition-colors">
-                              {language === 'bn' && donor.nameBn ? donor.nameBn : donor.name}
-                           </h3>
-                           <div className="flex items-center gap-2 mt-1.5">
-                              <div className={`h-2 w-2 rounded-full shadow-sm ${
-                                donor.availabilityStatus === "Available" ? "bg-green-500" :
-                                donor.availabilityStatus === "Recently Donated" ? "bg-yellow-500" : "bg-red-500"
-                              }`} />
-                              <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">
-                                 {donor.availabilityStatus === "Available" ? t("available", language) :
-                                  donor.availabilityStatus === "Recently Donated" ? t("recentlyDonated", language) : t("unavailable", language)}
-                              </span>
-                           </div>
-                        </div>
-                     </div>
-                     <div className="bg-red-50 text-red-600 px-4 py-2 rounded-xl text-lg font-black border border-red-100 shadow-sm">
-                        {donor.bloodGroup}
-                     </div>
+            <Card key={donor._id} className="p-6 rounded-[2rem] border-none shadow-lg hover:shadow-xl transition-all bg-white relative overflow-hidden flex flex-col h-full">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 ring-4 ring-slate-50 flex items-center justify-center">
+                  <Image src={'/blood-drop.png'} alt={donor.name} width={64} height={64} className="h-8 w-8" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-bold text-lg text-slate-900 ">{language === 'bn' && donor.nameBn ? donor.nameBn : donor.name}</h3>
                   </div>
-
-                  <div className="grid grid-cols-1 gap-4 bg-gray-50/50 p-6 rounded-2xl border border-gray-100 group-hover:bg-white transition-all">
-                     <div className="flex items-center gap-3">
-                        <Phone className="h-4 w-4 text-green-500" />
-                        <span className="text-sm font-black text-gray-700">{donor.phoneNumber}</span>
-                     </div>
-                     {donor.email && (
-                        <div className="flex items-center gap-3">
-                           <Mail className="h-4 w-4 text-blue-500" />
-                           <span className="text-sm font-bold text-gray-600 truncate">{donor.email}</span>
-                        </div>
-                     )}
-                     {(donor.division || donor.district || donor.thana) && (
-                        <div className="flex items-start gap-3 pt-3 border-t border-gray-100">
-                           <MapPin className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                           <div className="text-sm font-bold text-gray-600">
-                              {[
-                                 language === 'bn' ? donor.thanaBn || donor.thana : donor.thana,
-                                 language === 'bn' ? donor.districtBn || donor.district : donor.district,
-                                 language === 'bn' ? donor.divisionBn || donor.division : donor.division,
-                              ].filter(Boolean).join(", ")}
-                           </div>
-                        </div>
-                     )}
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs font-medium text-slate-500">{donor.phoneNumber}</span>
                   </div>
+                </div>
+                <div className="ml-auto w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center font-black text-lg shadow-lg shadow-primary/20 shrink-0">{donor.bloodGroup}</div>
+              </div>
 
-                  {donor.lastDonationDate && (
-                     <div className="space-y-2">
-                        <div className="text-[10px] font-black text-gray-300 uppercase tracking-widest flex items-center">
-                           <Calendar className="h-3 w-3 mr-2" />
-                           {t("lastDonationDate", language)}
-                        </div>
-                        <div className="text-sm font-black text-gray-500 bg-gray-50 group-hover:bg-white px-3 py-2 rounded-lg border border-transparent transition-all">
-                           {new Date(donor.lastDonationDate).toLocaleDateString(language === 'bn' ? 'bn-BD' : 'en-US', {
-                               year: 'numeric', month: 'long', day: 'numeric'
-                           })}
-                        </div>
-                     </div>
-                  )}
-               </div>
+              <div className="space-y-3 mb-6 flex-1">
+                <div className="flex items-center justify-between gap-2 text-sm">
+                  <span className="text-slate-500 font-medium">{t("availabilityStatus", language)} : </span>
+                  <span className={`font-bold ${donor.availabilityStatus === 'Available' ? 'text-green-500' : 'text-orange-500'}`}>
+                    {donor.availabilityStatus === 'Available' ? (language === 'bn' ? 'উপলব্ধ' : 'Available') : (language === 'bn' ? 'অনুপলব্ধ' : donor.availabilityStatus)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2 text-sm">
+                  <span className="text-slate-500 font-medium">{language === 'en' ? "Last Donation : " : "শেষ রক্তদান : "}</span>
+                  <span className="font-bold text-slate-700">{donor.lastDonationDate ? new Date(donor.lastDonationDate).toLocaleDateString(language === 'bn' ? 'bn-BD' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric'}) : (language === 'bn' ? 'কখনো নয়' : 'Never')}</span>
+                </div>
+                {(donor.division || donor.district || donor.thana) && (
+                  <div className="flex items-center justify-between gap-2 text-sm">
+                    <span className="text-slate-500 font-medium">{t("location", language)} : </span>
+                    <span className="font-bold text-slate-700 text-right truncate max-w-[60%]">
+                      {[
+                        language === 'bn' ? donor.thanaBn || donor.thana : donor.thana,
+                        language === 'bn' ? donor.districtBn || donor.district : donor.district,
+                        language === 'bn' ? donor.divisionBn || donor.division : donor.division,
+                      ].filter(Boolean).join(", ")}
+                    </span>
+                  </div>
+                )}
+              </div>
 
-               <div className="flex gap-1 p-4 bg-gray-50 border-t border-gray-100">
-                  <Link href={`/admin/blood-donors/edit/${donor._id}`} className="flex-1">
-                     <Button variant="ghost" className="w-full h-12 font-black text-gray-600 hover:text-primary hover:bg-primary/5 rounded-xl">
-                        <Edit className="h-4 w-4 mr-2" />
-                        {t("edit", language)}
-                     </Button>
-                  </Link>
-                  <Button 
-                    variant="ghost" 
-                    className="flex-1 h-12 font-black text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl"
-                    onClick={() => handleDelete(donor._id)}
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    {t("delete", language)}
+              <div className="flex gap-2">
+                <Link href={`/admin/blood-donors/edit/${donor._id}`} className="flex-1">
+                  <Button variant="outline" className="w-full h-10 font-bold text-slate-600 rounded-xl">
+                    <Edit className="h-4 w-4 mr-2" />
+                    {t("edit", language)}
                   </Button>
-               </div>
+                </Link>
+                <Button 
+                  variant="outline" 
+                  className="flex-1 h-10 font-bold text-red-500 hover:text-red-600 hover:bg-red-50 border-red-100 rounded-xl"
+                  onClick={() => handleDelete(donor._id)}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t("delete", language)}
+                </Button>
+              </div>
             </Card>
           ))}
         </div>

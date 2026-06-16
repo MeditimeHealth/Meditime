@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { t } from "@/lib/translations";
+import { ArrowLeft } from "lucide-react";
 
 const bloodDonorSchema = z.object({
   name: z.string().optional(),
@@ -58,6 +59,7 @@ export default function EditBloodDonorPage() {
     watch,
     setValue,
     reset,
+    getValues,
     formState: { errors },
   } = useForm<BloodDonorFormValues>({
     resolver: zodResolver(bloodDonorSchema) as any,
@@ -84,6 +86,7 @@ export default function EditBloodDonorPage() {
       fetch(`/api/blood-donors/${donorId}`)
         .then((res) => res.json())
         .then((data) => {
+          console.log(data)
           if (data.bloodDonor) {
             const donor = data.bloodDonor;
             reset({
@@ -143,46 +146,9 @@ export default function EditBloodDonorPage() {
     }
   }, [watchedDistrict, districts]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        alert("Please select an image file");
-        return;
-      }
-      
-      if (file.size > 10 * 1024 * 1024) {
-        alert("Image size must be less than 10MB");
-        return;
-      }
 
-      setSelectedImage(file);
-      
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
-  const uploadImage = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("image", file);
 
-    const response = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to upload image");
-    }
-
-    const data = await response.json();
-    return data.url;
-  };
 
   const onSubmit = async (data: BloodDonorFormValues) => {
     setIsLoading(true);
@@ -192,8 +158,6 @@ export default function EditBloodDonorPage() {
       if (selectedImage) {
         setIsUploading(true);
         try {
-          imageUrl = await uploadImage(selectedImage);
-          setValue("photo", imageUrl);
         } catch (error: any) {
           alert(error.message || "Failed to upload image. Please try again.");
           setIsLoading(false);
@@ -240,115 +204,100 @@ export default function EditBloodDonorPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            {t("editBloodDonor", language)}
-          </h1>
-          <p className="text-gray-600 mt-2">
-            {language === 'bn' ? 'রক্তদাতার তথ্য আপডেট করুন' : 'Update blood donor profile information'}
-          </p>
-        </div>
-        <Button variant="outline" onClick={() => router.back()}>
+    <div className="max-w-4xl mx-auto p-6 space-y-6">
+      <div className="flex items-center gap-4">
+        <Button variant="outline" size="sm" onClick={() => router.back()}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
           {t("back", language)}
         </Button>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">{t("editBloodDonor", language)}</h1>
+          <p className="text-gray-600 mt-1">{language === 'bn' ? 'রক্তদাতার তথ্য আপডেট করুন' : 'Update blood donor profile information'}</p>
+        </div>
       </div>
 
-      <Card className="p-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Language Toggle */}
-          <div className="flex justify-end mb-8">
-            <div className="bg-gray-150/80 p-1.5 rounded-xl inline-flex shadow-inner">
-              <button
-                type="button"
-                onClick={() => setLanguage('en')}
-                className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                  language === 'en'
-                    ? 'bg-white text-primary shadow-sm scale-105'
-                    : 'text-gray-500 hover:text-gray-800'
-                }`}
-              >
-                English
-              </button>
-              <button
-                type="button"
-                onClick={() => setLanguage('bn')}
-                className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                  language === 'bn'
-                    ? 'bg-white text-primary shadow-sm scale-105'
-                    : 'text-gray-500 hover:text-gray-800'
-                }`}
-              >
-                বাংলা
-              </button>
-            </div>
+      <Card className="p-6 bg-white">
+        {/* <div className="flex justify-end mb-8">
+          <div className="bg-gray-150/80 p-1.5 rounded-xl inline-flex shadow-inner">
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
+                language === 'en'
+                  ? 'bg-white text-primary shadow-sm scale-105'
+                  : 'text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              English
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage('bn')}
+              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
+                language === 'bn'
+                  ? 'bg-white text-primary shadow-sm scale-105'
+                  : 'text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              বাংলা
+            </button>
           </div>
+        </div> */}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {language === 'en' ? (
-              <div>
-                <Label htmlFor="name">
-                  {t("name", language)} <span className="text-gray-400 text-sm">(Optional)</span>
-                </Label>
-                <Input
-                  id="name"
-                  {...register("name")}
-                  placeholder="John Doe"
-                  className="mt-1"
-                />
-              </div>
-            ) : (
-              <div>
-                <Label htmlFor="nameBn">
-                  {t("nameBn", language)} <span className="text-gray-400 text-sm">(Optional)</span>
-                </Label>
-                <Input
-                  id="nameBn"
-                  {...register("nameBn")}
-                  placeholder="নাম লিখুন"
-                  className="mt-1"
-                />
-              </div>
-            )}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">{language === 'bn' ? 'পূর্ণ নাম (English)' : 'Full Name (English)'}</Label>
+              <Input
+                id="name"
+                {...register("name")}
+                defaultValue={getValues("name")}
+                placeholder="John Doe"
+              />
+              {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+            </div>
 
-            <div>
-              <Label htmlFor="phoneNumber">
-                {t("phone", language)} <span className="text-red-500">*</span>
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="nameBn">{language === 'bn' ? 'পূর্ণ নাম (বাংলা)' : 'Full Name (বাংলা)'}</Label>
+              <Input
+                id="nameBn"
+                {...register("nameBn")}
+                defaultValue={getValues("nameBn")}
+                placeholder="জন ডো"
+              />
+              {errors.nameBn && <p className="text-sm text-red-500">{errors.nameBn.message}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">{t("phone", language)} *</Label>
               <Input
                 id="phoneNumber"
                 {...register("phoneNumber")}
+                defaultValue={getValues("phoneNumber")}
                 placeholder="+1234567890"
-                className="mt-1"
               />
-              {errors.phoneNumber && (
-                <p className="text-sm text-red-500 mt-1">{errors.phoneNumber.message}</p>
-              )}
+              {errors.phoneNumber && <p className="text-sm text-red-500">{errors.phoneNumber.message}</p>}
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="email">{t("email", language)}</Label>
               <Input
                 id="email"
                 type="email"
                 {...register("email")}
+                defaultValue={getValues("email")}
                 placeholder="donor@example.com"
-                className="mt-1"
               />
-              {errors.email && (
-                <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
-              )}
+              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
             </div>
 
-            <div>
-              <Label htmlFor="bloodGroup">
-                {t("bloodGroup", language)} <span className="text-red-500">*</span>
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="bloodGroup">{t("bloodGroup", language)} *</Label>
               <select
                 id="bloodGroup"
                 {...register("bloodGroup")}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                defaultValue={getValues("bloodGroup")}
+                className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white"
               >
                 <option value="">{t("selectBloodGroup", language)}</option>
                 <option value="A+">A+</option>
@@ -360,149 +309,96 @@ export default function EditBloodDonorPage() {
                 <option value="O+">O+</option>
                 <option value="O-">O-</option>
               </select>
-              {errors.bloodGroup && (
-                <p className="text-sm text-red-500 mt-1">{errors.bloodGroup.message}</p>
-              )}
+              {errors.bloodGroup && <p className="text-sm text-red-500">{errors.bloodGroup.message}</p>}
             </div>
 
-            <div className="md:col-span-2">
-              <Label className="mb-2 block font-semibold text-gray-900">
-                {t("location", language)}
-              </Label>
-            </div>
-
-            <div>
-              <Label htmlFor="division">{t("division", language)}</Label>
-              <select
-                id="division"
-                {...register("division")}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                onChange={(e) => {
-                  setValue("division", e.target.value);
-                  setValue("district", "");
-                  setValue("thana", "");
-                }}
-              >
-                <option value="">{t("selectDivision", language)}</option>
-                {divisions.map((div) => (
-                  <option key={div._id} value={div.name}>
-                    {div.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <Label htmlFor="district">{t("district", language)}</Label>
-              <select
-                id="district"
-                {...register("district")}
-                disabled={!watchedDivision}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-                onChange={(e) => {
-                  setValue("district", e.target.value);
-                  setValue("thana", "");
-                }}
-              >
-                <option value="">{t("selectDistrict", language)}</option>
-                {districts.map((dist) => (
-                  <option key={dist._id} value={dist.name}>
-                    {dist.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <Label htmlFor="thana">{t("thana", language)}</Label>
-              <select
-                id="thana"
-                {...register("thana")}
-                disabled={!watchedDistrict || !watchedDivision}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
-              >
-                <option value="">{t("selectThana", language)}</option>
-                {thanas.map((thana) => (
-                  <option key={thana._id} value={thana.name}>
-                    {thana.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <Label htmlFor="availabilityStatus">
-                {t("availabilityStatus", language)} <span className="text-red-500">*</span>
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="availabilityStatus">{t("availabilityStatus", language)} *</Label>
               <select
                 id="availabilityStatus"
                 {...register("availabilityStatus")}
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                defaultValue={getValues("availabilityStatus")}
+                className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white"
               >
                 <option value="Available">{language === 'bn' ? 'উপলব্ধ' : 'Available'}</option>
                 <option value="Unavailable">{language === 'bn' ? 'অনুপলব্ধ' : 'Unavailable'}</option>
                 <option value="Recently Donated">{language === 'bn' ? 'সম্প্রতি রক্ত দিয়েছেন' : 'Recently Donated'}</option>
               </select>
-              {errors.availabilityStatus && (
-                <p className="text-sm text-red-500 mt-1">{errors.availabilityStatus.message}</p>
-              )}
+              {errors.availabilityStatus && <p className="text-sm text-red-500">{errors.availabilityStatus.message}</p>}
             </div>
 
-            <div>
+            <div className="space-y-2">
+              <Label htmlFor="division">{t("division", language)}</Label>
+              <select
+                id="division"
+                {...register("division", {
+                  onChange: (e) => {
+                    setValue("district", "");
+                    setValue("thana", "");
+                  }
+                })}
+                defaultValue={getValues("division")}
+                className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white"
+              >
+                <option value="">{t("selectDivision", language)}</option>
+                {divisions.map((div) => (
+                  <option key={div._id} value={div.name}>{div.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="district">{t("district", language)}</Label>
+              <select
+                id="district"
+                {...register("district", {
+                  onChange: (e) => {
+                    setValue("thana", "");
+                  }
+                })}
+                defaultValue={getValues("district")}
+                disabled={!watchedDivision}
+                className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white disabled:opacity-50"
+              >
+                <option value="">{t("selectDistrict", language)}</option>
+                {districts.map((dist) => (
+                  <option key={dist._id} value={dist.name}>{dist.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="thana">{t("thana", language)}</Label>
+              <select
+                id="thana"
+                {...register("thana")}
+                defaultValue={getValues("thana")}
+                disabled={!watchedDistrict || !watchedDivision}
+                className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white disabled:opacity-50"
+              >
+                <option value="">{t("selectThana", language)}</option>
+                {thanas.map((thana) => (
+                  <option key={thana._id} value={thana.name}>{thana.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="lastDonationDate">{t("lastDonationDate", language)}</Label>
               <Input
                 id="lastDonationDate"
                 type="date"
                 {...register("lastDonationDate")}
-                className="mt-1"
+                defaultValue={getValues("lastDonationDate")}
               />
-            </div>
-
-            <div className="md:col-span-2">
-              <Label htmlFor="photo">{t("photo", language)}</Label>
-              <div className="mt-1 space-y-3">
-                <div className="flex items-center gap-4">
-                  <input
-                    ref={fileInputRef}
-                    id="photo"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isLoading || isUploading}
-                  >
-                    {imagePreview ? (language === 'bn' ? "ছবি পরিবর্তন করুন" : "Change Image") : (language === 'bn' ? "ছবি নির্বাচন করুন" : "Select Image")}
-                  </Button>
-                  {selectedImage && (
-                    <span className="text-sm text-gray-600">
-                      {selectedImage.name}
-                    </span>
-                  )}
-                </div>
-                {imagePreview && (
-                  <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-gray-300">
-                    <Image
-                      src={imagePreview}
-                      alt="Preview"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-              </div>
             </div>
           </div>
 
-          <div className="flex gap-4 pt-8">
+          <div className="pt-4 flex gap-4">
             <Button
               type="submit"
               disabled={isLoading || isUploading}
-              className="flex-1 h-12 text-lg font-bold bg-primary hover:bg-primary/90 shadow-md rounded-xl transition-all active:scale-95"
+              className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold h-10"
             >
               {isUploading
                 ? t("uploading", language)
@@ -514,7 +410,7 @@ export default function EditBloodDonorPage() {
               type="button"
               variant="outline"
               onClick={() => router.back()}
-              className="flex-1 h-12 text-lg font-bold border-2 rounded-xl transition-all"
+              className="flex-1 h-10 font-bold"
             >
               {t("cancel", language)}
             </Button>

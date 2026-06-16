@@ -40,9 +40,10 @@ interface MultiSelectProps {
   onChange: (value: string) => void;
   placeholder: string;
   language: 'en' | 'bn';
+  required?: boolean;
 }
 
-function SearchableMultiSelect({ label, options, selected, onChange, placeholder, language }: MultiSelectProps) {
+function SearchableMultiSelect({ label, options, selected, onChange, placeholder, language, required = true }: MultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -64,7 +65,7 @@ function SearchableMultiSelect({ label, options, selected, onChange, placeholder
   return (
     <div className="space-y-3" ref={containerRef}>
       <Label className="text-base font-bold text-gray-700">
-        {label} <span className="text-red-500">*</span>
+        {label} {required && <span className="text-red-500">*</span>}
       </Label>
       
       <div
@@ -164,11 +165,6 @@ export default function CreateDiagnosticTestPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (formData.recommendations.length === 0) {
-      showToast.error(language === 'bn' ? "দয়া করে অন্তত একটি সুপারিশ নির্বাচন করুন" : "Please select at least one recommendation");
-      return;
-    }
 
     if (formData.departments.length === 0) {
       showToast.error(language === 'bn' ? "দয়া করে অন্তত একটি বিভাগ নির্বাচন করুন" : "Please select at least one department");
@@ -307,12 +303,13 @@ export default function CreateDiagnosticTestPage() {
             />
 
             <SearchableMultiSelect
-              label={language === 'bn' ? "সুপারিশ" : "Recommendation"}
+              label={language === 'bn' ? "সুপারিশ (ঐচ্ছিক)" : "Recommendation (Optional)"}
               options={recommendationOptions}
               selected={formData.recommendations}
               onChange={(val) => toggleSelection('recommendations', val)}
               placeholder={language === 'bn' ? "সুপারিশ নির্বাচন করুন" : "Select recommendations"}
               language={language}
+              required={false}
             />
           </div>
 

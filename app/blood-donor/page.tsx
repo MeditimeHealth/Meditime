@@ -477,26 +477,27 @@ export default function BloodDonorPage() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-start justify-between gap-2">
                                 <h3 className="font-bold text-lg text-slate-900 ">{getLocalizedValue(donor.name, donor.nameBn, language)}</h3>
-                                {donor.isApproved && (
+      
+                              </div>
+                               {donor.isApproved && (
                                   <span className="text-[10px] font-bold text-primary uppercase bg-primary/5 px-2 py-0.5 rounded border border-primary/10">
                                     {t.card.verified[language]}
                                   </span>
                                 )}
-                              </div>
                               <div className="flex items-center gap-2 mt-1">
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest truncate">{language === 'en' ? "Blood Group : " : "রক্তের গ্রুপ : "} <span className="text-slate-900 font-bold">{donor.bloodGroup}</span></p>
                               </div>
                             </div>
+                            <div className="ml-auto w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center font-black text-lg shadow-lg shadow-primary/20 shrink-0">{donor.bloodGroup}</div>
                           </div>
 
                           <div className="space-y-3 mb-6">
-                            <div className="flex items-center gap-8 text-sm">
-                              <span className="text-slate-500 font-medium">{t.card.status[language]}</span>
+                            <div className="flex items-center justify-between gap-2 text-sm">
+                              <span className="text-slate-500 font-medium">{t.card.status[language]} : </span>
                               <span className={`font-bold ${donor.availabilityStatus === 'Available' ? 'text-green-500' : 'text-orange-500'}`}>
-                                {donor.availabilityStatus === 'Available' ? (language === 'bn' ? 'উপলব্ধ : ' : 'Available : ') : (language === 'bn' ? 'অনুপলব্ধ : ' : donor.availabilityStatus)}
+                                {donor.availabilityStatus === 'Available' ? (language === 'bn' ? 'উপলব্ধ' : 'Available') : (language === 'bn' ? 'অনুপলব্ধ' : donor.availabilityStatus)}
                               </span>
                             </div>
-                            <div className="flex items-center gap-8 text-sm">
+                            <div className="flex items-center justify-between gap-2 text-sm">
                               <span className="text-slate-500 font-medium">{language === 'en' ? "Last Donation : " : "শেষ রক্তদান : "}</span>
                               <span className="font-bold text-slate-700">{donor.lastDonationDate ? new Date(donor.lastDonationDate).toLocaleDateString() : (language === 'bn' ? 'কখনো নয়' : 'Never')}</span>
                             </div>

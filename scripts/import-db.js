@@ -16,7 +16,8 @@
  *                  Without --drop, documents are ADDED (upserted by _id)
  */
 
-const { MongoClient, ObjectId } = require('mongodb');
+const { MongoClient, ObjectId, BSON } = require('mongodb');
+const { EJSON } = BSON;
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env.local') });
@@ -70,10 +71,8 @@ function formatBytes(bytes) {
 }
 
 /**
- * Recursively restores MongoDB-specific types from plain JSON.
- * - Converts { "$oid": "..." } back to ObjectId
- * - Converts { "$date": "..." } back to Date
- * - Converts string _id fields to ObjectId
+ * Recursively restores MongoDB-specific types if they were exported as plain strings.
+ * EJSON handles $oid and $date automatically, but older backups used plain strings.
  */
 function restoreMongoTypes(obj) {
   if (obj === null || obj === undefined) return obj;
@@ -83,19 +82,19 @@ function restoreMongoTypes(obj) {
   }
 
   if (typeof obj === 'object') {
-    // Handle extended JSON $oid
-    if (obj.$oid && typeof obj.$oid === 'string') {
-      try { return new ObjectId(obj.$oid); } catch { return obj.$oid; }
-    }
-
-    // Handle extended JSON $date
-    if (obj.$date && typeof obj.$date === 'string') {
-      return new Date(obj.$date);
-    }
+    // If we have an ObjectId instance from EJSON.parse, keep it
+    if (obj instanceof ObjectId) return obj;
+    // If it's a Date instance, keep it
+    if (obj instanceof Date) return obj;
 
     const restored = {};
     for (const [key, value] of Object.entries(obj)) {
-      restored[key] = restoreMongoTypes(value);
+      // Cast plain string _id to ObjectId if it's 24 hex chars
+      if (key === '_id' && typeof value === 'string' && /^[0-9a-fA-F]{24}$/.test(value)) {
+        restored[key] = new ObjectId(value);
+      } else {
+        restored[key] = restoreMongoTypes(value);
+      }
     }
     return restored;
   }
@@ -143,7 +142,7 @@ async function importDatabase() {
 
       let docs;
       try {
-        docs = JSON.parse(raw);
+        docs = EJSON.parse(raw);
       } catch (e) {
         console.log(`   ⚠️  Skipping "${collectionName}" — invalid JSON`);
         totalSkipped++;

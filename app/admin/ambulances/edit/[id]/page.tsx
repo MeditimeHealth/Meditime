@@ -58,6 +58,7 @@ export default function EditAmbulancePage() {
     watch,
     setValue,
     reset,
+    getValues,
     formState: { errors },
   } = useForm<AmbulanceFormValues>({
     resolver: zodResolver(ambulanceSchema),
@@ -216,7 +217,7 @@ export default function EditAmbulancePage() {
       </div>
 
       <Card className="p-6 bg-white">
-        <div className="flex justify-end mb-8">
+        {/* <div className="flex justify-end mb-8">
           <div className="bg-gray-100/80 p-1.5 rounded-xl inline-flex shadow-inner">
             <button
               type="button"
@@ -241,91 +242,129 @@ export default function EditAmbulancePage() {
               বাংলা
             </button>
           </div>
-        </div>
+        </div> */}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className={language === 'en' ? 'block space-y-2' : 'hidden'}>
-              <Label htmlFor="name" className="text-base font-semibold text-gray-700">
-                {t("ambulanceServiceName", language)} <span className="text-red-500">*</span>
-              </Label>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">{t("ambulanceServiceName", language)} *</Label>
               <Input
                 id="name"
                 {...register("name")}
+                defaultValue={getValues("name")}
                 placeholder="Ambulance Service Name"
-                className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
               />
-              {errors.name && (
-                <p className="text-sm text-red-500">{errors.name.message}</p>
-              )}
+              {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
             </div>
-            <div className={language === 'bn' ? 'block space-y-2' : 'hidden'}>
-              <Label htmlFor="nameBn" className="text-base font-semibold text-gray-700">
-                {t("nameBn", language)} <span className="text-gray-400 text-sm">(Optional)</span>
-              </Label>
+            
+            <div className="space-y-2">
+              <Label htmlFor="nameBn">{t("nameBn", language)}</Label>
               <Input
                 id="nameBn"
                 {...register("nameBn")}
+                defaultValue={getValues("nameBn")}
                 placeholder="অ্যাম্বুলেন্স সার্ভিসের নাম লিখুন"
-                className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phoneNumber" className="text-base font-semibold text-gray-700">
-                {t("phone", language)} <span className="text-red-500">*</span>
-              </Label>
+              <Label htmlFor="phoneNumber">{t("phone", language)} *</Label>
               <Input
                 id="phoneNumber"
                 {...register("phoneNumber")}
+                defaultValue={getValues("phoneNumber")}
                 placeholder="+880123456789"
-                className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
               />
-              {errors.phoneNumber && (
-                <p className="text-sm text-red-500">{errors.phoneNumber.message}</p>
-              )}
+              {errors.phoneNumber && <p className="text-sm text-red-500">{errors.phoneNumber.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="ambulanceNumber" className="text-base font-semibold text-gray-700">
-                {t("ambulanceNo", language)} <span className="text-red-500">*</span>
-              </Label>
+              <Label htmlFor="ambulanceNumber">{t("ambulanceNo", language)} *</Label>
               <Input
                 id="ambulanceNumber"
                 {...register("ambulanceNumber")}
+                defaultValue={getValues("ambulanceNumber")}
                 placeholder="e.g. Dhaka-MET-11-1234"
-                className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
               />
-              {errors.ambulanceNumber && (
-                <p className="text-sm text-red-500">{errors.ambulanceNumber.message}</p>
-              )}
+              {errors.ambulanceNumber && <p className="text-sm text-red-500">{errors.ambulanceNumber.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="drivingLicence" className="text-base font-semibold text-gray-700">
-                {t("drivingLicence", language)} <span className="text-red-500">*</span>
-              </Label>
+              <Label htmlFor="drivingLicence">{t("drivingLicence", language)} *</Label>
               <Input
                 id="drivingLicence"
                 {...register("drivingLicence")}
+                defaultValue={getValues("drivingLicence")}
                 placeholder="e.g. 123456789"
-                className="w-full p-3 text-base border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
               />
-              {errors.drivingLicence && (
-                <p className="text-sm text-red-500">{errors.drivingLicence.message}</p>
-              )}
+              {errors.drivingLicence && <p className="text-sm text-red-500">{errors.drivingLicence.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="vehicleType" className="text-base font-semibold text-gray-700">
-                {t("vehicleType", language)} <span className="text-red-500">*</span>
-              </Label>
+              <Label htmlFor="division">{language === 'bn' ? 'বিভাগ' : 'Division'}</Label>
+              <select
+                id="division"
+                {...register("division", {
+                  onChange: (e) => {
+                    setValue("district", "");
+                    setValue("thana", "");
+                  }
+                })}
+                defaultValue={getValues("division")}
+                className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white"
+              >
+                <option value="">{t("selectDivision", language)}</option>
+                {divisions.map((div) => (
+                  <option key={div._id} value={div.name}>{div.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="district">{language === 'bn' ? 'জেলা' : 'District'}</Label>
+              <select
+                id="district"
+                {...register("district", {
+                  onChange: (e) => {
+                    setValue("thana", "");
+                  }
+                })}
+                defaultValue={getValues("district")}
+                disabled={!watchedDivision}
+                className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white disabled:opacity-50"
+              >
+                <option value="">{t("selectDistrict", language)}</option>
+                {districts.map((dist) => (
+                  <option key={dist._id} value={dist.name}>{dist.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="thana">{language === 'bn' ? 'থানা' : 'Thana'}</Label>
+              <select
+                id="thana"
+                {...register("thana")}
+                defaultValue={getValues("thana")}
+                disabled={!watchedDistrict}
+                className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white disabled:opacity-50"
+              >
+                <option value="">{t("selectThana", language)}</option>
+                {thanas.map((thana) => (
+                  <option key={thana._id} value={thana.name}>{thana.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="vehicleType">{t("vehicleType", language)} *</Label>
               <select
                 id="vehicleType"
                 {...register("vehicleType")}
-                className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500"
+                defaultValue={getValues("vehicleType")}
+                className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white"
               >
-             <option value="">{t("selectVehicleType", language)}</option>
+                <option value="">{t("selectVehicleType", language)}</option>
                 <option value="AC Ambulance">{t("acAmbulance", language)}</option>
                 <option value="Non AC Ambulance">{t("nonAcAmbulance", language)}</option>
                 <option value="ICU Ambulance">{t("icuAmbulance", language)}</option>
@@ -333,96 +372,34 @@ export default function EditAmbulancePage() {
                 <option value="NICU Ambulance">{t("nicuAmbulance", language)}</option>
                 <option value="Air Ambulance">{t("airAmbulance", language)}</option>
               </select>
-              {errors.vehicleType && (
-                <p className="text-sm text-red-500">{errors.vehicleType.message}</p>
-              )}
+              {errors.vehicleType && <p className="text-sm text-red-500">{errors.vehicleType.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="availabilityStatus" className="text-base font-semibold text-gray-700">
-                {t("availabilityStatus", language)} <span className="text-red-500">*</span>
-              </Label>
+              <Label htmlFor="availabilityStatus">{t("availabilityStatus", language)} *</Label>
               <select
                 id="availabilityStatus"
                 {...register("availabilityStatus")}
-                className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500"
+                defaultValue={getValues("availabilityStatus")}
+                className="w-full h-10 px-3 border border-gray-300 rounded-md bg-white"
               >
                 <option value="Available">{t("available", language)}</option>
                 <option value="Unavailable">{t("unavailable", language)}</option>
                 <option value="On Call">{t("onCall", language)}</option>
               </select>
-              {errors.availabilityStatus && (
-                <p className="text-sm text-red-500">{errors.availabilityStatus.message}</p>
-              )}
-            </div>
-
-            <div className="md:col-span-2">
-              <Label className="text-base font-semibold text-gray-700">
-                {t("location", language)}
-              </Label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-                <div className="relative">
-                  <select
-                    id="division"
-                    {...register("division")}
-                    className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500"
-                    onChange={(e) => {
-                      setValue("division", e.target.value);
-                      setValue("district", "");
-                      setValue("thana", "");
-                    }}
-                  >
-                    <option value="">{t("selectDivision", language)}</option>
-                    {divisions.map((div) => (
-                      <option key={div._id} value={div.name}>{div.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="relative">
-                  <select
-                    id="district"
-                    {...register("district")}
-                    disabled={!watchedDivision}
-                    className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500 disabled:bg-gray-50 disabled:text-gray-400"
-                    onChange={(e) => {
-                      setValue("district", e.target.value);
-                      setValue("thana", "");
-                    }}
-                  >
-                    <option value="">{t("selectDistrict", language)}</option>
-                    {districts.map((dist) => (
-                      <option key={dist._id} value={dist.name}>{dist.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="relative">
-                  <select
-                    id="thana"
-                    {...register("thana")}
-                    disabled={!watchedDistrict}
-                    className="w-full p-3 text-base border border-gray-200 rounded-lg appearance-none bg-white focus:ring-primary focus:border-primary text-gray-500 disabled:bg-gray-50 disabled:text-gray-400"
-                  >
-                    <option value="">{t("selectThana", language)}</option>
-                    {thanas.map((thana) => (
-                      <option key={thana._id} value={thana.name}>{thana.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+              {errors.availabilityStatus && <p className="text-sm text-red-500">{errors.availabilityStatus.message}</p>}
             </div>
           </div>
 
-          <div className="flex gap-4 pt-8">
+          <div className="pt-4 flex gap-4">
             <Button
               type="submit"
               disabled={isLoading}
-              className="flex-1 h-12 text-lg font-bold bg-primary hover:bg-primary/90 shadow-md rounded-xl transition-all active:scale-95"
+              className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold h-10"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {t("updating", language)}
                 </>
               ) : (
@@ -433,7 +410,7 @@ export default function EditAmbulancePage() {
               type="button"
               variant="outline"
               onClick={() => router.back()}
-              className="flex-1 h-12 text-lg font-bold border-2 rounded-xl transition-all"
+              className="flex-1 h-10 font-bold"
             >
               {t("cancel", language)}
             </Button>
