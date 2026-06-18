@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Thana from "@/models/Thana";
 import District from "@/models/District";
+import mongoose from "mongoose";
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,7 +12,13 @@ export async function GET(request: NextRequest) {
 
     let query: any = {};
     if (districtId) {
-      query.district = districtId;
+      // Guard against both string-stored and ObjectId-stored references
+      if (mongoose.Types.ObjectId.isValid(districtId)) {
+        const oid = new mongoose.Types.ObjectId(districtId);
+        query.$or = [{ district: oid }, { district: districtId }];
+      } else {
+        query.district = districtId;
+      }
     }
 
     const thanas = await Thana.find(query)

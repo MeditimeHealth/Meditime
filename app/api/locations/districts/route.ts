@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import District from "@/models/District";
 import Division from "@/models/Division";
+import mongoose from "mongoose";
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,7 +12,14 @@ export async function GET(request: NextRequest) {
 
     let query: any = {};
     if (divisionId) {
-      query.division = divisionId;
+      // Guard against both string-stored and ObjectId-stored references
+      // (data may have been imported with plain strings instead of ObjectIds)
+      if (mongoose.Types.ObjectId.isValid(divisionId)) {
+        const oid = new mongoose.Types.ObjectId(divisionId);
+        query.$or = [{ division: oid }, { division: divisionId }];
+      } else {
+        query.division = divisionId;
+      }
     }
 
     const districts = await District.find(query)

@@ -71,32 +71,54 @@ export async function GET(request: NextRequest) {
     if (hospitalSlug) {
       hospitalSlugs.push(hospitalSlug);
     } else if (thanaName || districtName || divisionName) {
-      let thanaIds: mongoose.Types.ObjectId[] = [];
+      // Helper: build a query value that matches both ObjectId-stored and string-stored FKs
+      const bothTypes = (id: mongoose.Types.ObjectId | string) => {
+        const str = id.toString();
+        return mongoose.Types.ObjectId.isValid(str)
+          ? { $in: [new mongoose.Types.ObjectId(str), str] }
+          : str;
+      };
+
+      let thanaIds: (mongoose.Types.ObjectId | string)[] = [];
+
       if (thanaName) {
         const thana = await Thana.findOne({ name: thanaName });
         if (thana) thanaIds.push(thana._id);
       } else if (districtName) {
         const district = await District.findOne({ name: districtName });
         if (district) {
-          const thanas = await Thana.find({ district: district._id });
+          const thanas = await Thana.find({ district: bothTypes(district._id) });
           thanaIds = thanas.map(t => t._id);
         }
       } else if (divisionName) {
         const division = await Division.findOne({ name: divisionName });
         if (division) {
-          const districts = await District.find({ division: division._id });
+          const districts = await District.find({ division: bothTypes(division._id) });
           const districtIds = districts.map(d => d._id);
-          const thanas = await Thana.find({ district: { $in: districtIds } });
+          // Build $in array covering both ObjectId and string versions of each district ID
+          const districtBothTypes = districtIds.flatMap(id => {
+            const str = id.toString();
+            return mongoose.Types.ObjectId.isValid(str)
+              ? [new mongoose.Types.ObjectId(str), str]
+              : [str];
+          });
+          const thanas = await Thana.find({ district: { $in: districtBothTypes } });
           thanaIds = thanas.map(t => t._id);
         }
       }
 
       if (thanaIds.length > 0) {
-        const hospitals = await Hospital.find({ thana: { $in: thanaIds } });
+        // Build $in covering both ObjectId and string forms of thana IDs
+        const thanaBothTypes = thanaIds.flatMap(id => {
+          const str = id.toString();
+          return mongoose.Types.ObjectId.isValid(str)
+            ? [new mongoose.Types.ObjectId(str), str]
+            : [str];
+        });
+        const hospitals = await Hospital.find({ thana: { $in: thanaBothTypes } });
         hospitalSlugs = hospitals.map(h => h.slug).filter(Boolean) as string[];
       } else {
-        // If location is provided but no hospitals found, we should return empty result
-        // By adding a non-existent slug, the query will return nothing.
+        // Location provided but no matching hospitals found → return no doctors
         hospitalSlugs.push("NON_EXISTENT_HOSPITAL_SLUG_FOR_EMPTY_LOCATION");
       }
     }

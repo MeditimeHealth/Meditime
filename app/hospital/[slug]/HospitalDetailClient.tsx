@@ -198,51 +198,6 @@ export default function HospitalDetailPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      {hospital && (
-        <>
-          {/* Hospital Schema */}
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "Hospital",
-                "name": hospital.name,
-                "image": "https://meditime.com/images/hospital-placeholder.jpg",
-                "url": `https://meditime.com/hospital/${hospital.slug || encodeURIComponent(hospital.name)}`,
-                "address": {
-                  "@type": "PostalAddress",
-                  "streetAddress": hospital.address || "",
-                  "addressLocality": hospital.thana?.name || "",
-                  "addressCountry": "BD"
-                },
-                "openingHours": "Mo-Su 00:00-24:00",
-                "aggregateRating": {
-                  "@type": "AggregateRating",
-                  "ratingValue": "4.5",
-                  "reviewCount": "200"
-                }
-              })
-            }}
-          />
-
-          {/* Breadcrumb Schema */}
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "BreadcrumbList",
-                "itemListElement": [
-                  { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://meditime.com" },
-                  { "@type": "ListItem", "position": 2, "name": "Hospitals", "item": "https://meditime.com/hospital" },
-                  { "@type": "ListItem", "position": 3, "name": hospital.name, "item": `https://meditime.com/hospital/${hospital.slug || encodeURIComponent(hospital.name)}` }
-                ]
-              })
-            }}
-          />
-        </>
-      )}
       <Nav_for_details />
       <div className="max-w-7xl mt-28 mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="flex flex-col lg:flex-row gap-8">

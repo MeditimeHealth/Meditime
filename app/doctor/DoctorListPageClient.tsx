@@ -54,7 +54,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import DoctorCard from "@/components/doctor-card";
-import { useLanguage, getLocalizedValue } from "@/contexts/LanguageContext";
+import { getLocalizedValue, useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
 import PageLoader from "@/components/page-loader";
 
@@ -538,55 +538,39 @@ function DoctorListPageContent() {
   const suggestions = useMemo(() => {
     if (!searchQuery || searchQuery.length < 1) return [];
 
-    const query = searchQuery.toLowerCase();
-    const results: Array<{
-      type: string;
-      typeBn: string;
-      value: string;
-      doctor?: Doctor;
-      hospital?: Hospital;
-      link?: string;
-    }> = [];
+    const query = searchQuery.toLowerCase().trim();
 
-    // From dedicated suggestion fetch
-    suggestionDoctors
-      .slice(0, 8)
-      .forEach(doctor => {
-        const nameMatches = doctor.name.toLowerCase().includes(query) || doctor.nameBn?.includes(searchQuery);
-        const specialtyMatches = doctor.specialty.toLowerCase().includes(query) || doctor.specialtyBn?.includes(searchQuery);
+    // Score each doctor by how closely they match the query
+    const scored = suggestionDoctors.slice(0, 20).map(doctor => {
+      const nameLower      = (doctor.name || '').toLowerCase();
+      const nameBnLower    = (doctor.nameBn || '').toLowerCase();
+      const specialtyLower = (doctor.specialty || '').toLowerCase();
+      const desigLower     = (doctor.designation || '').toLowerCase();
+      const qualifLower    = (doctor.qualification || '').toLowerCase();
 
-        if (nameMatches) {
-          results.push({
-            type: 'Doctor',
-            typeBn: 'ডাক্তার',
-            value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name,
-            doctor,
-            link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
-          });
-        } else if (
-          specialtyMatches &&
-          !results.some(r => r.type === 'Specialty' && r.value === (language === 'bn' && doctor.specialtyBn ? doctor.specialtyBn : doctor.specialty))
-        ) {
-          const specialtyName = language === 'bn' && doctor.specialtyBn ? doctor.specialtyBn : doctor.specialty;
-          results.push({
-            type: 'Specialty',
-            typeBn: 'বিশেষজ্ঞতা',
-            value: specialtyName,
-            link: `/doctor?specialty=${encodeURIComponent(doctor.specialty)}`
-          });
-        } else {
-          results.push({
-            type: 'Doctor',
-            typeBn: 'ডাক্তার',
-            value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name,
-            doctor,
-            link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
-          });
-        }
-      });
+      let score = 0;
+      if (nameLower === query)                   score += 100; // exact match
+      else if (nameLower.startsWith(query))      score += 80;  // starts with
+      else if (nameLower.includes(query))        score += 60;  // contains
+      if (nameBnLower.includes(query))           score += 50;  // Bangla name
+      if (specialtyLower.includes(query))        score += 30;
+      if (desigLower.includes(query))            score += 10;
+      if (qualifLower.includes(query))           score += 10;
 
-    return results.slice(0, 8);
-  }, [searchQuery, suggestionDoctors, hospitals, language]);
+      return { doctor, score };
+    });
+
+    // Sort descending by score, keep only those with at least some match
+    scored.sort((a, b) => b.score - a.score);
+
+    return scored.slice(0, 8).map(({ doctor }) => ({
+      type: 'Doctor',
+      typeBn: 'ডাক্তার',
+      value: language === 'bn' && doctor.nameBn ? doctor.nameBn : doctor.name,
+      doctor,
+      link: `/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`
+    }));
+  }, [searchQuery, suggestionDoctors, language]);
 
   // Filter and sort doctors
   const filteredAndSortedDoctors = doctors;
@@ -693,64 +677,9 @@ function DoctorListPageContent() {
     );
   }
 
-  const itemListSchema = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "name": "Find Doctors in Savar, Dhaka",
-    "url": "https://meditime.com.bd",
-    "description": "Browse and book appointments with top verified doctors in Savar, Dhaka.",
-    "mainEntity": {
-      "@type": "ItemList",
-      "numberOfItems": doctors.length,
-      "itemListElement": doctors.map((doctor, index) => ({
-        "@type": "ListItem",
-        "position": index + 1,
-        "item": {
-          "@type": "Physician",
-          "name": getLocalizedValue(doctor.name, doctor.nameBn, language),
-          "url": `https://meditime.com.bd/doctor/${(language === 'bn' ? (doctor.slugBn || doctor.slug) : (doctor.slug || doctor.slugBn)) || doctor._id}`,
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": "Savar",
-            "addressRegion": "Dhaka"
-          }
-        }
-      }))
-    }
-  };
-
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "https://meditime.com.bd"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Doctors",
-        "item": "https://meditime.com.bd/doctors"
-      }
-    ]
-  };
-
-
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       <Navbar />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
 
       {/* Cover Photo / Hero Section */}
       <motion.div

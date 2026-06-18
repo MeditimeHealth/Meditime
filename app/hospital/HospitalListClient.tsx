@@ -441,26 +441,6 @@ export default function HospitalListPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "name": "Hospitals",
-            "url": "https://meditime.com/hospital",
-            "description": "Browse all listed hospitals.",
-            "mainEntity": {
-              "@type": "ItemList",
-              "itemListElement": filteredAndSortedHospitals.map((h, i) => ({
-                "@type": "ListItem",
-                "position": i + 1,
-                "url": `https://meditime.com/hospital/${h.slug || encodeURIComponent(h.name)}`
-              }))
-            }
-          })
-        }}
-      />
       <Navbar />
 
       {/* Cover Photo / Hero Section */}
