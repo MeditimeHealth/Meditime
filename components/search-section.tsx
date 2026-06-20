@@ -93,7 +93,7 @@ export default function SearchSection() {
       // Exact matches get highest priority
       if (name === query || nameBn === query) maxScore = 100;
       else if (name.startsWith(query) || nameBn.startsWith(query)) maxScore = 80;
-      else if (name.includes(query) || nameBn.includes(query)) maxScore = 60;
+      else if (name.includes(query) || nameBn.includes(query)) maxScore = 80;
 
       // Specialty matches
       if (specialty.includes(query) || specialtyBn.includes(query)) {

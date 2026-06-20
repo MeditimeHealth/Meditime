@@ -7,11 +7,8 @@ export interface IBloodDonor extends Document {
   email?: string;
   bloodGroup: string;
   division?: string;
-  divisionBn?: string;
   district?: string;
-  districtBn?: string;
   thana?: string;
-  thanaBn?: string;
   photo?: string;
   availabilityStatus: string;
   lastDonationDate?: Date;
@@ -53,23 +50,11 @@ const BloodDonorSchema: Schema = new Schema(
       type: String,
       trim: true,
     },
-    divisionBn: {
-      type: String,
-      trim: true,
-    },
     district: {
       type: String,
       trim: true,
     },
-    districtBn: {
-      type: String,
-      trim: true,
-    },
     thana: {
-      type: String,
-      trim: true,
-    },
-    thanaBn: {
       type: String,
       trim: true,
     },

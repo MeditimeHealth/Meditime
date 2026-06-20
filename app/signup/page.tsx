@@ -334,6 +334,23 @@ export default function SignupPage() {
                     </Button>
                   </form>
 
+                  {/* Or divider */}
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="bg-white px-2 text-gray-500">
+                        {language === 'bn' ? 'অথবা' : 'Or'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Google Sign-in Button */}
+                  <div className="w-full flex justify-center mb-6">
+                    <div id="google-signup-button" className="w-full" />
+                  </div>
+
                   <p className="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-gray-600">
                     {t.alreadyHaveAccount}{" "}
                     <Link href="/login" className="text-primary font-medium hover:underline">

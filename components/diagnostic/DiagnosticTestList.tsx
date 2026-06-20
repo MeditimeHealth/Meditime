@@ -34,7 +34,11 @@ const DiagnosticTestList = forwardRef<HTMLDivElement, DiagnosticTestListProps>(
                       <div className="flex items-center gap-3 mb-2 flex-wrap">
                         <h4 className="text-xl lg:text-2xl font-bold text-slate-900">{getLocalizedValue(test.name, test.nameBn, language)}</h4>
                         <span className="px-2.5 py-1 bg-slate-50 text-slate-600 border border-slate-200 rounded-md text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">
-                          {getLocalizedValue(test.category, test.categoryBn, language) || t.categories.blood}
+                          {test.departments[0] === 'Blood' ? t.categories.blood : 
+                           test.departments[0] === 'Cardiology' ? t.categories.cardio :
+                           test.departments[0] === 'Imaging' ? t.categories.imaging :
+                           test.departments[0] === 'Pathology' ? t.categories.pathology : 
+                           test.departments[0]}
                         </span>
                       </div>
                       <p className="text-md text-slate-500 mb-4 line-clamp-2">

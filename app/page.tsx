@@ -1,4 +1,5 @@
 import Navbar from "@/components/navbar";
+import Script from "next/script";
 import HeroSection from "@/components/hero-section";
 import SearchSection from "@/components/search-section";
 import ServicesSection from "@/components/services-section";
@@ -158,6 +159,15 @@ export default function Home() {
 
   return (
     <div className="overflow-x-hidden relative">
+      <Script src="https://www.googletagmanager.com/gtag/js?id=G-YPCJ8FPZNM" strategy="afterInteractive" />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-YPCJ8FPZNM');
+        `}
+      </Script>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}

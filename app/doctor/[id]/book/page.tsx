@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-import { ArrowLeft, MapPin, Loader2, RotateCcw, Ticket, Building2, ChevronRight } from "lucide-react";
+import { ArrowLeft, MapPin, Loader2, RotateCcw, Ticket, Building2, ChevronRight, Gift } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "@/lib/toast";
 import { translations } from "@/lib/translations";
@@ -370,10 +370,14 @@ export default function BookAppointmentPage() {
 
       const slotForDate = getSlotForDate(selectedDate);
 
+      // Validate mobile number to be exactly 11 digits starting with 01
+      if (mobileNumber.length !== 11 || !mobileNumber.startsWith("01")) {
+        alert(language === 'en' ? "Please enter a valid 11-digit mobile number starting with 01." : "দয়া করে ০১ দিয়ে শুরু হওয়া ১১ ডিজিটের সঠিক মোবাইল নম্বর দিন।");
+        return;
+      }
+
       // Prepend +880 to mobile number when submitting
-      const formattedMobileNumber = mobileNumber.startsWith("+880")
-        ? mobileNumber
-        : `+880${mobileNumber.replace(/^0+/, "")}`;
+      const formattedMobileNumber = mobileNumber;
 
       // Save booking data to localStorage and go to checkout page
       const checkoutData = {
@@ -547,7 +551,7 @@ export default function BookAppointmentPage() {
                     {days.map((day, index) => (
                       <div
                         key={index}
-                        className="text-center font-semibold text-gray-700 py-1 text-lg lg:text-xl"
+                        className="text-center font-semibold text-gray-700 py-1 text-xs md:text-xl"
 
                       >
                         {day}
@@ -668,21 +672,17 @@ export default function BookAppointmentPage() {
                     {t('mobileNumber')} <span className="text-red-500 font-bold">*</span>
                   </Label>
                   <div className="relative flex items-center mt-1">
-                    <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-gray-300 pointer-events-none select-none">
-                        <img src="https://flagcdn.com/w40/bd.png" alt="BD" className="w-6 h-4 rounded-sm object-cover" />
-                      <span>+880</span>
-                    </span>
                     <Input
                       id="mobileNumber"
                       type="tel"
                       value={mobileNumber}
                       onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '');
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 11);
                         setMobileNumber(val);
                       }}
                       required
-                      placeholder={t('mobileNumberPlaceholder')}
-                      className={`pl-[5.5rem] h-10 w-full rounded-none ${!mobileNumber ? '' : 'border-primary bg-green-50/30'}`}
+                      placeholder="01712345678"
+                      className={`h-10 w-full rounded-none ${!mobileNumber ? '' : 'border-primary bg-green-50/30'}`}
                     />
                 </div>
                 </div>
@@ -724,7 +724,7 @@ export default function BookAppointmentPage() {
                 {/* Affiliate Code - with Serial Input Option */}
                 <div className="p-4 bg-primary/10 rounded-xl border-2 border-primary/20">
                   <Label htmlFor="affiliateCode" className="flex items-center gap-2 text-primary" >
-                    <Ticket className="h-4 w-4" />
+                    <Gift className="h-4 w-4" />
                     {t('serialAffiliateCodeLabel')}
                   </Label>
                   <Input

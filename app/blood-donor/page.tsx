@@ -19,7 +19,8 @@ import {
   CheckCircle2,
   Users,
   Loader2,
-  Clock
+  Clock,
+  RotateCcw
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -163,18 +164,22 @@ export default function BloodDonorPage() {
     }
   }, [selectedDistrict, fetchThanas]);
 
-  const handleSearch = async () => {
+  const performSearch = async (group = selectedGroup, divisionId = selectedDivision, districtId = selectedDistrict, thanaId = selectedThana) => {
     setLoading(true);
     try {
       let url = `/api/blood-donors?`;
-      if (selectedGroup) url += `bloodGroup=${encodeURIComponent(selectedGroup)}&`;
-      if (selectedDivision) {
-        const div = divisions.find(d => d._id === selectedDivision);
+      if (group) url += `bloodGroup=${encodeURIComponent(group)}&`;
+      if (divisionId) {
+        const div = divisions.find(d => d._id === divisionId);
         if (div) url += `division=${encodeURIComponent(div.name)}&`;
       }
-      if (selectedDistrict) {
-        const dist = districts.find(d => d._id === selectedDistrict);
+      if (districtId) {
+        const dist = districts.find(d => d._id === districtId);
         if (dist) url += `district=${encodeURIComponent(dist.name)}&`;
+      }
+      if (thanaId) {
+        const th = thanas.find(t => t._id === thanaId);
+        if (th) url += `thana=${encodeURIComponent(th.name)}&`;
       }
 
       const res = await fetch(url);
@@ -188,6 +193,8 @@ export default function BloodDonorPage() {
       setLoading(false);
     }
   };
+
+  const handleSearch = () => performSearch();
 
   // Modal Specific States
   const [modalDistricts, setModalDistricts] = useState<any[]>([]);
@@ -390,7 +397,7 @@ export default function BloodDonorPage() {
                     <option value="">{language === 'en' ? "Select Division" : "বিভাগ নির্বাচন করুন"}</option>
                     {divisions.map((div) => (
                       <option key={div._id} value={div._id}>
-                        {getLocalizedValue(div.name, div.nameBn, language)}
+                        {div.name}
                       </option>
                     ))}
                   </select>
@@ -409,7 +416,7 @@ export default function BloodDonorPage() {
                     <option value="">{language === 'en' ? "Select District" : "জেলা নির্বাচন করুন"}</option>
                     {districts.map((dist) => (
                       <option key={dist._id} value={dist._id}>
-                        {getLocalizedValue(dist.name, dist.nameBn, language)}
+                        {dist.name  }
                       </option>
                     ))}
                   </select>
@@ -428,7 +435,7 @@ export default function BloodDonorPage() {
                     <option value="">{language === 'en' ? "Select Thana" : "থানা নির্বাচন করুন"}</option>
                     {thanas.map((thana) => (
                       <option key={thana._id} value={thana._id}>
-                        {getLocalizedValue(thana.name, thana.nameBn, language)}
+                        {thana.name}
                       </option>
                     ))}
                   </select>
@@ -444,6 +451,32 @@ export default function BloodDonorPage() {
                   <ChevronRight className="h-5 w-5" />
                 </div>}
               </Button>
+
+              <AnimatePresence>
+                {(selectedGroup || selectedDivision || selectedDistrict || selectedThana) && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="flex justify-end pt-4 border-t border-slate-100 overflow-hidden"
+                  >
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedGroup("");
+                        setSelectedDivision("");
+                        setSelectedDistrict("");
+                        setSelectedThana("");
+                        performSearch("", "", "", "");
+                      }}
+                      className="flex items-center gap-2 px-5 py-2.5 text-sm text-slate-600 hover:text-slate-900 border-slate-200 hover:border-slate-300 transition-all duration-200"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      {language === 'bn' ? 'রিসেট' : 'Reset'}
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </Card>
 
@@ -471,19 +504,19 @@ export default function BloodDonorPage() {
                       <motion.div key={donor._id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
                         <Card className="p-6 rounded-[2rem] border-none shadow-lg hover:shadow-xl transition-all bg-white relative overflow-hidden">
                           <div className="flex items-center gap-4 mb-6">
-                            <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 ring-4 ring-slate-50 flex items-center justify-center">
-                              <Image src={'/blood-drop.png'} alt={donor.name} width={64} height={64} className="h-8 w-8" />
+                            <div className="relative w-14 h-14 rounded-2xl overflow-hidden bg-slate-100 ring-4 ring-slate-50 flex items-center justify-center">
+                              <Image src={'/blood-drop.png'} alt={donor.name} width={50} height={50} className="h-6 w-6" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-start justify-between gap-2">
                                 <h3 className="font-bold text-lg text-slate-900 ">{getLocalizedValue(donor.name, donor.nameBn, language)}</h3>
-      
+
                               </div>
-                               {donor.isApproved && (
-                                  <span className="text-[10px] font-bold text-primary uppercase bg-primary/5 px-2 py-0.5 rounded border border-primary/10">
-                                    {t.card.verified[language]}
-                                  </span>
-                                )}
+                              {donor.isApproved && (
+                                <span className="text-[10px] font-bold text-primary uppercase bg-primary/5 px-2 py-0.5 rounded border border-primary/10">
+                                  {t.card.verified[language]}
+                                </span>
+                              )}
                               <div className="flex items-center gap-2 mt-1">
                               </div>
                             </div>
@@ -494,12 +527,24 @@ export default function BloodDonorPage() {
                             <div className="flex items-center justify-between gap-2 text-sm">
                               <span className="text-slate-500 font-medium">{t.card.status[language]} : </span>
                               <span className={`font-bold ${donor.availabilityStatus === 'Available' ? 'text-green-500' : 'text-orange-500'}`}>
-                                {donor.availabilityStatus === 'Available' ? (language === 'bn' ? 'উপলব্ধ' : 'Available') : (language === 'bn' ? 'অনুপলব্ধ' : donor.availabilityStatus)}
+                                {donor.availabilityStatus === 'Available'
+                                  ? (language === 'bn' ? 'উপলব্ধ' : 'Available')
+                                  : donor.availabilityStatus === 'Recently Donated'
+                                    ? (language === 'bn' ? 'সম্প্রতি রক্ত দিয়েছেন' : 'Recently Donated')
+                                    : (language === 'bn' ? 'অনুপলব্ধ' : 'Unavailable')}
                               </span>
                             </div>
                             <div className="flex items-center justify-between gap-2 text-sm">
                               <span className="text-slate-500 font-medium">{language === 'en' ? "Last Donation : " : "শেষ রক্তদান : "}</span>
                               <span className="font-bold text-slate-700">{donor.lastDonationDate ? new Date(donor.lastDonationDate).toLocaleDateString() : (language === 'bn' ? 'কখনো নয়' : 'Never')}</span>
+                            </div>
+                            <div className="flex items-center justify-between gap-2 text-sm">
+                              <span className="text-slate-500 font-medium">{language === 'en' ? "Address : " : "ঠিকানা : "}</span>
+                              <span className="font-bold text-slate-700">
+                                {language === 'bn'
+                                  ? [donor.thanaBn || donor.thana, donor.districtBn || donor.district].filter(Boolean).join(", ")
+                                  : [donor.thana, donor.district].filter(Boolean).join(", ") || 'N/A'}
+                              </span>
                             </div>
                           </div>
 

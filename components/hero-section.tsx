@@ -24,14 +24,15 @@ export default function HeroSection() {
       ctaText: t.slide1.cta,
       ctaLink: "/doctor",
       ctaText2: t.slide1.cta2,
-      ctaLink2: "/",
+      ctaLink2: "/live-consultation",
     },
     {
       title: t.slide2.title,
       description: t.slide2.description,
       image: "/slide-2.png",
       ctaText: t.slide2.cta,
-      ctaLink: "https://play.google.com/store",
+      ctaLink: "/diagnostic",
+
     },
     {
       title: t.slide3.title,
@@ -45,7 +46,7 @@ export default function HeroSection() {
       description: t.slide4.description,
       image: "/slide-4.png",
       ctaText: t.slide4.cta,
-      ctaLink: "/diagnostic",
+      ctaLink: "https://play.google.com/store",
     },
   ];
 

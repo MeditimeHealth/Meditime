@@ -1,5 +1,5 @@
 import React from "react";
-import { RotateCcw, Ticket, Loader2, ChevronRight } from "lucide-react";
+import { RotateCcw, Ticket, Loader2, ChevronRight, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,6 +43,7 @@ export default function DiagnosticPatientForm({
   handleSubmit
 }: DiagnosticPatientFormProps): React.JSX.Element {
   const { language } = useLanguage();
+  const [mobileError, setMobileError] = React.useState<string>("");
 
   // Load saved patient form data from localStorage
   React.useEffect(() => {
@@ -175,15 +176,40 @@ export default function DiagnosticPatientForm({
               id="mobileNumber"
               type="tel"
               value={mobileNumber}
+              maxLength={11}
               onChange={(e) => {
-                const val = e.target.value.replace(/\D/g, '');
+                const val = e.target.value.replace(/\D/g, '').slice(0, 11);
                 setMobileNumber(val);
+                if (val.length > 0 && val.length < 11) {
+                  setMobileError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে' : 'Mobile number must be exactly 11 digits');
+                } else {
+                  setMobileError("");
+                }
+              }}
+              onBlur={() => {
+                if (mobileNumber.length > 0 && mobileNumber.length < 11) {
+                  setMobileError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে' : 'Mobile number must be exactly 11 digits');
+                }
               }}
               required
-              placeholder={t("mobileNumberLabel", language)}
-              className={`pl-[5.5rem] h-10 w-full border-primary rounded-none ${!mobileNumber ? 'border-gray-100' : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'}`}
+              placeholder={language === 'bn' ? '০১XXXXXXXXX' : '01XXXXXXXXX'}
+              className={`pl-[5.5rem] h-10 w-full border-primary rounded-none ${
+                mobileError
+                  ? 'border-red-400 bg-red-50'
+                  : !mobileNumber
+                  ? 'border-gray-100'
+                  : 'border-[#00B7B5]/30 bg-[#00B7B5]/5'
+              }`}
             />
           </div>
+          {mobileError && (
+            <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+              <span className="font-bold">!</span> {mobileError}
+            </p>
+          )}
+          <p className="text-xs text-gray-400 mt-1">
+            {language === 'bn' ? '১১ সংখ্যা (যেমন: ০১XXXXXXXXX)' : '11 digits (e.g. 01XXXXXXXXX)'}
+          </p>
         </div>
 
         {/* Gender - Optional */}
@@ -224,7 +250,7 @@ export default function DiagnosticPatientForm({
         {/* Affiliate Code - with Serial Input Option */}
         <div className="p-4 bg-primary/10 rounded-xl border-2 border-primary/20">
           <Label htmlFor="affiliateCode" className="flex items-center gap-2 text-primary" >
-            <Ticket className="h-4 w-4" />
+            <Gift className="h-4 w-4" />
             {t("serialAffiliateCode", language)}
           </Label>
           <Input
@@ -241,7 +267,7 @@ export default function DiagnosticPatientForm({
 
         <Button
           type="submit"
-          disabled={!selectedDate || !patientName || !mobileNumber || submitting}
+          disabled={!selectedDate || !patientName || mobileNumber.length !== 11 || !!mobileError || submitting}
           className="w-full h-14 btn-primary btn-slide text-white font-bold py-4 text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-xl"
 
         >

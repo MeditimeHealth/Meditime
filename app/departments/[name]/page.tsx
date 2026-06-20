@@ -26,7 +26,7 @@ export default function DepartmentDoctorsPage() {
 
   const fetchDoctors = async () => {
     try {
-      const response = await fetch(`/api/doctors?limit=200`);
+      const response = await fetch(`/api/doctors?limit=20000`);
       const data = await response.json();
       if (response.ok) {
         const departmentDoctors = (data.doctors || []).filter(

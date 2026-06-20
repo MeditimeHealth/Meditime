@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://meditime.com.bd
+
+# Sitemaps
+Sitemap: https://meditime.com.bd/sitemap.xml

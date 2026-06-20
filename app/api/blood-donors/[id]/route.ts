@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import BloodDonor from "@/models/BloodDonor";
+import Division from "@/models/Division";
+import District from "@/models/District";
+import Thana from "@/models/Thana";
 
 export async function GET(
   request: NextRequest,
@@ -18,7 +21,28 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ bloodDonor }, { status: 200 });
+    // Resolve divisionBn, districtBn, and thanaBn translations on the fly dynamically
+    const donorObj = bloodDonor.toObject();
+    if (donorObj.division) {
+      const div = await Division.findOne({ name: donorObj.division });
+      if (div && div.nameBn) {
+        donorObj.divisionBn = div.nameBn;
+      }
+    }
+    if (donorObj.district) {
+      const dist = await District.findOne({ name: donorObj.district });
+      if (dist && dist.nameBn) {
+        donorObj.districtBn = dist.nameBn;
+      }
+    }
+    if (donorObj.thana) {
+      const th = await Thana.findOne({ name: donorObj.thana });
+      if (th && th.nameBn) {
+        donorObj.thanaBn = th.nameBn;
+      }
+    }
+
+    return NextResponse.json({ bloodDonor: donorObj }, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching blood donor:", error);
     return NextResponse.json(
@@ -38,6 +62,7 @@ export async function PUT(
     const body = await request.json();
     const {
       name,
+      nameBn,
       phoneNumber,
       email,
       bloodGroup,
@@ -72,6 +97,7 @@ export async function PUT(
 
     const updateData: any = {
       name,
+      nameBn: nameBn || undefined,
       phoneNumber,
       email: email || undefined,
       bloodGroup,

@@ -197,7 +197,7 @@ function DoctorListPageContent() {
     return <Stethoscope className="w-7 h-7" />;
   };
 
-  const getDeptPublicIcon = (name: string) => {
+  const getRawDeptPublicIcon = (name: string) => {
     const icons = [
       "Burn-Plastic & Reconstructive Surgery.png",
       "Cardiology & Medicine.png",
@@ -275,6 +275,11 @@ function DoctorListPageContent() {
     if (fallback) return `/icon_of_dept/${fallback}`;
 
     return null;
+  };
+
+  const getDeptPublicIcon = (name: string) => {
+    const path = getRawDeptPublicIcon(name);
+    return path ? encodeURI(path).replace(/&/g, "%26").replace(/\(/g, "%28").replace(/\)/g, "%29") : null;
   };
 
   const fetchDoctors = async (pageNum: number, isNewFilter: boolean = false) => {

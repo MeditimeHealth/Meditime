@@ -20,15 +20,22 @@ export default function SettingsPage() {
   });
 
   useEffect(() => {
-    const userData = localStorage.getItem("admin_user");
-    if (userData) {
-      const user = JSON.parse(userData);
-      setFormData((prev) => ({
-        ...prev,
-        email: user.email || "",
-        username: user.username || "",
-      }));
-    }
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("/api/admin/auth/verify");
+        if (res.ok) {
+          const data = await res.json();
+          setFormData((prev) => ({
+            ...prev,
+            email: data.user.email || "",
+            username: data.user.username || "",
+          }));
+        }
+      } catch (err) {
+        console.error("Failed to load admin profile info:", err);
+      }
+    };
+    fetchProfile();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +61,6 @@ export default function SettingsPage() {
 
       if (response.ok) {
         showToast.success("Profile updated successfully");
-        localStorage.setItem("admin_user", JSON.stringify(result.user));
         setFormData(prev => ({
           ...prev,
           currentPassword: "",

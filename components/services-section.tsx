@@ -45,7 +45,7 @@ export default function ServicesSection() {
     {
       title: t.videoConsultTitle,
       cta: t.bookConsultationBtn,
-      href: "/",
+      href: "/live-consultation",
       description: t.videoConsultDesc,
       image: "https://plus.unsplash.com/premium_photo-1661775601929-8c775187bea6?auto=format&fit=crop&q=80",
     },

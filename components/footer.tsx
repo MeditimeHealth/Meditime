@@ -29,7 +29,7 @@ export default function Footer() {
   ];
 
   const socialLinks = [
-    { icon: MessageCircle, href: "https://wa.me/8801610385555",             label: "WhatsApp"  },
+    { icon: MessageCircle, href: "https://wa.me/01610384444",             label: "WhatsApp"  },
     { icon: Facebook,      href: "https://www.facebook.com/meditime.health", label: "Facebook"  },
     { icon: Instagram,     href: "#", label: "Instagram" },
     { icon: Linkedin,      href: "#", label: "LinkedIn"  },

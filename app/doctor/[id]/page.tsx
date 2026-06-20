@@ -5,6 +5,45 @@ import Doctor from "@/models/Doctor";
 import Hospital from "@/models/Hospital";
 import { cookies } from "next/headers";
 
+const getMedicalSpecialtyUrl = (specialty: string | undefined): string[] | string | undefined => {
+  if (!specialty) return undefined;
+  const specialtyMap: Record<string, string> = {
+    "Gastro-Liver Diseases": "https://schema.org/Gastroenterologic",
+    "Trauma & Orthopedic Surgery": "https://schema.org/Surgery",
+    "Gynecology & Obstetrics": "https://schema.org/Gynecologic",
+    "Neuro-Medicine & Surgery": "https://schema.org/Neurologic",
+    "General & Laparoscopic Surgery": "https://schema.org/Surgery",
+    "ENT (Ear, Nose & Throat)": "https://schema.org/Otolaryngologic",
+    "Chest Diseases & Asthma": "https://schema.org/Pulmonologic",
+    "Nephrology & Medicine": "https://schema.org/Renal",
+    "Dermatology & Venereology": "https://schema.org/Dermatologic",
+    "Neonatal & Pediatrics": "https://schema.org/Pediatric",
+    "Cardiology & Medicine": "https://schema.org/Cardiovascular",
+    "Medicine Specialist": "https://schema.org/InternalMedicine",
+    "Ophthalmology": "https://schema.org/Ophthalmologic",
+    "Oral & Dental Diseases": "https://schema.org/Dentistry",
+    "Pain Medicine & Rheumatology": "https://schema.org/Rheumatologic",
+    "Diabetes": "https://schema.org/Endocrine",
+    "Physiotherapy": "https://schema.org/Physiotherapy",
+    "Medicine & Diabetes": "https://schema.org/Endocrine",
+    "Psychiatrist and psychotherapist": "https://schema.org/Psychiatric",
+    "Urology & Nephrology": "https://schema.org/Urologic",
+    "Thyroid & Hormone Specialist": "https://schema.org/Endocrine",
+    "Nutrition & Dietetics": "https://schema.org/DietNutrition",
+    "Burn, Plastic & Reconstructive Surgery": "https://schema.org/PlasticSurgery",
+    "Chest/Thoracic Surgery": "https://schema.org/Surgery",
+    "Oncology": "https://schema.org/Oncologic",
+    "Hematology & Medicine": "https://schema.org/Hematologic",
+    "Hepato-Biliary & Liver Transplant Surgery": "https://schema.org/Surgery",
+    "Vascular Surgery": "https://schema.org/Surgery",
+    "Food & Nutrition": "https://schema.org/DietNutrition",
+    "Nuclear Medicine": "https://schema.org/MedicalSpecialty",
+    "Cancer Specialist / Oncology": "https://schema.org/Oncologic"
+  };
+  const url = specialtyMap[specialty];
+  return url ? [url] : specialty;
+};
+
 export async function generateMetadata(
   { params }: { params: Promise<{ id: string }> },
   parent: ResolvingMetadata
@@ -183,7 +222,7 @@ export default async function DoctorProfilePage({
           "image": (doctor as any).image || `${baseUrl}/logo.png`,
           "description": (doctor as any).bio || `${(doctor as any).name} - ${(doctor as any).specialty}`,
           "url": doctorUrl,
-          "medicalSpecialty": (doctor as any).specialty,
+          "medicalSpecialty": getMedicalSpecialtyUrl((doctor as any).specialty),
           "telephone": "+8801946102102",
           ...(minFee ? { "priceRange": `৳${minFee}` } : {}),
           "address": {

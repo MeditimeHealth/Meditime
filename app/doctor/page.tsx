@@ -1,9 +1,49 @@
 import DoctorListPageClient from './DoctorListPageClient';
+import Script from 'next/script';
 import { Metadata } from 'next';
 import dbConnect from '@/lib/mongodb';
 import Doctor from '@/models/Doctor';
 import Department from '@/models/Department';
 import Hospital from '@/models/Hospital';
+
+const getMedicalSpecialtyUrl = (specialty: string | undefined): string[] | string | undefined => {
+  if (!specialty) return undefined;
+  const specialtyMap: Record<string, string> = {
+    "Gastro-Liver Diseases": "https://schema.org/Gastroenterologic",
+    "Trauma & Orthopedic Surgery": "https://schema.org/Surgery",
+    "Gynecology & Obstetrics": "https://schema.org/Gynecologic",
+    "Neuro-Medicine & Surgery": "https://schema.org/Neurologic",
+    "General & Laparoscopic Surgery": "https://schema.org/Surgery",
+    "ENT (Ear, Nose & Throat)": "https://schema.org/Otolaryngologic",
+    "Chest Diseases & Asthma": "https://schema.org/Pulmonologic",
+    "Nephrology & Medicine": "https://schema.org/Renal",
+    "Dermatology & Venereology": "https://schema.org/Dermatologic",
+    "Neonatal & Pediatrics": "https://schema.org/Pediatric",
+    "Cardiology & Medicine": "https://schema.org/Cardiovascular",
+    "Medicine Specialist": "https://schema.org/InternalMedicine",
+    "Ophthalmology": "https://schema.org/Ophthalmologic",
+    "Oral & Dental Diseases": "https://schema.org/Dentistry",
+    "Pain Medicine & Rheumatology": "https://schema.org/Rheumatologic",
+    "Diabetes": "https://schema.org/Endocrine",
+    "Physiotherapy": "https://schema.org/Physiotherapy",
+    "Medicine & Diabetes": "https://schema.org/Endocrine",
+    "Psychiatrist and psychotherapist": "https://schema.org/Psychiatric",
+    "Urology & Nephrology": "https://schema.org/Urologic",
+    "Thyroid & Hormone Specialist": "https://schema.org/Endocrine",
+    "Nutrition & Dietetics": "https://schema.org/DietNutrition",
+    "Burn, Plastic & Reconstructive Surgery": "https://schema.org/PlasticSurgery",
+    "Chest/Thoracic Surgery": "https://schema.org/Surgery",
+    "Oncology": "https://schema.org/Oncologic",
+    "Hematology & Medicine": "https://schema.org/Hematologic",
+    "Hepato-Biliary & Liver Transplant Surgery": "https://schema.org/Surgery",
+    "Vascular Surgery": "https://schema.org/Surgery",
+    "Food & Nutrition": "https://schema.org/DietNutrition",
+    "Nuclear Medicine": "https://schema.org/MedicalSpecialty",
+    "Cancer Specialist / Oncology": "https://schema.org/Oncologic"
+  };
+  const url = specialtyMap[specialty];
+  return url ? [url] : specialty;
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -61,7 +101,7 @@ export default async function DoctorListPage() {
           "@type": "Physician",
           "name": doctor.name || doctor.nameBn || "",
           "url": `https://meditime.com.bd/doctor/${doctor.slug || doctor._id}`,
-          "medicalSpecialty": doctor.specialty || undefined,
+          "medicalSpecialty": getMedicalSpecialtyUrl(doctor.specialty),
         }
       }))
     }
@@ -78,6 +118,15 @@ export default async function DoctorListPage() {
 
   return (
     <>
+      <Script src="https://www.googletagmanager.com/gtag/js?id=G-YPCJ8FPZNM" strategy="afterInteractive" />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-YPCJ8FPZNM');
+        `}
+      </Script>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}

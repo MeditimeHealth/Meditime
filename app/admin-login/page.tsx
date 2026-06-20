@@ -29,7 +29,6 @@ export default function AdminLoginPage() {
       const result = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("admin_user", JSON.stringify(result.user));
         window.dispatchEvent(new Event("adminLogin"));
         showToast.success("Welcome back, Admin!");
         router.push("/admin");

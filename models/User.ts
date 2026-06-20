@@ -8,13 +8,15 @@ export interface IUser extends Document {
   gender?: 'male' | 'female' | 'other';
   bloodGroup?: string;
   age?: number;
-  password: string;
+  password?: string;
   photo?: string;
   resetOtp?: string;
   resetOtpExpiry?: Date;
   role?: 'user' | 'doctor' | 'bloodDonor' | 'ambulance' | 'affiliate';
   userType?: 'user' | 'doctor' | 'bloodDonor' | 'ambulance' | 'affiliate';
   doctorId?: mongoose.Types.ObjectId;
+  authProvider?: 'credentials' | 'google';
+  googleId?: string;
   // Affiliate-specific fields
   affiliateCode?: string;
   isActive?: boolean;
@@ -66,8 +68,19 @@ const UserSchema: Schema = new Schema(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
+      required: function(this: any) {
+        return this.authProvider !== 'google';
+      },
       minlength: [6, 'Password must be at least 6 characters'],
+    },
+    authProvider: {
+      type: String,
+      enum: ['credentials', 'google'],
+      default: 'credentials',
+    },
+    googleId: {
+      type: String,
+      trim: true,
     },
     role: {
       type: String,

@@ -219,61 +219,14 @@ export default function DoctorProfilePage() {
     }
   };
 
-  // Helper to calculate similarity score
-  const calculateRelevanceScore = (currentDoc: IDoctor, otherDoc: IDoctor): number => {
-    let score = 0;
-    if (otherDoc.department === currentDoc.department) score += 10;
-
-    const currentHospitals = new Set(currentDoc.availability?.map(slot => slot.hospital).filter(Boolean) || []);
-    const otherHospitals = otherDoc.availability?.map(slot => slot.hospital).filter(Boolean) || [];
-    const sharesHospital = otherHospitals.some(h => currentHospitals.has(h));
-    if (sharesHospital) score += 5;
-
-    return score;
-  };
-
   const fetchRelatedDoctors = async () => {
     if (!doctor) return;
 
     try {
-      const response = await fetch("/api/doctors");
+      const response = await fetch(`/api/doctors/${doctorId}/related?language=${language}`);
       const data = await response.json();
       if (response.ok && data.doctors) {
-        // Filter out current doctor
-        let filtered = data.doctors.filter((d: IDoctor) => d._id !== doctorId);
-
-        // If in Bangla mode, prioritize/filter doctors with Bangla names to avoid mixing
-        if (language === 'bn') {
-          const withBn = filtered.filter((d: IDoctor) => d.nameBn);
-          // If we have enough Bangla doctors, use only them. Otherwise, keep original to show something.
-          if (withBn.length >= 4) {
-            filtered = withBn;
-          } else {
-            // Sort so Bangla ones come first
-            filtered = filtered.sort((a: IDoctor, b: IDoctor) => {
-              if (a.nameBn && !b.nameBn) return -1;
-              if (!a.nameBn && b.nameBn) return 1;
-              return 0;
-            });
-          }
-        }
-
-        // Sort by relevance score
-        const sorted = filtered.sort((a: IDoctor, b: IDoctor) => {
-          const relevanceA = calculateRelevanceScore(doctor, a);
-          const relevanceB = calculateRelevanceScore(doctor, b);
-
-          // Secondary sort by relevance
-          if (relevanceA !== relevanceB) return relevanceB - relevanceA;
-
-          // Tertiary sort: prioritize doctors with images if scores are same
-          if (a.image && !b.image) return -1;
-          if (!a.image && b.image) return 1;
-
-          return 0;
-        });
-
-        setRelatedDoctors(sorted.slice(0, 4)); // Take top 4
+        setRelatedDoctors(data.doctors);
       }
     } catch (error) {
       console.error("Error fetching related doctors:", error);
@@ -375,18 +328,6 @@ const displayedBio = needsTruncation && !bioExpanded
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
 
-      {/* Breadcrumbs */}
-      {/* <div className="bg-gradient-to-r from-gray-50 to-white border-b-2 border-gray-200 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3  md:text-lg font-semibold ">
-            <Link href="/" className="hover:text-primary transition-colors" >{language === 'bn' ? 'হোম' : 'Home'}</Link>
-            <span className="text-gray-400">/</span>
-            <Link href="/doctor" className="hover:text-primary transition-colors" >{language === 'bn' ? 'বিশেষজ্ঞ ডাক্তার' : 'Doctors'}</Link>
-            <span className="text-gray-400">/</span>
-            <span className="" >{getLocalizedValue(doctor.name, doctor.nameBn, language)}</span>
-          </div>
-        </div>
-      </div> */}
 
       {/* Facebook-style Cover Photo - Fixed Static */}
       <div className="relative  w-full h-[350px] md:h-[450px] overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-primary">
@@ -435,17 +376,10 @@ const displayedBio = needsTruncation && !bioExpanded
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
                     <h1
-                      className="text-3xl md:text-4xl font-bold text-[#193252] transition-colors duration-300 hover:text-[#00B1C2]"
+                      className="text-2xl md:text-4xl font-bold text-[#193252] transition-colors duration-300 hover:text-[#00B1C2]"
                     >
                       {getLocalizedValue(doctor.name, doctor.nameBn, language)}
                     </h1>
-                    {/* Safe rating check to avoid 0 rendering */}
-                    {!!doctor.rating && doctor.rating > 0 && (
-                      <div className="flex items-center gap-2 bg-yellow-50 px-4 py-2 rounded-full border-2 border-yellow-200">
-                        <Star className="h-6 w-6 fill-yellow-400 text-yellow-400" />
-                        <span className="text-xl md:text-2xl font-bold ">{doctor.rating.toFixed(1)}</span>
-                      </div>
-                    )}
                   </div>
                   <div className="space-y-2">
                     {/* Specialty */}

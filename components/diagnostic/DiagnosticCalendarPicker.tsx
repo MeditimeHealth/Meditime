@@ -132,7 +132,7 @@ export default function DiagnosticCalendarPicker({
         {[1, 2, 3, 4, 5, 6, 0].map((dayIndex) => (
           <div
             key={dayIndex}
-            className="text-center font-semibold text-gray-700 py-2"
+            className="text-center font-semibold text-gray-700 py-2 text-xs md:text-xl"
           >
             {t(`day_${dayIndex}` as any, language)}
           </div>

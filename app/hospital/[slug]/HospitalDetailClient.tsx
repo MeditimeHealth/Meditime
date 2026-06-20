@@ -88,15 +88,15 @@ export default function HospitalDetailPage() {
         const foundHospital = hospitalData.hospital;
         setHospital(foundHospital);
 
-        // 2. Fetch doctors for this specific hospital (SERVER SIDE FILTERING)
-        const doctorsResponse = await fetch(`/api/doctors?hospitalSlug=${encodeURIComponent(hospitalSlug)}&limit=100`);
+        // 2. Fetch doctors for this specific hospital using the new dedicated API
+        const doctorsResponse = await fetch(`/api/hospitals/${encodeURIComponent(hospitalSlug)}/doctors`);
         const doctorsData = await doctorsResponse.json();
         if (doctorsResponse.ok) {
           setDoctors(doctorsData.doctors || []);
         }
 
-        // 3. Fetch all hospitals for recommendations
-        const hospitalsResponse = await fetch("/api/locations/hospitals");
+        // 3. Fetch top 3 nearest hospitals for recommendations
+        const hospitalsResponse = await fetch(`/api/hospitals/${encodeURIComponent(hospitalSlug)}/nearest`);
         const hospitalsData = await hospitalsResponse.json();
         if (hospitalsResponse.ok) {
           setAllHospitals(hospitalsData.hospitals || []);
@@ -134,32 +134,25 @@ export default function HospitalDetailPage() {
   };
 
   const recommendedHospitals = useMemo(() => {
-    if (!hospital || !allHospitals.length) return [];
-
-    const currentThanaId = hospital.thana?._id;
-    const currentDistrictId = hospital.thana?.district?._id;
-
-    return allHospitals
-      .filter((h) => {
-        if (h._id === hospital._id) return false;
-        if (currentThanaId && h.thana?._id === currentThanaId) return true;
-        if (currentDistrictId && h.thana?.district?._id === currentDistrictId) return true;
-        return false;
-      })
-      .slice(0, 3);
-  }, [hospital, allHospitals]);
+    return allHospitals;
+  }, [allHospitals]);
 
   const filteredDoctors = useMemo(() => {
     if (!searchQuery.trim()) return doctors;
 
     const query = searchQuery.toLowerCase().trim();
     return doctors.filter((doctor) => {
-      const name = getLocalizedValue(doctor.name, doctor.nameBn, language).toLowerCase();
-      const department = getLocalizedValue(doctor.department, doctor.departmentBn, language).toLowerCase();
+      // Search across all name/department fields in both languages
+      const fields = [
+        doctor.name,
+        doctor.nameBn,
+        doctor.department,
+        doctor.departmentBn,
+      ].filter(Boolean).map((v: string) => v.toLowerCase());
 
-      return name.includes(query) || department.includes(query);
+      return fields.some((f) => f.includes(query));
     });
-  }, [doctors, searchQuery, language]);
+  }, [doctors, searchQuery]);
 
   if (loading) {
     return (
@@ -271,7 +264,7 @@ export default function HospitalDetailPage() {
                   <div className="p-3 bg-primary/10 rounded-xl">
                     <Users className="h-8 w-8 text-primary" />
                   </div>
-                  {hospitalName}'s {language === 'bn' ? "ডাক্তার তালিকা" : "Doctors list"}
+                  {hospitalName}'s {language === 'bn' ? "ডাক্তার তালিকা" : "Doctors list"} ({doctors.length})
                 </h2>
               </div>
 
@@ -312,16 +305,26 @@ export default function HospitalDetailPage() {
             )}
           </div>
 
-          {/* Sidebar */}
-          {recommendedHospitals.length > 0 && (
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="w-full lg:w-80 shrink-0">
-              <Card className="p-6 bg-gradient-to-br from-white via-primary/5 to-white border-2 border-primary/20 shadow-xl sticky top-32">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Building2 className="h-6 w-6 text-primary" />
+          {/* Sidebar — always visible */}
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="w-full lg:w-80 shrink-0">
+            <Card className="p-6 bg-gradient-to-br from-white via-primary/5 to-white border-2 border-primary/20 shadow-xl sticky top-32">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Building2 className="h-6 w-6 text-primary" />
+                </div>
+                {language === 'bn' ? banglaLabels.nearbyHospitals : "Nearby Hospitals"}
+              </h3>
+
+              {recommendedHospitals.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-10 text-center">
+                  <div className="p-4 bg-gray-100 rounded-full mb-4">
+                    <Building2 className="h-8 w-8 text-gray-400" />
                   </div>
-                  {language === 'bn' ? banglaLabels.nearbyHospitals : "Nearby Hospitals"}
-                </h3>
+                  <p className="text-sm font-medium text-gray-500">
+                    {language === 'bn' ? 'কাছাকাছি কোনো হাসপাতাল পাওয়া যায়নি' : 'No nearby hospitals found'}
+                  </p>
+                </div>
+              ) : (
                 <div className="space-y-4">
                   {recommendedHospitals.map((rec) => (
                     <motion.div key={rec._id} whileHover={{ scale: 1.02 }}>
@@ -332,12 +335,14 @@ export default function HospitalDetailPage() {
                               <Building2 className="h-6 w-6 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-lg font-bold text-gray-900 mb-1 line-clamp-2">
+                              <h4 className="text-sm font-bold text-gray-900 mb-1 line-clamp-2">
                                 {getLocalizedValue(rec.name, rec.nameBn, language)}
                               </h4>
-                              <div className="flex gap-1 text-sm text-gray-600">
-                                <MapPin className="h-4 w-4 text-primary shrink-0 mt-1" />
-                                <span className="">{getLocalizedValue(rec.address, rec.addressBn, language)}</span>
+                              <div className="flex gap-1 text-xs text-gray-500">
+                                <MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                                <span className="line-clamp-2">
+                                  {getLocalizedValue(rec.address, rec.addressBn, language) || getHospitalLocationString(rec)}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -346,9 +351,9 @@ export default function HospitalDetailPage() {
                     </motion.div>
                   ))}
                 </div>
-              </Card>
-            </motion.div>
-          )}
+              )}
+            </Card>
+          </motion.div>
         </div>
       </div>
       <Footer />

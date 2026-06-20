@@ -9,8 +9,9 @@
     "lint": "eslint",
     "create-admin": "node scripts/create-admin.js",
     "db:export": "node scripts/export-db.js",
-    "db:import": "node scripts/import-db.js"
-  },
+    "db:import": "node scripts/import-db.js",
+    "postbuild": "next-sitemap"
+    },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -28,6 +29,7 @@
     "mongodb": "^6.20.0",
     "mongoose": "^8.19.2",
     "next": "^16.0.10",
+    "next-sitemap": "^4.2.3",
     "nodemailer": "^7.0.13",
     "react": "19.2.0",
     "react-dom": "19.2.0",

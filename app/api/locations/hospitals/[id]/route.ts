@@ -36,7 +36,6 @@ export async function GET(
         },
       });
     }
-    console.log(hospital)
 
     if (!hospital) {
       return NextResponse.json(
@@ -133,22 +132,18 @@ export async function DELETE(
       );
     }
 
-    console.log("Attempting to delete hospital with ID:", id);
 
     const hospital = await Hospital.findByIdAndDelete(id);
     
     if (!hospital) {
-      console.log("Hospital not found with ID:", id);
       // Check if any hospital exists with similar ID (for debugging)
       const allHospitals = await Hospital.find({}).limit(5).select("_id name");
-      console.log("Sample hospital IDs in database:", allHospitals.map(h => ({ id: h._id.toString(), name: h.name })));
       return NextResponse.json(
         { error: "Hospital not found" },
         { status: 404 }
       );
     }
 
-    console.log("Hospital deleted successfully:", hospital.name);
     return NextResponse.json(
       { message: "Hospital deleted successfully" },
       { status: 200 }

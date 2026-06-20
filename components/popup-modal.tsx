@@ -43,7 +43,7 @@ export default function PopupModal() {
 
         if (data.success && data.popup && data.popup.isActive) {
           setPopupData(data.popup);
-          setTimeout(() => setIsOpen(true), 1500);
+          setTimeout(() => setIsOpen(true), 15000);
         }
       } catch (error) {
         console.error("Error fetching popup:", error);
@@ -84,7 +84,7 @@ export default function PopupModal() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-4xl bg-white rounded-[32px] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
+            className="relative w-full max-w-4xl bg-white rounded-[32px] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[80vh]"
           >
             {/* Close Button */}
             <button
@@ -107,14 +107,14 @@ export default function PopupModal() {
               {/* Content Section */}
               <div className="w-full p-8 md:p-12 flex flex-col justify-center bg-white">
                 <div className="mb-2">
-                  <span className="text-[var(--primary)] font-bold text-xs uppercase tracking-[0.2em]">Latest Update</span>
+                  <span className="text-[var(--primary)] font-bold text-xs md:text-base xl:text-lg  tracking-[0.2em]">Latest Update</span>
                 </div>
 
                 <motion.h2
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="text-2xl md:text-4xl font-bold text-[#017991] mb-6 leading-tight"
+                  className="text-md md:text-xl xl:text-4xl font-bold text-[#017991] lg:mb-6 leading-tight"
                 >
                   {currentTitle}
                 </motion.h2>
@@ -123,7 +123,7 @@ export default function PopupModal() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="text-slate-500 mb-10 text-lg leading-relaxed"
+                  className="text-slate-500 mb-4 md:mb-10 text-xs md:text-xl  leading-relaxed"
                 >
                   {currentDesc}
                 </motion.p>
@@ -132,13 +132,22 @@ export default function PopupModal() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
+                  className="flex gap-2 w-full"
                 >
                   <Link href={popupData.buttonLink} onClick={handleClose} className="inline-block w-full sm:w-auto">
                     <button
-                      className="btn-primary btn-slide flex items-center justify-center gap-3 w-full"
+                      className="btn-primary btn-slide flex items-center justify-center gap-3 w-full text-xs md:text-md"
                     >
                       {currentBtnText}
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </Link>
+                  <Link href={"/signup"} onClick={handleClose} className="inline-block w-full sm:w-auto">
+                    <button
+                      className="btn-primaryx btn-slidex flex items-center justify-center gap-3 w-full text-xs md:text-md"
+                    >
+                      {language === 'en' ? 'Sign Up' : 'রেজিস্টার'}
+                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </Link>
                 </motion.div>

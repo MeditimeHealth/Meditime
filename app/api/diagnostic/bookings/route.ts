@@ -10,6 +10,15 @@ export async function POST(req: Request) {
     await dbConnect();
     const body = await req.json();
 
+    // Validate mobile number: exactly 11 digits, no +880 prefix
+    const mobile = String(body.mobileNumber || '').replace(/\D/g, '');
+    if (mobile.length !== 11) {
+      return NextResponse.json(
+        { error: "Mobile number must be exactly 11 digits (without +880 prefix)" },
+        { status: 400 }
+      );
+    }
+
     // Generate unique 8-digit ID
     let bookingId = "";
     let isUnique = false;

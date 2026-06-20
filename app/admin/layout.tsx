@@ -24,46 +24,36 @@ export default function AdminLayout({
 
   useEffect(() => {
     const checkUser = async () => {
-      if (typeof window !== "undefined") {
-        const userData = localStorage.getItem("admin_user");
-        if (userData) {
-          try {
-            const parsedUser = JSON.parse(userData);
-            const verifyRes = await fetch("/api/admin/auth/verify");
-            if (verifyRes.ok) {
-              setUser(parsedUser);
-            } else {
-              console.warn("Admin session expired on backend");
-              localStorage.removeItem("admin_user");
-              try {
-                await fetch("/api/admin/auth/logout", { method: "POST" });
-              } catch (err) {
-                console.error("Logout error:", err);
-              }
-              window.dispatchEvent(new Event("adminLogout"));
-              router.push("/admin-login");
-            }
-          } catch (error) {
-            console.error("Error parsing admin data or verifying session:", error);
-            localStorage.removeItem("admin_user");
-            window.dispatchEvent(new Event("adminLogout"));
-            router.push("/admin-login");
-          }
+      try {
+        const verifyRes = await fetch("/api/admin/auth/verify");
+        if (verifyRes.ok) {
+          const resData = await verifyRes.json();
+          setUser(resData.user);
         } else {
+          console.warn("Admin session invalid or expired on backend");
+          try {
+            await fetch("/api/admin/auth/logout", { method: "POST" });
+          } catch (err) {
+            console.error("Logout error:", err);
+          }
+          window.dispatchEvent(new Event("adminLogout"));
           router.push("/admin-login");
         }
+      } catch (error) {
+        console.error("Error verifying admin session:", error);
+        window.dispatchEvent(new Event("adminLogout"));
+        router.push("/admin-login");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     checkUser();
 
-    window.addEventListener("storage", checkUser);
     window.addEventListener("adminLogin", checkUser);
     window.addEventListener("adminLogout", checkUser);
 
     return () => {
-      window.removeEventListener("storage", checkUser);
       window.removeEventListener("adminLogin", checkUser);
       window.removeEventListener("adminLogout", checkUser);
     };
@@ -77,7 +67,6 @@ export default function AdminLayout({
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      localStorage.removeItem("admin_user");
       setUser(null);
       window.dispatchEvent(new Event("adminLogout"));
       router.push("/");

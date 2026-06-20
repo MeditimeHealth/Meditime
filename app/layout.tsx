@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import PopupModal from "@/components/popup-modal";
 import Providers from "@/components/Providers";
 import { BiSolidMessageSquare } from "react-icons/bi";
+import GoogleOneTapProvider from "@/components/GoogleOneTapProvider";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -59,6 +60,7 @@ export default function RootLayout({
           </a>
           <ScrollToTopButton />
           <PopupModal />
+          <GoogleOneTapProvider />
           {children}
           <Toaster
             position="top-right"

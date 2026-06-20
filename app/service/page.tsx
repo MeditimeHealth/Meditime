@@ -222,7 +222,7 @@ export default function ServicePage() {
         </div>
       </div>
 
-      <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 ">
         {/* ── Services Section (Alternating) ── */}
         <div className="space-y-10 sm:space-y-16">
           <motion.div

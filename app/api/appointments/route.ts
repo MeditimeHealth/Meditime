@@ -127,6 +127,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate mobile number to be exactly 11 digits starting with 01
+    if (typeof mobileNumber !== 'string' || mobileNumber.length !== 11 || !mobileNumber.startsWith('01')) {
+      return NextResponse.json(
+        { error: 'Mobile number must be exactly 11 digits and start with 01.' },
+        { status: 400 }
+      );
+    }
+
     // Verify doctor exists
     let doctor;
     const trimmedDoctorId = doctorId.trim();

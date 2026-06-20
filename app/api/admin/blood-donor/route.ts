@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import BloodDonor from "@/models/BloodDonor";
+import Division from "@/models/Division";
+import District from "@/models/District";
+import Thana from "@/models/Thana";
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,7 +44,52 @@ export async function GET(request: NextRequest) {
     }
 
     const bloodDonors = await BloodDonor.find(query).sort({ createdAt: -1 });
-    return NextResponse.json({ bloodDonors }, { status: 200 });
+
+    // Resolve divisionBn, districtBn, and thanaBn translations on the fly dynamically (with per-request cache)
+    const divisionCache: { [key: string]: string } = {};
+    const districtCache: { [key: string]: string } = {};
+    const thanaCache: { [key: string]: string } = {};
+
+    const resolvedDonors = await Promise.all(
+      bloodDonors.map(async (donor) => {
+        const donorObj = donor.toObject();
+
+        if (donorObj.division) {
+          if (divisionCache[donorObj.division] !== undefined) {
+            donorObj.divisionBn = divisionCache[donorObj.division];
+          } else {
+            const div = await Division.findOne({ name: donorObj.division });
+            const bn = div && div.nameBn ? div.nameBn : "";
+            divisionCache[donorObj.division] = bn;
+            donorObj.divisionBn = bn;
+          }
+        }
+        if (donorObj.district) {
+          if (districtCache[donorObj.district] !== undefined) {
+            donorObj.districtBn = districtCache[donorObj.district];
+          } else {
+            const dist = await District.findOne({ name: donorObj.district });
+            const bn = dist && dist.nameBn ? dist.nameBn : "";
+            districtCache[donorObj.district] = bn;
+            donorObj.districtBn = bn;
+          }
+        }
+        if (donorObj.thana) {
+          if (thanaCache[donorObj.thana] !== undefined) {
+            donorObj.thanaBn = thanaCache[donorObj.thana];
+          } else {
+            const th = await Thana.findOne({ name: donorObj.thana });
+            const bn = th && th.nameBn ? th.nameBn : "";
+            thanaCache[donorObj.thana] = bn;
+            donorObj.thanaBn = bn;
+          }
+        }
+
+        return donorObj;
+      })
+    );
+
+    return NextResponse.json({ bloodDonors: resolvedDonors }, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching blood donors:", error);
     return NextResponse.json(
@@ -58,6 +106,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       name,
+      nameBn,
       phoneNumber,
       email,
       bloodGroup,
@@ -82,6 +131,7 @@ export async function POST(request: NextRequest) {
     // Create blood donor
     const bloodDonor = await BloodDonor.create({
       name,
+      nameBn: nameBn || undefined,
       phoneNumber,
       email: email || undefined,
       bloodGroup,
@@ -92,7 +142,7 @@ export async function POST(request: NextRequest) {
       availabilityStatus,
       lastDonationDate: lastDonationDate ? new Date(lastDonationDate) : undefined,
       userId: userId || undefined,
-      isApproved: true, // Applications are pending by default
+      isApproved: true, // Approved by default when created by admin
     });
 
     return NextResponse.json(

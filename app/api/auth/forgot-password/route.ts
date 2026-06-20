@@ -33,6 +33,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ message: "If an account exists, an OTP has been sent." }, { status: 200 });
       }
 
+      if (user.authProvider === 'google') {
+        return NextResponse.json(
+          { error: "This email is registered with Google. Please log in using Google." },
+          { status: 400 }
+        );
+      }
+
       const otpCode = generateOTP();
       const hashedOtp = await bcrypt.hash(otpCode, 10);
       
@@ -98,6 +105,10 @@ export async function POST(request: NextRequest) {
       const user = await User.findOne({ email: email.toLowerCase() });
       if (!user || !user.resetOtp || !user.resetOtpExpiry) {
         return NextResponse.json({ error: "Invalid session" }, { status: 400 });
+      }
+
+      if (user.authProvider === 'google') {
+        return NextResponse.json({ error: "Google accounts cannot reset passwords." }, { status: 400 });
       }
 
       // Check if expired

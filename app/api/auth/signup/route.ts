@@ -48,6 +48,12 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingUser) {
+      if (email && existingUser.email === email.toLowerCase() && existingUser.authProvider === 'google') {
+        return NextResponse.json(
+          { error: "An account with this email already exists via Google. Please log in using Google." },
+          { status: 400 }
+        );
+      }
       return NextResponse.json(
         { error: "User with this phone number or email already exists" },
         { status: 400 }

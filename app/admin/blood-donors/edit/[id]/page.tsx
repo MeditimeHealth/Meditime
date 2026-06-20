@@ -18,7 +18,6 @@ const bloodDonorSchema = z.object({
   name: z.string().optional(),
   nameBn: z.string().optional(),
   phoneNumber: z.string().min(10, "Phone number is required"),
-  email: z.string().email("Invalid email address").optional().or(z.literal("")),
   bloodGroup: z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], {
     message: "Blood group is required",
   }),
@@ -29,7 +28,6 @@ const bloodDonorSchema = z.object({
   availabilityStatus: z.enum(["Available", "Unavailable", "Recently Donated"], {
     message: "Availability status is required",
   }),
-  lastDonationDate: z.string().optional(),
   isApproved: z.boolean().default(true)
 });
 
@@ -93,13 +91,11 @@ export default function EditBloodDonorPage() {
               name: donor.name || "",
               nameBn: donor.nameBn || "",
               phoneNumber: donor.phoneNumber || "",
-              email: donor.email || "",
               bloodGroup: donor.bloodGroup,
               division: donor.division || "",
               district: donor.district || "",
               thana: donor.thana || "",
               availabilityStatus: donor.availabilityStatus || "Available",
-              lastDonationDate: donor.lastDonationDate ? donor.lastDonationDate.split('T')[0] : "",
               photo: donor.photo || "",
               isApproved: donor.isApproved ?? true,
             });
@@ -279,17 +275,6 @@ export default function EditBloodDonorPage() {
               {errors.phoneNumber && <p className="text-sm text-red-500">{errors.phoneNumber.message}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">{t("email", language)}</Label>
-              <Input
-                id="email"
-                type="email"
-                {...register("email")}
-                defaultValue={getValues("email")}
-                placeholder="donor@example.com"
-              />
-              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
-            </div>
 
             <div className="space-y-2">
               <Label htmlFor="bloodGroup">{t("bloodGroup", language)} *</Label>
@@ -383,15 +368,7 @@ export default function EditBloodDonorPage() {
               </select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="lastDonationDate">{t("lastDonationDate", language)}</Label>
-              <Input
-                id="lastDonationDate"
-                type="date"
-                {...register("lastDonationDate")}
-                defaultValue={getValues("lastDonationDate")}
-              />
-            </div>
+
           </div>
 
           <div className="pt-4 flex gap-4">
