@@ -10,11 +10,21 @@ export async function POST(req: Request) {
     await dbConnect();
     const body = await req.json();
 
-    // Validate mobile number: exactly 11 digits, no +880 prefix
-    const mobile = String(body.mobileNumber || '').replace(/\D/g, '');
-    if (mobile.length !== 11) {
+    // Validate mobile number: exactly 11 digits, strip +88 or +880 prefix if present
+    let mobile = String(body.mobileNumber || '').trim();
+    if (mobile.startsWith('+880')) {
+      mobile = mobile.slice(4);
+    } else if (mobile.startsWith('+88')) {
+      mobile = mobile.slice(3);
+    } else if (mobile.startsWith('880')) {
+      mobile = mobile.slice(3);
+    }
+    
+    // Now replace non-digits
+    const cleanMobile = mobile.replace(/\D/g, '');
+    if (cleanMobile.length !== 11 || !cleanMobile.startsWith('01')) {
       return NextResponse.json(
-        { error: "Mobile number must be exactly 11 digits (without +880 prefix)" },
+        { error: "Mobile number must be exactly 11 digits starting with 01" },
         { status: 400 }
       );
     }

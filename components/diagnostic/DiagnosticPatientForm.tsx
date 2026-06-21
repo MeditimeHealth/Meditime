@@ -79,9 +79,12 @@ export default function DiagnosticPatientForm({
           setPatientName(loggedInUser.fullName);
         }
         if (loggedInUser.phoneNumber) {
-          const phone = loggedInUser.phoneNumber.startsWith("+880")
-            ? loggedInUser.phoneNumber.slice(4)
+          let phone = loggedInUser.phoneNumber.startsWith("+88")
+            ? loggedInUser.phoneNumber.slice(3)
             : loggedInUser.phoneNumber;
+          if (phone.length === 10 && !phone.startsWith("0")) {
+            phone = "0" + phone;
+          }
           setMobileNumber(phone);
         }
       }
@@ -170,7 +173,7 @@ export default function DiagnosticPatientForm({
           <div className="relative flex items-center mt-1">
             <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-gray-300 pointer-events-none select-none">
               <img src="https://flagcdn.com/w40/bd.png" alt="BD" className="w-6 h-4 rounded-sm object-cover" />
-              <span className="">+880</span>
+              <span className="">+88</span>
             </span>
             <Input
               id="mobileNumber"
@@ -193,7 +196,7 @@ export default function DiagnosticPatientForm({
               }}
               required
               placeholder={language === 'bn' ? '০১XXXXXXXXX' : '01XXXXXXXXX'}
-              className={`pl-[5.5rem] h-10 w-full border-primary rounded-none ${
+              className={`pl-[5rem] h-10 w-full border-primary rounded-none ${
                 mobileError
                   ? 'border-red-400 bg-red-50'
                   : !mobileNumber

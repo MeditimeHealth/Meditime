@@ -15,12 +15,32 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { showToast } from "@/lib/toast";
 
-const loginSchema = z.object({
-  phoneOrEmail: z.string().min(1, "Phone number or email is required"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+const getLoginSchema = (language: 'en' | 'bn') => z.object({
+  phoneOrEmail: z.string().min(1, language === 'bn' ? "ফোন নম্বর বা ইমেইল প্রয়োজন" : "Phone number or email is required"),
+  password: z.string().min(6, language === 'bn' ? "পাসওয়ার্ড কমপক্ষে ৬টি অক্ষরের হতে হবে" : "Password must be at least 6 characters"),
+}).refine((data) => {
+  const val = data.phoneOrEmail;
+  const isPhone = /^\+?\d/.test(val);
+  if (isPhone) {
+    const clean = val.replace(/\D/g, '');
+    let localPhone = clean;
+    if (clean.startsWith('880')) {
+      localPhone = clean.slice(3);
+    } else if (clean.startsWith('88')) {
+      localPhone = clean.slice(2);
+    }
+    return localPhone.length === 11 && localPhone.startsWith('01');
+  }
+  return true;
+}, {
+  message: language === 'bn' ? "মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে" : "Phone number must be exactly 11 digits starting with 01",
+  path: ["phoneOrEmail"],
 });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type LoginFormValues = {
+  phoneOrEmail: string;
+  password: string;
+};
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
@@ -42,10 +62,14 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(getLoginSchema(language)) as any,
   });
+
+  const phoneOrEmailValue = watch("phoneOrEmail") || "";
+  const isPhone = /^\+?\d/.test(phoneOrEmailValue);
 
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
@@ -210,13 +234,21 @@ export default function LoginPage() {
 
                         <div>
                           <Label htmlFor="phoneOrEmail">{t.phoneOrEmail}</Label>
-                          <Input
-                            id="phoneOrEmail"
-                            type="text"
-                            placeholder={t.phoneOrEmailPlaceholder}
-                            {...register("phoneOrEmail")}
-                            className="mt-1"
-                          />
+                          <div className="relative flex items-center mt-1">
+                            {isPhone && (
+                              <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-gray-300 pointer-events-none select-none">
+                                <span>🇧🇩</span>
+                                <span>+88</span>
+                              </span>
+                            )}
+                            <Input
+                              id="phoneOrEmail"
+                              type="text"
+                              placeholder={t.phoneOrEmailPlaceholder}
+                              {...register("phoneOrEmail")}
+                              className={`w-full ${isPhone ? 'pl-[4.5rem]' : ''}`}
+                            />
+                          </div>
                           {errors.phoneOrEmail && (
                             <p className="text-sm text-red-500 mt-1">{errors.phoneOrEmail.message}</p>
                           )}

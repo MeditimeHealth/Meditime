@@ -60,7 +60,15 @@ export default function DiagnosticCheckoutPage() {
         try {
           const user = JSON.parse(userData);
           if (user.fullName) setPatientName(user.fullName);
-          if (user.phoneNumber) setMobileNumber(user.phoneNumber);
+          if (user.phoneNumber) {
+            let phone = user.phoneNumber.startsWith("+88")
+              ? user.phoneNumber.slice(3)
+              : user.phoneNumber;
+            if (phone.length === 10 && !phone.startsWith("0")) {
+              phone = "0" + phone;
+            }
+            setMobileNumber(phone);
+          }
         } catch (error) {
           console.error("Error parsing user data:", error);
         }

@@ -64,6 +64,7 @@ export default function BookAppointmentPage() {
   // Form data
   const [patientName, setPatientName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
+  const [mobileError, setMobileError] = useState("");
   const [gender, setGender] = useState("");
   const [age, setAge] = useState("");
   const [patientType, setPatientType] = useState<"new" | "report">("new");
@@ -232,9 +233,12 @@ export default function BookAppointmentPage() {
           setPatientName(loggedInUser.fullName);
         }
         if (loggedInUser.phoneNumber) {
-          const phone = loggedInUser.phoneNumber.startsWith("+880")
-            ? loggedInUser.phoneNumber.slice(4)
+          let phone = loggedInUser.phoneNumber.startsWith("+88")
+            ? loggedInUser.phoneNumber.slice(3)
             : loggedInUser.phoneNumber;
+          if (phone.length === 10 && !phone.startsWith("0")) {
+            phone = "0" + phone;
+          }
           setMobileNumber(phone);
         }
       }
@@ -372,7 +376,8 @@ export default function BookAppointmentPage() {
 
       // Validate mobile number to be exactly 11 digits starting with 01
       if (mobileNumber.length !== 11 || !mobileNumber.startsWith("01")) {
-        alert(language === 'en' ? "Please enter a valid 11-digit mobile number starting with 01." : "দয়া করে ০১ দিয়ে শুরু হওয়া ১১ ডিজিটের সঠিক মোবাইল নম্বর দিন।");
+        setMobileError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে' : 'Mobile number must be exactly 11 digits');
+        setSubmitting(false);
         return;
       }
 
@@ -672,6 +677,10 @@ export default function BookAppointmentPage() {
                     {t('mobileNumber')} <span className="text-red-500 font-bold">*</span>
                   </Label>
                   <div className="relative flex items-center mt-1">
+                    <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-gray-300 pointer-events-none select-none">
+                      <span>🇧🇩</span>
+                      <span>+88</span>
+                    </span>
                     <Input
                       id="mobileNumber"
                       type="tel"
@@ -679,12 +688,36 @@ export default function BookAppointmentPage() {
                       onChange={(e) => {
                         const val = e.target.value.replace(/\D/g, '').slice(0, 11);
                         setMobileNumber(val);
+                        if (val.length > 0 && (val.length < 11 || !val.startsWith("01"))) {
+                          setMobileError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে' : 'Mobile number must be exactly 11 digits');
+                        } else {
+                          setMobileError("");
+                        }
+                      }}
+                      onBlur={() => {
+                        if (mobileNumber.length > 0 && (mobileNumber.length < 11 || !mobileNumber.startsWith("01"))) {
+                          setMobileError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে' : 'Mobile number must be exactly 11 digits');
+                        }
                       }}
                       required
-                      placeholder="01712345678"
-                      className={`h-10 w-full rounded-none ${!mobileNumber ? '' : 'border-primary bg-green-50/30'}`}
+                      placeholder={language === 'bn' ? '০১XXXXXXXXX' : '01XXXXXXXXX'}
+                      className={`pl-[4.5rem] h-10 w-full rounded-none ${
+                        mobileError
+                          ? 'border-red-400 bg-red-50'
+                          : !mobileNumber
+                          ? ''
+                          : 'border-primary bg-green-50/30'
+                      }`}
                     />
-                </div>
+                  </div>
+                  {mobileError && (
+                    <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                      <span className="font-bold">!</span> {mobileError}
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-400 mt-1">
+                    {language === 'bn' ? '১১ সংখ্যা (যেমন: ০১XXXXXXXXX)' : '11 digits (e.g. 01XXXXXXXXX)'}
+                  </p>
                 </div>
 
                 {/* Gender - Optional */}

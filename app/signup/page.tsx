@@ -22,7 +22,7 @@ const signupSchema = z
       message: "Please select a user type",
     }).default("user"),
     email: z.string().email("Invalid email address").optional().or(z.literal("")),
-    phoneNumber: z.string().min(10, "Phone number must be at least 10 digits").regex(/^[0-9]+$/, "Phone number must contain only digits"),
+    phoneNumber: z.string().length(11, "Phone number must be exactly 11 digits").regex(/^[0-9]+$/, "Phone number must contain only digits"),
     fullName: z.string().min(2, "Full name is required"),
     gender: z.enum(["male", "female"]),
     bloodGroup: z.string().optional(),
@@ -187,7 +187,7 @@ export default function SignupPage() {
                       <div className="relative flex items-center mt-1">
                         <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-gray-300 pointer-events-none select-none">
                           <span>🇧🇩</span>
-                          <span>+880</span>
+                          <span>+88</span>
                         </span>
                         <Input
                           id="phoneNumber"

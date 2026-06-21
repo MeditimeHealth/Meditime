@@ -20,7 +20,7 @@ async function recreateDoctors() {
       uri.split('/').pop()?.split('?')[0] || 'meditime';
 
     const db = client.db(dbName);
-    const doctorsColl = db.collection('hospitals');
+    const doctorsColl = db.collection('doctors');
 
     const doctors = await doctorsColl.find({}).toArray();
 

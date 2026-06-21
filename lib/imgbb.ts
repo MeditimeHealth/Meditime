@@ -4,7 +4,7 @@
  * @returns The uploaded image URL
  */
 export async function uploadImageToImgbb(imageFile: File): Promise<string> {
-  const apiKey = process.env.IMGBB_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
   
   if (!apiKey) {
     throw new Error("IMGBB_API_KEY is not configured. Please add it to your environment variables.");

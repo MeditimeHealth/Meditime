@@ -18,10 +18,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    let formattedPhone = phoneOrEmail;
+    const cleanPhone = phoneOrEmail.replace(/\D/g, '');
+    if (cleanPhone.length >= 10 && cleanPhone.length <= 13) {
+      if (cleanPhone.length === 11 && cleanPhone.startsWith('01')) {
+        formattedPhone = `+880${cleanPhone.slice(1)}`;
+      } else if (cleanPhone.length === 13 && cleanPhone.startsWith('8801')) {
+        formattedPhone = `+${cleanPhone}`;
+      } else if (cleanPhone.length === 10 && cleanPhone.startsWith('1')) {
+        formattedPhone = `+880${cleanPhone}`;
+      }
+    }
+
     // Find user by phone number, email, or username
     const user = await User.findOne({
       $or: [
         { phoneNumber: phoneOrEmail },
+        { phoneNumber: formattedPhone },
         { email: phoneOrEmail.toLowerCase() },
         { username: phoneOrEmail.toLowerCase() },
       ],
