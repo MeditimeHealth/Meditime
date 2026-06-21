@@ -133,6 +133,70 @@ interface Hospital {
   slug?: string;
 }
 
+// All available icon filenames (without .png extension) in /public/icon_of_dept
+const DEPT_ICONS = [
+  "Burn-Plastic & Reconstructive Surgery",
+  "Cardiology & Medicine",
+  "Chest Thoracic Surgery",
+  "Dermatology & Venereology",
+  "Diabetes  Endocrinology",
+  "ENT-Ear Nose & Throat",
+  "Gastro-Liver Diseases",
+  "General & Laparoscopic Surgery",
+  "Gynecology & Obstetrics",
+  "Hematology & Medicine (Blood diseases)",
+  "Hepato-Biliary & Liver Transplant Surgery",
+  "Medicine Specialist",
+  "Neonatal & Pediatrics",
+  "Nephrology & Medicine",
+  "Neuromedicine & Neurosurgery",
+  "Nuclear Medicine",
+  "Nutrition & Dietetics",
+  "Oncology Cancer)",
+  "Ophthalmology",
+  "Oral & Dental Diseases",
+  "Pain Medicine & Rheumatology ",
+  "Physiotherapy",
+  "Psychiatry & Psychotherapy",
+  "Pulmonology & Asthma",
+  "Thyroid & Hormone ",
+  "Trauma & Orthopedic Surgery",
+  "Urology & Nephrology",
+  "Vascular Surgery (Blood vessels)",
+];
+
+/**
+ * Fuzzy match a department name to an icon filename by checking if
+ * any significant word in the dept name appears in the icon filename.
+ */
+function findDeptIcon(deptName: string): string | null {
+  const normalize = (s: string) =>
+    s.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim();
+
+  const deptWords = normalize(deptName)
+    .split(/\s+/)
+    .filter((w) => w.length > 3); // ignore short words like "and", "of"
+
+  if (deptWords.length === 0) return null;
+
+  let bestMatch: string | null = null;
+  let bestScore = 0;
+
+  for (const icon of DEPT_ICONS) {
+    const normalizedIcon = normalize(icon);
+    let score = 0;
+    for (const word of deptWords) {
+      if (normalizedIcon.includes(word)) score++;
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = icon;
+    }
+  }
+
+  return bestScore > 0 ? bestMatch : null;
+}
+
 function DoctorListPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -196,90 +260,10 @@ function DoctorListPageContent() {
   const getDeptIcon = (name: string) => {
     return <Stethoscope className="w-7 h-7" />;
   };
-
-  const getRawDeptPublicIcon = (name: string) => {
-    const icons = [
-      "Burn-Plastic & Reconstructive Surgery.png",
-      "Cardiology & Medicine.png",
-      "Chest Thoracic Surgery.png",
-      "Dermatology & Venereology.png",
-      "Diabetes  Endocrinology.png",
-      "ENT-Ear Nose & Throat.png",
-      "Gastro-Liver Diseases.png",
-      "General & Laparoscopic Surgery.png",
-      "Gynecology & Obstetrics.png",
-      "Hematology & Medicine (Blood diseases).png",
-      "Hepato-Biliary & Liver Transplant Surgery.png",
-      "Medicine Specialist.png",
-      "Neonatal & Pediatrics.png",
-      "Nephrology & Medicine.png",
-      "Neuromedicine & Neurosurgery.png",
-      "Nuclear Medicine.png",
-      "Nutrition & Dietetics.png",
-      "Oncology Cancer).png",
-      "Ophthalmology.png",
-      "Oral & Dental Diseases.png",
-      "Pain Medicine & Rheumatology .png",
-      "Physiotherapy.png",
-      "Psychiatry & Psychotherapy.png",
-      "Pulmonology & Asthma.png",
-      "Thyroid & Hormone .png",
-      "Trauma & Orthopedic Surgery.png",
-      "Urology & Nephrology.png",
-      "Vascular Surgery (Blood vessels).png"
-    ];
-
-    const n = name.toLowerCase();
-
-    // Nearest name logic
-    if (n.includes('heart') || n.includes('cardio') || n.includes('হার্ট') || n.includes('হৃদ')) return "/icon_of_dept/Cardiology & Medicine.png";
-    if (n.includes('kidney') || n.includes('nephro') || n.includes('কিডনি')) return "/icon_of_dept/Nephrology & Medicine.png";
-    if (n.includes('brain') || n.includes('neuro') || n.includes('মস্তিষ্ক') || n.includes('নিউরো')) return "/icon_of_dept/Neuromedicine & Neurosurgery.png";
-    if (n.includes('child') || n.includes('pediatric') || n.includes('neonatal') || n.includes('শিশু')) return "/icon_of_dept/Neonatal & Pediatrics.png";
-    if (n.includes('eye') || n.includes('ophthal') || n.includes('চোখ')) return "/icon_of_dept/Ophthalmology.png";
-    if (n.includes('skin') || n.includes('derma') || n.includes('চর্ম')) return "/icon_of_dept/Dermatology & Venereology.png";
-    if (n.includes('dental') || n.includes('teeth') || n.includes('দাঁত')) return "/icon_of_dept/Oral & Dental Diseases.png";
-    if (n.includes('ent') || n.includes('ear') || n.includes('nose') || n.includes('নাক') || n.includes('কান')) return "/icon_of_dept/ENT-Ear Nose & Throat.png";
-    if (n.includes('gastro') || n.includes('liver') || n.includes('যকৃত')) return "/icon_of_dept/Gastro-Liver Diseases.png";
-
-    if (n.includes('surgery') || n.includes('সার্জারি')) {
-      if (n.includes('plastic') || n.includes('burn')) return "/icon_of_dept/Burn-Plastic & Reconstructive Surgery.png";
-      if (n.includes('vascular')) return "/icon_of_dept/Vascular Surgery (Blood vessels).png";
-      if (n.includes('thoracic') || n.includes('chest')) return "/icon_of_dept/Chest Thoracic Surgery.png";
-      if (n.includes('ortho') || n.includes('trauma')) return "/icon_of_dept/Trauma & Orthopedic Surgery.png";
-      if (n.includes('hepato') || n.includes('liver')) return "/icon_of_dept/Hepato-Biliary & Liver Transplant Surgery.png";
-      return "/icon_of_dept/General & Laparoscopic Surgery.png";
-    }
-
-    if (n.includes('medicine') || n.includes('মেডিসিন')) {
-      if (n.includes('nuclear')) return "/icon_of_dept/Nuclear Medicine.png";
-      if (n.includes('pain')) return "/icon_of_dept/Pain Medicine & Rheumatology .png";
-      return "/icon_of_dept/Medicine Specialist.png";
-    }
-
-    if (n.includes('cancer') || n.includes('onco') || n.includes('ক্যানসার')) return "/icon_of_dept/Oncology Cancer).png";
-    if (n.includes('hormone') || n.includes('thyroid') || n.includes('হরমোন')) return "/icon_of_dept/Thyroid & Hormone .png";
-    if (n.includes('diabetes') || n.includes('ডায়াবেটিস')) return "/icon_of_dept/Diabetes  Endocrinology.png";
-    if (n.includes('bone') || n.includes('ortho') || n.includes('হাড়')) return "/icon_of_dept/Trauma & Orthopedic Surgery.png";
-    if (n.includes('mental') || n.includes('psychiatry') || n.includes('মানসিক')) return "/icon_of_dept/Psychiatry & Psychotherapy.png";
-    if (n.includes('asthma') || n.includes('pulmonology') || n.includes('হাঁপানি') || n.includes('ফুসফুস')) return "/icon_of_dept/Pulmonology & Asthma.png";
-    if (n.includes('blood') || n.includes('hemato') || n.includes('রক্ত')) return "/icon_of_dept/Hematology & Medicine (Blood diseases).png";
-    if (n.includes('nutrition') || n.includes('diet') || n.includes('পুষ্টি')) return "/icon_of_dept/Nutrition & Dietetics.png";
-    if (n.includes('physio') || n.includes('ফিজিওথেরাপি')) return "/icon_of_dept/Physiotherapy.png";
-    if (n.includes('gynec') || n.includes('obstet') || n.includes('গাইনি')) return "/icon_of_dept/Gynecology & Obstetrics.png";
-    if (n.includes('urology') || n.includes('ইউরোলজি')) return "/icon_of_dept/Urology & Nephrology.png";
-    if (n.includes('vascular') || n.includes('ভ্যাসকুলার')) return "/icon_of_dept/Vascular Surgery (Blood vessels).png";
-
-    // Fallback search in icon list
-    const fallback = icons.find(icon => icon.toLowerCase().includes(n) || n.includes(icon.toLowerCase().replace('.png', '')));
-    if (fallback) return `/icon_of_dept/${fallback}`;
-
-    return null;
-  };
-
-  const getDeptPublicIcon = (name: string) => {
-    const path = getRawDeptPublicIcon(name);
-    return path ? encodeURI(path).replace(/&/g, "%26").replace(/\(/g, "%28").replace(/\)/g, "%29") : null;
+  const getDeptPublicIcon = (name: string, image?: string) => {
+    if (image) return image;
+    const matchedIcon = findDeptIcon(name);
+    return matchedIcon ? `/icon_of_dept/${encodeURIComponent(matchedIcon)}.png` : null;
   };
 
   const fetchDoctors = async (pageNum: number, isNewFilter: boolean = false) => {
@@ -340,9 +324,13 @@ function DoctorListPageContent() {
     }
   };
 
-  const fetchHospitals = async () => {
+  const fetchHospitals = useCallback(async () => {
     try {
-      const response = await fetch("/api/locations/hospitals");
+      const thanaObj = thanas.find((t) => t.name === selectedThana);
+      const url = thanaObj
+        ? `/api/locations/hospitals?thana=${thanaObj._id}`
+        : "/api/locations/hospitals";
+      const response = await fetch(url);
       const data = await response.json();
       if (response.ok) {
         setHospitals(data.hospitals);
@@ -350,7 +338,7 @@ function DoctorListPageContent() {
     } catch (error) {
       console.error("Error fetching hospitals:", error);
     }
-  };
+  }, [selectedThana, thanas]);
 
   const fetchDivisions = async () => {
     try {
@@ -406,6 +394,9 @@ function DoctorListPageContent() {
 
   useEffect(() => {
     fetchHospitals();
+  }, [fetchHospitals]);
+
+  useEffect(() => {
     fetchDivisions();
     fetchDepartments();
   }, []);
@@ -930,7 +921,7 @@ function DoctorListPageContent() {
                     >
                       <div className="relative z-10 w-full flex-grow flex items-center justify-center p-2">
                         <Image
-                          src={getDeptPublicIcon(dept.name) || "/default.png"}
+                          src={getDeptPublicIcon(dept.name, dept.image) || "/default.png"}
                           alt={dept.name}
                           width={120}
                           height={120}

@@ -198,14 +198,27 @@ export default function ContactSection() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700 ml-1">{t.phone}</label>
-                  <input
-                    type="tel"
-                    required
-                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:border-[#3DB5A0] focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none"
-                    placeholder="01XXXXXXXXX"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  />
+                  <div className="relative flex items-center">
+                    <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-slate-300 pointer-events-none select-none">
+                      <img src="https://flagcdn.com/w40/bd.png" alt="BD" className="w-6 h-4 rounded-sm object-cover" />
+                      <span>+88</span>
+                    </span>
+                    <input
+                      type="tel"
+                      required
+                      maxLength={11}
+                      className="w-full pl-[5rem] pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:border-[#3DB5A0] focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none"
+                      placeholder={language === 'bn' ? '০১XXXXXXXXX' : '01XXXXXXXXX'}
+                      value={formData.phone}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 11);
+                        setFormData({ ...formData, phone: val });
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-400 ml-1">
+                    {language === 'bn' ? '১১ সংখ্যা (যেমন: ০১XXXXXXXXX)' : '11 digits (e.g. 01XXXXXXXXX)'}
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700 ml-1">{language === 'bn' ? "বিষয়" : "Subject"}</label>

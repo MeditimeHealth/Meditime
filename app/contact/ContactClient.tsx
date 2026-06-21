@@ -309,21 +309,29 @@ export default function ContactPage() {
                       {language === 'bn' ? "ফোন নম্বর" : "Phone Number"} <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative flex items-center">
-                      <div className="absolute left-4 flex items-center gap-2 pr-3 border-r border-slate-200">
+                      <span className="absolute left-4 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-slate-200 pointer-events-none select-none">
                         <img src="https://flagcdn.com/w40/bd.png" alt="BD" className="w-6 h-4 rounded-sm object-cover" />
-                        <span className="text-slate-600 font-medium">+880</span>
-                      </div>
+                        <span>+88</span>
+                      </span>
                       <Input
                         id="phone"
                         type="tel"
-                        placeholder=""
-                        {...register("phone")}
-                        className="h-14 rounded-xl border-slate-200 bg-white focus:ring-slate-100 transition-all text-base pl-[105px]"
+                        maxLength={11}
+                        placeholder={language === 'bn' ? '০১XXXXXXXXX' : '01XXXXXXXXX'}
+                        {...register("phone", {
+                          onChange: (e) => {
+                            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
+                          }
+                        })}
+                        className="h-14 rounded-xl border-slate-200 bg-white focus:ring-slate-100 transition-all text-base pl-[5rem]"
                       />
                     </div>
                     {errors.phone && (
                       <p className="text-sm text-red-500">{errors.phone.message}</p>
                     )}
+                    <p className="text-xs text-gray-400">
+                      {language === 'bn' ? '১১ সংখ্যা (যেমন: ০১XXXXXXXXX)' : '11 digits (e.g. 01XXXXXXXXX)'}
+                    </p>
                   </div>
                 </div>
 

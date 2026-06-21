@@ -36,33 +36,49 @@ export default function SearchSection() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
 
+  // Debounce search query for suggestions (150ms)
   useEffect(() => {
-    fetchDoctors();
-    fetchHospitals();
-  }, []);
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-  const fetchDoctors = async () => {
-    try {
-      const response = await fetch("/api/doctors");
-      const data = await response.json();
-      if (response.ok) setDoctors(data.doctors);
-    } catch (error) {
-      console.error("Error fetching doctors:", error);
+  // Fetch suggestions dynamically when search query changes
+  useEffect(() => {
+    if (!debouncedQuery || debouncedQuery.trim().length < 1) {
+      setDoctors([]);
+      setHospitals([]);
+      return;
     }
-  };
 
-  const fetchHospitals = async () => {
-    try {
-      const response = await fetch("/api/locations/hospitals");
-      const data = await response.json();
-      if (response.ok) setHospitals(data.hospitals);
-    } catch (error) {
-      console.error("Error fetching hospitals:", error);
-    }
-  };
+    const fetchSuggestions = async () => {
+      const q = debouncedQuery.trim();
+      try {
+        const [docsRes, hospRes] = await Promise.all([
+          fetch(`/api/doctors?search=${encodeURIComponent(q)}&limit=20`),
+          fetch(`/api/locations/hospitals?search=${encodeURIComponent(q)}&limit=20`)
+        ]);
+
+        if (docsRes.ok) {
+          const docsData = await docsRes.json();
+          setDoctors(docsData.doctors || []);
+        }
+        if (hospRes.ok) {
+          const hospData = await hospRes.json();
+          setHospitals(hospData.hospitals || []);
+        }
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+      }
+    };
+
+    fetchSuggestions();
+  }, [debouncedQuery]);
 
   const suggestions = useMemo(() => {
     if (!searchQuery || searchQuery.length < 1) return [];
@@ -93,7 +109,9 @@ export default function SearchSection() {
       // Exact matches get highest priority
       if (name === query || nameBn === query) maxScore = 100;
       else if (name.startsWith(query) || nameBn.startsWith(query)) maxScore = 80;
-      else if (name.includes(query) || nameBn.includes(query)) maxScore = 80;
+      else if (name.includes(query) || nameBn.includes(query)){
+         maxScore = 80;
+      }
 
       // Specialty matches
       if (specialty.includes(query) || specialtyBn.includes(query)) {

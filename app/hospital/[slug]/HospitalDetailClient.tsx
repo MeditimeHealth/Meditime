@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import Nav_for_details from "@/components/nav_for_details";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -75,6 +75,20 @@ export default function HospitalDetailPage() {
   const [allHospitals, setAllHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  const PAGE_SIZE = 10;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // Debounce search input by 150ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery.trim());
+      setVisibleCount(PAGE_SIZE); // reset pagination on new search
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const fetchHospitalAndDoctors = useCallback(async () => {
     try {
@@ -138,11 +152,10 @@ export default function HospitalDetailPage() {
   }, [allHospitals]);
 
   const filteredDoctors = useMemo(() => {
-    if (!searchQuery.trim()) return doctors;
+    if (!debouncedQuery) return doctors;
 
-    const query = searchQuery.toLowerCase().trim();
+    const query = debouncedQuery.toLowerCase();
     return doctors.filter((doctor) => {
-      // Search across all name/department fields in both languages
       const fields = [
         doctor.name,
         doctor.nameBn,
@@ -152,7 +165,45 @@ export default function HospitalDetailPage() {
 
       return fields.some((f) => f.includes(query));
     });
-  }, [doctors, searchQuery]);
+  }, [doctors, debouncedQuery]);
+
+  const visibleDoctors = filteredDoctors.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredDoctors.length;
+
+  // Keep a ref so the stable observer callback always reads the latest hasMore.
+  const hasMoreRef = useRef(hasMore);
+  hasMoreRef.current = hasMore;
+
+  // Callback ref — fires when the sentinel node mounts or unmounts.
+  // This correctly handles the sentinel being inside a conditional render.
+  const setSentinelRef = useCallback((node: HTMLDivElement | null) => {
+    if (sentinelRef.current) {
+      // cleanup previous observer if node changes
+      sentinelRef.current = null;
+    }
+    if (!node) return;
+    sentinelRef.current = node;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMoreRef.current) {
+          setVisibleCount((prev) => prev + PAGE_SIZE);
+        }
+      },
+      { rootMargin: '200px', threshold: 0 }
+    );
+    observer.observe(node);
+    // Store cleanup on the node itself so we can disconnect when it unmounts
+    (node as any).__observer = observer;
+  }, []);
+
+  // Disconnect when sentinel unmounts (search changes hide/show it)
+  useEffect(() => {
+    return () => {
+      if (sentinelRef.current) {
+        (sentinelRef.current as any).__observer?.disconnect();
+      }
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -271,14 +322,23 @@ export default function HospitalDetailPage() {
               {/* Search Box */}
               <div className="w-full md:w-auto">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 transition-colors" />
                   <Input
                     type="text"
                     placeholder={language === 'bn' ? banglaLabels.searchPlaceholder : "Search doctors..."}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-4 py-2 w-full md:w-80 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                    className="pl-10 pr-10 py-2 w-full md:w-80 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                   />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      aria-label="Clear search"
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -297,11 +357,37 @@ export default function HospitalDetailPage() {
                 </Card>
               </motion.div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2  gap-6 mb-8">
-                {filteredDoctors.map((doctor, index) => (
-                  <DoctorCard key={doctor._id} doctor={doctor} index={index} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
+                  {visibleDoctors.map((doctor, index) => (
+                    <motion.div
+                      key={doctor._id}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <DoctorCard doctor={doctor} index={index} />
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Infinite scroll sentinel */}
+                <div ref={setSentinelRef} className="flex flex-col items-center gap-2 py-4">
+                  {hasMore && (
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      {language === 'bn' ? 'আরো লোড হচ্ছে...' : 'Loading more...'}
+                    </div>
+                  )}
+                  {!hasMore && filteredDoctors.length > PAGE_SIZE && (
+                    <p className="text-xs text-gray-400">
+                      {language === 'bn'
+                        ? `মোট ${filteredDoctors.length} জন ডাক্তার দেখানো হয়েছে`
+                        : `Showing all ${filteredDoctors.length} doctors`}
+                    </p>
+                  )}
+                </div>
+              </>
             )}
           </div>
 

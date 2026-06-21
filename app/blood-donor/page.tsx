@@ -355,7 +355,7 @@ export default function BloodDonorPage() {
       </div>
 
       {/* Original Search Section (Using Primary Color) */}
-      <section className="pt-24 pb-4">
+      <section className="py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Card className="p-8 rounded-[3rem] shadow-2xl border-none bg-white mb-12">
             <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-2">

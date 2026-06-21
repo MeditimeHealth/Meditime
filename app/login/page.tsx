@@ -237,7 +237,7 @@ export default function LoginPage() {
                           <div className="relative flex items-center mt-1">
                             {isPhone && (
                               <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-gray-300 pointer-events-none select-none">
-                                <span>🇧🇩</span>
+                                <img src="https://flagcdn.com/w40/bd.png" alt="BD" className="w-6 h-4 rounded-sm object-cover" />
                                 <span>+88</span>
                               </span>
                             )}
@@ -246,7 +246,7 @@ export default function LoginPage() {
                               type="text"
                               placeholder={t.phoneOrEmailPlaceholder}
                               {...register("phoneOrEmail")}
-                              className={`w-full ${isPhone ? 'pl-[4.5rem]' : ''}`}
+                              className={`w-full ${isPhone ? 'pl-[5rem]' : ''}`}
                             />
                           </div>
                           {errors.phoneOrEmail && (

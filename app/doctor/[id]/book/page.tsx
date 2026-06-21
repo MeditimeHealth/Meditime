@@ -678,13 +678,14 @@ export default function BookAppointmentPage() {
                   </Label>
                   <div className="relative flex items-center mt-1">
                     <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-gray-300 pointer-events-none select-none">
-                      <span>🇧🇩</span>
+                      <img src="https://flagcdn.com/w40/bd.png" alt="BD" className="w-6 h-4 rounded-sm object-cover" />
                       <span>+88</span>
                     </span>
                     <Input
                       id="mobileNumber"
                       type="tel"
                       value={mobileNumber}
+                      maxLength={11}
                       onChange={(e) => {
                         const val = e.target.value.replace(/\D/g, '').slice(0, 11);
                         setMobileNumber(val);
@@ -701,7 +702,7 @@ export default function BookAppointmentPage() {
                       }}
                       required
                       placeholder={language === 'bn' ? '০১XXXXXXXXX' : '01XXXXXXXXX'}
-                      className={`pl-[4.5rem] h-10 w-full rounded-none ${
+                      className={`pl-[5rem] h-10 w-full rounded-none ${
                         mobileError
                           ? 'border-red-400 bg-red-50'
                           : !mobileNumber

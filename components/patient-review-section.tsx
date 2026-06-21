@@ -61,6 +61,7 @@ export default function PatientReviewSection() {
     message: "",
   });
   const [loading, setLoading] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
 
   const formTranslations = {
     title: language === 'bn' ? "যোগাযোগ করুন" : "Get In Touch",
@@ -95,12 +96,13 @@ export default function PatientReviewSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validation
-    const phoneRegex = /^(?:\+8801|01|8801)[3-9]\d{8}$/;
+    // Validate phone inline
+    const phoneRegex = /^01[3-9]\d{8}$/;
     if (!phoneRegex.test(formData.phone)) {
-      toast.error(formTranslations.invalidPhone);
+      setPhoneError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে এবং 01 দিয়ে শুরু হতে হবে' : 'Phone number must be exactly 11 digits starting with 01');
       return;
     }
+    setPhoneError("");
 
     if (!formData.subject) {
       toast.error(language === 'bn' ? "দয়া করে একটি বিষয় নির্বাচন করুন" : "Please select a subject");
@@ -251,14 +253,35 @@ export default function PatientReviewSection() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-slate-700 ml-1">{formTranslations.phone}</label>
-                    <input
-                      type="tel"
-                      required
-                      className="w-full px-6 py-2 rounded-2xl bg-slate-50 border border-slate-200 focus:border-[#3DB5A0] focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none"
-                      placeholder="01XXXXXXXXX"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    />
+                    <div className="relative flex items-center">
+                      <span className="absolute left-3 flex items-center gap-1.5 text-gray-500 text-sm border-r pr-2 h-6 border-slate-300 pointer-events-none select-none">
+                        <img src="https://flagcdn.com/w40/bd.png" alt="BD" className="w-6 h-4 rounded-sm object-cover" />
+                        <span>+88</span>
+                      </span>
+                      <input
+                        type="tel"
+                        required
+                        maxLength={11}
+                        className={`w-full pl-[5rem] pr-4 py-2 rounded-2xl bg-slate-50 border focus:ring-4 focus:ring-[#3DB5A0]/10 transition-all outline-none ${
+                          phoneError
+                            ? 'border-red-400 bg-red-50'
+                            : 'border-slate-200 focus:border-[#3DB5A0]'
+                        }`}
+                        placeholder="01XXXXXXXXX"
+                        value={formData.phone}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '').slice(0, 11);
+                          setFormData({ ...formData, phone: val });
+                          if (phoneError) setPhoneError("");
+                        }}
+                      />
+                    </div>
+                    {phoneError && (
+                      <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                    {phoneError}
+                      </p>
+                    )}
+                    <p className="text-xs text-gray-400 ml-1">11 digits (e.g. 01XXXXXXXXX)</p>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-slate-700 ml-1">{formTranslations.subject}</label>
