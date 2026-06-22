@@ -12,24 +12,18 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
 import { formatBlogDate } from "@/lib/time-utils";
 
-interface WordPressPost {
-  id: number;
-  date: string;
-  slug: string;
-  title: { rendered: string };
-  excerpt: { rendered: string };
-  link: string;
-  _embedded?: {
-    "wp:featuredmedia"?: Array<{ source_url: string; alt_text: string }>;
-    author?: Array<{ name: string }>;
-  };
+interface Blog {
+  _id: string;
+  title: string;
+  titleBn: string;
+  description: string;
+  descriptionBn: string;
+  imageUrl: string;
+  createdAt: string;
 }
 
-// Use proxy to avoid CORS
-// const WORDPRESS_API = "https://wordpress.meditime.com.bd/wp-json/wp/v2";
-
 export default function BlogSection() {
-  const [posts, setPosts] = useState<WordPressPost[]>([]);
+  const [posts, setPosts] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const swiperRef = useRef<SwiperType | null>(null);
   const { language } = useLanguage();
@@ -39,12 +33,12 @@ export default function BlogSection() {
     const fetchPosts = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `/api/blog/posts?per_page=8&lang=${language}`
-        );
+        const response = await fetch("/api/blog");
         const data = await response.json();
-        console.log("Blog API Response:", data);
-        if (Array.isArray(data)) setPosts(data);
+        if (data.success) {
+          // Limit to 8 posts
+          setPosts(data.blogs.slice(0, 8));
+        }
       } catch (error) {
         console.error("Error fetching blog posts:", error);
       } finally {
@@ -55,12 +49,11 @@ export default function BlogSection() {
   }, [language]);
 
   const stripHtml = (html: string) =>
-    html.replace(/<[^>]*>/g, "").replace(/&[^;]+;/g, " ").trim();
+    (html || "").replace(/<[^>]*>/g, "").replace(/&[^;]+;/g, " ").trim();
 
   const formatDate = (dateString: string) => formatBlogDate(dateString, language);
 
-  const getFeaturedImage = (post: WordPressPost) =>
-    post._embedded?.["wp:featuredmedia"]?.[0]?.source_url || "/slide.jpg";
+  const getFeaturedImage = (post: Blog) => post.imageUrl || "/slide.jpg";
 
   if (loading) {
     return (
@@ -111,13 +104,13 @@ export default function BlogSection() {
             onSwiper={(swiper) => { swiperRef.current = swiper; }}
           >
             {posts.map((post) => (
-              <SwiperSlide key={post.id}>
-                <Link href={`/blog/${post.slug}`} className="group block">
+              <SwiperSlide key={post._id}>
+                <Link href={`/blog/${post._id}`} className="group block">
                   {/* Image */}
                   <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden mb-4">
                     <Image
                       src={getFeaturedImage(post)}
-                      alt={stripHtml(post.title.rendered)}
+                      alt={language === 'en' ? post.title : (post.titleBn || post.title)}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, 50vw"
@@ -130,17 +123,17 @@ export default function BlogSection() {
                     </span>
                     <span className="text-xs text-slate-400 flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      {formatDate(post.date)}
+                      {formatDate(post.createdAt)}
                     </span>
                   </div>
                   {/* Title */}
                   <h3
                     className="text-base font-bold text-slate-900 mb-1.5 line-clamp-2 group-hover:text-primary transition-colors leading-snug"
-                    dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+                    dangerouslySetInnerHTML={{ __html: language === 'en' ? post.title : (post.titleBn || post.title) }}
                   />
                   {/* Excerpt */}
                   <p className="text-xs text-slate-500 leading-relaxed line-clamp-2 mb-3">
-                    {stripHtml(post.excerpt.rendered)}
+                    {stripHtml(language === 'en' ? post.description : (post.descriptionBn || post.description))}
                   </p>
                   {/* Read More */}
                   <div className="btn-slide btn-primary flex items-center gap-2 group w-fit text-sm">

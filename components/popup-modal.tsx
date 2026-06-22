@@ -10,21 +10,20 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { usePathname } from "next/navigation";
 
-interface PopupData {
+interface OfferData {
+  _id: string;
   title: string;
   titleBn: string;
   description: string;
   descriptionBn: string;
   imageUrl: string;
-  buttonText: string;
-  buttonTextBn: string;
-  buttonLink: string;
   isActive: boolean;
+  isPopup: boolean;
 }
 
 export default function PopupModal() {
   const [isOpen, setIsOpen] = useState(false);
-  const [popupData, setPopupData] = useState<PopupData | null>(null);
+  const [popupData, setPopupData] = useState<OfferData | null>(null);
   const pathname = usePathname();
   const { language } = useLanguage();
 
@@ -38,15 +37,19 @@ export default function PopupModal() {
 
     const fetchPopup = async () => {
       try {
-        const response = await fetch("/api/popup");
+        const response = await fetch("/api/offer");
         const data = await response.json();
 
-        if (data.success && data.popup && data.popup.isActive) {
-          setPopupData(data.popup);
-          setTimeout(() => setIsOpen(true), 15000);
+        if (data.success && Array.isArray(data.offers)) {
+          // Find the first active offer designated as a popup
+          const popupOffer = data.offers.find((o: OfferData) => o.isActive && o.isPopup);
+          if (popupOffer) {
+            setPopupData(popupOffer);
+            setTimeout(() => setIsOpen(true), 15000);
+          }
         }
       } catch (error) {
-        console.error("Error fetching popup:", error);
+        console.error("Error fetching popup offer:", error);
       }
     };
 
@@ -61,9 +64,9 @@ export default function PopupModal() {
 
   if (!popupData) return null;
 
-  const currentTitle = language === 'bn' ? (popupData.titleBn || '') : (popupData.title || '');
-  const currentDesc = language === 'bn' ? (popupData.descriptionBn || '') : (popupData.description || '');
-  const currentBtnText = language === 'bn' ? (popupData.buttonTextBn || '') : (popupData.buttonText || '');
+  const currentTitle = language === 'bn' ? (popupData.titleBn || popupData.title || '') : (popupData.title || '');
+  const currentDesc = language === 'bn' ? (popupData.descriptionBn || popupData.description || '') : (popupData.description || '');
+  const currentBtnText = language === 'bn' ? 'বিস্তারিত জানুন' : 'Learn More';
 
   return (
     <AnimatePresence>
@@ -119,14 +122,13 @@ export default function PopupModal() {
                   {currentTitle}
                 </motion.h2>
 
-                <motion.p
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="text-slate-500 mb-4 md:mb-10 text-xs md:text-xl  leading-relaxed"
-                >
-                  {currentDesc}
-                </motion.p>
+                  className="text-slate-500 mb-4 md:mb-10 text-xs md:text-xl leading-relaxed prose line-clamp-4"
+                  dangerouslySetInnerHTML={{ __html: currentDesc }}
+                />
 
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -134,7 +136,7 @@ export default function PopupModal() {
                   transition={{ delay: 0.4 }}
                   className="flex gap-2 w-full"
                 >
-                  <Link href={popupData.buttonLink} onClick={handleClose} className="inline-block w-full sm:w-auto">
+                  <Link href="/offers" onClick={handleClose} className="inline-block w-full sm:w-auto">
                     <button
                       className="btn-primary btn-slide flex items-center justify-center gap-3 w-full text-xs md:text-md"
                     >

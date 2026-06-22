@@ -154,10 +154,16 @@ const menuItems = [
   },
 
   {
-    title: "Blog Sidebar",
-    titleBn: "ব্লগ সাইডবার",
+    title: "Offers",
+    titleBn: "অফারসমূহ",
     icon: Image,
-    href: "/admin/blog-sidebar",
+    href: "/admin/offers",
+  },
+  {
+    title: "Blogs",
+    titleBn: "ব্লগ",
+    icon: FileText,
+    href: "/admin/blogs",
   },
   {
     title: "Service Sections",
@@ -207,12 +213,7 @@ const menuItems = [
     icon: FileText,
     href: "/admin/affiliate-reports/completed",
   },
-  {
-    title: "Popup Manager",
-    titleBn: "পপআপ ম্যানেজার",
-    icon: Image,
-    href: "/admin/popup",
-  },
+
   {
     title: "App Image Manager",
     titleBn: "অ্যাপ ছবি ম্যানেজার",

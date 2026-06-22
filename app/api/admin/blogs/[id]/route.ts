@@ -1,0 +1,40 @@
+import { NextResponse } from "next/server";
+import mongoose from "mongoose";
+import Blog from "@/models/Blog";
+
+async function connectDB() {
+  if (mongoose.connection.readyState >= 1) return;
+  return mongoose.connect(process.env.MONGODB_URI!);
+}
+
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    await connectDB();
+    const blog = await Blog.findById((await params).id);
+    if (!blog) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
+    return NextResponse.json({ success: true, blog });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: "Failed to fetch blog" }, { status: 500 });
+  }
+}
+
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    await connectDB();
+    const body = await req.json();
+    const blog = await Blog.findByIdAndUpdate((await params).id, body, { new: true });
+    return NextResponse.json({ success: true, blog });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: "Failed to update blog" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    await connectDB();
+    await Blog.findByIdAndDelete((await params).id);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: "Failed to delete blog" }, { status: 500 });
+  }
+}

@@ -12,73 +12,49 @@ import { homepageTranslations } from "@/lib/homepage-translations";
 import { formatBlogDate } from "@/lib/time-utils";
 import Nav_for_details from "@/components/nav_for_details";
 
-interface WordPressPost {
-  id: number;
-  date: string;
-  modified: string;
-  slug: string;
-  status: string;
-  title: {
-    rendered: string;
-  };
-  content: {
-    rendered: string;
-  };
-  excerpt: {
-    rendered: string;
-  };
-  author: number;
-  featured_media: number;
-  categories: number[];
-  tags: number[];
-  link: string;
-  _embedded?: {
-    "wp:featuredmedia"?: Array<{
-      source_url: string;
-      alt_text: string;
-    }>;
-    author?: Array<{
-      name: string;
-    }>;
-  };
+interface Blog {
+  _id: string;
+  title: string;
+  titleBn: string;
+  description: string;
+  descriptionBn: string;
+  imageUrl: string;
+  isActive: boolean;
+  createdAt: string;
 }
-
-const WORDPRESS_API = "https://wordpress.meditime.com.bd/wp-json/wp/v2";
 
 
 
 export default function BlogPostPage() {
   const params = useParams();
   const router = useRouter();
-  const slug = params?.slug as string;
-  const [post, setPost] = useState<WordPressPost | null>(null);
+  const id = params?.id as string;
+  const [post, setPost] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { language } = useLanguage();
   const t = homepageTranslations[language];
 
   useEffect(() => {
-    if (slug) {
+    if (id) {
       fetchPost();
     }
-  }, [slug, language]);
+  }, [id, language]);
 
   const fetchPost = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(
-        `${WORDPRESS_API}/posts?slug=${slug}&_embed=true&lang=${language}`
-      );
+      const response = await fetch(`/api/blog/${id}`);
       const data = await response.json();
-      if (Array.isArray(data) && data.length > 0) {
-        setPost(data[0]);
+      if (data.success && data.blog) {
+        setPost(data.blog);
       } else {
-        setError(t.blogPage.postNotFound);
+        setError(t.blogPage?.postNotFound || "Post not found");
       }
     } catch (error) {
       console.error("Error fetching post:", error);
-      setError(t.blogPage.failedLoad);
+      setError(t.blogPage?.failedLoad || "Failed to load post");
     } finally {
       setLoading(false);
     }
@@ -87,37 +63,34 @@ export default function BlogPostPage() {
 
 
   const stripHtml = (html: string) => {
-    return html.replace(/<[^>]*>/g, "").replace(/&[^;]+;/g, " ").trim();
+    return (html || "").replace(/<[^>]*>/g, "").replace(/&[^;]+;/g, " ").trim();
   };
 
   const formatDate = (dateString: string) => {
     return formatBlogDate(dateString, language);
   };
 
-  const getFeaturedImage = (post: WordPressPost) => {
-    const imageUrl = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
-    return imageUrl || "/slide.jpg";
+  const getFeaturedImage = (post: Blog) => {
+    return post.imageUrl || "/slide.jpg";
   };
 
-  const getAuthorName = (post: WordPressPost) => {
-    return post._embedded?.author?.[0]?.name || t.blogPage.authorAdmin;
+  const getAuthorName = (post: Blog) => {
+    return t.blogPage?.authorAdmin || "Admin";
   };
 
-  // Keep recentPosts for fallback (but we'll remove the fetch)
-  const [recentPosts, setRecentPosts] = useState<WordPressPost[]>([]);
+  // Keep recentPosts for fallback
+  const [recentPosts, setRecentPosts] = useState<Blog[]>([]);
   
   useEffect(() => {
     fetchRecentPosts();
-  }, [slug, language]);
+  }, [id, language]);
 
   const fetchRecentPosts = async () => {
     try {
-      const response = await fetch(
-        `/api/blog/posts?per_page=4&lang=${language}`
-      );
+      const response = await fetch(`/api/blog`);
       const data = await response.json();
-      if (Array.isArray(data)) {
-        const filtered = data.filter((p: WordPressPost) => p.slug !== slug).slice(0, 3);
+      if (data.success && Array.isArray(data.blogs)) {
+        const filtered = data.blogs.filter((p: Blog) => p._id !== id).slice(0, 3);
         setRecentPosts(filtered);
       }
     } catch (error) {
@@ -177,7 +150,7 @@ export default function BlogPostPage() {
             <div className="relative min-h-[200px] md:min-h-[400px] w-full mb-8 rounded-lg overflow-hidden">
               <Image
                 src={getFeaturedImage(post)}
-                alt={stripHtml(post.title.rendered)}
+                alt={language === 'en' ? post.title : (post.titleBn || post.title)}
                 fill
                 className=" w-full h-auto object-cover"
                 sizes="(max-width: 1024px) 100vw, 66vw"
@@ -189,13 +162,13 @@ export default function BlogPostPage() {
             <div className="mb-8">
               <h1
                 className="text-[32px] sm:text-5xl md:text-6xl lg:text-[56px] font-extrabold text-primary mb-6 leading-tight tracking-tight"
-                dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+                dangerouslySetInnerHTML={{ __html: language === 'en' ? post.title : (post.titleBn || post.title) }}
               />
               
               <div className="flex items-center gap-6 text-sm text-gray-500 mb-6 pb-6 border-b border-gray-200">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  {formatDate(post.date)}
+                  {formatDate(post.createdAt)}
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />
@@ -207,8 +180,8 @@ export default function BlogPostPage() {
             {/* Article Content */}
             <article className="prose prose-lg max-w-none">
               <div
-                className="  leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+                className="leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: language === 'en' ? post.description : (post.descriptionBn || post.description) }}
               />
             </article>
 
@@ -232,12 +205,12 @@ export default function BlogPostPage() {
               <h3 className="text-xl font-bold text-gray-900 mb-4 px-2">{t.blogPage.relatedArticles}</h3>
               {recentPosts.length > 0 ? (
                 recentPosts.map((recentPost) => (
-                  <Card key={recentPost.id} className="overflow-hidden border-0 shadow-lg">
-                    <Link href={`/blog/${recentPost.slug}`}>
+                  <Card key={recentPost._id} className="overflow-hidden border-0 shadow-lg">
+                    <Link href={`/blog/${recentPost._id}`}>
                       <div className="relative h-48 w-full bg-gray-200 group cursor-pointer">
                         <Image
                           src={getFeaturedImage(recentPost)}
-                          alt={stripHtml(recentPost.title.rendered)}
+                          alt={language === 'en' ? recentPost.title : (recentPost.titleBn || recentPost.title)}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
                           sizes="(max-width: 1024px) 100vw, 33vw"
@@ -248,7 +221,7 @@ export default function BlogPostPage() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4">
                           <p className="text-white font-bold text-sm line-clamp-2">
-                            {stripHtml(recentPost.title.rendered)}
+                            {language === 'en' ? recentPost.title : (recentPost.titleBn || recentPost.title)}
                           </p>
                         </div>
                       </div>

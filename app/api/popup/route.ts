@@ -19,9 +19,9 @@ export async function GET() {
                     description: latestOffer.description,
                     descriptionBn: latestOffer.descriptionBn,
                     imageUrl: latestOffer.imageUrl,
-                    buttonText: latestOffer.buttonText,
-                    buttonTextBn: latestOffer.buttonTextBn,
-                    buttonLink: latestOffer.linkUrl,
+                    buttonText: 'Learn More',
+                    buttonTextBn: 'আরও জানুন',
+                    buttonLink: '/offers',
                     isActive: latestOffer.isActive
                 } 
             });
