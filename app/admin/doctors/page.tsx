@@ -67,8 +67,14 @@ export default function DoctorsPage() {
   };
 
   useEffect(() => {
-    fetchDoctors(currentPage);
     fetchHospitals();
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchDoctors(currentPage);
+    }, 300);
+    return () => clearTimeout(timer);
   }, [currentPage, searchQuery]);
 
   const fetchHospitals = async () => {

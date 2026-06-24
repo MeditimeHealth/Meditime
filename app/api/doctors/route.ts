@@ -45,21 +45,33 @@ export async function GET(request: NextRequest) {
 
     let query: any = {};
 
+    // Helper function to escape RegExp special characters
+    const escapeRegex = (string: string) => {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    };
+
     // Text search across multiple fields
     if (search) {
-      const searchRegex = new RegExp(search, "i");
-      query.$or = [
-        { name: searchRegex },
-        { nameBn: searchRegex },
-        { specialty: searchRegex },
-        { specialtyBn: searchRegex },
-        { qualification: searchRegex },
-        { qualificationBn: searchRegex },
-        { bio: searchRegex },
-        { bioBn: searchRegex },
-        { designation: searchRegex },
-        { designationBn: searchRegex }
-      ];
+      const searchTerms = search.split(/\s+/).filter(Boolean);
+      if (searchTerms.length > 0) {
+        query.$and = searchTerms.map(term => {
+          const termRegex = new RegExp(escapeRegex(term), "i");
+          return {
+            $or: [
+              { name: termRegex },
+              { nameBn: termRegex },
+              { specialty: termRegex },
+              { specialtyBn: termRegex },
+              { qualification: termRegex },
+              { qualificationBn: termRegex },
+              { bio: termRegex },
+              { bioBn: termRegex },
+              { designation: termRegex },
+              { designationBn: termRegex }
+            ]
+          };
+        });
+      }
     }
 
     // Exact matches

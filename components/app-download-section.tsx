@@ -27,9 +27,9 @@ export default function AppDownloadSection() {
   }, []);
 
   return (
-    <div className="w-full relative py-8 sm:py-12 overflow-hidden ">
+    <div className="w-full relative py-8 sm:py-18 overflow-hidden ">
       <Image
-        src={"/app.png"}
+        src={"/home/app.png"}
         alt={t.title}
         fill
         className="object-cover object-center -z-10"

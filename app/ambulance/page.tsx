@@ -286,11 +286,10 @@ export default function AmbulancePage() {
         transition={{ duration: 0.8 }}
         className="relative  h-[450px] md:h-[650px] w-full overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/50 to-primary-dark/60 z-10" />
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1587745416684-47953f16f02f?w=1920&q=80')",
+            backgroundImage: "url('/hero/ambulance.png')",
           }}
         />
         <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">

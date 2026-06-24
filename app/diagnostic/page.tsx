@@ -410,12 +410,11 @@ export default function DiagnosticPage() {
         transition={{ duration: 0.8 }}
         className="relative h-[450px] md:h-[650px] w-full overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-[#00B7B5]/90 via-[#0088FF]/80 to-[#2C5282]/70 z-10" />
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1920&q=80')",
+              "url('/hero/diagnostic.png')",
             backgroundPosition: "center",
             backgroundSize: "cover",
           }}
@@ -435,7 +434,8 @@ export default function DiagnosticPage() {
               </p>
 
               <div className="flex justify-center lg:justify-start mb-8">
-                <Button onClick={() => setShowBookingsModal(true)} variant="outline" className="gap-2 border-white/30 text-white hover:bg-white hover:text-[#00B7B5] rounded-xl shadow-lg bg-white/10 backdrop-blur-md border-2 transition-all">
+                <Button onClick={() => setShowBookingsModal(true)} 
+                  className="gap-2 btn-primary btn-slide">
                   <Activity className="w-5 h-5" />
                   {language === 'en' ? 'My Booking History' : 'আমার বুকিং ইতিহাস'}
                   {myBookingsHistory.length > 0 && <span className="bg-white text-[#00B7B5] px-2 py-0.5 rounded-md text-xs ml-1 font-black">{myBookingsHistory.length}</span>}

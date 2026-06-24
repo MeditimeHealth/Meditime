@@ -40,21 +40,21 @@ export default function ServicesSection() {
       cta: t.bookAppointmentBtn,
       href: "/doctor",
       description: t.doctorAppointmentDesc,
-      image: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528",
+      image: "/home/doctor.png",
     },
     {
       title: t.videoConsultTitle,
       cta: t.bookConsultationBtn,
       href: "/live-consultation",
       description: t.videoConsultDesc,
-      image: "https://plus.unsplash.com/premium_photo-1661775601929-8c775187bea6?auto=format&fit=crop&q=80",
+      image: "/home/live-consult.png",
     },
     {
       title: t.hospitalsTitle,
       cta: t.hospitalListBtn,
       href: "/hospital",
       description: t.hospitalsDesc,
-      image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d",
+      image: "/home/hospital.png",
     },
 
     {
@@ -62,7 +62,7 @@ export default function ServicesSection() {
       cta: t.comparePriceBtn,
       href: "/diagnostic",
       description: t.diagnosticDesc,
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80",
+      image: "/home/diagnostic.png",
     }
   ];
 

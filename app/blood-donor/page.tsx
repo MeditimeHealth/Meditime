@@ -296,11 +296,10 @@ export default function BloodDonorPage() {
         transition={{ duration: 0.8 }}
         className="relative  h-[450px] md:h-[650px] w-full overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/60 via-primary/40 to-slate-900/60 z-10" />
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1615461066159-fea0960485d5?auto=format&fit=crop&q=80')",
+            backgroundImage: "url('/hero/blood.png')",
           }}
         />
         <div className="relative z-20 h-full flex flex-col max-w-7xl mx-auto justify-center px-4 sm:px-6 lg:px-8 text-center lg:text-left  ">
@@ -576,7 +575,7 @@ export default function BloodDonorPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
               <div className="aspect-[4/5] relative rounded-[3rem] overflow-hidden shadow-2xl">
-                <Image src="/images/blood_donor_hero.png" alt="Blood Donation" fill className="object-cover" />
+                <Image src="/hero/blood2.png" alt="Blood Donation" fill className="object-cover" />
               </div>
               <div className="absolute bottom-10 -right-10 bg-white p-8 rounded-[2rem] shadow-2xl border border-slate-100 hidden md:block max-w-[280px]">
                 <div className="flex items-center gap-3 mb-4">

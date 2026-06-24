@@ -106,21 +106,21 @@ export default function ServicePage() {
       cta: t.doctorBtn,
       href: "/doctor",
       description: t.doctorDesc,
-      image: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528",
+      image: "/service/doctor.png",
     },
     {
       title: t.videoTitle,
       cta: t.videoBtn,
       href: "/live-consultation",
       description: t.videoDesc,
-      image: "https://plus.unsplash.com/premium_photo-1661775601929-8c775187bea6?auto=format&fit=crop&q=80",
+      image: "/service/video_consult.png",
     },
     {
       title: t.hospitalTitle,
       cta: t.hospitalBtn,
       href: "/hospital",
       description: t.hospitalDesc,
-      image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d",
+      image: "/service/hospital.png",
     },
 
     {
@@ -128,21 +128,21 @@ export default function ServicePage() {
       cta: t.diagnosticBtn,
       href: "/diagnostic",
       description: t.diagnosticDesc,
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80",
+      image: "/service/diagnostic.png",
     },
     {
       title: t.bloodTitle,
       cta: t.bloodBtn,
       href: "/blood-donor",
       description: t.bloodDesc,
-      image: "https://images.unsplash.com/photo-1615461066159-fea0960485d5?auto=format&fit=crop&q=80",
+      image: "/service/blood.png",
     },
     {
       title: t.ambulanceTitle,
       cta: t.ambulanceBtn,
       href: "/ambulance",
       description: t.ambulanceDesc,
-      image: "https://images.unsplash.com/photo-1554734867-bf3c00a49371?auto=format&fit=crop&q=80",
+      image: "/service/ambulance.png",
     },
   ];
 
@@ -164,11 +164,10 @@ export default function ServicePage() {
         transition={{ duration: 0.8 }}
         className="relative h-[450px] md:h-[650px] w-full overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-primary/90 z-10" />
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1920&q=80')",
+            backgroundImage: "url('/hero/service.png')",
           }}
         />
         <div className="relative z-20 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 ">
@@ -285,7 +284,7 @@ export default function ServicePage() {
         </div>
 
         {/* ── FAQ Section ── */}
-        <div className="mt-24 md:mt-32 max-w-4xl mx-auto">
+        <div className="mt-24 md:mt-32 max-w-4xl mx-auto mb-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
