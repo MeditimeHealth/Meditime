@@ -99,7 +99,7 @@ export default function PatientReviewSection() {
     // Validate phone inline
     const phoneRegex = /^01[3-9]\d{8}$/;
     if (!phoneRegex.test(formData.phone)) {
-      setPhoneError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে এবং 01 দিয়ে শুরু হতে হবে' : 'Phone number must be exactly 11 digits starting with 01');
+      setPhoneError(language === 'bn' ? "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX": 'Please provide 11 digits number (starting with 01). Example: 01XXXXXXXXX');
       return;
     }
     setPhoneError("");

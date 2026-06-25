@@ -33,7 +33,7 @@ const getLoginSchema = (language: 'en' | 'bn') => z.object({
   }
   return true;
 }, {
-  message: language === 'bn' ? "মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে" : "Phone number must be exactly 11 digits starting with 01",
+  message: language === 'bn' ? "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX" : "Please provide 11 digits number (starting with 01). Example: 01XXXXXXXXX",
   path: ["phoneOrEmail"],
 });
 
@@ -44,6 +44,7 @@ type LoginFormValues = {
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
+import Nav_for_details from "@/components/nav_for_details";
 
 export default function LoginPage() {
   const { language } = useLanguage() as { language: 'en' | 'bn' };
@@ -184,7 +185,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{
-      backgroundImage: "url('/slide2.jpg')",
+      backgroundImage: "url('/slide.jpg')",
       backgroundSize: "cover",
       backgroundPosition: "center",
     }}>

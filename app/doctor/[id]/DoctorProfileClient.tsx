@@ -334,7 +334,7 @@ const displayedBio = needsTruncation && !bioExpanded
         {/* Static Cover Image */}
         <div className="absolute inset-0">
           <Image
-            src="/slide.jpg"
+            src="/hero/d_profile.png"
             alt="Cover"
             fill
             sizes="100vw"

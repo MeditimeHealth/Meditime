@@ -184,7 +184,7 @@ export default function DiagnosticPatientForm({
                 const val = e.target.value.replace(/\D/g, '').slice(0, 11);
                 setMobileNumber(val);
                 if (val.length > 0 && val.length < 11) {
-                  setMobileError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে' : 'Mobile number must be exactly 11 digits');
+                  setMobileError(language === 'en' ? "Please provide 11 digits number (starting with 01). Example: 01XXXXXXXXX" : "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX");
                 } else {
                   setMobileError("");
                 }

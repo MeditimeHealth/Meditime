@@ -85,7 +85,7 @@ export default function HospitalPartnersSection() {
               {t.title}
             </h2>
             <div className="w-20 h-1.5 bg-primary mx-auto mb-6 shadow-[0_0_15px_rgba(13,148,136,0.5)]" />
-            <p className=" text-sm sm:text-lg text-white/90 max-w-sm mx-auto leading-relaxed font-medium">
+            <p className=" text-sm sm:text-lg text-white/90 max-w-xl mx-auto leading-relaxed font-medium">
               {t.subtitle}
             </p>
           </motion.div>

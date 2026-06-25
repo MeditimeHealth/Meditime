@@ -401,7 +401,7 @@ export default function UserProfilePage() {
                       </div>
                     )}
                   </div>
-                  {errors.phoneNumber && <p className="text-[10px] text-rose-500 font-bold uppercase">{errors.phoneNumber.message}</p>}
+                  {errors.phoneNumber && <p className="text-[10px] text-rose-500 font-bold uppercase">{language === 'bn' ? "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX" : "Please provide 11 digits number (starting with 01). Example: 01XXXXXXXXX"}</p>}
                 </div>
 
                 <div className="space-y-2">

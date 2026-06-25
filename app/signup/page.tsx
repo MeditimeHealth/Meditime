@@ -45,6 +45,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import { homepageTranslations } from "@/lib/homepage-translations";
+import Image from "next/image";
 
 export default function SignupPage() {
   const { language } = useLanguage() as { language: 'en' | 'bn' };
@@ -132,12 +133,7 @@ export default function SignupPage() {
               <div className="hidden md:flex md:col-span-2 bg-gradient-to-br from-primary/20 to-primary-dark/20 p-6 lg:p-12 flex-col justify-center text-white">
                 <div className="space-y-4 lg:space-y-6">
                   <div className="flex items-center gap-3 mb-4 lg:mb-8">
-                    <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-white/20 flex items-center justify-center">
-                      <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0v-5a2 2 0 012-2h2a2 2 0 012 2v5m-6 0h6" />
-                      </svg>
-                    </div>
-                    <h1 className="text-2xl lg:text-3xl font-bold">MEDI TIME</h1>
+                    <Image src="/SVG/asset-3.png" alt="Logo" width={200} height={50} />
                   </div>
                   <h2 className="text-3xl lg:text-5xl font-bold leading-tight">
                     {t.signupTitle}
@@ -203,11 +199,9 @@ export default function SignupPage() {
                         />
                       </div>
                       {errors.phoneNumber && (
-                        <p className="text-xs sm:text-sm text-red-500 mt-1">{errors.phoneNumber.message}</p>
+                        <p className="text-xs sm:text-sm text-red-500 mt-1">{language === 'en' ? "Please provide 11 digits number (starting with 01). Example: 01XXXXXXXXX" : "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX"}</p>
                       )}
-                      <p className="text-xs text-gray-400 mt-1">
-                        {language === 'bn' ? '১১ সংখ্যা (যেমন: ০১XXXXXXXXX)' : '11 digits (e.g. 01XXXXXXXXX)'}
-                      </p>
+                
                     </div>
 
                     <div>

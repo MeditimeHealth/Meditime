@@ -62,8 +62,7 @@ export default function OfferPage() {
               <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
-                  backgroundImage: `url(/OfferBanner.png)`,
-                  backgroundColor: "#000000"
+                  backgroundImage: `url(/slide.jpg)`,
                 }}
               >
                 {/* Overlay */}

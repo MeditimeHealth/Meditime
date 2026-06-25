@@ -121,12 +121,12 @@ export default function DepartmentsPage() {
         transition={{ duration: 0.8 }}
         className="relative  h-[400px] md:h-[500px] w-full overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-primary/50 to-primary-dark/50 z-10" />
+        {/* <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-primary/50 to-primary-dark/50 z-10" /> */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1920&q=80')",
+              "url('/hero/department.png')",
             backgroundPosition: "center",
             backgroundSize: "cover",
           }}

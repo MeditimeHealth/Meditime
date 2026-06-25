@@ -376,7 +376,7 @@ export default function BookAppointmentPage() {
 
       // Validate mobile number to be exactly 11 digits starting with 01
       if (mobileNumber.length !== 11 || !mobileNumber.startsWith("01")) {
-        setMobileError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে' : 'Mobile number must be exactly 11 digits');
+        setMobileError(language === 'en' ? "Please provide 11 digits number (starting with 01). Example: 01XXXXXXXXX" : "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX");
         setSubmitting(false);
         return;
       }

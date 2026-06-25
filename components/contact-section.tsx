@@ -35,7 +35,7 @@ export default function ContactSection() {
     submit: language === 'bn' ? "সাবমিট" : "Submit",
     sending: language === 'bn' ? "পাঠানো হচ্ছে..." : "Sending...",
     success: language === 'bn' ? "আপনার বার্তাটি সফলভাবে পাঠানো হয়েছে!" : "Your message has been sent successfully!",
-    invalidPhone: language === 'bn' ? "ফোন নম্বর অবশ্যই ০৮৮০ বা ০১ দিয়ে শুরু হতে হবে এবং শুধু সংখ্যা থাকতে হবে" : "Phone number must start with 880 or 01 and contain only numbers",
+    invalidPhone: language === 'bn' ? "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX" : "Please provide an 11-digit number starting with 01. Example: 01XXXXXXXXX",
   };
 
   const [formData, setFormData] = useState({

@@ -193,14 +193,14 @@ export default function ContactPage() {
 
                 <div className="flex gap-6">
                   <div className="w-14 h-14 rounded-2xl bg-[#00B1C2] flex items-center justify-center text-white shrink-0 border border-slate-100">
-                    <a href="https://www.facebook.com/meditime.health" target="_blank">
+                    <a href="https://www.facebook.com/meditime.com.bd" target="_blank">
                       <FaFacebookF className="w-6 h-6" />
                     </a>
                   </div>
                   <div>
                     <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-1">Facebook</p>
-                    <a href="https://www.facebook.com/meditime.health" target="_blank" className="text-lg font-bold text-slate-900 hover:text-[#3DB5A0] transition-colors">
-                      meditime.health
+                    <a href="https://www.facebook.com/meditime.com.bd" target="_blank" className="text-lg font-bold text-slate-900 hover:text-[#3DB5A0] transition-colors">
+                      meditime.com.bd
                     </a>
                   </div>
                 </div>
@@ -213,8 +213,8 @@ export default function ContactPage() {
                     <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-1">Address</p>
                     <p className="text-lg font-bold text-slate-900 leading-relaxed">
                       {language === 'bn'
-                        ? 'সাভার ডিওএইচএস, ঢাকা, বাংলাদেশ, ১৩৪৯'
-                        : 'Savar DOHS, Dhaka, Bangladesh, 1349'}
+                        ? 'সাভার ডিওএইচএস, ঢাকা-১৩৪৪, বাংলাদেশ'
+                        : 'Savar DOHS, Dhaka-1344, Bangladesh'}
                     </p>
                   </div>
                 </div>
@@ -326,11 +326,9 @@ export default function ContactPage() {
                       />
                     </div>
                     {errors.phone && (
-                      <p className="text-sm text-red-500">{errors.phone.message}</p>
+                      <p className="text-sm text-red-500">{language === 'en' ? "Please provide 11 digits number (starting with 01). Example: 01XXXXXXXXX" : "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX"}</p>
                     )}
-                    <p className="text-xs text-gray-400">
-                      {language === 'bn' ? '১১ সংখ্যা (যেমন: ০১XXXXXXXXX)' : '11 digits (e.g. 01XXXXXXXXX)'}
-                    </p>
+                   
                   </div>
                 </div>
 
