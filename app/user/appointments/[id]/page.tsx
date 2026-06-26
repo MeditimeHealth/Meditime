@@ -169,28 +169,28 @@ function AppointmentDetailsContent() {
         </p>
       </div>
 
-      {/* Appointment Slip - Exact design copy */}
       <div id="appointment-slip-wrapper">
         <Card
-          className="bg-white border border-slate-200 shadow-2xl overflow-hidden print:shadow-none print:border-none"
+          className="bg-white border border-slate-200 shadow-2xl overflow-hidden print:shadow-none print:border-x-2"
           id="appointment-slip"
         >
-          {/* Slip Header - Gradient from success page */}
-          <div className="bg-gradient-to-r from-[#00B7B5] to-teal-600 px-6 py-6 text-center">
+          {/* Slip Header */}
+          <div className="bg-[var(--color-primary)] px-6 py-6 text-center">
             <div className="flex justify-center mb-4">
-              <div className="bg-white p-2 rounded-xl">
-                <img src="/SVG/asset-3.svg" alt="MediTime Logo" className="h-8 w-auto" />
+              <div className="">
+                <img src="/SVG/Asset-4.png" alt="MediTime Logo" className="h-14 w-auto" />
               </div>
             </div>
+            
             <p className="text-white/80 text-sm font-bold uppercase tracking-wider mt-1">
               Appointment Slip
             </p>
             {appointment.serialNumber && (
               <div className="mt-4 pt-4 border-t border-white/20">
-                <p className="text-white/70 text-xs uppercase tracking-widest mb-1">
+                <p className="text-white/70 text-xs uppercase tracking-widest mb-1" >
                   {t.serialNumber[language]}
                 </p>
-                <p className="font-mono font-bold text-3xl text-white">{appointment.serialNumber}</p>
+                <p className="font-mono font-bold text-2xl text-white">{appointment.serialNumber}</p>
               </div>
             )}
           </div>
@@ -198,26 +198,27 @@ function AppointmentDetailsContent() {
           <div className="p-6 space-y-6">
             {/* Doctor Information */}
             <div className="pb-5 border-b border-dashed border-slate-200">
-              <p className="text-[11px] text-[#00B7B5] font-bold uppercase tracking-widest mb-3">
+              <p className="text-[11px] text-[#00B7B5] font-bold uppercase tracking-widest mb-3" >
                 {t.doctorInfo[language]}
               </p>
               <div className="flex items-start gap-4">
+                {/* Doctor Info */}
                 <div className="min-w-0">
-                  <p className="font-bold text-slate-900 text-xl leading-tight mb-0.5">
-                    {getLocalizedValue(doc.name, doc.nameBn, language) || (language === 'bn' ? 'ডাক্তার' : 'Doctor')}
+                  <p className="font-bold text-slate-900 text-xl leading-tight mb-0.5" >
+                    {getLocalizedValue(doc.name, doc.nameBn, language)}
                   </p>
                   {(language === 'bn' ? doc.specialtyBn : doc.specialty) && (
-                    <p className="text-sm text-[#00B7B5] font-semibold mb-0.5">
+                    <p className="text-sm text-[#00B7B5] font-semibold mb-0.5" >
                       {language === 'bn' ? (doc.specialtyBn || '') : (doc.specialty || '')}
                     </p>
                   )}
                   {(language === 'bn' ? doc.qualificationBn : doc.qualification) && (
-                    <p className="text-sm text-slate-600 font-medium mb-0.5">
+                    <p className="text-sm text-slate-600 font-medium mb-0.5" >
                       {language === 'bn' ? (doc.qualificationBn || '') : (doc.qualification || '')}
                     </p>
                   )}
                   {(language === 'bn' ? doc.designationBn : doc.designation) && (
-                    <p className="text-xs text-slate-400 font-medium">
+                    <p className="text-xs text-slate-400 font-medium" >
                       {getLocalizedValue(doc.designation, doc.designationBn, language)}
                     </p>
                   )}
@@ -227,24 +228,26 @@ function AppointmentDetailsContent() {
 
             {/* Patient Information */}
             <div>
-              <p className="text-[11px] text-[#00B7B5] font-bold uppercase tracking-widest mb-4">
+              <p className="text-[11px] text-[#00B7B5] font-bold uppercase tracking-widest mb-4" >
                 {t.patientInfo[language]}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Patient Name */}
                 <div className="space-y-1 p-3 bg-slate-50 rounded-xl">
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
+                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider" >
                     {t.patientName[language]}
                   </p>
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-slate-400 flex-shrink-0" />
-                    <p className="font-bold text-slate-800 text-sm">{appointment.patientName}</p>
+                    <p className="font-bold text-slate-800 text-sm" >
+                      {appointment.patientName}
+                    </p>
                   </div>
                 </div>
 
                 {/* Mobile */}
                 <div className="space-y-1 p-3 bg-slate-50 rounded-xl">
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
+                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider" >
                     {t.mobileNumber[language]}
                   </p>
                   <div className="flex items-center gap-2">
@@ -255,25 +258,26 @@ function AppointmentDetailsContent() {
 
                 {/* Date */}
                 <div className="space-y-1 p-3 bg-slate-50 rounded-xl">
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
+                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider" >
                     {t.appointmentDate[language]}
                   </p>
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-[#00B7B5] flex-shrink-0" />
-                    <p className="font-bold text-slate-800 text-sm">
+                    <p className="font-bold text-slate-800 text-sm" >
                       {formatDate(appointment.appointmentDate, language)}
+                      {appointment.appointmentTime && ` • ${appointment.appointmentTime}`}
                     </p>
                   </div>
                 </div>
 
                 {/* Hospital */}
                 <div className="space-y-1 p-3 bg-slate-50 rounded-xl">
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
+                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider" >
                     {t.hospital[language]}
                   </p>
                   <div className="flex items-start gap-2">
                     <MapPin className="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" />
-                    <p className="font-bold text-slate-800 text-sm leading-snug">
+                    <p className="font-bold text-slate-800 text-sm leading-snug" >
                       {appointment.hospitalName}
                     </p>
                   </div>
@@ -281,17 +285,17 @@ function AppointmentDetailsContent() {
 
                 {/* Patient Type */}
                 <div className="space-y-1 p-3 bg-slate-50 rounded-xl">
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
+                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider" >
                     {t.patientType[language]}
                   </p>
-                  <p className="font-bold text-slate-800 text-sm">
+                  <p className="font-bold text-slate-800 text-sm" >
                     {getPatientTypeLabel(appointment.patientType, language)}
                   </p>
                 </div>
 
                 {/* Status */}
                 <div className="space-y-1 p-3 bg-slate-50 rounded-xl">
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
+                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider" >
                     {t.status[language]}
                   </p>
                   <span
@@ -310,27 +314,27 @@ function AppointmentDetailsContent() {
                   </span>
                 </div>
 
-                {/* Gender */}
+                {/* Gender (if available) */}
                 {appointment.gender && (
                   <div className="space-y-1 p-3 bg-slate-50 rounded-xl">
-                    <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
+                    <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider" >
                       {t.gender[language]}
                     </p>
-                    <p className="font-bold text-slate-800 text-sm">
+                    <p className="font-bold text-slate-800 text-sm" >
                       {getGenderLabel(appointment.gender, language)}
                     </p>
                   </div>
                 )}
 
-                {/* Age */}
+                {/* Age (if available) */}
                 {appointment.age && (
                   <div className="space-y-1 p-3 bg-slate-50 rounded-xl">
-                    <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
+                    <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider" >
                       {t.age[language]}
                     </p>
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-orange-400 flex-shrink-0" />
-                      <p className="font-bold text-slate-800 text-sm">
+                      <p className="font-bold text-slate-800 text-sm" >
                         {language === "bn" ? toBengaliNumber(appointment.age) : appointment.age} {t.years[language]}
                       </p>
                     </div>

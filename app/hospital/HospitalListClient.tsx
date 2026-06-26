@@ -470,7 +470,7 @@ export default function HospitalListPage() {
                 {t.heroTitle}
               </h1>
               <p className="text-[16px] md:text-xl text-white/90 max-w-2xl mb-8 font-light">
-                {language === 'bn' ? 'সাভারের কাছে বিভিন্ন লোকেশন, ২০+ স্পেশালিটি এবং ৪০+ হাসপাতাল থেকে ডাক্তার খুঁজে নিন।' : 'Find doctors near Savar from different locations, 20+ specialties, and 40+ hospitals.'}
+                {language === 'bn' ? 'সাভারের কাছে বিভিন্ন লোকেশন, ২০+ স্পেশালিটি এবং ৫০+ হাসপাতাল থেকে ডাক্তার খুঁজে নিন।' : 'Find doctors near Savar from different locations, 20+ specialties, and 50+ hospitals.'}
               </p>
             </motion.div>
           </div>

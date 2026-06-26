@@ -194,7 +194,7 @@ export default function BloodDonorPage() {
     }
   };
 
-  const handleSearch = () => performSearch();
+
 
   // Modal Specific States
   const [modalDistricts, setModalDistricts] = useState<any[]>([]);
@@ -282,8 +282,9 @@ export default function BloodDonorPage() {
   ];
 
   useEffect(() => {
-    handleSearch();
-  }, [])
+    performSearch(selectedGroup, selectedDivision, selectedDistrict, selectedThana);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedGroup, selectedDivision, selectedDistrict, selectedThana]);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -358,7 +359,11 @@ export default function BloodDonorPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Card className="p-8 rounded-[3rem] shadow-2xl border-none bg-white mb-12">
             <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-2">
-              <Search className="w-6 h-6 text-primary" />
+              {loading ? (
+                <Loader2 className="w-6 h-6 text-primary animate-spin" />
+              ) : (
+                <Search className="w-6 h-6 text-primary" />
+              )}
               {t.title[language]}
             </h3>
 
@@ -390,7 +395,11 @@ export default function BloodDonorPage() {
                   </label>
                   <select
                     value={selectedDivision}
-                    onChange={(e) => setSelectedDivision(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedDivision(e.target.value);
+                      setSelectedDistrict("");
+                      setSelectedThana("");
+                    }}
                     className="w-full h-14 px-4 bg-slate-50 border-none rounded-xl font-medium focus:ring-2 focus:ring-primary/20"
                   >
                     <option value="">{language === 'en' ? "Select Division" : "বিভাগ নির্বাচন করুন"}</option>
@@ -408,7 +417,10 @@ export default function BloodDonorPage() {
                   </label>
                   <select
                     value={selectedDistrict}
-                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedDistrict(e.target.value);
+                      setSelectedThana("");
+                    }}
                     disabled={!selectedDivision}
                     className="w-full h-14 px-4 bg-slate-50 border-none rounded-xl font-medium focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
                   >
@@ -441,16 +453,6 @@ export default function BloodDonorPage() {
                 </div>
               </div>
 
-              <Button
-                onClick={handleSearch}
-                disabled={loading}
-                className="w-full btn-slide btn-primary h-14"
-              >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <div className="flex justify-center items-center gap-2 w-full"><Search className="w-5 h-5" /> {t.searchBtn[language]}
-                  <ChevronRight className="h-5 w-5" />
-                </div>}
-              </Button>
-
               <AnimatePresence>
                 {(selectedGroup || selectedDivision || selectedDistrict || selectedThana) && (
                   <motion.div
@@ -466,7 +468,6 @@ export default function BloodDonorPage() {
                         setSelectedDivision("");
                         setSelectedDistrict("");
                         setSelectedThana("");
-                        performSearch("", "", "", "");
                       }}
                       className="flex items-center gap-2 px-5 py-2.5 text-sm text-slate-600 hover:text-slate-900 border-slate-200 hover:border-slate-300 transition-all duration-200"
                     >
