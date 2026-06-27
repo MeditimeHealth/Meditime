@@ -154,16 +154,18 @@ export default function HospitalDetailPage() {
   const filteredDoctors = useMemo(() => {
     if (!debouncedQuery) return doctors;
 
-    const query = debouncedQuery.toLowerCase();
+    const cleanQuery = debouncedQuery.toLowerCase().replace(/[\s.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+    if (!cleanQuery) return doctors;
+
     return doctors.filter((doctor) => {
       const fields = [
         doctor.name,
         doctor.nameBn,
         doctor.department,
         doctor.departmentBn,
-      ].filter(Boolean).map((v: string) => v.toLowerCase());
+      ].filter(Boolean).map((v: string) => v.toLowerCase().replace(/[\s.,\/#!$%\^&\*;:{}=\-_`~()]/g, ""));
 
-      return fields.some((f) => f.includes(query));
+      return fields.some((f) => f.includes(cleanQuery));
     });
   }, [doctors, debouncedQuery]);
 

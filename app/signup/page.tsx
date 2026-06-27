@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -10,11 +10,12 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { showToast } from "@/lib/toast";
+import PhoneVerificationModal from "@/components/PhoneVerificationModal";
 
 const signupSchema = z
   .object({
@@ -56,6 +57,12 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  // Verification states
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [tempSignupData, setTempSignupData] = useState<SignupFormValues | null>(null);
+  const [phoneErrorMsg, setPhoneErrorMsg] = useState("");
+  const [isCheckingPhone, setIsCheckingPhone] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -70,11 +77,55 @@ export default function SignupPage() {
   });
 
   const agreeToTerms = watch("agreeToTerms");
+  const phoneNumber = watch("phoneNumber");
+
+  // Debounced phone number registration status check
+  useEffect(() => {
+    if (!phoneNumber) {
+      setPhoneErrorMsg("");
+      return;
+    }
+
+    if (phoneNumber.length !== 11 || !phoneNumber.startsWith("01")) {
+      setPhoneErrorMsg(language === 'en' ? "Phone number must be exactly 11 digits starting with 01." : "ফোন নম্বরটি অবশ্যই ১১ ডিজিটের হতে হবে এবং ০১ দিয়ে শুরু হতে হবে।");
+      return;
+    }
+
+    setPhoneErrorMsg("");
+
+    const delayDebounce = setTimeout(async () => {
+      setIsCheckingPhone(true);
+      try {
+        const res = await fetch(`/api/auth/check-phone?phoneNumber=${phoneNumber}`);
+        const data = await res.json();
+        if (data.exists) {
+          setPhoneErrorMsg(language === 'en' ? "Phone number already registered." : "এই ফোন নম্বরটি ইতিমধ্যে নিবন্ধিত হয়েছে।");
+        }
+      } catch (err) {
+        console.error("Error checking phone existence:", err);
+      } finally {
+        setIsCheckingPhone(false);
+      }
+    }, 600);
+
+    return () => clearTimeout(delayDebounce);
+  }, [phoneNumber, language]);
 
   const onSubmit = async (data: SignupFormValues) => {
+    if (phoneErrorMsg) {
+      showToast.error(phoneErrorMsg);
+      return;
+    }
+    // Set temp data and trigger verify modal
+    setTempSignupData(data);
+    setShowVerifyModal(true);
+  };
+
+  const handleVerifySuccess = async () => {
+    if (!tempSignupData) return;
     setIsLoading(true);
     try {
-      const { confirmPassword, agreeToTerms, ...userData } = data;
+      const { confirmPassword, agreeToTerms, ...userData } = tempSignupData;
       
       // Prepend +880 and strip leading zero if present
       let formattedPhone = userData.phoneNumber;
@@ -100,7 +151,7 @@ export default function SignupPage() {
           window.dispatchEvent(new Event("userLogin"));
         }
 
-        const userType = data.userType;
+        const userType = tempSignupData.userType;
         if (userType === 'user') {
           router.push("/");
           showToast.success(language === 'en' ? "Account created successfully! You are now logged in." : "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! আপনি এখন লগ ইন করেছেন।");
@@ -198,10 +249,19 @@ export default function SignupPage() {
                           className="pl-[5rem] w-full text-sm sm:text-base"
                         />
                       </div>
-                      {errors.phoneNumber && (
+                      {isCheckingPhone && (
+                        <p className="text-xs sm:text-sm text-slate-500 mt-1 flex items-center gap-1.5">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>{language === 'en' ? "Checking availability..." : "পরীক্ষা করা হচ্ছে..."}</span>
+                        </p>
+                      )}
+                      {!isCheckingPhone && phoneErrorMsg && (
+                        <p className="text-xs sm:text-sm text-red-500 mt-1">{phoneErrorMsg}</p>
+                      )}
+                      {!isCheckingPhone && !phoneErrorMsg && errors.phoneNumber && (
                         <p className="text-xs sm:text-sm text-red-500 mt-1">{language === 'en' ? "Please provide 11 digits number (starting with 01). Example: 01XXXXXXXXX" : "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX"}</p>
                       )}
-                
+                 
                     </div>
 
                     <div>
@@ -361,6 +421,14 @@ export default function SignupPage() {
           </div>
         </div>
       </div>
+      <PhoneVerificationModal
+        isOpen={showVerifyModal}
+        onClose={() => setShowVerifyModal(false)}
+        phoneNumber={phoneNumber}
+        onVerifySuccess={handleVerifySuccess}
+        language={language}
+        checkExists={true}
+      />
       <Footer />
     </div>
   );

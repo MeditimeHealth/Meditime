@@ -28,6 +28,7 @@ export interface IUser extends Document {
   earnings?: number;
   paymentMethod?: string;
   paymentDetails?: string;
+  isPhoneVerified?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -99,6 +100,10 @@ const UserSchema: Schema = new Schema(
     photo: {
       type: String,
       trim: true,
+    },
+    isPhoneVerified: {
+      type: Boolean,
+      default: false,
     },
     resetOtp: {
       type: String,

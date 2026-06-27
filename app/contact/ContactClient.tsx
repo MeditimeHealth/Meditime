@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -48,6 +48,7 @@ export default function ContactPage() {
   const { language } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [phoneErrorMsg, setPhoneErrorMsg] = useState("");
 
   const {
     register,
@@ -64,8 +65,31 @@ export default function ContactPage() {
   });
 
   const isExistingCustomer = watch("isExistingCustomer");
+  const phoneVal = watch("phone");
+
+  // Debounced phone number format check
+  useEffect(() => {
+    if (!phoneVal) {
+      setPhoneErrorMsg("");
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      if (phoneVal.length !== 11 || !phoneVal.startsWith("01")) {
+        setPhoneErrorMsg(language === 'en' ? "Phone number must be exactly 11 digits starting with 01." : "ফোন নম্বরটি অবশ্যই ১১ ডিজিটের হতে হবে এবং ০১ দিয়ে শুরু হতে হবে।");
+      } else {
+        setPhoneErrorMsg("");
+      }
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [phoneVal, language]);
 
   const onSubmit = async (data: ContactFormValues) => {
+    if (phoneErrorMsg) {
+      showToast.error(phoneErrorMsg);
+      return;
+    }
     setIsLoading(true);
     setIsSuccess(false);
     try {
@@ -80,7 +104,7 @@ export default function ContactPage() {
       if (response.ok) {
         setIsSuccess(true);
         reset();
-        showToast.success(language === 'bn' ? "আপনার বার্তা সফলভাবে পাঠানো হয়েছে!" : "Your message has been sent successfully!");
+        showToast.success(language === 'bn' ? "অ্যাডমিনকে মেসেজ পাঠানো হয়েছে!" : "Message has been sent to admin!");
         setTimeout(() => setIsSuccess(false), 5000);
       } else {
         showToast.error(result.error || (language === 'en' ? "Failed to send message." : "মেসেজ পাঠাতে ব্যর্থ হয়েছে।"));
@@ -103,11 +127,9 @@ export default function ContactPage() {
         className="relative  h-[450px] md:h-[650px] w-full overflow-hidden"
       >
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-[position:95%_center] lg:bg-center bg-no-repeat"
           style={{
             backgroundImage: "url('/hero/contact.png')",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
           }}
         />
         <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
@@ -325,9 +347,11 @@ export default function ContactPage() {
                         className="h-14 rounded-xl border-slate-200 bg-white focus:ring-slate-100 transition-all text-base pl-[5rem]"
                       />
                     </div>
-                    {errors.phone && (
+                    {phoneErrorMsg ? (
+                      <p className="text-sm text-red-500">{phoneErrorMsg}</p>
+                    ) : errors.phone ? (
                       <p className="text-sm text-red-500">{language === 'en' ? "Please provide 11 digits number (starting with 01). Example: 01XXXXXXXXX" : "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX"}</p>
-                    )}
+                    ) : null}
                    
                   </div>
                 </div>

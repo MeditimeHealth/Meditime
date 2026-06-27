@@ -113,11 +113,9 @@ export default function MembershipPage() {
         className="relative  h-[450px] md:h-[650px] w-full overflow-hidden"
       >
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-[position:95%_center] lg:bg-center bg-no-repeat"
           style={{
             backgroundImage: "url('/hero/membership.png')",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
           }}
         />
         <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">

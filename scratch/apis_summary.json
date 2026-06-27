@@ -1,0 +1,771 @@
+[
+  {
+    "file": "affiliate/profile/route.ts",
+    "methods": [
+      "GET",
+      "PUT"
+    ],
+    "modelsUsed": [
+      "User"
+    ]
+  },
+  {
+    "file": "affiliate/referrals/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "Appointment",
+      "Doctor",
+      "User",
+      "Affiliate"
+    ]
+  },
+  {
+    "file": "affiliate/reports/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "Appointment",
+      "AffiliateCommission",
+      "AffiliateWithdrawal",
+      "Affiliate"
+    ]
+  },
+  {
+    "file": "affiliate/request/route.ts",
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "modelsUsed": [
+      "AffiliateRequest"
+    ]
+  },
+  {
+    "file": "affiliate/wallet/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "User",
+      "Affiliate",
+      "AffiliateCommission",
+      "AffiliateWithdrawal"
+    ]
+  },
+  {
+    "file": "affiliate/withdrawal/route.ts",
+    "methods": [
+      "POST"
+    ],
+    "modelsUsed": [
+      "AffiliateWithdrawal",
+      "User",
+      "Affiliate"
+    ]
+  },
+  {
+    "file": "ambulances/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "Ambulance"
+    ]
+  },
+  {
+    "file": "ambulances/[id]/route.ts",
+    "methods": [
+      "GET",
+      "PUT",
+      "PATCH",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "Ambulance"
+    ]
+  },
+  {
+    "file": "app-image/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "AppImageSetting"
+    ]
+  },
+  {
+    "file": "appointments/route.ts",
+    "methods": [
+      "GET",
+      "POST",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "Appointment",
+      "Doctor",
+      "Affiliate",
+      "User"
+    ]
+  },
+  {
+    "file": "appointments/[id]/route.ts",
+    "methods": [
+      "PATCH",
+      "GET",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "Appointment",
+      "Doctor",
+      "User"
+    ]
+  },
+  {
+    "file": "auth/forgot-password/route.ts",
+    "methods": [
+      "POST"
+    ],
+    "modelsUsed": [
+      "User"
+    ]
+  },
+  {
+    "file": "auth/google-one-tap/route.ts",
+    "methods": [
+      "POST"
+    ],
+    "modelsUsed": [
+      "User"
+    ]
+  },
+  {
+    "file": "auth/login/route.ts",
+    "methods": [
+      "POST"
+    ],
+    "modelsUsed": [
+      "User"
+    ]
+  },
+  {
+    "file": "auth/logout/route.ts",
+    "methods": [
+      "POST"
+    ],
+    "modelsUsed": []
+  },
+  {
+    "file": "auth/signup/route.ts",
+    "methods": [
+      "POST"
+    ],
+    "modelsUsed": [
+      "User",
+      "Appointment"
+    ]
+  },
+  {
+    "file": "auth/verify/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": []
+  },
+  {
+    "file": "blog/posts/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": []
+  },
+  {
+    "file": "blog/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "Blog"
+    ]
+  },
+  {
+    "file": "blog/[id]/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "Blog"
+    ]
+  },
+  {
+    "file": "blog-sidebar/all/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "BlogSidebarPhoto",
+      "Admin"
+    ]
+  },
+  {
+    "file": "blog-sidebar/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "BlogSidebarPhoto",
+      "Admin"
+    ]
+  },
+  {
+    "file": "blog-sidebar/[id]/route.ts",
+    "methods": [
+      "DELETE",
+      "PUT"
+    ],
+    "modelsUsed": [
+      "BlogSidebarPhoto",
+      "Admin"
+    ]
+  },
+  {
+    "file": "blood-donors/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "BloodDonor",
+      "Division",
+      "District",
+      "Thana"
+    ]
+  },
+  {
+    "file": "blood-donors/[id]/route.ts",
+    "methods": [
+      "GET",
+      "PUT",
+      "PATCH",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "BloodDonor",
+      "Division",
+      "District",
+      "Thana"
+    ]
+  },
+  {
+    "file": "contact/route.ts",
+    "methods": [
+      "POST"
+    ],
+    "modelsUsed": [
+      "ContactMessage"
+    ]
+  },
+  {
+    "file": "departments/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "Department"
+    ]
+  },
+  {
+    "file": "departments/[id]/route.ts",
+    "methods": [
+      "PUT",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "Department"
+    ]
+  },
+  {
+    "file": "diagnostic/abandoned-cart/route.ts",
+    "methods": [
+      "POST",
+      "DELETE",
+      "GET"
+    ],
+    "modelsUsed": [
+      "AbandonedCart"
+    ]
+  },
+  {
+    "file": "diagnostic/bookings/route.ts",
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "modelsUsed": [
+      "DiagnosticBooking",
+      "AbandonedCart"
+    ]
+  },
+  {
+    "file": "diagnostic/centers/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "DiagnosticCenter"
+    ]
+  },
+  {
+    "file": "diagnostic/centers/[id]/route.ts",
+    "methods": [
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "DiagnosticCenter"
+    ]
+  },
+  {
+    "file": "diagnostic/stats/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "DiagnosticTest"
+    ]
+  },
+  {
+    "file": "diagnostic/tests/route.ts",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "modelsUsed": [
+      "DiagnosticTest"
+    ]
+  },
+  {
+    "file": "diagnostic/tests/[id]/route.ts",
+    "methods": [
+      "GET",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "DiagnosticTest"
+    ]
+  },
+  {
+    "file": "diseases/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "Disease",
+      "Department"
+    ]
+  },
+  {
+    "file": "diseases/[id]/route.ts",
+    "methods": [
+      "PUT",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "Disease",
+      "Department"
+    ]
+  },
+  {
+    "file": "doctor/dashboard/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "LiveConsultant",
+      "Appointment"
+    ]
+  },
+  {
+    "file": "doctor/profile/route.ts",
+    "methods": [
+      "PUT"
+    ],
+    "modelsUsed": [
+      "User",
+      "Doctor"
+    ]
+  },
+  {
+    "file": "doctor/stats/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "DoctorTimeSlot"
+    ]
+  },
+  {
+    "file": "doctor/time-slots/route.ts",
+    "methods": [
+      "GET",
+      "POST",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "DoctorTimeSlot",
+      "Doctor"
+    ]
+  },
+  {
+    "file": "doctor/time-slots/[id]/route.ts",
+    "methods": [
+      "PUT",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "DoctorTimeSlot"
+    ]
+  },
+  {
+    "file": "doctors/check-duplicate/route.ts",
+    "methods": [
+      "POST"
+    ],
+    "modelsUsed": [
+      "Doctor"
+    ]
+  },
+  {
+    "file": "doctors/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "Doctor",
+      "Hospital",
+      "Thana",
+      "District",
+      "Division"
+    ]
+  },
+  {
+    "file": "doctors/[id]/related/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "Doctor"
+    ]
+  },
+  {
+    "file": "doctors/[id]/route.ts",
+    "methods": [
+      "GET",
+      "PUT",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "Doctor"
+    ]
+  },
+  {
+    "file": "hospitals/[slug]/doctors/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "Doctor"
+    ]
+  },
+  {
+    "file": "hospitals/[slug]/nearest/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "Hospital",
+      "Thana",
+      "District",
+      "Division"
+    ]
+  },
+  {
+    "file": "live-consultation/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "LiveConsultant"
+    ]
+  },
+  {
+    "file": "live-consultation/[id]/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "LiveConsultant"
+    ]
+  },
+  {
+    "file": "locations/districts/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "District",
+      "Division"
+    ]
+  },
+  {
+    "file": "locations/districts/[id]/route.ts",
+    "methods": [
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "District",
+      "Thana"
+    ]
+  },
+  {
+    "file": "locations/divisions/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "Division"
+    ]
+  },
+  {
+    "file": "locations/divisions/[id]/route.ts",
+    "methods": [
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "Division",
+      "District"
+    ]
+  },
+  {
+    "file": "locations/hospitals/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "Hospital",
+      "Thana",
+      "District",
+      "Division"
+    ]
+  },
+  {
+    "file": "locations/hospitals/[id]/route.ts",
+    "methods": [
+      "GET",
+      "PUT",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "Hospital"
+    ]
+  },
+  {
+    "file": "locations/thanas/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "Thana",
+      "District"
+    ]
+  },
+  {
+    "file": "locations/thanas/[id]/route.ts",
+    "methods": [
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "Thana",
+      "Hospital"
+    ]
+  },
+  {
+    "file": "membership-cards/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "MembershipCard"
+    ]
+  },
+  {
+    "file": "membership-cards/verify/route.ts",
+    "methods": [
+      "POST"
+    ],
+    "modelsUsed": [
+      "MembershipCard"
+    ]
+  },
+  {
+    "file": "membership-cards/[id]/route.ts",
+    "methods": [
+      "GET",
+      "PUT",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "MembershipCard"
+    ]
+  },
+  {
+    "file": "memberships/payment/ipn/route.ts",
+    "methods": [
+      "POST"
+    ],
+    "modelsUsed": [
+      "Membership"
+    ]
+  },
+  {
+    "file": "memberships/payment/route.ts",
+    "methods": [
+      "POST"
+    ],
+    "modelsUsed": [
+      "Membership"
+    ]
+  },
+  {
+    "file": "memberships/route.ts",
+    "methods": [
+      "POST",
+      "GET"
+    ],
+    "modelsUsed": [
+      "Membership"
+    ]
+  },
+  {
+    "file": "memberships/[id]/route.ts",
+    "methods": [
+      "PUT",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "Membership"
+    ]
+  },
+  {
+    "file": "offer/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "Offer"
+    ]
+  },
+  {
+    "file": "offer/[id]/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "Offer"
+    ]
+  },
+  {
+    "file": "popup/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "Popup",
+      "Offer"
+    ]
+  },
+  {
+    "file": "service-sections/all/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "ServiceSection",
+      "Admin"
+    ]
+  },
+  {
+    "file": "service-sections/route.ts",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "modelsUsed": [
+      "ServiceSection",
+      "Admin"
+    ]
+  },
+  {
+    "file": "service-sections/[id]/route.ts",
+    "methods": [
+      "GET",
+      "PUT",
+      "DELETE"
+    ],
+    "modelsUsed": [
+      "ServiceSection",
+      "Admin"
+    ]
+  },
+  {
+    "file": "stats/route.ts",
+    "methods": [
+      "GET"
+    ],
+    "modelsUsed": [
+      "Doctor",
+      "Department",
+      "Hospital"
+    ]
+  },
+  {
+    "file": "upload/imgbb/route.ts",
+    "methods": [
+      "POST"
+    ],
+    "modelsUsed": []
+  },
+  {
+    "file": "upload/route.ts",
+    "methods": [
+      "POST"
+    ],
+    "modelsUsed": []
+  },
+  {
+    "file": "user/profile/route.ts",
+    "methods": [
+      "GET",
+      "PUT"
+    ],
+    "modelsUsed": [
+      "User"
+    ]
+  }
+]

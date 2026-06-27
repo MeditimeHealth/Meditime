@@ -535,6 +535,8 @@ function DoctorListPageContent() {
     if (!searchQuery || searchQuery.length < 1) return [];
 
     const query = searchQuery.toLowerCase().trim();
+    const queryClean = query.replace(/[\s.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+    if (!queryClean) return [];
 
     // Score each doctor by how closely they match the query
     const scored = suggestionDoctors.slice(0, 20).map(doctor => {
@@ -544,14 +546,21 @@ function DoctorListPageContent() {
       const desigLower     = (doctor.designation || '').toLowerCase();
       const qualifLower    = (doctor.qualification || '').toLowerCase();
 
+      const cleanField = (str: string | undefined) => (str || '').toLowerCase().replace(/[\s.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+      const nameClean      = cleanField(doctor.name);
+      const nameBnClean    = cleanField(doctor.nameBn);
+      const specialtyClean = cleanField(doctor.specialty);
+      const desigClean     = cleanField(doctor.designation);
+      const qualifClean    = cleanField(doctor.qualification);
+
       let score = 0;
-      if (nameLower === query)                   score += 100; // exact match
-      else if (nameLower.startsWith(query))      score += 80;  // starts with
-      else if (nameLower.includes(query))        score += 60;  // contains
-      if (nameBnLower.includes(query))           score += 50;  // Bangla name
-      if (specialtyLower.includes(query))        score += 30;
-      if (desigLower.includes(query))            score += 10;
-      if (qualifLower.includes(query))           score += 10;
+      if (nameLower === query || nameClean === queryClean)                   score += 100; // exact match
+      else if (nameLower.startsWith(query) || nameClean.startsWith(queryClean))      score += 80;  // starts with
+      else if (nameLower.includes(query) || nameClean.includes(queryClean))        score += 60;  // contains
+      if (nameBnLower.includes(query) || nameBnClean.includes(queryClean))           score += 50;  // Bangla name
+      if (specialtyLower.includes(query) || specialtyClean.includes(queryClean))        score += 30;
+      if (desigLower.includes(query) || desigClean.includes(queryClean))            score += 10;
+      if (qualifLower.includes(query) || qualifClean.includes(queryClean))           score += 10;
 
       return { doctor, score };
     });
@@ -625,21 +634,24 @@ function DoctorListPageContent() {
     if (!searchQuery) return [];
 
     const query = searchQuery.toLowerCase();
+    const queryClean = query.replace(/[\s.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
     const matched: string[] = [];
 
-    if (doctor.name.toLowerCase().includes(query)) {
+    const cleanStr = (str: string | undefined) => (str || '').toLowerCase().replace(/[\s.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+
+    if (doctor.name.toLowerCase().includes(query) || cleanStr(doctor.name).includes(queryClean)) {
       matched.push("Doctor Name");
     }
-    if (doctor.specialty.toLowerCase().includes(query)) {
+    if (doctor.specialty.toLowerCase().includes(query) || cleanStr(doctor.specialty).includes(queryClean)) {
       matched.push("Specialty");
     }
-    if (doctor.availability && Array.isArray(doctor.availability) && doctor.availability.some(slot => slot.hospital?.toLowerCase().includes(query))) {
+    if (doctor.availability && Array.isArray(doctor.availability) && doctor.availability.some(slot => slot.hospital?.toLowerCase().includes(query) || cleanStr(slot.hospital).includes(queryClean))) {
       matched.push("Hospital");
     }
-    if (doctor.qualification.toLowerCase().includes(query)) {
+    if (doctor.qualification.toLowerCase().includes(query) || cleanStr(doctor.qualification).includes(queryClean)) {
       matched.push("Qualification");
     }
-    if (doctor.bio?.toLowerCase().includes(query)) {
+    if (doctor.bio?.toLowerCase().includes(query) || cleanStr(doctor.bio).includes(queryClean)) {
       matched.push("Bio");
     }
 
@@ -685,12 +697,10 @@ function DoctorListPageContent() {
         className="relative  h-[450px] md:h-[650px] w-full overflow-hidden"
       >
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-[position:80%_center] lg:bg-center bg-no-repeat"
           style={{
             backgroundImage:
               "url('/hero/doctor.png')",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
           }}
         />
         <div className="relative z-20 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pb-20">

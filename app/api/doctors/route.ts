@@ -45,32 +45,66 @@ export async function GET(request: NextRequest) {
 
     let query: any = {};
 
-    // Helper function to escape RegExp special characters
-    const escapeRegex = (string: string) => {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Helper to build a fuzzy regex matching characters with optional punctuation/spaces
+    const buildFuzzyRegex = (term: string) => {
+      const cleanTerm = term.replace(/[\s.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+      if (!cleanTerm) return null;
+      const escapedChars = Array.from(cleanTerm).map(char => {
+        return char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      });
+      return new RegExp(escapedChars.join("[\\s.-]*"), "i");
     };
 
     // Text search across multiple fields
     if (search) {
+      const fullFuzzyRegex = buildFuzzyRegex(search);
       const searchTerms = search.split(/\s+/).filter(Boolean);
-      if (searchTerms.length > 0) {
-        query.$and = searchTerms.map(term => {
-          const termRegex = new RegExp(escapeRegex(term), "i");
-          return {
-            $or: [
-              { name: termRegex },
-              { nameBn: termRegex },
-              { specialty: termRegex },
-              { specialtyBn: termRegex },
-              { qualification: termRegex },
-              { qualificationBn: termRegex },
-              { bio: termRegex },
-              { bioBn: termRegex },
-              { designation: termRegex },
-              { designationBn: termRegex }
-            ]
-          };
-        });
+
+      if (fullFuzzyRegex) {
+        const fullQueryOr = [
+          { name: fullFuzzyRegex },
+          { nameBn: fullFuzzyRegex },
+          { specialty: fullFuzzyRegex },
+          { specialtyBn: fullFuzzyRegex },
+          { qualification: fullFuzzyRegex },
+          { qualificationBn: fullFuzzyRegex },
+          { bio: fullFuzzyRegex },
+          { bioBn: fullFuzzyRegex },
+          { designation: fullFuzzyRegex },
+          { designationBn: fullFuzzyRegex }
+        ];
+
+        if (searchTerms.length > 1) {
+          const termsAnd = searchTerms.map(term => {
+            const termFuzzy = buildFuzzyRegex(term);
+            if (!termFuzzy) return null;
+            return {
+              $or: [
+                { name: termFuzzy },
+                { nameBn: termFuzzy },
+                { specialty: termFuzzy },
+                { specialtyBn: termFuzzy },
+                { qualification: termFuzzy },
+                { qualificationBn: termFuzzy },
+                { bio: termFuzzy },
+                { bioBn: termFuzzy },
+                { designation: termFuzzy },
+                { designationBn: termFuzzy }
+              ]
+            };
+          }).filter((c): c is NonNullable<typeof c> => c !== null);
+
+          if (termsAnd.length > 0) {
+            query.$or = [
+              { $and: termsAnd },
+              { $or: fullQueryOr }
+            ];
+          } else {
+            query.$or = fullQueryOr;
+          }
+        } else {
+          query.$or = fullQueryOr;
+        }
       }
     }
 

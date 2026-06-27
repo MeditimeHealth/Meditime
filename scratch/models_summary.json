@@ -1,0 +1,162 @@
+[
+  {
+    "modelName": "AbandonedCart",
+    "interface": "export interface IAbandonedCart extends Document {\r\n  userId: mongoose.Types.ObjectId;\r\n  fullName: string;\r\n  phoneNumber: string;\r\n  email?: string;\r\n  tests: {\r\n    _id: mongoose.Types.ObjectId;\r\n    name: string;\r\n    price: number;\r\n    nameBn?: string;\r\n  }[];\r\n  venueId?: mongoose.Types.ObjectId;\r\n  totalPrice: number;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "Admin",
+    "interface": "export interface IAdmin extends Document {\r\n  username: string;\r\n  email: string;\r\n  password: string;\r\n  role: 'admin' | 'superadmin';\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "Affiliate",
+    "interface": "export interface IAffiliate extends Document {\r\n  name: string; // Stores NID\r\n  email: string;\r\n  phoneNumber: string;\r\n  password: string;\r\n  affiliateCode: string;\r\n  isActive: boolean;\r\n  earnings: number;\r\n  referrals: number;\r\n  // Wallet fields\r\n  walletBalance: number;\r\n  totalEarned: number;\r\n  totalWithdrawn: number;\r\n  pendingCommissions: number;\r\n  // Payment information\r\n  paymentMethod?: string;\r\n  paymentDetails?: string;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "AffiliateCommission",
+    "interface": "export interface IAffiliateCommission extends Document {\r\n  appointmentId: mongoose.Types.ObjectId;\r\n  affiliateId: mongoose.Types.ObjectId;\r\n  totalBill: number;\r\n  commissionType: 'percentage' | 'flat';\r\n  commissionValue: number;\r\n  commissionAmount: number;\r\n  status: 'pending' | 'approved' | 'paid';\r\n  approvedBy?: mongoose.Types.ObjectId;\r\n  approvedAt?: Date;\r\n  paidAt?: Date;\r\n  notes?: string;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "AffiliateRequest",
+    "interface": "export interface IAffiliateRequest extends Document {\r\n  affiliateId: mongoose.Types.ObjectId;\r\n  patientName: string;\r\n  patientPhone: string;\r\n  doctorName: string;\r\n  hospitalName: string;\r\n  proofPhoto?: string; // imgbb URL (deprecated, use proofPhotos)\r\n  proofPhotos?: string[]; // Array of imgbb URLs for multiple photos\r\n  appointmentId?: mongoose.Types.ObjectId; // Reference to appointment if linked\r\n  commissionAmount?: number; // Flat rate commission set by admin\r\n  status: 'pending' | 'approved' | 'rejected';\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "AffiliateWithdrawal",
+    "interface": "export interface IAffiliateWithdrawal extends Document {\r\n  affiliateId: mongoose.Types.ObjectId;\r\n  amount: number;\r\n  patientName?: string;\r\n  patientPhone?: string;\r\n  hospitalName?: string;\r\n  proofPhotos?: string[];\r\n  paymentMethod?: string;\r\n  paymentDetails?: string;\r\n  status: 'pending' | 'approved' | 'rejected';\r\n  rejectionReason?: string;\r\n  processedBy?: mongoose.Types.ObjectId;\r\n  processedAt?: Date;\r\n  notes?: string;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "Ambulance",
+    "interface": "export interface IAmbulance extends Document {\r\n  name: string;\r\n  nameBn?: string;\r\n  phoneNumber: string;\r\n  division?: string;\r\n  divisionBn?: string;\r\n  district?: string;\r\n  districtBn?: string;\r\n  thana?: string;\r\n  thanaBn?: string;\r\n  availabilityStatus: string;\r\n  vehicleType: string;\r\n  isApproved: boolean;\r\n  ambulanceNumber?: string;\r\n  drivingLicence?: string;\r\n  userId?: string;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "AppImageSetting",
+    "interface": "export interface IAppImageSetting extends Document {\r\n  imageUrl: string;\r\n  isActive: boolean;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "Appointment",
+    "interface": "export interface IAppointment extends Document {\r\n  doctorId: mongoose.Types.ObjectId;\r\n  serialNumber?: string;\r\n  patientName: string;\r\n  mobileNumber: string;\r\n  gender?: string;\r\n  age?: number;\r\n  patientType: 'old' | 'new' | 'report';\r\n  hospitalName: string;\r\n  hospitalSlug?: string;\r\n  appointmentDate: Date;\r\n  appointmentTime?: string;\r\n  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';\r\n  userId?: mongoose.Types.ObjectId;\r\n  affiliateCode?: string;\r\n  affiliateId?: mongoose.Types.ObjectId;\r\n  hasCommission: boolean;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "Blog",
+    "interface": "export interface IBlog extends Document {\n  title: string;\n  titleBn: string;\n  description: string;\n  descriptionBn: string;\n  imageUrl: string;\n  isActive: boolean;\n  createdAt: Date;\n  updatedAt: Date;\n}",
+    "schemaSnippet": "const BlogSchema: Schema = new Schema(\n  {\n    title: { type: String, required: true },\n    titleBn: { type: String, required: true },\n    description: { type: String, required: true },\n    descriptionBn: { type: String, required: true },\n    imageUrl: { type: String, required: true },\n    isActive: { type: Boolean, default: true },\n  },\n  { timestamps: true }\n)"
+  },
+  {
+    "modelName": "BlogSidebarPhoto",
+    "interface": "export interface IBlogSidebarPhoto extends Document {\r\n  imageUrl: string;\r\n  linkUrl: string;\r\n  title?: string;\r\n  order: number;\r\n  isActive: boolean;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "BloodDonor",
+    "interface": "export interface IBloodDonor extends Document {\r\n  name: string;\r\n  nameBn?: string;\r\n  phoneNumber: string;\r\n  email?: string;\r\n  bloodGroup: string;\r\n  division?: string;\r\n  district?: string;\r\n  thana?: string;\r\n  photo?: string;\r\n  availabilityStatus: string;\r\n  lastDonationDate?: Date;\r\n  isApproved: boolean;\r\n  userId?: string;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "ConsultationSession",
+    "interface": "export interface IConsultationSession extends Document {\r\n  doctorId: mongoose.Types.ObjectId;\r\n  liveConsultantId: mongoose.Types.ObjectId;\r\n  patientName: string;\r\n  patientPhone: string;\r\n  patientEmail?: string;\r\n  roomId: string;\r\n  status: 'waiting' | 'in-progress' | 'completed' | 'cancelled';\r\n  queuePosition: number;\r\n  joinedAt: Date;\r\n  startedAt?: Date;\r\n  endedAt?: Date;\r\n  duration?: number; // in seconds\r\n  notes?: string;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "ContactMessage",
+    "interface": "export interface IContactMessage extends Document {\r\n  name: string;\r\n  email: string;\r\n  phone: string;\r\n  subject: string;\r\n  message: string;\r\n  status: 'new' | 'read' | 'replied' | 'resolved';\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "Department",
+    "interface": "export interface IDepartment extends Document {\r\n  name: string;\r\n  nameBn?: string;\r\n  image?: string;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "DiagnosticBooking",
+    "interface": "export interface IDiagnosticBooking extends Document {\r\n  userId?: mongoose.Types.ObjectId;\r\n  patientName: string;\r\n  mobileNumber: string;\r\n  gender?: string;\r\n  age?: number;\r\n  patientType: 'new' | 'old' | 'report';\r\n  appointmentDate: Date;\r\n  status: 'Pending' | 'Accepted' | 'Completed' | 'Cancelled';\r\n  bookingId: string;\r\n  venueId: mongoose.Types.ObjectId;\r\n  tests: {\r\n    _id: mongoose.Types.ObjectId;\r\n    name: string;\r\n    price: number;\r\n    nameBn?: string;\r\n  }[];\r\n  totalPrice: number;\r\n  affiliateCode?: string;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "DiagnosticCenter",
+    "interface": "export interface IDiagnosticCenter extends Document {\r\n  name: string;\r\n  nameBn?: string;\r\n  division?: string;\r\n  district?: string;\r\n  thana?: string;\r\n  address?: string;\r\n  phone?: string;\r\n  email?: string;\r\n  packageDiscount?: number; // Percentage discount for packages\r\n  minTestsForPackage?: number; // Minimum tests for package discount\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "DiagnosticTest",
+    "interface": "export interface IDiagnosticTest extends Document {\r\n  serialNumber: number;\r\n  name: string;\r\n  nameBn?: string;\r\n  description?: string;\r\n  descriptionBn?: string;\r\n  price: number;\r\n  recommendations: TestRecommendation[];\r\n  departments: TestDepartment[];\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "Disease",
+    "interface": "export interface IDisease extends Document {\r\n  name: string;\r\n  bangla: string;\r\n  department?: mongoose.Types.ObjectId;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "District",
+    "interface": "export interface IDistrict extends Document {\r\n  name: string;\r\n  division: mongoose.Types.ObjectId;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "Division",
+    "interface": "export interface IDivision extends Document {\r\n  name: string;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "Doctor",
+    "interface": "export interface IDoctor extends Document {\r\n  // ── Core identity ──────────────────────────────────────────────\r\n  name: string;\r\n  nameBn?: string;\r\n\r\n  specialty?: string;\r\n  specialtyBn?: string;\r\n\r\n  qualification: string;\r\n  qualificationBn?: string;\r\n\r\n  designation?: string;\r\n  designationBn?: string;\r\n\r\n  /**\r\n   * slug: English text slug used for English pages.\r\n   */\r\n  slug: string;\r\n\r\n  // ── Department ─────────────────────────────────────────────────\r\n  department?: string;\r\n  departmentBn?: string;\r\n\r\n  // ── Fees ────────────────────────────────────────────────────────\r\n  reportShowFee?: number;\r\n  reportShowFeeBn?: string; // Bangla representation, e.g. \"৳৫০০\"\r\n\r\n  newPatientFee?: number;\r\n  newPatientFeeBn?: string; // Bangla representation, e.g. \"৳৮০০\"\r\n\r\n  // ── Diseases / Conditions ───────────────────────────────────────\r\n  /**\r\n   * diseases: Bangla disease/condition names (matches existing database).\r\n   * diseasesEn: English disease/condition names.\r\n   */\r\n  diseases?: string[];\r\n  diseasesEn?: string[];\r\n\r\n  // ── Bio ─────────────────────────────────────────────────────────\r\n  bio?: string;\r\n  bioBn?: string;\r\n\r\n  // ── Availability ────────────────────────────────────────────────\r\n  /**\r\n   * Each slot represents a schedule at a specific hospital.\r\n   * hospital: slug of the hospital (required).\r\n   */\r\n  availability: Array<{\r\n    days: string[];\r\n    daysBn?: string[];\r\n    time?: string;\r\n    timeBn?: string;\r\n    hospital: string; // hospital slug (required)\r\n  }>;\r\n\r\n\r\n  // ── UI-only / no Bangla needed ──────────────────────────────────\r\n  slotDuration?: number;\r\n  image?: string;\r\n  rating?: number;\r\n\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "DoctorTimeSlot",
+    "interface": "export interface IDoctorTimeSlot extends Document {\r\n  doctorId: mongoose.Types.ObjectId;\r\n  date: Date;\r\n  startTime: string;\r\n  endTime: string;\r\n  slotDuration: number;\r\n  isAvailable: boolean;\r\n  isBooked: boolean;\r\n  consultationId?: mongoose.Types.ObjectId;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "Hospital",
+    "interface": "export interface IHospital extends Document {\r\n  name: string;\r\n  thana?: mongoose.Types.ObjectId;\r\n  address?: string;\r\n  phone?: string;\r\n  email?: string;\r\n  \r\n  // Bangla Fields\r\n  nameBn?: string;\r\n  addressBn?: string;\r\n  slug?:string;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "LiveConsultant",
+    "interface": "export interface IQueueEntry {\r\n  patientName: string;\r\n  patientPhone: string;\r\n  patientEmail?: string;\r\n  status: 'waiting' | 'in-call' | 'completed' | 'cancelled';\r\n  joinedAt: Date;\r\n  startedAt?: Date;\r\n  endedAt?: Date;\r\n}",
+    "schemaSnippet": "new Schema({\r\n  patientName: { type: String, required: true, trim: true },\r\n  patientPhone: { type: String, required: true, trim: true },\r\n  patientEmail: { type: String, trim: true },\r\n  status: {\r\n    type: String,\r\n    enum: ['waiting', 'in-call', 'completed', 'cancelled'],\r\n    default: 'waiting',\r\n  },\r\n  joinedAt: { type: Date, default: Date.now },\r\n  startedAt: { type: Date },\r\n  endedAt: { type: Date },\r\n});\r\n\r\nconst LiveConsultantSchema: Schema = new Schema(\r\n  {\r\n    doctorId: {\r\n      type: Schema.Types.ObjectId,\r\n      ref: 'Doctor',\r\n      required: true,\r\n    },\r\n    isLive: {\r\n      type: Boolean,\r\n      default: false,\r\n    },\r\n    newPatientFee: {\r\n      type: Number,\r\n      required: true,\r\n      min: [0, 'Fee must be at least 0'],\r\n    },\r\n    estimatedWaitTime: {\r\n      type: Number,\r\n      default: 15,\r\n      min: [1, 'Wait time must be at least 1 minute'],\r\n    },\r\n    maxQueueSize: {\r\n      type: Number,\r\n      default: 10,\r\n      min: [1, 'Queue size must be at least 1'],\r\n    },\r\n    currentQueue: {\r\n      type: [QueueEntrySchema],\r\n      default: [],\r\n    },\r\n    roomId: {\r\n      type: String,\r\n      required: true,\r\n      unique: true,\r\n    },\r\n    specialization: { type: String, trim: true },\r\n    specializationBn: { type: String, trim: true },\r\n    language: { type: String, trim: true, default: 'Bengali' },\r\n  },\r\n  {"
+  },
+  {
+    "modelName": "Membership",
+    "interface": "Not Found",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "MembershipCard",
+    "interface": "Not Found",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "Offer",
+    "interface": "export interface IOffer extends Document {\r\n  title: string;\r\n  titleBn: string;\r\n  description: string;\r\n  descriptionBn: string;\r\n  imageUrl: string;\r\n  startDate?: Date;\r\n  endDate?: Date;\r\n  isActive: boolean;\r\n  isPopup: boolean;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "Popup",
+    "interface": "export interface IPopup extends Document {\r\n  title: string;\r\n  titleBn?: string;\r\n  description: string;\r\n  descriptionBn?: string;\r\n  imageUrl: string;\r\n  buttonText: string;\r\n  buttonTextBn?: string;\r\n  buttonLink: string;\r\n  isActive: boolean;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "ServiceSection",
+    "interface": "export interface IServiceSection extends Document {\r\n  title: string;\r\n  description: string;\r\n  slug: string; // URL-friendly identifier (e.g., 'ambulance', 'blood-donor')\r\n  order: number;\r\n  isActive: boolean;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "Thana",
+    "interface": "export interface IThana extends Document {\r\n  name: string;\r\n  district: mongoose.Types.ObjectId;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  },
+  {
+    "modelName": "User",
+    "interface": "export interface IUser extends Document {\r\n  email?: string;\r\n  phoneNumber: string;\r\n  username?: string;\r\n  fullName: string;\r\n  gender?: 'male' | 'female' | 'other';\r\n  bloodGroup?: string;\r\n  age?: number;\r\n  password?: string;\r\n  photo?: string;\r\n  resetOtp?: string;\r\n  resetOtpExpiry?: Date;\r\n  role?: 'user' | 'doctor' | 'bloodDonor' | 'ambulance' | 'affiliate';\r\n  userType?: 'user' | 'doctor' | 'bloodDonor' | 'ambulance' | 'affiliate';\r\n  doctorId?: mongoose.Types.ObjectId;\r\n  authProvider?: 'credentials' | 'google';\r\n  googleId?: string;\r\n  // Affiliate-specific fields\r\n  affiliateCode?: string;\r\n  isActive?: boolean;\r\n  walletBalance?: number;\r\n  totalEarned?: number;\r\n  totalWithdrawn?: number;\r\n  pendingCommissions?: number;\r\n  referrals?: number;\r\n  earnings?: number;\r\n  paymentMethod?: string;\r\n  paymentDetails?: string;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}",
+    "schemaSnippet": "Not Found"
+  }
+]

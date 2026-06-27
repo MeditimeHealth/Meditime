@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb';
 import Appointment from '@/models/Appointment';
 import Doctor from '@/models/Doctor';
 import User from '@/models/User';
+import { sendSMS } from '@/lib/sms';
 import { getSession, getAdminSession } from '@/lib/auth';
 
 // PATCH - Update appointment status and serial number
@@ -94,6 +95,31 @@ export async function PATCH(
         { error: 'Appointment not found' },
         { status: 404 }
       );
+    }
+
+    if (status === 'confirmed' && (serialNumber || appointment.serialNumber)) {
+      try {
+        const patientName = appointment.patientName;
+        const serialNo = serialNumber || appointment.serialNumber || '';
+        
+        // Grab doctor name
+        const doctorName = (appointment.doctorId as any)?.name || 'Doctor';
+        const hospitalName = appointment.hospitalName || '';
+        
+        // Format Date and Day
+        const apptDate = appointment.appointmentDate ? new Date(appointment.appointmentDate) : new Date();
+        const dateStr = apptDate.toISOString().split('T')[0];
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayStr = days[apptDate.getDay()];
+        
+        const timeSlot = appointment.appointmentTime || '';
+        
+        const smsContent = `Dear ${patientName},\nYour serial has been successfully Confirmed.\nSerial No: ${serialNo}\nDoctor: ${doctorName}\nChamber: ${hospitalName}\nDate: ${dateStr} (${dayStr})\nAppointment Time: ${timeSlot}\nHelpline: +8801610384444\n\nMeditime`;
+        
+        await sendSMS(appointment.mobileNumber, smsContent);
+      } catch (smsError) {
+        console.error('Error sending patient confirmation SMS:', smsError);
+      }
     }
 
     return NextResponse.json(

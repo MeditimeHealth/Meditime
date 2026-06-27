@@ -123,12 +123,10 @@ export default function DepartmentsPage() {
       >
         {/* <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-primary/50 to-primary-dark/50 z-10" /> */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-[position:95%_center] lg:bg-center bg-no-repeat"
           style={{
             backgroundImage:
               "url('/hero/department.png')",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
           }}
         />
         <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">

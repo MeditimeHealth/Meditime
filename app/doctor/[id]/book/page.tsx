@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useContext } from "react";
+import PhoneVerificationModal from "@/components/PhoneVerificationModal";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -69,6 +70,27 @@ export default function BookAppointmentPage() {
   const [age, setAge] = useState("");
   const [patientType, setPatientType] = useState<"new" | "report">("new");
   const [affiliateCode, setAffiliateCode] = useState("");
+
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+
+  // Debounced mobile number check
+  useEffect(() => {
+    if (!mobileNumber) {
+      setMobileError("");
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      if (mobileNumber.length !== 11 || !mobileNumber.startsWith("01")) {
+        setMobileError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে এবং ০১ দিয়ে শুরু হতে হবে' : 'Mobile number must be exactly 11 digits starting with 01');
+      } else {
+        setMobileError("");
+      }
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [mobileNumber, language]);
 
   const searchParams = useSearchParams();
   const hospitalSlugParam = searchParams?.get("hospitalSlug");
@@ -206,6 +228,7 @@ export default function BookAppointmentPage() {
       if (userData) {
         try {
           loggedInUser = JSON.parse(userData);
+          setCurrentUser(loggedInUser);
         } catch (error) {
           console.error("Error parsing user data:", error);
         }
@@ -356,35 +379,16 @@ export default function BookAppointmentPage() {
     return hospitalSlots.find((s: any) => s.days && s.days.includes(dayName));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedHospitalSlug || !selectedDate) {
-      alert("Please select a date and ensure hospital is selected.");
-      return;
-    }
-
+  const proceedToCheckout = async () => {
     setSubmitting(true);
     try {
-      const userData = typeof window !== "undefined" ? localStorage.getItem("user") : null;
-      const user = userData ? JSON.parse(userData) : null;
-      
       const selectedHospitalObj = hospitals.find(h => h.slug === selectedHospitalSlug || h.name === selectedHospitalSlug);
       const hospitalName = selectedHospitalObj?.name || selectedHospitalSlug;
       const hospitalBn = selectedHospitalObj?.nameBn || hospitalName;
 
-      const slotForDate = getSlotForDate(selectedDate);
-
-      // Validate mobile number to be exactly 11 digits starting with 01
-      if (mobileNumber.length !== 11 || !mobileNumber.startsWith("01")) {
-        setMobileError(language === 'en' ? "Please provide 11 digits number (starting with 01). Example: 01XXXXXXXXX" : "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX");
-        setSubmitting(false);
-        return;
-      }
-
-      // Prepend +880 to mobile number when submitting
+      const slotForDate = getSlotForDate(selectedDate!);
       const formattedMobileNumber = mobileNumber;
 
-      // Save booking data to localStorage and go to checkout page
       const checkoutData = {
         doctorId: doctor?._id || doctorId,
         doctorSlug: doctorId,
@@ -409,10 +413,11 @@ export default function BookAppointmentPage() {
         hospitalName,
         hospitalBn,
         hospitalSlug: selectedHospitalSlug,
-        appointmentDate: selectedDate.toISOString(),
+        appointmentDate: selectedDate!.toISOString(),
         appointmentTime: slotForDate?.time || undefined,
-        userId: user?._id || user?.id || undefined,
+        userId: currentUser?._id || currentUser?.id || undefined,
         affiliateCode: affiliateCode || undefined,
+        isVerified: true,
       };
 
       if (typeof window !== "undefined") {
@@ -426,6 +431,59 @@ export default function BookAppointmentPage() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedHospitalSlug || !selectedDate) {
+      alert("Please select a date and ensure hospital is selected.");
+      return;
+    }
+
+    if (mobileNumber.length !== 11 || !mobileNumber.startsWith("01")) {
+      setMobileError(language === 'en' ? "Please provide 11 digits number (starting with 01). Example: 01XXXXXXXXX" : "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX");
+      return;
+    }
+
+    if (mobileError) {
+      alert(mobileError);
+      return;
+    }
+
+    // Check if phone verification is needed
+    let needsVerification = true;
+    if (currentUser && currentUser.isPhoneVerified) {
+      const userLocalPhone = currentUser.phoneNumber.startsWith("+880")
+        ? "0" + currentUser.phoneNumber.slice(4)
+        : (currentUser.phoneNumber.startsWith("+88") ? "0" + currentUser.phoneNumber.slice(3) : currentUser.phoneNumber);
+      if (userLocalPhone === mobileNumber) {
+        needsVerification = false;
+      }
+    }
+
+    if (needsVerification) {
+      setShowVerifyModal(true);
+    } else {
+      await proceedToCheckout();
+    }
+  };
+
+  const handleVerifySuccess = async () => {
+    if (currentUser) {
+      const updatedUser = { ...currentUser, isPhoneVerified: true };
+      setCurrentUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      try {
+        await fetch("/api/profile/verify-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: currentUser._id || currentUser.id, isPhoneVerified: true })
+        });
+      } catch (e) {
+        console.error("Failed to sync verification state to server:", e);
+      }
+    }
+    await proceedToCheckout();
   };
 
   const changeMonth = (direction: number) => {
@@ -689,15 +747,10 @@ export default function BookAppointmentPage() {
                       onChange={(e) => {
                         const val = e.target.value.replace(/\D/g, '').slice(0, 11);
                         setMobileNumber(val);
-                        if (val.length > 0 && (val.length < 11 || !val.startsWith("01"))) {
-                          setMobileError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে' : 'Mobile number must be exactly 11 digits');
-                        } else {
-                          setMobileError("");
-                        }
                       }}
                       onBlur={() => {
                         if (mobileNumber.length > 0 && (mobileNumber.length < 11 || !mobileNumber.startsWith("01"))) {
-                          setMobileError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে' : 'Mobile number must be exactly 11 digits');
+                          setMobileError(language === 'bn' ? "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX" : 'Please provide 11 digits number (starting with 01). Example: 01XXXXXXXXX');
                         }
                       }}
                       required
@@ -713,12 +766,10 @@ export default function BookAppointmentPage() {
                   </div>
                   {mobileError && (
                     <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
-                      <span className="font-bold">!</span> {mobileError}
+                       {mobileError}
                     </p>
                   )}
-                  <p className="text-xs text-gray-400 mt-1">
-                    {language === 'bn' ? '১১ সংখ্যা (যেমন: ০১XXXXXXXXX)' : '11 digits (e.g. 01XXXXXXXXX)'}
-                  </p>
+                 
                 </div>
 
                 {/* Gender - Optional */}
@@ -839,6 +890,13 @@ export default function BookAppointmentPage() {
           </div>
         </div>
       </div>
+      <PhoneVerificationModal
+        isOpen={showVerifyModal}
+        onClose={() => setShowVerifyModal(false)}
+        phoneNumber={mobileNumber}
+        onVerifySuccess={handleVerifySuccess}
+        language={language}
+      />
       <Footer />
     </div>
   );

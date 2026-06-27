@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import DiagnosticBooking from "@/models/DiagnosticBooking";
 import AbandonedCart from "@/models/AbandonedCart";
+import User from "@/models/User";
+import PhoneVerification from "@/models/PhoneVerification";
 import mongoose from "mongoose";
 import "@/models/Hospital"; // Ensure Hospital model is registered for populate
 
@@ -27,6 +29,42 @@ export async function POST(req: Request) {
         { error: "Mobile number must be exactly 11 digits starting with 01" },
         { status: 400 }
       );
+    }
+
+    // Validate phone verification
+    let isVerified = false;
+    if (body.userId) {
+      const user = await User.findById(body.userId);
+      if (user && user.isPhoneVerified) {
+        const userLocalPhone = user.phoneNumber.startsWith('+880')
+          ? '0' + user.phoneNumber.slice(4)
+          : (user.phoneNumber.startsWith('+88') ? '0' + user.phoneNumber.slice(3) : user.phoneNumber);
+          
+        if (userLocalPhone === cleanMobile) {
+          isVerified = true;
+        }
+      }
+    }
+
+    if (!isVerified) {
+      const verification = await PhoneVerification.findOne({
+        phoneNumber: cleanMobile,
+        verified: true
+      });
+
+      if (!verification) {
+        return NextResponse.json(
+          { error: 'Phone number not verified. Please verify your phone number first.' },
+          { status: 400 }
+        );
+      }
+
+      // Delete verification document
+      try {
+        await PhoneVerification.deleteOne({ phoneNumber: cleanMobile });
+      } catch (e) {
+        console.error("Error deleting verification entry:", e);
+      }
     }
 
     // Generate unique 8-digit ID

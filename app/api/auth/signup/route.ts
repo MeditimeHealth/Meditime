@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 import Appointment from "@/models/Appointment";
+import PhoneVerification from "@/models/PhoneVerification";
 import bcrypt from "bcryptjs";
 
 // Generate unique affiliate code
@@ -19,6 +20,23 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const { email, phoneNumber, fullName, gender, bloodGroup, age, password, userType } = body;
+
+    // Validate phone verification
+    const localPhone = phoneNumber.startsWith('+880') 
+      ? '0' + phoneNumber.slice(4) 
+      : (phoneNumber.startsWith('+88') ? '0' + phoneNumber.slice(3) : phoneNumber);
+
+    const verification = await PhoneVerification.findOne({
+      phoneNumber: localPhone,
+      verified: true
+    });
+
+    if (!verification) {
+      return NextResponse.json(
+        { error: "Phone number not verified. Please verify your phone number first." },
+        { status: 400 }
+      );
+    }
 
     // Validate required fields based on user type
     if (userType === 'affiliate') {
@@ -69,6 +87,7 @@ export async function POST(request: NextRequest) {
       phoneNumber,
       fullName,
       password: hashedPassword,
+      isPhoneVerified: true,
     };
 
     // Handle affiliate registration
@@ -110,6 +129,13 @@ export async function POST(request: NextRequest) {
 
     // Create user
     const user = await User.create(userData);
+
+    // Delete phone verification entry
+    try {
+      await PhoneVerification.deleteOne({ phoneNumber: localPhone });
+    } catch (e) {
+      console.error("Error deleting verification record:", e);
+    }
 
     // Link existing appointments with this phone number to the new user account
     try {

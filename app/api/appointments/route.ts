@@ -4,6 +4,8 @@ import Appointment from '@/models/Appointment';
 import Doctor from '@/models/Doctor';
 import Affiliate from '@/models/Affiliate';
 import User from '@/models/User';
+import PhoneVerification from '@/models/PhoneVerification';
+import { sendSMS } from '@/lib/sms';
 import { getSession, getAdminSession } from '@/lib/auth';
 
 // GET - Fetch all appointments or filter by doctorId
@@ -135,6 +137,46 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate phone verification
+    let isVerified = false;
+    const localPhone = mobileNumber.startsWith('+880') 
+      ? '0' + mobileNumber.slice(4) 
+      : (mobileNumber.startsWith('+88') ? '0' + mobileNumber.slice(3) : mobileNumber);
+
+    if (userId) {
+      const user = await User.findById(userId);
+      if (user && user.isPhoneVerified) {
+        const userLocalPhone = user.phoneNumber.startsWith('+880')
+          ? '0' + user.phoneNumber.slice(4)
+          : (user.phoneNumber.startsWith('+88') ? '0' + user.phoneNumber.slice(3) : user.phoneNumber);
+          
+        if (userLocalPhone === localPhone) {
+          isVerified = true;
+        }
+      }
+    }
+
+    if (!isVerified) {
+      const verification = await PhoneVerification.findOne({
+        phoneNumber: localPhone,
+        verified: true
+      });
+
+      if (!verification) {
+        return NextResponse.json(
+          { error: 'Phone number not verified. Please verify your phone number first.' },
+          { status: 400 }
+        );
+      }
+
+      // Delete the phone verification entry as it has been consumed
+      try {
+        await PhoneVerification.deleteOne({ phoneNumber: localPhone });
+      } catch (e) {
+        console.error("Error deleting verification entry:", e);
+      }
+    }
+
     // Verify doctor exists
     let doctor;
     const trimmedDoctorId = doctorId.trim();
@@ -208,6 +250,14 @@ export async function POST(request: NextRequest) {
 
     // Populate doctor info
     await appointment.populate('doctorId');
+
+    // Send SMS alert to admin
+    try {
+      const adminMessage = `New Serial Added!\nPatient Name: ${patientName}\nPatient Mobile: ${mobileNumber}`;
+      await sendSMS('8801610384444', adminMessage);
+    } catch (smsErr) {
+      console.error('Failed to send admin booking SMS alert:', smsErr);
+    }
 
     return NextResponse.json(
       { message: 'Appointment booked successfully', appointment },

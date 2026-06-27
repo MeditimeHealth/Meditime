@@ -63,6 +63,24 @@ export default function PatientReviewSection() {
   const [loading, setLoading] = useState(false);
   const [phoneError, setPhoneError] = useState("");
 
+  // Debounced phone validation
+  useEffect(() => {
+    if (!formData.phone) {
+      setPhoneError("");
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      if (formData.phone.length !== 11 || !formData.phone.startsWith("01")) {
+        setPhoneError(language === 'bn' ? "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX" : "Please enter 11 digits number (starting with 01). Example: 01XXXXXXXXX");
+      } else {
+        setPhoneError("");
+      }
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [formData.phone, language]);
+
   const formTranslations = {
     title: language === 'bn' ? "যোগাযোগ করুন" : "Get In Touch",
     subtitle: language === 'bn'
@@ -272,7 +290,6 @@ export default function PatientReviewSection() {
                         onChange={(e) => {
                           const val = e.target.value.replace(/\D/g, '').slice(0, 11);
                           setFormData({ ...formData, phone: val });
-                          if (phoneError) setPhoneError("");
                         }}
                       />
                     </div>
@@ -281,7 +298,6 @@ export default function PatientReviewSection() {
                     {phoneError}
                       </p>
                     )}
-                    <p className="text-xs text-gray-400 ml-1">11 digits (e.g. 01XXXXXXXXX)</p>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-slate-700 ml-1">{formTranslations.subject}</label>

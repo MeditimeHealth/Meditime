@@ -37,9 +37,21 @@ export default function DiagnosticSuccessPage() {
       const savedCheckout = localStorage.getItem("diagnosticCheckout");
       
       if (savedTests && savedVenue && savedCheckout) {
-        setBookedTests(JSON.parse(savedTests));
-        setSelectedVenue(JSON.parse(savedVenue));
-        setCheckoutData(JSON.parse(savedCheckout));
+        try {
+          const checkoutParsed = JSON.parse(savedCheckout);
+          if (!checkoutParsed.isVerified) {
+            showToast.error("Please complete phone verification first.");
+            router.push("/diagnostic");
+            return;
+          }
+          setBookedTests(JSON.parse(savedTests));
+          setSelectedVenue(JSON.parse(savedVenue));
+          setCheckoutData(checkoutParsed);
+        } catch (e) {
+          showToast.error("Invalid checkout data. Redirecting...");
+          router.push("/diagnostic");
+          return;
+        }
       } else {
         showToast.error("Missing booking data. Redirecting...");
         router.push("/diagnostic");

@@ -8,6 +8,7 @@ import Navbar from "@/components/navbar";
 import { ArrowLeft, MapPin, Loader2, Building2, Activity } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "@/lib/toast";
+import PhoneVerificationModal from "@/components/PhoneVerificationModal";
 
 import DiagnosticCalendarPicker from "@/components/diagnostic/DiagnosticCalendarPicker";
 import DiagnosticPatientForm from "@/components/diagnostic/DiagnosticPatientForm";
@@ -36,6 +37,9 @@ export default function DiagnosticCheckoutPage() {
   const [patientType, setPatientType] = useState<"old" | "new" | "report">("new");
   const [affiliateCode, setAffiliateCode] = useState("");
 
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedTests = localStorage.getItem("diagnosticCart");
@@ -59,6 +63,7 @@ export default function DiagnosticCheckoutPage() {
       if (userData) {
         try {
           const user = JSON.parse(userData);
+          setCurrentUser(user);
           if (user.fullName) setPatientName(user.fullName);
           if (user.phoneNumber) {
             let phone = user.phoneNumber.startsWith("+88")
@@ -76,13 +81,7 @@ export default function DiagnosticCheckoutPage() {
     }
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedVenue || !selectedDate) {
-      alert("Please select a date");
-      return;
-    }
-
+  const proceedToSuccess = async () => {
     setSubmitting(true);
     try {
       const formattedMobileNumber = mobileNumber.startsWith("+880")
@@ -96,7 +95,8 @@ export default function DiagnosticCheckoutPage() {
         age,
         patientType,
         affiliateCode,
-        appointmentDate: selectedDate.toISOString()
+        appointmentDate: selectedDate!.toISOString(),
+        isVerified: true
       };
 
       if (typeof window !== "undefined") {
@@ -109,6 +109,54 @@ export default function DiagnosticCheckoutPage() {
       alert("Failed to proceed to success page");
       setSubmitting(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedVenue || !selectedDate) {
+      alert("Please select a date");
+      return;
+    }
+
+    if (mobileNumber.length !== 11 || !mobileNumber.startsWith("01")) {
+      alert("Mobile number must be exactly 11 digits starting with 01.");
+      return;
+    }
+
+    // Check if phone verification is needed
+    let needsVerification = true;
+    if (currentUser && currentUser.isPhoneVerified) {
+      const userLocalPhone = currentUser.phoneNumber.startsWith("+880")
+        ? "0" + currentUser.phoneNumber.slice(4)
+        : (currentUser.phoneNumber.startsWith("+88") ? "0" + currentUser.phoneNumber.slice(3) : currentUser.phoneNumber);
+      if (userLocalPhone === mobileNumber) {
+        needsVerification = false;
+      }
+    }
+
+    if (needsVerification) {
+      setShowVerifyModal(true);
+    } else {
+      await proceedToSuccess();
+    }
+  };
+
+  const handleVerifySuccess = async () => {
+    if (currentUser) {
+      const updatedUser = { ...currentUser, isPhoneVerified: true };
+      setCurrentUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      try {
+        await fetch("/api/profile/verify-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: currentUser._id || currentUser.id, isPhoneVerified: true })
+        });
+      } catch (e) {
+        console.error("Failed to sync verification state to server:", e);
+      }
+    }
+    await proceedToSuccess();
   };
 
   if (loading) {
@@ -229,6 +277,13 @@ export default function DiagnosticCheckoutPage() {
           </div>
         </div>
       </div>
+      <PhoneVerificationModal
+        isOpen={showVerifyModal}
+        onClose={() => setShowVerifyModal(false)}
+        phoneNumber={mobileNumber}
+        onVerifySuccess={handleVerifySuccess}
+        language={language}
+      />
     </div>
   );
 }

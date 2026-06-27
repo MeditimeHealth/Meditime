@@ -45,6 +45,24 @@ export default function DiagnosticPatientForm({
   const { language } = useLanguage();
   const [mobileError, setMobileError] = React.useState<string>("");
 
+  // Debounced mobile number check
+  React.useEffect(() => {
+    if (!mobileNumber) {
+      setMobileError("");
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      if (mobileNumber.length !== 11 || !mobileNumber.startsWith("01")) {
+        setMobileError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে এবং ০১ দিয়ে শুরু হতে হবে' : 'Mobile number must be exactly 11 digits starting with 01');
+      } else {
+        setMobileError("");
+      }
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [mobileNumber, language]);
+
   // Load saved patient form data from localStorage
   React.useEffect(() => {
     if (typeof window !== "undefined") {
@@ -183,16 +201,6 @@ export default function DiagnosticPatientForm({
               onChange={(e) => {
                 const val = e.target.value.replace(/\D/g, '').slice(0, 11);
                 setMobileNumber(val);
-                if (val.length > 0 && val.length < 11) {
-                  setMobileError(language === 'en' ? "Please provide 11 digits number (starting with 01). Example: 01XXXXXXXXX" : "অনুগ্রহ করে 11 ডিজিটের নম্বরটি দিন (01 দিয়ে শুরু করুন)। যেমন: 01XXXXXXXXX");
-                } else {
-                  setMobileError("");
-                }
-              }}
-              onBlur={() => {
-                if (mobileNumber.length > 0 && mobileNumber.length < 11) {
-                  setMobileError(language === 'bn' ? 'মোবাইল নম্বর অবশ্যই ১১ সংখ্যার হতে হবে' : 'Mobile number must be exactly 11 digits');
-                }
               }}
               required
               placeholder={language === 'bn' ? '০১XXXXXXXXX' : '01XXXXXXXXX'}

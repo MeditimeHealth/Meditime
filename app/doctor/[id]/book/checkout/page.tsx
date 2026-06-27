@@ -138,7 +138,12 @@ function CheckoutContent() {
       const data = localStorage.getItem("pendingBooking");
       if (data) {
         try {
-          setBooking(JSON.parse(data));
+          const parsed = JSON.parse(data);
+          if (!parsed.isVerified) {
+            router.replace(`/doctor/${doctorId}/book`);
+            return;
+          }
+          setBooking(parsed);
         } catch {
           setError("Invalid booking data. Please go back and try again.");
         }

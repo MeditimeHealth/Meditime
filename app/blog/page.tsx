@@ -88,9 +88,9 @@ export default function HealthTipsPage() {
             <div className="relative h-full w-full">
               {/* Background Image */}
               <div
-                className="absolute inset-0 bg-cover bg-center"
+                className="absolute inset-0 bg-cover bg-[position:95%_center] lg:bg-center"
                 style={{
-                  backgroundImage: `url(/slide.jpg)`,
+                  backgroundImage: `url(/hero/blog.png)`,
                 }}
               >
                 {/* Overlay */}
